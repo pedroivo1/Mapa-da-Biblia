@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Mapa da Bíblia</title>
-    <meta name="description" content="Mapa da Bíblia: linha do tempo bíblica e notas de estudo." />
+    <meta name="description" content="Linha do tempo bíblica com progresso de leitura salvo na sua conta." />
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg" />
@@ -16,6 +16,9 @@
     />
     <link rel="stylesheet" href="css/global.css" />
     <script src="js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/conta.js"></script>
   </head>
   <body>
     <header class="nav">
@@ -43,7 +46,7 @@
           Mapa da<br />
           <em>Bíblia.</em>
         </h1>
-        <p>Mapas, linhas do tempo e notas que escrevo enquanto estudo.</p>
+        <p>Uma linha do tempo da Bíblia, da criação ao Novo Testamento. Crie uma conta para marcar os livros, capítulos e versículos que já leu e acompanhar seu progresso.</p>
       </section>
 
       <section id="colecoes">
@@ -66,35 +69,11 @@
           </li>
         </ol>
       </section>
-
-      <section id="notas">
-        <div class="eyebrow">
-          <p class="hud muted">
-            <span class="faint">02</span><span class="sep faint">/</span>Notas
-          </p>
-          <p class="hud faint eyebrow-aside">escrito para mim</p>
-        </div>
-
-        <!-- Copie o <li> para cada nota nova e troque o link, o número, o assunto, o título, o resumo e a data. -->
-        <ol class="note-list">
-          <li>
-            <a class="note-row" href="notas/como-anotar-o-que-estudo.html">
-              <span class="hud faint" aria-hidden="true">01</span>
-              <span class="topic hud muted">Método</span>
-              <span class="note-copy">
-                <span class="note-title">Como anotar o que estou estudando</span>
-                <span class="note-summary">Um molde curto para tutoriais e artigos que eu escrevo para mim.</span>
-              </span>
-              <time class="hud faint" datetime="2026-10-12">12 out 2026</time>
-            </a>
-          </li>
-        </ol>
-      </section>
     </main>
 
     <footer>
       <div class="footer-inner frame">
-        <p class="hud faint">Mapa da Bíblia · escrito para mim</p>
+        <p class="hud faint">Mapa da Bíblia · <a href="privacidade.html">Privacidade</a></p>
       </div>
     </footer>
   </body>

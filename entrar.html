@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Entrar — Mapa da Bíblia</title>
+    <meta name="description" content="Entre com Google ou e-mail para salvar seu progresso de leitura da Bíblia." />
+    <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/global.css" />
+    <script src="js/theme.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/conta.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner frame">
+        <a class="wordmark" href="index.html">
+          <span class="mark" aria-hidden="true">B</span>
+          Mapa da Bíblia
+        </a>
+        <a class="nav-link hud" href="biblia/index.html"><span>Linha do tempo</span></a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="frame">
+      <div class="article-kicker">
+        <p class="hud muted">Conta</p>
+      </div>
+      <h1 class="article-title" id="titulo">Entrar</h1>
+
+      <section class="form-conta" id="painel-sessao" hidden>
+        <p id="sessao-texto"></p>
+        <a class="btn" id="ir" href="biblia/index.html">Ir para a linha do tempo</a>
+        <button type="button" class="btn secundario" id="sair">Sair</button>
+      </section>
+
+      <form class="form-conta" id="form-entrar" novalidate>
+        <button type="button" class="btn secundario" id="google">Entrar com Google</button>
+        <p class="ou hud faint">ou com e-mail</p>
+        <div class="abas" role="group" aria-label="Modo">
+          <button type="button" class="hud" data-modo="entrar" aria-pressed="true">Entrar</button>
+          <button type="button" class="hud" data-modo="criar" aria-pressed="false">Criar conta</button>
+        </div>
+        <label><span class="hud muted">E-mail</span><input type="email" name="email" autocomplete="email" required /></label>
+        <label><span class="hud muted">Senha</span><input type="password" name="senha" autocomplete="current-password" minlength="8" required /></label>
+        <button type="submit" class="btn" id="enviar">Entrar</button>
+        <button type="button" class="link-btn" id="esqueci">Esqueci a senha</button>
+        <p class="msg" id="msg" role="status" hidden></p>
+      </form>
+
+      <form class="form-conta" id="form-nova" novalidate hidden>
+        <label><span class="hud muted">Nova senha</span><input type="password" name="senha" autocomplete="new-password" minlength="8" required /></label>
+        <button type="submit" class="btn">Salvar nova senha</button>
+        <p class="msg" id="msg-nova" role="status" hidden></p>
+      </form>
+    </main>
+
+    <footer>
+      <div class="footer-inner frame">
+        <p class="hud faint">Mapa da Bíblia · <a href="privacidade.html">Privacidade</a></p>
+      </div>
+    </footer>
+    <script>
+      (function () {
+        "use strict";
+
+        // só volta para páginas deste site
+        var volta = new URLSearchParams(location.search).get("volta") || "";
+        if (volta.charAt(0) !== "/" || volta.charAt(1) === "/") volta = new URL("biblia/", location.href).pathname;
+
+        var formEntrar = document.getElementById("form-entrar");
+        var formNova = document.getElementById("form-nova");
+        var painelSessao = document.getElementById("painel-sessao");
+        var titulo = document.getElementById("titulo");
+        var msg = document.getElementById("msg");
+        var enviar = document.getElementById("enviar");
+        var modo = "entrar";
+        var recuperando = /nova-senha/.test(location.search) || /type=recovery/.test(location.hash);
+
+        document.getElementById("ir").href = volta;
+
+        var ERROS = {
+          "Invalid login credentials": "E-mail ou senha incorretos.",
+          "Email not confirmed": "Confirme seu e-mail pelo link que enviamos antes de entrar.",
+          "User already registered": "Este e-mail já tem conta. Use a aba Entrar.",
+          "New password should be different from the old password.": "A nova senha precisa ser diferente da anterior."
+        };
+        function traduzir(e) {
+          var m = (e && e.message) || String(e);
+          if (ERROS[m]) return ERROS[m];
+          if (/password/i.test(m) && /(at least|characters|weak)/i.test(m)) return "Senha fraca: use pelo menos 8 caracteres.";
+          if (/rate limit|too many/i.test(m)) return "Muitas tentativas. Espere alguns minutos e tente de novo.";
+          if (/valid email|invalid.*email/i.test(m)) return "Digite um e-mail válido.";
+          if (/fetch|network/i.test(m)) return "Sem conexão. Verifique a internet e tente de novo.";
+          return "Algo deu errado: " + m;
+        }
+        function mostrar(el, texto, erro) {
+          el.textContent = texto;
+          el.className = "msg" + (erro ? " erro" : "");
+          el.hidden = !texto;
+        }
+        function ocupado(form, sim) {
+          Array.prototype.forEach.call(form.querySelectorAll("button"), function (b) {
+            b.disabled = sim;
+          });
+        }
+
+        function tela() {
+          var u = Conta.usuario();
+          formNova.hidden = !recuperando || !u;
+          formEntrar.hidden = !!u;
+          painelSessao.hidden = !u || recuperando;
+          if (recuperando && u) titulo.textContent = "Nova senha";
+          else if (u) {
+            titulo.textContent = "Você entrou";
+            document.getElementById("sessao-texto").textContent = "Conectado como " + u.email + ".";
+          } else titulo.textContent = modo === "criar" ? "Criar conta" : "Entrar";
+        }
+
+        if (!Conta.ativo) {
+          mostrar(msg, "O login ainda não foi configurado neste site (js/config.js).", true);
+          ocupado(formEntrar, true);
+          return;
+        }
+
+        Conta.aoMudar(function (evento, u) {
+          if (evento === "PASSWORD_RECOVERY") recuperando = true;
+          tela();
+        });
+        Conta.pronto().then(tela);
+
+        formEntrar.addEventListener("click", function (ev) {
+          var b = ev.target.closest("[data-modo]");
+          if (!b) return;
+          modo = b.getAttribute("data-modo");
+          Array.prototype.forEach.call(formEntrar.querySelectorAll("[data-modo]"), function (x) {
+            x.setAttribute("aria-pressed", String(x === b));
+          });
+          enviar.textContent = modo === "criar" ? "Criar conta" : "Entrar";
+          formEntrar.senha.autocomplete = modo === "criar" ? "new-password" : "current-password";
+          mostrar(msg, "");
+          tela();
+        });
+
+        document.getElementById("google").addEventListener("click", function () {
+          ocupado(formEntrar, true);
+          Conta.entrarGoogle(volta).catch(function (e) {
+            ocupado(formEntrar, false);
+            mostrar(msg, traduzir(e), true);
+          });
+        });
+
+        formEntrar.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var email = formEntrar.email.value.trim();
+          var senha = formEntrar.senha.value;
+          if (!email || !senha) return mostrar(msg, "Preencha e-mail e senha.", true);
+          if (modo === "criar" && senha.length < 8) return mostrar(msg, "A senha precisa ter pelo menos 8 caracteres.", true);
+          ocupado(formEntrar, true);
+          mostrar(msg, "");
+          var pedido = modo === "criar" ? Conta.criar(email, senha, volta) : Conta.entrar(email, senha);
+          pedido
+            .then(function (d) {
+              if (d.session) return location.assign(volta);
+              ocupado(formEntrar, false);
+              // com confirmação de e-mail ligada, um e-mail já cadastrado volta sem identidades
+              if (d.user && d.user.identities && d.user.identities.length === 0) {
+                mostrar(msg, ERROS["User already registered"], true);
+              } else {
+                mostrar(msg, "Quase lá: enviamos um link de confirmação para " + email + ". Abra o e-mail e clique no link.");
+              }
+            })
+            .catch(function (e) {
+              ocupado(formEntrar, false);
+              mostrar(msg, traduzir(e), true);
+            });
+        });
+
+        document.getElementById("esqueci").addEventListener("click", function () {
+          var email = formEntrar.email.value.trim();
+          if (!email) return mostrar(msg, "Digite seu e-mail acima e clique de novo em Esqueci a senha.", true);
+          ocupado(formEntrar, true);
+          Conta.esqueci(email)
+            .then(function () {
+              mostrar(msg, "Se existir uma conta com " + email + ", enviamos um link para criar uma nova senha.");
+            })
+            .catch(function (e) {
+              mostrar(msg, traduzir(e), true);
+            })
+            .then(function () {
+              ocupado(formEntrar, false);
+            });
+        });
+
+        formNova.addEventListener("submit", function (ev) {
+          ev.preventDefault();
+          var m = document.getElementById("msg-nova");
+          var senha = formNova.senha.value;
+          if (senha.length < 8) return mostrar(m, "A senha precisa ter pelo menos 8 caracteres.", true);
+          ocupado(formNova, true);
+          Conta.novaSenha(senha)
+            .then(function () {
+              location.assign(volta);
+            })
+            .catch(function (e) {
+              ocupado(formNova, false);
+              mostrar(m, traduzir(e), true);
+            });
+        });
+
+        document.getElementById("sair").addEventListener("click", function () {
+          Conta.sair().then(tela);
+        });
+      })();
+    </script>
+  </body>
+</html>

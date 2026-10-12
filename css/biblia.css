@@ -660,3 +660,26 @@ button.chip:hover {
     white-space: nowrap;
   }
 }
+
+/* sem login: só consulta */
+.l-aviso {
+  margin: 0;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-sunken);
+  color: var(--muted);
+}
+
+.l-aviso a,
+.lido-box a {
+  color: var(--ink-strong);
+}
+
+.leitura .l-check[disabled],
+.leitura .l-verso[disabled] {
+  cursor: default;
+}
+
+.leitura .l-check[disabled] {
+  opacity: 0.4;
+}

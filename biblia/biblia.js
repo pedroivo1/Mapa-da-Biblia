@@ -1,8 +1,9 @@
 (function () {
   "use strict";
 
-  var KEY = "biblioteca-lido";
   var KEY_COL = "biblioteca-colunas";
+  // progresso antigo, de quando era salvo só no navegador: sobe para a conta no primeiro login
+  var KEY = "biblioteca-lido";
   var KEY_V = "biblioteca-versiculos";
   var NS = "http://www.w3.org/2000/svg";
 
@@ -51,9 +52,12 @@
     } catch (e) {}
   }
 
-  var lido = ler(KEY, {});
+  var lido = {};
   var colunas = ler(KEY_COL, { livros: true, reis: true, potencias: true });
-  var leitura = ler(KEY_V, {}); // { livro: { capitulo: [versículos] | 1 (todos) } }
+  var leitura = {}; // { livro: { capitulo: [versículos] | 1 (todos) } }
+  var Conta = window.Conta;
+  var conectado = false; // só marca leitura com login e progresso carregado
+  var usuarioCarregado = null;
   var canon = [];
   var canonPorItem = {};
   var canonPorId = {};
@@ -61,6 +65,10 @@
   var itens = {};
   var raiz = document.getElementById("vista");
   var painel = null;
+
+  function urlEntrar() {
+    return Conta ? Conta.urlEntrar() : "../entrar.html";
+  }
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
@@ -145,6 +153,9 @@
   }
 
   function lidoBox(item) {
+    if (!conectado) {
+      return '<p class="lido-box"><a href="' + esc(urlEntrar()) + '">Entre</a> para marcar como lido.</p>';
+    }
     return (
       '<label class="lido-box"><input type="checkbox" data-lido="' + esc(item.key) + '"' +
       (lido[item.key] ? " checked" : "") + "> Lido</label>"
@@ -684,8 +695,7 @@
     var on = livroCompleto(b);
     if (on) lido[b.item] = true;
     else delete lido[b.item];
-    gravar(KEY, lido);
-    gravar(KEY_V, leitura);
+    salvarProgresso();
     document.querySelectorAll('[data-key="' + b.item + '"]').forEach(function (n) {
       n.classList.toggle("lido", on);
     });
@@ -712,6 +722,10 @@
     if (b && nav.nivel === "versos") h += '<span>›</span><button type="button" aria-current="true">Capítulo ' + nav.cap + "</button>";
     h += '</nav><button type="button" class="fechar-dlg" data-l-fechar aria-label="Fechar">×</button></header>';
     h += '<div class="leitura-corpo">';
+    var off = conectado ? "" : " disabled";
+    if (!conectado) {
+      h += '<p class="l-aviso"><a href="' + esc(urlEntrar()) + '">Entre</a> para marcar sua leitura. Sem login, você só consulta.</p>';
+    }
 
     if (nav.nivel === "livros") {
       [["AT", "Antigo Testamento"], ["NT", "Novo Testamento"]].forEach(function (ta) {
@@ -724,7 +738,7 @@
           var c = capsCompletos(x);
           var st = c === x.v.length ? "feito" : capsComAlgo(x) ? "parcial" : "";
           h += '<div class="l-livro ' + st + '">' +
-            '<button type="button" class="l-check ' + st + '" data-l-livro-tog="' + x.id + '" aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
+            '<button type="button" class="l-check ' + st + '" data-l-livro-tog="' + x.id + '"' + off + ' aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
             '<button type="button" class="l-nome" data-l-abrir="' + x.id + '">' + esc(x.nome) + "</button>" +
             '<span class="hud faint">' + c + "/" + x.v.length + " cap.</span>" +
             '<progress value="' + c + '" max="' + x.v.length + '"></progress></div>';
@@ -733,14 +747,14 @@
     } else if (nav.nivel === "caps") {
       var feitosCaps = capsCompletos(b);
       h += '<div class="l-acoes"><p class="hud muted">' + esc(b.nome) + " · " + feitosCaps + "/" + b.v.length + " capítulos</p>" +
-        '<span><button type="button" class="chip" data-l-livro-set="1">Marcar livro inteiro</button> ' +
-        '<button type="button" class="chip" data-l-livro-set="0">Limpar</button></span></div>';
+        '<span><button type="button" class="chip" data-l-livro-set="1"' + off + '>Marcar livro inteiro</button> ' +
+        '<button type="button" class="chip" data-l-livro-set="0"' + off + '>Limpar</button></span></div>';
       h += '<div class="l-grade">';
       for (var c = 1; c <= b.v.length; c++) {
         var lc = lidosCap(b, c);
         var st = estado(lc, b.v[c - 1]);
         h += '<div class="l-cap ' + st + '"><button type="button" class="l-cap-num" data-l-cap="' + c + '" title="' + lc + "/" + b.v[c - 1] + ' versículos">' + c + "</button>" +
-          '<button type="button" class="l-check ' + st + '" data-l-cap-tog="' + c + '" aria-label="Marcar capítulo ' + c + '" title="Marcar o capítulo inteiro"></button></div>';
+          '<button type="button" class="l-check ' + st + '" data-l-cap-tog="' + c + '"' + off + ' aria-label="Marcar capítulo ' + c + '" title="Marcar o capítulo inteiro"></button></div>';
       }
       h += "</div>";
     } else {
@@ -750,11 +764,11 @@
         "<span>" +
         '<button type="button" class="chip" data-l-nav="-1"' + (nav.cap <= 1 ? " disabled" : "") + ">← Anterior</button> " +
         '<button type="button" class="chip" data-l-nav="1"' + (nav.cap >= b.v.length ? " disabled" : "") + ">Próximo →</button> " +
-        '<button type="button" class="chip" data-l-cap-set="1">Marcar capítulo</button> ' +
-        '<button type="button" class="chip" data-l-cap-set="0">Limpar</button></span></div>';
+        '<button type="button" class="chip" data-l-cap-set="1"' + off + '>Marcar capítulo</button> ' +
+        '<button type="button" class="chip" data-l-cap-set="0"' + off + '>Limpar</button></span></div>';
       h += '<div class="l-grade versos">';
       for (var v = 1; v <= n; v++) {
-        h += '<button type="button" class="l-verso ' + (versoLido(b, nav.cap, v) ? "feito" : "") + '" data-l-verso="' + v + '" aria-pressed="' + versoLido(b, nav.cap, v) + '">' + v + "</button>";
+        h += '<button type="button" class="l-verso ' + (versoLido(b, nav.cap, v) ? "feito" : "") + '" data-l-verso="' + v + '"' + off + ' aria-pressed="' + versoLido(b, nav.cap, v) + '">' + v + "</button>";
       }
       h += "</div>";
     }
@@ -873,6 +887,10 @@
   document.addEventListener("change", function (ev) {
     var t = ev.target;
     if (t.hasAttribute("data-lido")) {
+      if (!conectado) {
+        t.checked = !t.checked;
+        return;
+      }
       var key = t.getAttribute("data-lido");
       var cb = canonPorItem[key];
       if (cb) {
@@ -882,7 +900,7 @@
       }
       if (t.checked) lido[key] = true;
       else delete lido[key];
-      gravar(KEY, lido);
+      salvarProgresso();
       document.querySelectorAll('[data-key="' + key + '"]').forEach(function (n) {
         n.classList.toggle("lido", !!lido[key]);
       });
@@ -908,6 +926,96 @@
     }, 150);
   });
 
+  /* ---------- progresso da conta ---------- */
+
+  function salvarProgresso() {
+    if (conectado) Conta.salvar(lido, leitura);
+  }
+
+  // marcações antigas ("livro lido") viram leitura completa; depois o mapa passa a seguir os capítulos
+  function normalizar() {
+    canon.forEach(function (b) {
+      if (lido[b.item] && !leitura[b.id]) setLivro(b, true);
+      if (livroCompleto(b)) lido[b.item] = true;
+      else delete lido[b.item];
+    });
+  }
+
+  // null: sem login. Erro ao ler a conta: fica só para consulta, para não sobrescrever o que está salvo.
+  function carregarProgresso() {
+    if (!Conta) return Promise.resolve(null);
+    return Conta.pronto().then(function (u) {
+      return u ? Conta.carregar() : null;
+    });
+  }
+
+  function aplicarProgresso(p) {
+    var u = Conta && Conta.usuario();
+    usuarioCarregado = p && u ? u.id : null;
+    conectado = !!usuarioCarregado;
+    lido = p ? p.lido : {};
+    leitura = p ? p.versiculos : {};
+    if (!conectado) return;
+
+    var antigoLido = ler(KEY, null);
+    var antigoV = ler(KEY_V, null);
+    var importar = p.vazio && (antigoLido || antigoV);
+    if (importar) {
+      lido = antigoLido || {};
+      leitura = antigoV || {};
+    }
+    var antes = JSON.stringify([lido, leitura]);
+    normalizar();
+    if (importar) {
+      Conta.salvarAgora(lido, leitura).then(function () {
+        try {
+          localStorage.removeItem(KEY);
+          localStorage.removeItem(KEY_V);
+        } catch (e) {}
+      }, function () {});
+    } else if (JSON.stringify([lido, leitura]) !== antes) {
+      salvarProgresso();
+    }
+  }
+
+  function falhaProgresso() {
+    aplicarProgresso(null);
+    renderizar();
+    raiz.insertAdjacentHTML(
+      "afterbegin",
+      '<p class="vazio">Não consegui carregar seu progresso. O mapa está só para consulta; recarregue a página para tentar de novo.</p>'
+    );
+  }
+
+  // redesenha tudo com o progresso atual, mantendo o painel e o popup abertos
+  function atualizarTudo() {
+    var aberto = painel && !painel.hidden && painel.dataset.key;
+    renderizar();
+    if (aberto) abrir(aberto);
+    if (dlg && dlg.open) renderLeitura();
+  }
+
+  function recarregarProgresso() {
+    carregarProgresso().then(function (p) {
+      aplicarProgresso(p);
+      atualizarTudo();
+    }, falhaProgresso);
+  }
+
+  if (Conta) {
+    Conta.aoMudar(function (evento, u) {
+      if (!dados) return;
+      var id = u ? u.id : null;
+      if (id !== usuarioCarregado) recarregarProgresso();
+    });
+  }
+
+  // outra aba ou outro aparelho pode ter marcado algo: ao voltar para a página, busca de novo
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState !== "visible" || !conectado || Conta.temPendente()) return;
+    recarregarProgresso();
+  });
+
   Promise.all(
     ["reis", "livros", "eras", "canon"].map(function (n) {
       return fetch("dados/" + n + ".json").then(function (r) {
@@ -915,25 +1023,22 @@
       });
     })
   )
-    .then(function (res) {
-      dados = preparar(res[0], res[1], res[2]);
-      canon = res[3];
-      canon.forEach(function (b) {
-        canonPorItem[b.item] = b;
-        canonPorId[b.id] = b;
-      });
-      // marcações antigas ("livro lido") viram leitura completa; depois o mapa passa a seguir os capítulos
-      canon.forEach(function (b) {
-        if (lido[b.item] && !leitura[b.id]) setLivro(b, true);
-        if (livroCompleto(b)) lido[b.item] = true;
-        else delete lido[b.item];
-      });
-      gravar(KEY, lido);
-      gravar(KEY_V, leitura);
-      renderizar();
-    })
-    .catch(function () {
-      raiz.innerHTML =
-        '<p class="vazio">Não consegui carregar os dados. Abra por um servidor local (<code>python -m http.server</code>); o navegador bloqueia JSON via <code>file://</code>.</p>';
-    });
+    .then(
+      function (res) {
+        dados = preparar(res[0], res[1], res[2]);
+        canon = res[3];
+        canon.forEach(function (b) {
+          canonPorItem[b.item] = b;
+          canonPorId[b.id] = b;
+        });
+        return carregarProgresso().then(function (p) {
+          aplicarProgresso(p);
+          renderizar();
+        }, falhaProgresso);
+      },
+      function () {
+        raiz.innerHTML =
+          '<p class="vazio">Não consegui carregar os dados. Abra por um servidor local (<code>python -m http.server</code>); o navegador bloqueia JSON via <code>file://</code>.</p>';
+      }
+    );
 })();

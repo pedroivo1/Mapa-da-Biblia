@@ -519,3 +519,185 @@ body > .frame {
 ::-webkit-scrollbar-corner {
   background: var(--bg);
 }
+
+/* conta: menu no topo, aviso de salvamento e formulários */
+.nav-conta {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+  margin-left: auto;
+  border-left: 1px solid var(--line);
+}
+
+.nav-conta:empty {
+  display: none;
+}
+
+.nav-conta + .theme-toggle {
+  margin-left: 0;
+}
+
+.nav-conta button.nav-link {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.nav-email {
+  display: flex;
+  align-items: center;
+  max-width: 16rem;
+  overflow: hidden;
+  padding-left: 0.9rem;
+  text-overflow: ellipsis;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.footer-inner a {
+  color: inherit;
+}
+
+.conta-aviso {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 100;
+  max-width: calc(100% - 2rem);
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.form-conta {
+  display: flex;
+  max-width: 26rem;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1.5rem 1.5rem 4rem;
+}
+
+.form-conta[hidden] {
+  display: none;
+}
+
+.form-conta label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-conta input {
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg-sunken);
+  color: var(--ink-strong);
+  font: inherit;
+}
+
+.form-conta input:focus {
+  border-color: var(--ink-strong);
+}
+
+.btn {
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--ink-strong);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--bg);
+  color: var(--ink-strong);
+}
+
+.btn.secundario {
+  background: transparent;
+  color: var(--ink-strong);
+}
+
+.btn.secundario:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.abas {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.abas button {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.abas button[aria-pressed="true"] {
+  border-color: var(--ink-strong);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.ou {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.ou::before,
+.ou::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid var(--line);
+}
+
+.link-btn {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.msg {
+  margin: 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  color: var(--ink-strong);
+}
+
+.msg.erro {
+  border-color: var(--c-israel);
+}
+
+.msg[hidden] {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .nav-email {
+    display: none;
+  }
+
+  .form-conta {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+}
