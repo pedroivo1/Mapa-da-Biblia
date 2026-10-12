@@ -701,3 +701,18 @@ body > .frame {
     padding-left: 1.25rem;
   }
 }
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.hero .hero-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.hero-acoes [hidden] {
+  display: none;
+}

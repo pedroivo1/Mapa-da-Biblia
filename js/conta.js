@@ -172,8 +172,11 @@
     });
   }
 
+  // sem js/config.js preenchido o botão Entrar aparece mesmo assim; a página de login explica o que falta
   function montarNav() {
-    if (!sb) return;
+    Array.prototype.forEach.call(document.querySelectorAll("[data-entrar]"), function (el) {
+      el.hidden = !!usuario;
+    });
     var nav = document.querySelector(".nav-inner");
     if (!nav) return;
     var caixa = nav.querySelector(".nav-conta");
