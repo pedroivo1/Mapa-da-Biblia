@@ -1,0 +1,1089 @@
+{
+ "aviso": "Anos aproximados (a.C. e d.C.), numa cronologia tradicional com o êxodo em c. 1446 a.C. Outras cronologias divergem. O período das origens não tem data. A partir de 1051 a.C. as datas seguem Thiele. Cada trecho da linha usa uma escala diferente.",
+ "reis": [
+  {
+   "id": "saul",
+   "nome": "Saul",
+   "reino": "unido",
+   "inicio": 1051,
+   "fim": 1011,
+   "duracao": "40 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Sm 9–31",
+    "cronicas": "1Cr 10"
+   },
+   "nota": "Primeiro rei de Israel. Rejeitado por Deus; morre em Gilboa."
+  },
+  {
+   "id": "davi",
+   "nome": "Davi",
+   "reino": "unido",
+   "inicio": 1011,
+   "fim": 971,
+   "duracao": "40 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "1Sm 16 – 1Rs 2",
+    "cronicas": "1Cr 11–29"
+   },
+   "nota": "Reina sobre Judá em Hebrom e depois sobre todo Israel em Jerusalém. Recebe a promessa da dinastia (2Sm 7)."
+  },
+  {
+   "id": "salomao",
+   "nome": "Salomão",
+   "reino": "unido",
+   "inicio": 971,
+   "fim": 931,
+   "duracao": "40 anos",
+   "avaliacao": "misto",
+   "refs": {
+    "reis": "1Rs 1–11",
+    "cronicas": "2Cr 1–9"
+   },
+   "nota": "Constrói o templo. Termina o reinado com idolatria e trabalho forçado."
+  },
+  {
+   "id": "roboao",
+   "nome": "Roboão",
+   "reino": "juda",
+   "inicio": 931,
+   "fim": 913,
+   "duracao": "17 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 12; 14:21-31",
+    "cronicas": "2Cr 10–12"
+   },
+   "nota": "Recusa aliviar os impostos e o reino se divide. Sisaque do Egito invade Judá."
+  },
+  {
+   "id": "abias",
+   "nome": "Abias",
+   "reino": "juda",
+   "inicio": 913,
+   "fim": 911,
+   "duracao": "3 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 15:1-8",
+    "cronicas": "2Cr 13"
+   },
+   "nota": "Guerra com Jeroboão. A narrativa de Crônicas é mais favorável que a de Reis."
+  },
+  {
+   "id": "asa",
+   "nome": "Asa",
+   "reino": "juda",
+   "inicio": 911,
+   "fim": 870,
+   "duracao": "41 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "1Rs 15:9-24",
+    "cronicas": "2Cr 14–16"
+   },
+   "nota": "Reforma religiosa. Contrata a Síria contra Israel e é repreendido."
+  },
+  {
+   "id": "josafa",
+   "nome": "Josafá",
+   "reino": "juda",
+   "inicio": 870,
+   "fim": 848,
+   "duracao": "25 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "1Rs 22:41-50",
+    "cronicas": "2Cr 17–20"
+   },
+   "nota": "Aliança com Acabe. Seu filho Jeorão casa com Atalia, filha de Acabe."
+  },
+  {
+   "id": "jeorao-ju",
+   "nome": "Jeorão",
+   "reino": "juda",
+   "inicio": 848,
+   "fim": 841,
+   "duracao": "8 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 8:16-24",
+    "cronicas": "2Cr 21"
+   },
+   "nota": "Casado com Atalia. Edom e Libna se rebelam."
+  },
+  {
+   "id": "acazias-ju",
+   "nome": "Acazias",
+   "reino": "juda",
+   "inicio": 841,
+   "fim": 841,
+   "duracao": "1 ano",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 8:25-29; 9:27-29",
+    "cronicas": "2Cr 22:1-9"
+   },
+   "nota": "Morto por Jeú junto com Jorão de Israel."
+  },
+  {
+   "id": "atalia",
+   "nome": "Atalia",
+   "reino": "juda",
+   "inicio": 841,
+   "fim": 835,
+   "duracao": "6 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 11",
+    "cronicas": "2Cr 22:10 – 23:21"
+   },
+   "nota": "Usurpa o trono e elimina a linhagem real. Joás é escondido no templo."
+  },
+  {
+   "id": "joas-ju",
+   "nome": "Joás",
+   "reino": "juda",
+   "inicio": 835,
+   "fim": 796,
+   "duracao": "40 anos",
+   "avaliacao": "misto",
+   "refs": {
+    "reis": "2Rs 12",
+    "cronicas": "2Cr 24"
+   },
+   "nota": "Bom enquanto vive o sacerdote Joiada; depois se desvia."
+  },
+  {
+   "id": "amazias",
+   "nome": "Amazias",
+   "reino": "juda",
+   "inicio": 796,
+   "fim": 767,
+   "duracao": "29 anos",
+   "avaliacao": "misto",
+   "refs": {
+    "reis": "2Rs 14:1-22",
+    "cronicas": "2Cr 25"
+   },
+   "nota": "Vence Edom e é derrotado por Jeoás de Israel."
+  },
+  {
+   "id": "uzias",
+   "nome": "Uzias",
+   "reino": "juda",
+   "inicio": 767,
+   "fim": 740,
+   "duracao": "52 anos",
+   "avaliacao": "misto",
+   "refs": {
+    "reis": "2Rs 15:1-7",
+    "cronicas": "2Cr 26"
+   },
+   "nota": "Também chamado Azarias. Prospera; fica leproso por invadir o templo. Isaías é chamado no ano da sua morte (Is 6)."
+  },
+  {
+   "id": "jotao",
+   "nome": "Jotão",
+   "reino": "juda",
+   "inicio": 740,
+   "fim": 732,
+   "duracao": "16 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "2Rs 15:32-38",
+    "cronicas": "2Cr 27"
+   },
+   "nota": "Governa como regente e depois como rei; constrói no templo e em Judá."
+  },
+  {
+   "id": "acaz",
+   "nome": "Acaz",
+   "reino": "juda",
+   "inicio": 732,
+   "fim": 715,
+   "duracao": "16 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 16",
+    "cronicas": "2Cr 28"
+   },
+   "nota": "Pressionado por Israel e Síria, pede ajuda à Assíria. Contexto de Isaías 7."
+  },
+  {
+   "id": "ezequias",
+   "nome": "Ezequias",
+   "reino": "juda",
+   "inicio": 715,
+   "fim": 686,
+   "duracao": "29 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "2Rs 18–20",
+    "cronicas": "2Cr 29–32; Is 36–39"
+   },
+   "nota": "Reforma religiosa. Senaqueribe cerca Jerusalém em 701."
+  },
+  {
+   "id": "manasses",
+   "nome": "Manassés",
+   "reino": "juda",
+   "inicio": 686,
+   "fim": 642,
+   "duracao": "55 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 21:1-18",
+    "cronicas": "2Cr 33:1-20"
+   },
+   "nota": "O pior rei de Judá em Reis. Crônicas acrescenta o seu arrependimento."
+  },
+  {
+   "id": "amom",
+   "nome": "Amom",
+   "reino": "juda",
+   "inicio": 642,
+   "fim": 640,
+   "duracao": "2 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 21:19-26",
+    "cronicas": "2Cr 33:21-25"
+   },
+   "nota": "Assassinado pelos seus servos."
+  },
+  {
+   "id": "josias",
+   "nome": "Josias",
+   "reino": "juda",
+   "inicio": 640,
+   "fim": 609,
+   "duracao": "31 anos",
+   "avaliacao": "bom",
+   "refs": {
+    "reis": "2Rs 22:1 – 23:30",
+    "cronicas": "2Cr 34–35"
+   },
+   "nota": "Acha o livro da lei e faz a maior reforma. Morre em Megido contra o Egito."
+  },
+  {
+   "id": "jeoacaz-ju",
+   "nome": "Jeoacaz",
+   "reino": "juda",
+   "inicio": 609,
+   "fim": 609,
+   "duracao": "3 meses",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 23:31-33",
+    "cronicas": "2Cr 36:1-3"
+   },
+   "nota": "Deposto pelo faraó Neco e levado ao Egito."
+  },
+  {
+   "id": "jeoaquim",
+   "nome": "Jeoaquim",
+   "reino": "juda",
+   "inicio": 609,
+   "fim": 598,
+   "duracao": "11 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 23:34 – 24:7",
+    "cronicas": "2Cr 36:4-8"
+   },
+   "nota": "Vassalo do Egito e depois da Babilônia. Queima o rolo de Jeremias (Jr 36)."
+  },
+  {
+   "id": "joaquim",
+   "nome": "Joaquim",
+   "reino": "juda",
+   "inicio": 598,
+   "fim": 597,
+   "duracao": "3 meses",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 24:8-17",
+    "cronicas": "2Cr 36:9-10"
+   },
+   "nota": "Também chamado Jeconias. Deportado para a Babilônia em 597, com Ezequiel."
+  },
+  {
+   "id": "zedequias",
+   "nome": "Zedequias",
+   "reino": "juda",
+   "inicio": 597,
+   "fim": 586,
+   "duracao": "11 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 24:18 – 25:21",
+    "cronicas": "2Cr 36:11-21"
+   },
+   "nota": "Último rei de Judá. Rebela-se contra a Babilônia; Jerusalém cai em 586."
+  },
+  {
+   "id": "jeroboao-1",
+   "nome": "Jeroboão I",
+   "reino": "israel",
+   "inicio": 931,
+   "fim": 910,
+   "duracao": "22 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 11:26 – 14:20",
+    "cronicas": "2Cr 10–13"
+   },
+   "nota": "Primeiro rei do norte. Faz os bezerros de ouro em Betel e Dã."
+  },
+  {
+   "id": "nadabe",
+   "nome": "Nadabe",
+   "reino": "israel",
+   "inicio": 910,
+   "fim": 909,
+   "duracao": "2 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 15:25-31"
+   },
+   "nota": "Assassinado por Baasa, que extermina a casa de Jeroboão."
+  },
+  {
+   "id": "baasa",
+   "nome": "Baasa",
+   "reino": "israel",
+   "inicio": 909,
+   "fim": 886,
+   "duracao": "24 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 15:32 – 16:7"
+   },
+   "nota": "Guerra constante com Asa de Judá."
+  },
+  {
+   "id": "ela",
+   "nome": "Elá",
+   "reino": "israel",
+   "inicio": 886,
+   "fim": 885,
+   "duracao": "2 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 16:8-14"
+   },
+   "nota": "Morto bêbado por Zinri."
+  },
+  {
+   "id": "zinri",
+   "nome": "Zinri",
+   "reino": "israel",
+   "inicio": 885,
+   "fim": 885,
+   "duracao": "7 dias",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 16:15-20"
+   },
+   "nota": "Reina uma semana e se queima no palácio."
+  },
+  {
+   "id": "onri",
+   "nome": "Onri",
+   "reino": "israel",
+   "inicio": 885,
+   "fim": 874,
+   "duracao": "12 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 16:21-28"
+   },
+   "nota": "Funda Samaria como capital."
+  },
+  {
+   "id": "acabe",
+   "nome": "Acabe",
+   "reino": "israel",
+   "inicio": 874,
+   "fim": 853,
+   "duracao": "22 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 16:29 – 22:40"
+   },
+   "nota": "Casado com Jezabel. Confronto com Elias no Carmelo e a vinha de Nabote."
+  },
+  {
+   "id": "acazias-is",
+   "nome": "Acazias",
+   "reino": "israel",
+   "inicio": 853,
+   "fim": 852,
+   "duracao": "2 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "1Rs 22:51 – 2Rs 1:18"
+   },
+   "nota": "Consulta Baal-Zebube e Elias anuncia sua morte."
+  },
+  {
+   "id": "jorao-is",
+   "nome": "Jorão",
+   "reino": "israel",
+   "inicio": 852,
+   "fim": 841,
+   "duracao": "12 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 3; 2Rs 9"
+   },
+   "nota": "Elias sobe ao céu e Eliseu assume. Morto por Jeú."
+  },
+  {
+   "id": "jeu",
+   "nome": "Jeú",
+   "reino": "israel",
+   "inicio": 841,
+   "fim": 814,
+   "duracao": "28 anos",
+   "avaliacao": "misto",
+   "refs": {
+    "reis": "2Rs 9–10"
+   },
+   "nota": "Extermina a casa de Acabe e o culto de Baal, mas mantém os bezerros."
+  },
+  {
+   "id": "jeoacaz-is",
+   "nome": "Jeoacaz",
+   "reino": "israel",
+   "inicio": 814,
+   "fim": 798,
+   "duracao": "17 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 13:1-9"
+   },
+   "nota": "Oprimido por Hazael e Ben-Hadade de Arã."
+  },
+  {
+   "id": "jeoas",
+   "nome": "Jeoás",
+   "reino": "israel",
+   "inicio": 798,
+   "fim": 782,
+   "duracao": "16 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 13:10-25; 14:8-16"
+   },
+   "nota": "Eliseu morre no seu reinado. Derrota Amazias de Judá."
+  },
+  {
+   "id": "jeroboao-2",
+   "nome": "Jeroboão II",
+   "reino": "israel",
+   "inicio": 782,
+   "fim": 753,
+   "duracao": "41 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 14:23-29"
+   },
+   "nota": "Auge territorial do norte. Época de Jonas, Amós e Oseias."
+  },
+  {
+   "id": "zacarias-rei",
+   "nome": "Zacarias",
+   "reino": "israel",
+   "inicio": 753,
+   "fim": 752,
+   "duracao": "6 meses",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 15:8-12"
+   },
+   "nota": "Último da dinastia de Jeú. Assassinado por Salum."
+  },
+  {
+   "id": "salum",
+   "nome": "Salum",
+   "reino": "israel",
+   "inicio": 752,
+   "fim": 752,
+   "duracao": "1 mês",
+   "avaliacao": null,
+   "refs": {
+    "reis": "2Rs 15:13-15"
+   },
+   "nota": "Morto por Menaém."
+  },
+  {
+   "id": "menaem",
+   "nome": "Menaém",
+   "reino": "israel",
+   "inicio": 752,
+   "fim": 742,
+   "duracao": "10 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 15:16-22"
+   },
+   "nota": "Paga tributo a Pul (Tiglate-Pileser III) da Assíria."
+  },
+  {
+   "id": "pecaias",
+   "nome": "Pecaías",
+   "reino": "israel",
+   "inicio": 742,
+   "fim": 740,
+   "duracao": "2 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 15:23-26"
+   },
+   "nota": "Assassinado por seu oficial Peca."
+  },
+  {
+   "id": "peca",
+   "nome": "Peca",
+   "reino": "israel",
+   "inicio": 740,
+   "fim": 732,
+   "duracao": "20 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 15:27-31"
+   },
+   "nota": "Alia-se à Síria contra Acaz. A Assíria deporta parte do norte."
+  },
+  {
+   "id": "oseias-rei",
+   "nome": "Oseias",
+   "reino": "israel",
+   "inicio": 732,
+   "fim": 722,
+   "duracao": "9 anos",
+   "avaliacao": "mau",
+   "refs": {
+    "reis": "2Rs 17; 18:9-12"
+   },
+   "nota": "Último rei do norte. Samaria cai para a Assíria em 722."
+  }
+ ],
+ "profetas": [
+  {
+   "id": "nata",
+   "nome": "Natã",
+   "livro": null,
+   "inicio": 1000,
+   "fim": 970,
+   "reino": "unido",
+   "destino": "Davi e Salomão",
+   "refs": [
+    "2Sm 7",
+    "2Sm 12",
+    "1Rs 1"
+   ],
+   "nota": "Sem livro próprio. Promessa da dinastia e repreensão a Davi."
+  },
+  {
+   "id": "aias",
+   "nome": "Aías",
+   "livro": null,
+   "inicio": 931,
+   "fim": 910,
+   "reino": "israel",
+   "destino": "Jeroboão I",
+   "refs": [
+    "1Rs 11:29-39",
+    "1Rs 14:1-18"
+   ],
+   "nota": "Anuncia a divisão do reino e depois a queda da casa de Jeroboão."
+  },
+  {
+   "id": "elias",
+   "nome": "Elias",
+   "livro": null,
+   "inicio": 874,
+   "fim": 851,
+   "reino": "israel",
+   "destino": "Acabe e Acazias",
+   "refs": [
+    "1Rs 17–19",
+    "1Rs 21",
+    "2Rs 1–2"
+   ],
+   "nota": "Sem livro próprio. Carmelo, Nabote e a subida ao céu."
+  },
+  {
+   "id": "eliseu",
+   "nome": "Eliseu",
+   "livro": null,
+   "inicio": 851,
+   "fim": 795,
+   "reino": "israel",
+   "destino": "Israel e Arã",
+   "refs": [
+    "2Rs 2–9",
+    "2Rs 13:14-21"
+   ],
+   "nota": "Sem livro próprio. Sucessor de Elias; morre no reinado de Jeoás."
+  },
+  {
+   "id": "joel",
+   "nome": "Joel",
+   "livro": "Joel",
+   "inicio": 830,
+   "fim": 796,
+   "reino": "juda",
+   "destino": "Judá",
+   "refs": [
+    "Jl 1–3"
+   ],
+   "incerta": true,
+   "nota": "Data incerta: o livro não cita rei. Aqui, na linha tradicional (Joás)."
+  },
+  {
+   "id": "jonas",
+   "nome": "Jonas",
+   "livro": "Jonas",
+   "inicio": 785,
+   "fim": 760,
+   "reino": "israel",
+   "destino": "Nínive",
+   "refs": [
+    "2Rs 14:25",
+    "Jn 1–4"
+   ],
+   "nota": "Mencionado em 2Reis 14:25 no reinado de Jeroboão II. Datas aproximadas."
+  },
+  {
+   "id": "amos",
+   "nome": "Amós",
+   "livro": "Amós",
+   "inicio": 760,
+   "fim": 750,
+   "reino": "israel",
+   "destino": "Israel (norte)",
+   "citados": [
+    "uzias",
+    "jeroboao-2"
+   ],
+   "refs": [
+    "Am 1–9"
+   ],
+   "nota": "Pastor de Judá que profetiza no norte, dois anos antes do terremoto."
+  },
+  {
+   "id": "oseias",
+   "nome": "Oseias",
+   "livro": "Oseias",
+   "inicio": 755,
+   "fim": 715,
+   "reino": "israel",
+   "destino": "Israel (norte)",
+   "citados": [
+    "uzias",
+    "jotao",
+    "acaz",
+    "ezequias",
+    "jeroboao-2"
+   ],
+   "refs": [
+    "Os 1–14"
+   ],
+   "nota": "Casamento com Gômer como imagem da infidelidade de Israel."
+  },
+  {
+   "id": "isaias",
+   "nome": "Isaías",
+   "livro": "Isaías",
+   "inicio": 740,
+   "fim": 681,
+   "reino": "juda",
+   "destino": "Judá e nações",
+   "citados": [
+    "uzias",
+    "jotao",
+    "acaz",
+    "ezequias"
+   ],
+   "refs": [
+    "Is 1–66",
+    "2Rs 19–20"
+   ],
+   "nota": "Chamado no ano da morte de Uzias. Atua em Judá até Senaqueribe."
+  },
+  {
+   "id": "miqueias",
+   "nome": "Miqueias",
+   "livro": "Miqueias",
+   "inicio": 735,
+   "fim": 700,
+   "reino": "ambos",
+   "destino": "Samaria e Jerusalém",
+   "citados": [
+    "jotao",
+    "acaz",
+    "ezequias"
+   ],
+   "refs": [
+    "Mq 1–7"
+   ],
+   "nota": "Contemporâneo de Isaías; anuncia Belém (Mq 5:2)."
+  },
+  {
+   "id": "nau",
+   "nome": "Naum",
+   "livro": "Naum",
+   "inicio": 663,
+   "fim": 612,
+   "reino": "juda",
+   "destino": "Nínive",
+   "refs": [
+    "Na 1–3"
+   ],
+   "nota": "Anuncia a queda de Nínive, que ocorre em 612."
+  },
+  {
+   "id": "sofonias",
+   "nome": "Sofonias",
+   "livro": "Sofonias",
+   "inicio": 640,
+   "fim": 621,
+   "reino": "juda",
+   "destino": "Judá",
+   "citados": [
+    "josias"
+   ],
+   "refs": [
+    "Sf 1–3"
+   ],
+   "nota": "Dia do Senhor, antes ou durante a reforma de Josias."
+  },
+  {
+   "id": "jeremias",
+   "nome": "Jeremias",
+   "livro": "Jeremias",
+   "inicio": 627,
+   "fim": 580,
+   "reino": "juda",
+   "destino": "Judá e nações",
+   "citados": [
+    "josias",
+    "jeoaquim",
+    "zedequias"
+   ],
+   "refs": [
+    "Jr 1–52",
+    "Lm 1–5"
+   ],
+   "nota": "Chamado no 13º ano de Josias. Vê a queda de Jerusalém e vai ao Egito."
+  },
+  {
+   "id": "habacuque",
+   "nome": "Habacuque",
+   "livro": "Habacuque",
+   "inicio": 609,
+   "fim": 598,
+   "reino": "juda",
+   "destino": "Judá",
+   "refs": [
+    "Hc 1–3"
+   ],
+   "incerta": true,
+   "nota": "Pergunta a Deus sobre a ascensão da Babilônia. Datas aproximadas."
+  },
+  {
+   "id": "obadias",
+   "nome": "Obadias",
+   "livro": "Obadias",
+   "inicio": 586,
+   "fim": 580,
+   "reino": "nenhum",
+   "destino": "Edom",
+   "refs": [
+    "Ob 1"
+   ],
+   "incerta": true,
+   "nota": "Contra Edom pela queda de Jerusalém. Alguns datam mais cedo, sob Jeorão."
+  },
+  {
+   "id": "ezequiel",
+   "nome": "Ezequiel",
+   "livro": "Ezequiel",
+   "inicio": 593,
+   "fim": 571,
+   "reino": "juda",
+   "destino": "Exilados na Babilônia",
+   "refs": [
+    "Ez 1–48"
+   ],
+   "nota": "Deportado em 597. Profetiza sobre Jerusalém e depois a restauração."
+  },
+  {
+   "id": "daniel",
+   "nome": "Daniel",
+   "livro": "Daniel",
+   "inicio": 605,
+   "fim": 536,
+   "reino": "juda",
+   "destino": "Corte da Babilônia e da Pérsia",
+   "refs": [
+    "Dn 1–12"
+   ],
+   "nota": "Levado à Babilônia em 605. Serve até o primeiro ano de Ciro."
+  },
+  {
+   "id": "ageu",
+   "nome": "Ageu",
+   "livro": "Ageu",
+   "inicio": 520,
+   "fim": 520,
+   "reino": "nenhum",
+   "destino": "Remanescente em Jerusalém",
+   "refs": [
+    "Ag 1–2",
+    "Ed 5:1"
+   ],
+   "nota": "Chama o povo a reconstruir o templo, no 2º ano de Dario."
+  },
+  {
+   "id": "zacarias",
+   "nome": "Zacarias",
+   "livro": "Zacarias",
+   "inicio": 520,
+   "fim": 518,
+   "reino": "nenhum",
+   "destino": "Remanescente em Jerusalém",
+   "refs": [
+    "Zc 1–14",
+    "Ed 5:1"
+   ],
+   "nota": "Visões noturnas e promessas messiânicas, junto com Ageu."
+  },
+  {
+   "id": "malaquias",
+   "nome": "Malaquias",
+   "livro": "Malaquias",
+   "inicio": 435,
+   "fim": 425,
+   "reino": "nenhum",
+   "destino": "Judá pós-exílio",
+   "refs": [
+    "Ml 1–4"
+   ],
+   "nota": "Último livro profético do AT. Data aproximada, no tempo de Neemias."
+  }
+ ],
+ "potencias": [
+  {
+   "id": "egito",
+   "nome": "Egito",
+   "inicio": 2166,
+   "fim": 525,
+   "resumo": "Presente em toda a história bíblica, de Abraão ao exílio.",
+   "eventos": [
+    {
+     "ano": 1898,
+     "texto": "José é vendido e levado ao Egito",
+     "ref": "Gn 37"
+    },
+    {
+     "ano": 1885,
+     "texto": "José governa o Egito",
+     "ref": "Gn 41"
+    },
+    {
+     "ano": 1876,
+     "texto": "Jacó e a família descem ao Egito",
+     "ref": "Gn 46"
+    },
+    {
+     "ano": 1446,
+     "texto": "O êxodo: Israel sai do Egito",
+     "ref": "Êx 12–14"
+    },
+    {
+     "ano": 926,
+     "texto": "Sisaque invade Judá no reinado de Roboão",
+     "ref": "1Rs 14:25-26; 2Cr 12"
+    },
+    {
+     "ano": 609,
+     "texto": "Neco mata Josias em Megido e depõe Jeoacaz",
+     "ref": "2Rs 23:29-35"
+    }
+   ]
+  },
+  {
+   "id": "filisteus",
+   "nome": "Filisteus",
+   "inicio": 1180,
+   "fim": 1000,
+   "resumo": "Rivais de Israel nos dias dos juízes, de Saul e de Davi. Datas aproximadas.",
+   "eventos": []
+  },
+  {
+   "id": "ara",
+   "nome": "Arã (Síria)",
+   "inicio": 890,
+   "fim": 732,
+   "resumo": "Reino de Damasco, rival de Israel até cair para a Assíria.",
+   "eventos": [
+    {
+     "ano": 841,
+     "texto": "Hazael sucede Ben-Hadade em Damasco",
+     "ref": "2Rs 8:7-15"
+    },
+    {
+     "ano": 732,
+     "texto": "Damasco cai para Tiglate-Pileser III",
+     "ref": "2Rs 16:9"
+    }
+   ]
+  },
+  {
+   "id": "assiria",
+   "nome": "Assíria",
+   "inicio": 858,
+   "fim": 612,
+   "resumo": "Domina o Oriente Próximo; destrói o reino do norte.",
+   "eventos": [
+    {
+     "ano": 722,
+     "texto": "Queda de Samaria",
+     "ref": "2Rs 17"
+    },
+    {
+     "ano": 701,
+     "texto": "Senaqueribe cerca Jerusalém",
+     "ref": "2Rs 18–19; Is 36–37"
+    },
+    {
+     "ano": 612,
+     "texto": "Queda de Nínive",
+     "ref": "Naum"
+    }
+   ]
+  },
+  {
+   "id": "babilonia",
+   "nome": "Babilônia",
+   "inicio": 626,
+   "fim": 539,
+   "resumo": "Sucede a Assíria e leva Judá ao exílio.",
+   "eventos": [
+    {
+     "ano": 605,
+     "texto": "Batalha de Carquemis; primeira deportação (Daniel)",
+     "ref": "Jr 46:2; Dn 1:1-6"
+    },
+    {
+     "ano": 597,
+     "texto": "Segunda deportação, com Joaquim e Ezequiel",
+     "ref": "2Rs 24:10-17"
+    },
+    {
+     "ano": 586,
+     "texto": "Destruição de Jerusalém e do templo",
+     "ref": "2Rs 25"
+    },
+    {
+     "ano": 539,
+     "texto": "A Babilônia cai para Ciro",
+     "ref": "Dn 5"
+    }
+   ]
+  },
+  {
+   "id": "persia",
+   "nome": "Pérsia",
+   "inicio": 539,
+   "fim": 331,
+   "resumo": "Permite o retorno e a reconstrução do templo.",
+   "eventos": [
+    {
+     "ano": 538,
+     "texto": "Decreto de Ciro: os exilados podem voltar",
+     "ref": "Ed 1; 2Cr 36:22-23"
+    },
+    {
+     "ano": 516,
+     "texto": "Templo reconstruído",
+     "ref": "Ed 6:15"
+    },
+    {
+     "ano": 479,
+     "texto": "Ester torna-se rainha",
+     "ref": "Et 2:16-17"
+    },
+    {
+     "ano": 458,
+     "texto": "Esdras chega a Jerusalém",
+     "ref": "Ed 7"
+    },
+    {
+     "ano": 445,
+     "texto": "Neemias reconstrói os muros",
+     "ref": "Ne 2–6"
+    }
+   ]
+  },
+  {
+   "id": "grecia",
+   "nome": "Grécia",
+   "inicio": 331,
+   "fim": 63,
+   "resumo": "Alexandre e os reinos que o sucedem (Ptolomeus e Selêucidas).",
+   "eventos": [
+    {
+     "ano": 331,
+     "texto": "Alexandre conquista o Oriente",
+     "ref": "Dn 8; 11"
+    },
+    {
+     "ano": 167,
+     "texto": "Antíoco IV profana o templo; começa a revolta macabeia",
+     "ref": "Dn 11:31"
+    },
+    {
+     "ano": 164,
+     "texto": "Templo purificado (Hanucá)",
+     "ref": "Jo 10:22"
+    }
+   ]
+  },
+  {
+   "id": "roma",
+   "nome": "Roma",
+   "inicio": 63,
+   "fim": -476,
+   "resumo": "Domina a Judeia no tempo de Jesus e dos apóstolos.",
+   "eventos": [
+    {
+     "ano": 63,
+     "texto": "Pompeu toma Jerusalém",
+     "ref": "—"
+    },
+    {
+     "ano": 37,
+     "texto": "Herodes assume o trono da Judeia",
+     "ref": "Mt 2"
+    },
+    {
+     "ano": -64,
+     "texto": "Nero persegue os cristãos em Roma",
+     "ref": "—"
+    },
+    {
+     "ano": -70,
+     "texto": "Tito destrói Jerusalém e o templo",
+     "ref": "Mt 24:1-2"
+    }
+   ]
+  }
+ ]
+}

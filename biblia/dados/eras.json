@@ -1,0 +1,214 @@
+{
+ "eras": [
+  {
+   "id": "origens",
+   "nome": "Origens",
+   "periodo": "Sem data",
+   "inicio": 2400,
+   "fim": 2200,
+   "resumo": "Criação, queda, dilúvio e Babel.",
+   "livros": [
+    "Gênesis 1–11"
+   ],
+   "leitura": "Comece aqui. Jó e os Salmos podem entrar em paralelo."
+  },
+  {
+   "id": "patriarcas",
+   "nome": "Patriarcas",
+   "periodo": "c. 2166–1876 a.C.",
+   "inicio": 2166,
+   "fim": 1876,
+   "resumo": "Abraão, Isaque e Jacó.",
+   "livros": [
+    "Gênesis 12–36"
+   ],
+   "leitura": "Gênesis em ordem."
+  },
+  {
+   "id": "egito",
+   "nome": "Egito",
+   "periodo": "c. 1876–1446 a.C.",
+   "inicio": 1876,
+   "fim": 1446,
+   "resumo": "De José à escravidão: 430 anos no Egito.",
+   "livros": [
+    "Gênesis 37–50",
+    "Êxodo 1–12"
+   ],
+   "leitura": "Fim de Gênesis e começo de Êxodo."
+  },
+  {
+   "id": "exodo",
+   "nome": "Êxodo e deserto",
+   "periodo": "c. 1446–1406 a.C.",
+   "inicio": 1446,
+   "fim": 1406,
+   "resumo": "Libertação, Sinai e os 40 anos no deserto.",
+   "livros": [
+    "Êxodo 13–40",
+    "Levítico",
+    "Números",
+    "Deuteronômio"
+   ],
+   "leitura": "Êxodo a Deuteronômio em ordem."
+  },
+  {
+   "id": "conquista",
+   "nome": "Canaã",
+   "periodo": "c. 1406–1375 a.C.",
+   "inicio": 1406,
+   "fim": 1375,
+   "resumo": "Conquista e divisão da terra.",
+   "livros": [
+    "Josué"
+   ],
+   "leitura": "Josué."
+  },
+  {
+   "id": "juizes",
+   "nome": "Juízes",
+   "periodo": "c. 1375–1051 a.C.",
+   "inicio": 1375,
+   "fim": 1051,
+   "resumo": "Ciclos de apostasia e livramento antes da monarquia.",
+   "livros": [
+    "Juízes",
+    "Rute",
+    "1Samuel 1–8"
+   ],
+   "leitura": "Juízes, com Rute (da mesma época) e o começo de 1Samuel."
+  },
+  {
+   "id": "unido",
+   "nome": "Reino unido",
+   "periodo": "1051–931 a.C.",
+   "inicio": 1051,
+   "fim": 931,
+   "resumo": "Saul, Davi e Salomão.",
+   "livros": [
+    "1Samuel 9–31",
+    "2Samuel",
+    "1Reis 1–11",
+    "1Crônicas",
+    "2Crônicas 1–9",
+    "Salmos",
+    "Provérbios",
+    "Eclesiastes",
+    "Cantares"
+   ],
+   "leitura": "Samuel e Reis, com Crônicas ao lado. Salmos, Provérbios, Eclesiastes e Cantares entram na época de Davi e Salomão."
+  },
+  {
+   "id": "dividido",
+   "nome": "Reino dividido",
+   "periodo": "931–722 a.C.",
+   "inicio": 931,
+   "fim": 722,
+   "resumo": "Judá e Israel lado a lado, até Samaria cair.",
+   "livros": [
+    "1Reis 12 – 2Reis 17",
+    "2Crônicas 10–28",
+    "Jonas",
+    "Amós",
+    "Oseias",
+    "Isaías",
+    "Miqueias",
+    "Joel (data incerta)"
+   ],
+   "leitura": "Leia o rei e depois o profeta ligado a ele."
+  },
+  {
+   "id": "juda-sozinho",
+   "nome": "Judá sozinho",
+   "periodo": "722–586 a.C.",
+   "inicio": 722,
+   "fim": 586,
+   "resumo": "De Ezequias à queda de Jerusalém.",
+   "livros": [
+    "2Reis 18–25",
+    "2Crônicas 29–36",
+    "Isaías",
+    "Naum",
+    "Sofonias",
+    "Jeremias",
+    "Habacuque",
+    "Lamentações"
+   ],
+   "leitura": "Reis com Crônicas; Jeremias atravessa Josias a Zedequias."
+  },
+  {
+   "id": "exilio",
+   "nome": "Exílio",
+   "periodo": "586–538 a.C.",
+   "inicio": 586,
+   "fim": 538,
+   "resumo": "O povo na Babilônia.",
+   "livros": [
+    "Ezequiel",
+    "Daniel",
+    "Obadias",
+    "Lamentações",
+    "Salmos 137"
+   ],
+   "leitura": "Ezequiel e Daniel."
+  },
+  {
+   "id": "retorno",
+   "nome": "Retorno",
+   "periodo": "538–c. 425 a.C.",
+   "inicio": 538,
+   "fim": 425,
+   "resumo": "Volta a Jerusalém, templo e muros.",
+   "livros": [
+    "Esdras",
+    "Neemias",
+    "Ageu",
+    "Zacarias",
+    "Ester",
+    "Malaquias"
+   ],
+   "leitura": "Esdras 1–6 com Ageu e Zacarias; depois Ester, Esdras 7–10, Neemias e Malaquias."
+  },
+  {
+   "id": "entre",
+   "nome": "Entre os Testamentos",
+   "periodo": "c. 425–5 a.C.",
+   "inicio": 425,
+   "fim": 5,
+   "resumo": "Domínio grego, revolta macabeia e chegada de Roma. Não há livros do cânon protestante.",
+   "livros": [
+    "(Deuterocanônicos, em tradições católicas e ortodoxas)"
+   ],
+   "leitura": "Daniel 8 e 11 ajudam a entender este período."
+  },
+  {
+   "id": "jesus",
+   "nome": "Vida de Jesus",
+   "periodo": "c. 5 a.C. – 30 d.C.",
+   "inicio": 5,
+   "fim": -30,
+   "resumo": "Nascimento, ministério, morte e ressurreição.",
+   "livros": [
+    "Mateus",
+    "Marcos",
+    "Lucas",
+    "João"
+   ],
+   "leitura": "Os quatro Evangelhos, de preferência lado a lado."
+  },
+  {
+   "id": "igreja",
+   "nome": "Igreja primitiva",
+   "periodo": "c. 30–100 d.C.",
+   "inicio": -30,
+   "fim": -100,
+   "resumo": "De Pentecostes ao Apocalipse.",
+   "livros": [
+    "Atos",
+    "Cartas",
+    "Apocalipse"
+   ],
+   "leitura": "Atos com as cartas de Paulo na ordem em que foram escritas; depois as cartas gerais e o Apocalipse."
+  }
+ ]
+}
