@@ -321,10 +321,9 @@
 
   var REGUA_Y = 72; // largura da régua de rolagem, em px
 
-  // em tela larga (quadro de 1280 px + régua de cada lado) a régua fica no canto da tela,
-  // fora do quadro, e não tira espaço da linha do tempo; em tela estreita ela divide o espaço
-  function reguaNaBorda() {
-    return window.innerWidth >= 1280 + 2 * REGUA_Y;
+  // no celular (até 720 px) a régua some e o mapa usa a largura toda
+  function reguaAtiva() {
+    return window.innerWidth > 720;
   }
 
   function rotuloAno(a) {
@@ -540,23 +539,10 @@
     );
 
     rolagem.addEventListener("scroll", posicionar);
-    // no canto da tela, a régua (position: fixed) acompanha a altura e o topo da área do mapa
-    function encaixar() {
-      if (reguaNaBorda()) {
-        var r = rolagem.getBoundingClientRect();
-        regua.style.top = r.top + "px";
-        regua.style.height = r.height + "px";
-      } else {
-        regua.style.top = "";
-        regua.style.height = "";
-      }
-    }
     function atualizar() {
-      encaixar();
       construir();
       posicionar();
     }
-    window.addEventListener("resize", encaixar);
     if (window.ResizeObserver) new ResizeObserver(atualizar).observe(rolagem);
     else window.addEventListener("resize", atualizar);
     return regua;
@@ -639,7 +625,7 @@
       (colunas.reis ? 2 * (BAR + GUT) : 0) +
       (colunas.potencias ? n.potencias * SUB.potencias : 0);
     // a régua de rolagem fica ao lado do mapa e tira a sua largura do espaço
-    var disponivel = (raiz.clientWidth || 1100) - 2 - (reguaNaBorda() ? 0 : REGUA_Y);
+    var disponivel = (raiz.clientWidth || 1100) - 2 - (reguaAtiva() ? REGUA_Y : 0);
     if (disponivel < 600) MARGEM = 0;
     else if (disponivel < 900) MARGEM = 56;
     var f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM) / flex));
@@ -993,7 +979,7 @@
     // refazer a vista zera a rolagem: guarda a posição e devolve depois
     var topo = antigo ? antigo.scrollTop : 0;
     larguraAnterior = raiz.clientWidth;
-    bordaAnterior = reguaNaBorda();
+    reguaAnterior = reguaAtiva();
     raiz.innerHTML = "";
     raiz.appendChild(vistaFaixas());
     var novo = raiz.querySelector(".mapa-scroll");
@@ -1118,11 +1104,11 @@
 
   var temporizador = null;
   var larguraAnterior = 0;
-  var bordaAnterior = false;
+  var reguaAnterior = true;
   window.addEventListener("resize", function () {
     clearTimeout(temporizador);
     temporizador = setTimeout(function () {
-      if (!dados || (raiz.clientWidth === larguraAnterior && reguaNaBorda() === bordaAnterior)) return;
+      if (!dados || (raiz.clientWidth === larguraAnterior && reguaAtiva() === reguaAnterior)) return;
       var aberto = painel && !painel.hidden && painel.dataset.key;
       renderizar();
       if (aberto) abrir(aberto);

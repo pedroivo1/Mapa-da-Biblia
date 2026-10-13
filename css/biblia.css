@@ -1733,12 +1733,10 @@ body.linha-tempo .detalhe {
   display: none;
 }
 
-/* tela larga: a régua de tempo fica no canto da tela, fora do quadro, sem tirar espaço do mapa */
-@media (min-width: 1424px) {
+/* celular: sem régua de tempo; o mapa rola com o toque */
+@media (max-width: 720px) {
   body.linha-tempo .regua-y {
-    position: fixed;
-    right: 0;
-    border-top: 1px solid var(--line);
+    display: none;
   }
 
   body.linha-tempo .mapa-cab {
