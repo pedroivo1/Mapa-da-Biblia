@@ -38,17 +38,48 @@
     "profeta-menor": "Profeta menor"
   };
   // grupos de livros do filtro (Livros ▾)
-  var GRUPOS = [
-    { id: "lei", nome: "Pentateuco", ta: "Antigo Testamento" },
-    { id: "historia", nome: "Históricos", ta: "Antigo Testamento" },
-    { id: "poesia", nome: "Poéticos e sapienciais", ta: "Antigo Testamento" },
-    { id: "profeta-maior", nome: "Profetas maiores", ta: "Antigo Testamento" },
-    { id: "profeta-menor", nome: "Profetas menores", ta: "Antigo Testamento" },
-    { id: "evangelho", nome: "Evangelhos", ta: "Novo Testamento" },
-    { id: "atos", nome: "Histórico", ta: "Novo Testamento" },
-    { id: "carta", nome: "Cartas", ta: "Novo Testamento" },
-    { id: "apocalipse", nome: "Profético", ta: "Novo Testamento" }
-  ];
+  var AT = "Antigo Testamento", NT = "Novo Testamento";
+  var MODOS = {
+    almeida: {
+      nome: "Almeida",
+      grupos: [
+        { id: "lei", nome: "Pentateuco", ta: AT },
+        { id: "historia", nome: "Históricos", ta: AT },
+        { id: "poesia", nome: "Poéticos e sapienciais", ta: AT },
+        { id: "profeta-maior", nome: "Profetas maiores", ta: AT },
+        { id: "profeta-menor", nome: "Profetas menores", ta: AT },
+        { id: "evangelho", nome: "Evangelhos", ta: NT },
+        { id: "atos", nome: "Histórico", ta: NT },
+        { id: "carta", nome: "Cartas", ta: NT },
+        { id: "apocalipse", nome: "Profético", ta: NT }
+      ]
+    },
+    simples: {
+      nome: "Simplificada",
+      grupos: [
+        { id: "lei", nome: "Lei", ta: AT },
+        { id: "historia", nome: "Históricos", ta: AT },
+        { id: "poesia", nome: "Poéticos", ta: AT },
+        { id: "profeta", nome: "Profetas", ta: AT },
+        { id: "historico-nt", nome: "Históricos", ta: NT },
+        { id: "carta", nome: "Cartas", ta: NT },
+        { id: "apocalipse", nome: "Proféticos", ta: NT }
+      ]
+    }
+  };
+  var JUNTA = { "profeta-maior": "profeta", "profeta-menor": "profeta", evangelho: "historico-nt", atos: "historico-nt" };
+  function grupoDe(livro) {
+    if (colunas.modo !== "simples") return livro.grupo;
+    // Gênesis e Êxodo são narrativa; a lei propriamente dita começa em Levítico
+    if (livro.id === "genesis" || livro.id === "exodo") return "historia";
+    return JUNTA[livro.grupo] || livro.grupo;
+  }
+  function gruposAtuais() {
+    return MODOS[colunas.modo].grupos;
+  }
+  function grupoLigado(id) {
+    return colunas.grupos[id] !== false;
+  }
 
   function ler(chave, padrao) {
     try {
@@ -71,16 +102,19 @@
       : { eras: true, livros: true, reis: true, potencias: true }
   );
   if (colunas.eras === undefined) colunas.eras = true;
-  // filtro de livros por grupo; progressos antigos só tinham "livros" ligado ou desligado
+  // filtro de livros por grupo; "livros" desligado (versão antiga) desliga todos
+  if (!colunas.modo || !MODOS[colunas.modo]) colunas.modo = "almeida";
   if (!colunas.grupos) {
     colunas.grupos = {};
-    GRUPOS.forEach(function (g) {
-      colunas.grupos[g.id] = colunas.livros !== false;
-    });
+    if (colunas.livros === false) {
+      Object.keys(JUNTA).concat(["lei", "historia", "poesia", "profeta", "historico-nt", "carta", "apocalipse"]).forEach(function (id) {
+        colunas.grupos[id] = false;
+      });
+    }
   }
   function livrosAtivos() {
-    return GRUPOS.some(function (g) {
-      return colunas.grupos[g.id];
+    return gruposAtuais().some(function (g) {
+      return grupoLigado(g.id);
     });
   }
   var dados = null;
@@ -314,7 +348,7 @@
     var blocos = {};
     var n = {};
     var livrosVisiveis = dados.livros.filter(function (l) {
-      return colunas.grupos[l.grupo];
+      return grupoLigado(grupoDe(l));
     });
     [["livros", livrosVisiveis], ["potencias", dados.potencias]].forEach(function (c) {
       blocos[c[0]] = blocosDe(c[1].slice());
@@ -424,7 +458,7 @@
     function desenhar(lista, c, sub, cls, nomeDe) {
       lista.forEach(function (b) {
         var bx = c.x + b.sub * sub;
-        var g = grupo(b.item, cls + (b.item.grupo ? " g-" + b.item.grupo : "") + (b.item.incerta ? " incerta" : ""));
+        var g = grupo(b.item, cls + (b.item.grupo ? " g-" + grupoDe(b.item) : "") + (b.item.incerta ? " incerta" : ""));
         rect(g, bx + 2, b.y1, sub - 4, b.y2 - b.y1);
         rotulo(g, bx + 2, sub - 4, b.y1, b.y2, nomeDe(b.item));
         s.appendChild(g);
@@ -588,18 +622,23 @@
     var tog = '<div class="colunas hud" role="group" aria-label="Colunas visíveis">';
     COLUNAS.forEach(function (c) {
       if (c.id === "livros") {
-        var n = GRUPOS.filter(function (g) {
-          return colunas.grupos[g.id];
+        var gs = gruposAtuais();
+        var n = gs.filter(function (g) {
+          return grupoLigado(g.id);
         }).length;
         tog += '<details class="filtro"><summary><span class="amostra c-livro"></span>Livros <span class="faint">' +
-          n + "/" + GRUPOS.length + '</span></summary><div class="filtro-menu">';
+          n + "/" + gs.length + '</span></summary><div class="filtro-menu"><div class="filtro-modos" role="group" aria-label="Classificação">';
+        Object.keys(MODOS).forEach(function (m) {
+          tog += '<button type="button" data-modo="' + m + '"' + (colunas.modo === m ? ' aria-pressed="true"' : "") + ">" + MODOS[m].nome + "</button>";
+        });
+        tog += "</div>";
         var ta = "";
-        GRUPOS.forEach(function (g) {
+        gs.forEach(function (g) {
           if (g.ta !== ta) {
             ta = g.ta;
             tog += '<p class="filtro-ta">' + ta + "</p>";
           }
-          tog += '<label><input type="checkbox" data-grupo="' + g.id + '"' + (colunas.grupos[g.id] ? " checked" : "") +
+          tog += '<label><input type="checkbox" data-grupo="' + g.id + '"' + (grupoLigado(g.id) ? " checked" : "") +
             '><span class="amostra g-' + g.id + '"></span>' + g.nome + "</label>";
         });
         tog += "</div></details>";
@@ -649,6 +688,17 @@
   }
 
   document.addEventListener("click", function (ev) {
+    var modo = ev.target.closest && ev.target.closest("[data-modo]");
+    if (modo) {
+      colunas.modo = modo.getAttribute("data-modo");
+      gravar(KEY_COL, colunas);
+      var painelAberto = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      var fm = document.querySelector(".filtro");
+      if (fm) fm.open = true;
+      if (painelAberto) abrir(painelAberto);
+      return;
+    }
     var filtro = document.querySelector(".filtro");
     if (filtro && filtro.open && !ev.target.closest(".filtro")) filtro.open = false;
     var alvo = ev.target.closest && ev.target.closest("[data-abrir]");
