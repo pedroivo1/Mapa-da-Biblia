@@ -746,3 +746,189 @@ button.chip:hover {
 .aviso-acoes .chip {
   text-decoration: none;
 }
+
+/* leitor: texto da Bíblia, como nos apps */
+.leitor {
+  --leitor-fonte: 1.2rem;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+.leitor-barra {
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.leitor-barra button,
+.leitor-fim button {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-barra button:hover:not([disabled]),
+.leitor-fim button:hover:not([disabled]) {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-barra button[disabled],
+.leitor-fim button[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.leitor-ref {
+  font-weight: 500;
+}
+
+.leitor-fonte {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.leitor-texto h1 {
+  margin: 2rem 0 1.25rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.leitor-texto p {
+  margin: 0 0 0.9rem;
+  font-size: var(--leitor-fonte);
+  line-height: 1.7;
+}
+
+.leitor-texto sup {
+  margin-right: 0.25em;
+  color: var(--faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.6em;
+}
+
+.leitor-fim {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.leitor-dlg {
+  width: min(560px, 94vw);
+  max-height: 85vh;
+  padding: 0;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.leitor-dlg::backdrop {
+  background: rgba(11, 11, 12, 0.55);
+}
+
+.leitor-dlg-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.leitor-dlg-topo button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-dlg-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.leitor-dlg-lista button {
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.leitor-dlg-lista button:hover,
+.leitor-dlg-lista button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-dlg .l-grade {
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+}
+
+.leitor-dlg .l-grade button {
+  padding: 0.9rem 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-dlg .l-grade button:hover,
+.leitor-dlg .l-grade button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+@media (max-width: 720px) {
+  .leitor { padding: 0 1rem 2.5rem; }
+}
+
+/* Leitura dentro do popup do leitor: sem topo, nav nem rodapé */
+html.embutido .nav,
+html.embutido footer,
+html.embutido .biblia-topo {
+  display: none;
+}
+
+.leitor-dlg-leitura {
+  display: flex;
+  width: min(900px, 96vw);
+  height: 88vh;
+  max-height: 88vh;
+  flex-direction: column;
+}
+
+.leitor-dlg-leitura:not([open]) {
+  display: none;
+}
+
+.leitor-dlg-leitura iframe {
+  width: 100%;
+  flex: 1;
+  border: 0;
+  background: var(--bg);
+}
+
+
+.leitor-aviso {
+  margin: 0.75rem 0 0;
+}

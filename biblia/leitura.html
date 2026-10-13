@@ -17,6 +17,11 @@
     <link rel="stylesheet" href="../css/global.css" />
     <link rel="stylesheet" href="../css/biblia.css" />
     <script src="../js/theme.js"></script>
+    <script>
+      // só existe como popup do leitor: aberta direto, volta para a Bíblia
+      if (location.search === "?embutido") document.documentElement.classList.add("embutido");
+      else location.replace("ler.html");
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/conta.js"></script>
@@ -31,7 +36,7 @@
         </a>
         <nav class="nav-links" aria-label="Principal">
           <a class="nav-link hud" href="index.html"><span>Linha do tempo</span></a>
-          <a class="nav-link hud" href="leitura.html" aria-current="page"><span>Leitura</span></a>
+          <a class="nav-link hud" href="ler.html"><span>Bíblia</span></a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
