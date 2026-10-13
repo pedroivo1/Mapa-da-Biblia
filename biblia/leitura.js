@@ -301,9 +301,22 @@
     }
   }
 
+  // #livro (ou #livro/cap) abre direto nos capítulos desse livro; vem do leitor
+  function abrirDoHash() {
+    var m = /^#([a-z0-9]+)(?:\/\d+)?$/.exec(location.hash);
+    if (!m || !canonPorId[m[1]]) return false;
+    nav.livro = m[1];
+    nav.nivel = "caps";
+    return true;
+  }
+
   function mostrar() {
     render();
   }
+
+  window.addEventListener("hashchange", function () {
+    if (canon.length && abrirDoHash()) render();
+  });
 
   function recarregarProgresso() {
     carregarProgresso().then(function (p) {
@@ -335,6 +348,7 @@
       canon.forEach(function (b) { canonPorId[b.id] = b; });
       return carregarProgresso().then(function (p) {
         aplicarProgresso(p);
+        abrirDoHash();
         mostrar();
       }, function () {
         aplicarProgresso(null);

@@ -1061,3 +1061,475 @@ html.embutido .biblia-topo {
 .mapa-trechos a:visited {
   color: var(--ink-strong);
 }
+
+/* apoio: mapa da viagem de Abrão */
+.apoio {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+/* cabeçalho compacto: o mapa é o conteúdo */
+.apoio-pagina .biblia-topo {
+  padding: 1.5rem 1.5rem 1.1rem;
+}
+
+.apoio-pagina .biblia-topo h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+.apoio-pagina .biblia-topo p {
+  margin-top: 0.5rem;
+}
+
+/* camadas (apoio e curiosidades) acima do mapa */
+.apoio-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.apoio-barra > .chip,
+.apoio-barra .apoio-filtros .chip {
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.apoio-barra > .chip:hover,
+.apoio-barra > .chip[aria-pressed="true"],
+.apoio-barra .chip:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.apoio-mapa {
+  position: relative;
+  min-width: 0;
+}
+
+/* texto da etapa ou da curiosidade, sobre o mapa */
+.apoio-cartao {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  max-width: 34rem;
+  max-height: 55%;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+}
+
+.apoio-cartao[hidden] {
+  display: none;
+}
+
+.apoio-cartao h2 {
+  margin: 0.2rem 0 0.5rem;
+  padding-right: 2rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.apoio-cartao p {
+  margin: 0.4rem 0;
+}
+
+.apoio-fechar {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.5rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.apoio-fechar:hover {
+  color: var(--ink-strong);
+}
+
+.apoio-nota {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.apoio-ctrl {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1;
+  display: flex;
+  gap: 0.375rem;
+}
+
+.apoio-ctrl .btn {
+  min-width: 2.25rem;
+  background: var(--bg);
+}
+
+#apoio-svg {
+  line-height: 0;
+}
+
+.apoio-svg {
+  display: block;
+  width: 100%;
+  height: clamp(440px, calc(100vh - 17rem), 1000px);
+  cursor: grab;
+  touch-action: none;
+  font-family: Archivo, sans-serif;
+  user-select: none;
+}
+
+.apoio-svg.arrastando {
+  cursor: grabbing;
+}
+
+.apoio-terra {
+  fill: var(--bg-sunken);
+}
+
+.apoio-agua {
+  fill: var(--bg);
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.apoio-rio {
+  stroke: var(--c-livro);
+  stroke-width: 1.5;
+  opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.apoio-rotulo {
+  fill: var(--faint);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.apoio-rotulo.mar,
+.apoio-rotulo.rio {
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.apoio-rota {
+  stroke: var(--c-era);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.35;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.apoio-rota.incerto {
+  stroke-dasharray: 7 6;
+}
+
+.apoio-rota.feita {
+  opacity: 0.75;
+}
+
+.apoio-rota.ativa {
+  opacity: 1;
+  stroke-width: 4;
+}
+
+.apoio-marcador {
+  cursor: pointer;
+  outline: none;
+}
+
+.apoio-marcador circle {
+  fill: var(--bg);
+  stroke: var(--ink-strong);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.apoio-marcador.feito circle {
+  fill: var(--bg-sunken);
+}
+
+.apoio-marcador.ativo circle,
+.apoio-marcador:hover circle,
+.apoio-marcador:focus-visible circle {
+  fill: var(--invert-bg);
+}
+
+
+.apoio-marcador.ativo .apoio-num,
+.apoio-marcador:hover .apoio-num,
+.apoio-marcador:focus-visible .apoio-num {
+  fill: var(--invert-fg);
+}
+
+
+.apoio-num {
+  fill: var(--ink-strong);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.apoio-nome {
+  fill: var(--ink-strong);
+  font-size: 13px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg-sunken);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+/* celular: o mapa usa quase toda a altura da tela; os botões ficam numa linha rolável */
+@media (max-width: 720px) {
+  .apoio-pagina .biblia-topo {
+    padding: 1.1rem 1rem 0.8rem;
+  }
+
+  .apoio-barra {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .apoio-barra .chip,
+  .apoio-barra .apoio-filtros {
+    flex: none;
+    white-space: nowrap;
+  }
+
+  .apoio-svg {
+    height: calc(100vh - 12rem);
+    min-height: 420px;
+  }
+
+  .apoio-cartao {
+    right: 0.5rem;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    max-height: 60%;
+  }
+}
+
+/* no popup do leitor o quadro é a própria janela */
+html.embutido .apoio {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  border: 0;
+}
+
+html.embutido .apoio-mapa {
+  flex: 1;
+  min-height: 0;
+}
+
+html.embutido #apoio-svg,
+html.embutido .apoio-svg {
+  height: 100%;
+  min-height: 0;
+}
+
+/* popup de material de apoio no leitor */
+.apoio-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0;
+}
+
+.apoio-abas button {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.apoio-abas button:hover,
+.apoio-abas button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.apoio-resumo {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Apoio e Curiosidades, na linha das abas */
+.apoio-camadas {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: 0.5rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--line);
+}
+
+.apoio-camadas button[aria-pressed="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.apoio-passos {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.apoio-passos button[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.apoio-passos button[disabled]:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+
+.apoio-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.6rem 0;
+}
+
+.apoio-filtros .chip {
+  cursor: pointer;
+}
+
+.apoio-filtros .chip:hover,
+.apoio-filtros .chip[aria-pressed="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* mapa grande: costa em linha fina e marcadores das curiosidades */
+.apoio-terra {
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.apoio-agua.fundo {
+  stroke: none;
+}
+
+.apoio-curio-pt {
+  cursor: pointer;
+  outline: none;
+}
+
+.apoio-curio-pt rect {
+  fill: var(--c-era);
+  stroke: var(--ink-strong);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.apoio-curio-pt:hover rect,
+.apoio-curio-pt:focus-visible rect,
+.apoio-curio-pt.atual rect {
+  fill: var(--invert-bg);
+}
+
+
+.apoio-barra .apoio-filtros {
+  margin: 0;
+}
+
+.apoio-barra[hidden] {
+  display: none;
+}
+
+/* guias de apoio (esboço, personagens, listas) */
+.guia {
+  max-width: 46rem;
+  padding: 0 1.5rem 2.5rem;
+}
+
+.guia-intro {
+  margin: 1.25rem 0;
+}
+
+.guia-secao {
+  padding: 1rem 0 1rem 1rem;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid transparent;
+}
+
+.guia-secao.atual {
+  border-left-color: var(--c-era);
+  background: var(--bg-sunken);
+}
+
+.guia-secao p {
+  margin: 0;
+}
+
+.guia-secao h2 {
+  margin: 0.15rem 0 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.guia-secao a {
+  color: var(--muted);
+}
+
+.guia-itens {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guia-itens li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.guia-itens li.atual {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.guia-itens li.atual .faint {
+  color: inherit;
+}
+
+html.embutido .guia {
+  max-width: none;
+  padding: 0 1rem 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .guia { padding-right: 1.25rem; padding-left: 1.25rem; }
+}
+
+.apoio-camadas[hidden] {
+  display: none;
+}

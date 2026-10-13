@@ -19,7 +19,7 @@
     <script src="../js/theme.js"></script>
     <script>
       // só existe como popup do leitor: aberta direto, volta para a Bíblia
-      if (location.search === "?embutido") document.documentElement.classList.add("embutido");
+      if (/[?&]embutido/.test(location.search)) document.documentElement.classList.add("embutido");
       else location.replace("ler.html");
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
