@@ -16,6 +16,22 @@
   --invert-bg: #0b0b0c;
   --invert-fg: #f2f1ee;
   --regua-centro: #0a6a85;
+  /* linha do tempo: uma cor por significado, em tons médios que aceitam texto preto */
+  --tl-era: #c8cbcf;
+  --tl-era-cab: #9aa0a8;
+  --tl-lei: #8f7ee6;
+  --tl-hist: #3aa65a;
+  --tl-poesia: #e87ba4;
+  --tl-pmaior: #eb6834;
+  --tl-pmenor: #f4a98a;
+  --tl-lider: #cf9a5a;
+  --tl-profeta: #eb6834;
+  --tl-judah: #3584e0;
+  --tl-israel: #1baf7a;
+  --tl-unido: #eda100;
+  --tl-governo: #a9c9f3;
+  --tl-roma: #e34948;
+  --tl-potencia: #c2ae93;
   color-scheme: light;
 }
 
@@ -30,6 +46,21 @@
   --invert-bg: #f2f1ee;
   --invert-fg: #0b0b0c;
   --regua-centro: #1ea7c7;
+  --tl-era: #80858c;
+  --tl-era-cab: #5d636b;
+  --tl-lei: #9085e9;
+  --tl-hist: #3a9a4e;
+  --tl-poesia: #d55181;
+  --tl-pmaior: #d95926;
+  --tl-pmenor: #e8a07c;
+  --tl-lider: #a8794a;
+  --tl-profeta: #d95926;
+  --tl-judah: #3987e5;
+  --tl-israel: #199e70;
+  --tl-unido: #c98500;
+  --tl-governo: #9dbdf0;
+  --tl-roma: #e66767;
+  --tl-potencia: #8c7660;
   color-scheme: dark;
 }
 

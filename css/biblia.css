@@ -235,6 +235,26 @@ button.chip:hover {
   color: var(--invert-fg);
 }
 
+/* marcar ou desmarcar todos os grupos de livros */
+.filtro-todos {
+  display: block;
+  width: calc(100% - 1.8rem);
+  margin: 0 0.9rem 0.2rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.filtro-todos:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
 /* faixas */
 .colunas {
   position: sticky;
@@ -270,12 +290,12 @@ button.chip:hover {
   vertical-align: middle;
 }
 
-.amostra.c-livro { background: var(--c-livro); }
-.amostra.c-lider { background: var(--c-lider); }
-.amostra.c-terra { background: var(--c-israel); }
-.amostra.c-profeta { background: var(--c-profeta); }
-.amostra.c-potencia { background: var(--c-potencia); }
-.amostra.c-era { background: var(--c-era); }
+.amostra.c-livro { background: linear-gradient(90deg, var(--tl-lei) 0 20%, var(--tl-hist) 20% 40%, var(--tl-poesia) 40% 60%, var(--tl-pmaior) 60% 80%, var(--tl-pmenor) 80%); }
+.amostra.c-lider { background: var(--tl-lider); }
+.amostra.c-terra { background: linear-gradient(90deg, var(--tl-judah) 0 25%, var(--tl-israel) 25% 50%, var(--tl-unido) 50% 75%, var(--tl-roma) 75%); }
+.amostra.c-profeta { background: var(--tl-profeta); }
+.amostra.c-potencia { background: var(--tl-potencia); }
+.amostra.c-era { background: var(--tl-era-cab); }
 .amostra.c-evento { background: var(--c-evento); }
 
 .mapa-cab {
@@ -300,15 +320,20 @@ button.chip:hover {
   height: 100%;
   align-items: center;
   justify-content: center;
-  color: #0b0b0c;
+  background-color: var(--bg-sunken);
+  box-shadow: inset 1px 0 0 var(--faint);
+  background-position: top;
+  background-repeat: no-repeat;
+  background-size: 100% 3px;
+  color: var(--ink-strong);
 }
 
-.mapa-cab-in .c-era { background: var(--c-era); }
-.mapa-cab-in .c-livros { background: var(--c-livro); }
-.mapa-cab-in .c-lideres { background: var(--c-lider); color: #fff; }
-.mapa-cab-in .c-terra { background: var(--c-israel); }
-.mapa-cab-in .c-profetas { background: var(--c-profeta); }
-.mapa-cab-in .c-potencias { background: var(--c-potencia); }
+.mapa-cab-in .c-era { background-image: linear-gradient(var(--tl-era-cab), var(--tl-era-cab)); }
+.mapa-cab-in .c-livros { background-image: linear-gradient(90deg, var(--tl-lei) 0 20%, var(--tl-hist) 20% 40%, var(--tl-poesia) 40% 60%, var(--tl-pmaior) 60% 80%, var(--tl-pmenor) 80%); }
+.mapa-cab-in .c-lideres { background-image: linear-gradient(var(--tl-lider), var(--tl-lider)); }
+.mapa-cab-in .c-terra { background-image: linear-gradient(90deg, var(--tl-judah) 0 25%, var(--tl-israel) 25% 50%, var(--tl-unido) 50% 75%, var(--tl-roma) 75%); }
+.mapa-cab-in .c-profetas { background-image: linear-gradient(var(--tl-profeta), var(--tl-profeta)); }
+.mapa-cab-in .c-potencias { background-image: linear-gradient(var(--tl-potencia), var(--tl-potencia)); }
 
 .mapa-scroll {
   border-bottom: 1px solid var(--line);
@@ -358,6 +383,8 @@ button.chip:hover {
 .col-fundo.b { fill: var(--bg-sunken); opacity: 0.55; }
 
 .grade { stroke: var(--line); stroke-width: 1; }
+.col-sep { stroke: var(--faint); stroke-width: 1; opacity: 0.55; pointer-events: none; }
+.col-sep.sub { stroke-dasharray: 2 4; opacity: 0.45; }
 .regua { fill: var(--faint); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; }
 .marco-linha { stroke: var(--c-evento); stroke-width: 2; stroke-dasharray: 5 3; pointer-events: none; }
 .marco-hit { stroke: rgba(0, 0, 0, 0); stroke-width: 10; }
@@ -380,27 +407,27 @@ button.chip:hover {
 .rot-txt:hover { text-decoration: underline; }
 .barra .guia { fill: none; stroke: var(--muted); stroke-width: 1; }
 
-.barra.rei.juda rect { fill: var(--c-juda); }
-.barra.rei.israel rect { fill: var(--c-israel); }
-.barra.rei.unido rect { fill: var(--c-unido); }
+.barra.rei.juda rect { fill: var(--tl-judah); }
+.barra.rei.israel rect { fill: var(--tl-israel); }
+.barra.rei.unido rect { fill: var(--tl-unido); }
 /* depois do exílio: governadores e domínio estrangeiro em azul claro; os reis macabeus e hasmoneus seguem o azul de Judá; Roma e os reis nomeados por ela (Herodes) em vermelho */
-.barra.rei.governo rect { fill: var(--c-governo); }
-.barra.rei.roma rect { fill: var(--c-roma); }
-.barra.livro rect { fill: var(--c-livro); }
+.barra.rei.governo rect { fill: var(--tl-governo); }
+.barra.rei.roma rect { fill: var(--tl-roma); }
+.barra.livro rect { fill: var(--tl-hist); }
 /* cor por tipo de livro; os testamentos reaproveitam as cores */
-.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: #c9915c; background: #c9915c; }
-.barra.g-historia rect, .barra.g-atos rect, .barra.g-historico-nt rect, .amostra.g-historia, .amostra.g-atos, .amostra.g-historico-nt { fill: #1ea7c7; background: #1ea7c7; }
-.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: #8fa3b8; background: #8fa3b8; }
-.barra.g-profeta-maior rect, .barra.g-apocalipse rect, .barra.g-profeta rect, .amostra.g-profeta-maior, .amostra.g-apocalipse, .amostra.g-profeta { fill: #e8c11c; background: #e8c11c; }
-.barra.g-profeta-menor rect, .amostra.g-profeta-menor { fill: #ff9f43; background: #ff9f43; }
-.barra.lider rect { fill: var(--c-lider); }
+.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: var(--tl-lei); background: var(--tl-lei); }
+.barra.g-historia rect, .barra.g-atos rect, .barra.g-historico-nt rect, .amostra.g-historia, .amostra.g-atos, .amostra.g-historico-nt { fill: var(--tl-hist); background: var(--tl-hist); }
+.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: var(--tl-poesia); background: var(--tl-poesia); }
+.barra.g-profeta-maior rect, .barra.g-apocalipse rect, .barra.g-profeta rect, .amostra.g-profeta-maior, .amostra.g-apocalipse, .amostra.g-profeta { fill: var(--tl-pmaior); background: var(--tl-pmaior); }
+.barra.g-profeta-menor rect, .amostra.g-profeta-menor { fill: var(--tl-pmenor); background: var(--tl-pmenor); }
+.barra.lider rect { fill: var(--tl-lider); }
 .barra.lider .rot { fill: #fff; }
 .barra.livro.incerta rect,
 .barra.lider.incerta rect { stroke: var(--ink-strong); stroke-dasharray: 3 2; }
-.barra.profeta rect { fill: var(--c-profeta); }
+.barra.profeta rect { fill: var(--tl-profeta); }
 .barra.profeta.incerta rect { stroke: var(--ink-strong); stroke-dasharray: 3 2; }
-.barra.potencia rect { fill: var(--c-potencia); }
-.barra.era rect { fill: var(--c-era); }
+.barra.potencia rect { fill: var(--tl-potencia); }
+.barra.era rect { fill: var(--tl-era); }
 .barra.periodo rect {
   fill: transparent;
 }

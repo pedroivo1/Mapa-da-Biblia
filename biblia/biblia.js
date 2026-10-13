@@ -308,6 +308,27 @@
   // o início do eixo (Origens, Gn 1–11) não tem data: a régua não conta anos ali
   var SEM_DATA_ATE = SEGMENTOS[0].ate;
 
+  // rolagem suave para a roda do mouse fora do mapa: soma o deslocamento num alvo e anda até ele,
+  // em vez de pular de uma vez (o que dava a sensação de rolagem "dura")
+  var rolagemAlvo = 0;
+  var rolagemQuadro = null;
+  function rolarSuave(el, delta) {
+    if (rolagemQuadro === null) rolagemAlvo = el.scrollTop;
+    rolagemAlvo = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, rolagemAlvo + delta));
+    if (rolagemQuadro !== null) return;
+    function passo() {
+      var d = rolagemAlvo - el.scrollTop;
+      if (Math.abs(d) < 1) {
+        el.scrollTop = rolagemAlvo;
+        rolagemQuadro = null;
+        return;
+      }
+      el.scrollTop += d > 0 ? Math.max(1, d * 0.2) : Math.min(-1, d * 0.2);
+      rolagemQuadro = requestAnimationFrame(passo);
+    }
+    rolagemQuadro = requestAnimationFrame(passo);
+  }
+
   // inverso de Y: o ano que está numa altura do mapa (null no trecho sem data)
   function anoDeY(y) {
     if (y < Y(SEM_DATA_ATE)) return null;
@@ -533,7 +554,7 @@
     regua.addEventListener(
       "wheel",
       function (ev) {
-        rolagem.scrollTop += ev.deltaY;
+        rolarSuave(rolagem, ev.deltaY);
         ev.preventDefault();
       },
       { passive: false }
@@ -665,6 +686,18 @@
     cols.forEach(function (c, i) {
       s.appendChild(svg("rect", { x: c.x, y: 0, width: c.w, height: H, class: "col-fundo " + (i % 2 ? "b" : "a") }));
     });
+
+    // linhas verticais entre as colunas, de ponta a ponta, e entre as faixas de Judá e Israel
+    cols.forEach(function (c) {
+      s.appendChild(svg("line", { x1: c.x + 0.5, y1: 0, x2: c.x + 0.5, y2: H, class: "col-sep" }));
+    });
+    if (cols.length) {
+      var ultima = cols[cols.length - 1];
+      s.appendChild(svg("line", { x1: ultima.x + ultima.w - 0.5, y1: 0, x2: ultima.x + ultima.w - 0.5, y2: H, class: "col-sep" }));
+    }
+    if (cIsrael) {
+      s.appendChild(svg("line", { x1: cIsrael.x + 0.5, y1: 0, x2: cIsrael.x + 0.5, y2: H, class: "col-sep sub" }));
+    }
 
     // linhas de grade, nos anos redondos
     var marcas = [];
@@ -942,6 +975,8 @@
           tog += '<button type="button" data-modo="' + m + '"' + (colunas.modo === m ? ' aria-pressed="true"' : "") + ">" + MODOS[m].nome + "</button>";
         });
         tog += "</div>";
+        tog += '<button type="button" class="filtro-todos" data-todos="' + (n === gs.length ? "0" : "1") + '">' +
+          (n === gs.length ? "Desmarcar todos" : "Marcar todos") + "</button>";
         var ta = "";
         gs.forEach(function (g) {
           if (g.ta !== ta) {
@@ -1037,6 +1072,21 @@
   }
 
   document.addEventListener("click", function (ev) {
+    var todos = ev.target.closest && ev.target.closest("[data-todos]");
+    if (todos) {
+      var ligar = todos.getAttribute("data-todos") === "1";
+      gruposAtuais().forEach(function (g) {
+        colunas.grupos[g.id] = ligar;
+      });
+      colunas.livros = livrosAtivos();
+      gravar(KEY_COL, colunas);
+      var abertoTodos = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      var ft = document.querySelector(".filtro");
+      if (ft) ft.open = true;
+      if (abertoTodos) abrir(abertoTodos);
+      return;
+    }
     var modo = ev.target.closest && ev.target.closest("[data-modo]");
     if (modo) {
       colunas.modo = modo.getAttribute("data-modo");
@@ -1094,10 +1144,18 @@
     function (ev) {
       if (ev.ctrlKey || ev.metaKey || ev.defaultPrevented) return;
       var rolagem = raiz.querySelector(".mapa-scroll");
-      if (!rolagem || rolagem.contains(ev.target)) return;
+      if (!rolagem) return;
+      if (rolagem.contains(ev.target)) {
+        // rolagem nativa do mapa: para a animação para os dois não brigarem
+        if (rolagemQuadro !== null) {
+          cancelAnimationFrame(rolagemQuadro);
+          rolagemQuadro = null;
+        }
+        return;
+      }
       if (ev.target.closest && ev.target.closest(".detalhe, .filtro-menu, dialog, .regua-y")) return;
       var f = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? rolagem.clientHeight : 1;
-      rolagem.scrollTop += ev.deltaY * f;
+      rolarSuave(rolagem, ev.deltaY * f);
       rolagem.scrollLeft += ev.deltaX * f;
       ev.preventDefault();
     },
