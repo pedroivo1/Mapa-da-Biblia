@@ -1,0 +1,27 @@
+{
+  "mundo": "mundo.json",
+  "titulo": "Os lugares do livro de",
+  "destaque": "Jó.",
+  "subtitulo": "Material de apoio · Jó 1 – 42",
+  "livro": "jo",
+  "livroNome": "Jó",
+  "aria": "Mapa-múndi com os lugares citados no livro de Jó: Uz, Sabá, Caldeia, Temã, Sua e Buz",
+  "lugares": [
+    {"id":"uz","nome":"Uz","lon":35.61,"lat":30.72},
+    {"id":"saba","nome":"Sabá","lon":45.35,"lat":15.43},
+    {"id":"caldeia","nome":"Caldeia","lon":46.0,"lat":31.3},
+    {"id":"tema","nome":"Temã","lon":35.45,"lat":30.32},
+    {"id":"sua","nome":"Sua","lon":38.0,"lat":30.4},
+    {"id":"buz","nome":"Buz","lon":38.55,"lat":27.63},
+    {"id":"nilo","nome":"O Nilo","lon":31.4,"lat":27.0}
+  ],
+  "etapas": [
+    {"id":"uz","lugar":"uz","titulo":"A terra de Uz","ref":"Jó 1:1","cap":1,"incerto":true,"texto":"“Havia na terra de Uz um homem chamado Jó”, íntegro, reto e temente a Deus, dono de sete mil ovelhas, três mil camelos, quinhentas juntas de bois e quinhentas jumentas. Uz aparece também em Lamentações 4:21, onde é ligada a Edom, e em Gênesis 22:21, onde é o nome de um sobrinho de Abraão, filho de Naor.","nota":"Ninguém sabe ao certo onde ficava Uz. Edom, ao sul do Mar Morto, é a opção mais citada; outros propõem a região de Hauran, ao norte, ou a família de Naor, em Harã. O marcador mostra Edom, mas é aproximado.","caminho":[]},
+    {"id":"saba","lugar":"saba","titulo":"Os sabeus","ref":"Jó 1:13–15","cap":1,"incerto":true,"texto":"Primeiro a perder o que tinha: sabeus atacam, levam os bois e as jumentas e matam os servos. Jó volta a falar das “caravanas de Sabá” em 6:19. A Sabá do sul da Arábia, no atual Iêmen, era famosa pelo comércio de incenso e ouro.","nota":"Há mais de um povo chamado Sabá na Bíblia, e o traçado do ataque até Uz é só uma ilustração.","caminho":[[45.35,15.43],[43.0,20.0],[40.5,25.5],[35.61,30.72]]},
+    {"id":"caldeia","lugar":"caldeia","titulo":"Os caldeus","ref":"Jó 1:17","cap":1,"incerto":true,"texto":"Três bandos de caldeus levam os camelos e matam os servos. Esses povos nômades viviam no sul da Mesopotâmia, a região de onde saiu Abraão (Ur dos caldeus), a mesma do mapa da viagem de Abrão.","nota":"O traçado do ataque até Uz é só uma ilustração; o texto não diz por onde eles vieram.","caminho":[[46.0,31.3],[43.5,31.0],[40.0,30.5],[35.61,30.72]]},
+    {"id":"tema","lugar":"tema","titulo":"Temã, terra de Elifaz","ref":"Jó 2:11","cap":2,"incerto":false,"texto":"Elifaz vem de Temã, em Edom (Gênesis 36:11, Jeremias 49:7). Temã tinha fama de ter sábios, e Elifaz abre os discursos dos amigos com base numa visão noturna (4:12–21). Os três amigos se encontram e viajam juntos para consolar Jó.","nota":"","caminho":[]},
+    {"id":"sua","lugar":"sua","titulo":"Sua, terra de Bildade","ref":"Jó 2:11","cap":2,"incerto":true,"texto":"Bildade vem de Sua, nome de um filho de Abraão e Quetura (Gênesis 25:2), cujos descendentes se estabeleceram no oriente (25:6). Naamate, terra do terceiro amigo, Zofar, também é desconhecida.","nota":"A localização de Sua e de Naamate é desconhecida; o marcador só indica o deserto a leste do Jordão.","caminho":[]},
+    {"id":"buz","lugar":"buz","titulo":"Buz, terra de Eliú","ref":"Jó 32:2","cap":32,"incerto":true,"texto":"Eliú, “filho de Baraquel, de Buz”, fala por último, e fala com raiva dos amigos e de Jó. Buz era irmão de Uz, filho de Naor (Gênesis 22:21), e aparece em Jeremias 25:23 junto com Dedã e Tema, no noroeste da Arábia.","nota":"Local aproximado, segundo Jeremias 25:23.","caminho":[]},
+    {"id":"nilo","lugar":"nilo","titulo":"Behemot e Leviatã","ref":"Jó 40:15 – 41:34","cap":40,"incerto":true,"texto":"Deus apresenta duas criaturas gigantes: o Behemot, que “come capim como o boi” e repousa nos juncos do rio (40:15–24), e o Leviatã, de couraça de escamas (41). Muitos leitores veem aí o hipopótamo e o crocodilo do Nilo; outros, criaturas simbólicas do caos.","nota":"Interpretação: o texto não nomeia o Nilo. O marcador só ajuda a imaginar os animais.","caminho":[]}
+  ]
+}

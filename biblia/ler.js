@@ -12,6 +12,8 @@
   var tam = 1.2;
   var dlg = null;
   var dlgLeitura = null;
+  var dlgApoio = null;
+  var materiais = [];
   var voz = window.speechSynthesis || null;
   var falando = false;
   // modo mapa: só quando aberto pelo botão do mapa (?mapa=id); pela aba Bíblia segue a ordem dos livros
@@ -193,14 +195,26 @@
       '<p class="hud"><a href="mapa.html">Ver o mapa</a> · <a href="' + esc(sai) + '">Sair do mapa (ordem dos livros)</a></p></div>';
   }
 
+  // materiais de apoio ligados ao capítulo que está na tela
+  function materiaisDoCapitulo() {
+    var b = canon[pos.i];
+    return materiais.filter(function (m) {
+      return m.capitulos.some(function (r) {
+        return r.livro === b.id && pos.c >= r.de && pos.c <= r.ate;
+      });
+    });
+  }
+
   function render() {
     var b = canon[pos.i];
+    var apoio = materiaisDoCapitulo();
     var versos = texto[pos.i].chapters[pos.c - 1];
     var ant = anterior();
     var prox = proximo();
     var h = '<div class="leitor-barra">' +
       '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> ▾</button>" +
       '<span class="leitor-fonte">' +
+      (apoio.length ? '<button type="button" data-apoio aria-haspopup="dialog">Apoio (' + apoio.length + ")</button>" : "") +
       (voz ? '<button type="button" data-ouvir>' + (falando ? "Parar" : "Ouvir") + "</button>" : "") +
       '<button type="button" data-leitura aria-haspopup="dialog">Marcar leitura</button>' +
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
@@ -260,23 +274,105 @@
 
   // a página Leitura inteira, dentro de um popup (mesma conta, mesmo progresso)
   function abrirLeitura() {
+    // a cada abertura recarrega, para cair no livro que está sendo lido
+    var url = "leitura.html?embutido&_=" + Date.now() + "#" + canon[pos.i].id + "/" + pos.c;
     if (!dlgLeitura) {
       dlgLeitura = document.createElement("dialog");
       dlgLeitura.className = "leitor-dlg leitor-dlg-leitura";
       dlgLeitura.innerHTML =
         '<div class="leitor-dlg-topo"><span class="hud muted">Leitura</span><button type="button" data-fechar>Fechar</button></div>' +
-        '<iframe src="leitura.html?embutido" title="Leitura"></iframe>';
+        '<iframe title="Leitura"></iframe>';
       dlgLeitura.addEventListener("click", function (ev) {
         if (ev.target === dlgLeitura || ev.target.closest("[data-fechar]")) dlgLeitura.close();
       });
       document.body.appendChild(dlgLeitura);
     }
+    var quadro = dlgLeitura.querySelector("iframe");
+    quadro.setAttribute("src", url);
     if (!dlgLeitura.open) dlgLeitura.showModal();
   }
+
+  // popup com os materiais do capítulo: troca de um para outro sem fechar
+  function mostrarApoio(lista, k) {
+    dlgApoio.setAttribute("data-k", k);
+    var ant = dlgApoio.querySelector('[data-apoio-passo="-1"]');
+    var prox = dlgApoio.querySelector('[data-apoio-passo="1"]');
+    ant.disabled = k === 0;
+    prox.disabled = k === lista.length - 1;
+    var quadro = dlgApoio.querySelector("iframe");
+    var m = lista[k];
+    var abas = dlgApoio.querySelectorAll("[data-aba]");
+    for (var j = 0; j < abas.length; j++) {
+      if (j === k) abas[j].setAttribute("aria-current", "true");
+      else abas[j].removeAttribute("aria-current");
+    }
+    var cams = dlgApoio.querySelector(".apoio-camadas");
+    if (cams) {
+      cams.hidden = !m.camadas;
+      cams.querySelector('[data-camada="apoio"]').setAttribute("aria-pressed", "true");
+      cams.querySelector('[data-camada="curio"]').setAttribute("aria-pressed", "false");
+    }
+    dlgApoio.querySelector(".apoio-resumo").textContent = m.tipo + " · " + m.ref + " — " + m.resumo;
+    quadro.setAttribute("title", m.titulo);
+    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c);
+  }
+
+  function abrirApoio() {
+    var lista = materiaisDoCapitulo();
+    if (!lista.length) return;
+    if (!dlgApoio) {
+      dlgApoio = document.createElement("dialog");
+      dlgApoio.className = "leitor-dlg leitor-dlg-leitura leitor-dlg-apoio";
+      document.body.appendChild(dlgApoio);
+    }
+    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Material de apoio</span><button type="button" data-fechar>Fechar</button></div>' +
+      '<div class="apoio-abas" role="tablist">';
+    lista.forEach(function (m, k) {
+      h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";
+    });
+    if (lista.some(function (m) { return m.camadas; })) {
+      h += '<span class="apoio-camadas" hidden>' +
+        '<button type="button" data-camada="apoio" aria-pressed="true" title="Rota e etapas">Apoio</button>' +
+        '<button type="button" data-camada="curio" aria-pressed="false">Curiosidades</button></span>';
+    }
+    h += '<span class="apoio-passos">' +
+      '<button type="button" data-apoio-passo="-1">← Anterior</button>' +
+      '<button type="button" data-apoio-passo="1">Próximo →</button></span>';
+    h += '</div><p class="apoio-resumo hud muted"></p><iframe></iframe>';
+    dlgApoio.innerHTML = h;
+    dlgApoio.onclick = function (ev) {
+      if (ev.target === dlgApoio || ev.target.closest("[data-fechar]")) return dlgApoio.close();
+      var aba = ev.target.closest("[data-aba]");
+      if (aba) return mostrarApoio(lista, Number(aba.getAttribute("data-aba")));
+      var cam = ev.target.closest("[data-camada]");
+      if (cam) {
+        var quadro = dlgApoio.querySelector("iframe");
+        if (quadro.contentWindow) quadro.contentWindow.postMessage({ tipo: "apoio-camada", camada: cam.getAttribute("data-camada") }, location.origin);
+        return;
+      }
+      var passo = ev.target.closest("[data-apoio-passo]");
+      if (passo && !passo.disabled) {
+        var k = Number(dlgApoio.getAttribute("data-k")) + Number(passo.getAttribute("data-apoio-passo"));
+        if (k >= 0 && k < lista.length) mostrarApoio(lista, k);
+      }
+    };
+    mostrarApoio(lista, 0);
+    if (!dlgApoio.open) dlgApoio.showModal();
+  }
+
+  // o mapa avisa quando liga ou desliga uma camada
+  window.addEventListener("message", function (ev) {
+    if (ev.origin !== location.origin || !ev.data || ev.data.tipo !== "apoio-estado" || !dlgApoio) return;
+    var cams = dlgApoio.querySelector(".apoio-camadas");
+    if (!cams) return;
+    cams.querySelector('[data-camada="apoio"]').setAttribute("aria-pressed", String(!!ev.data.apoio));
+    cams.querySelector('[data-camada="curio"]').setAttribute("aria-pressed", String(!!ev.data.curiosidades));
+  });
 
   raiz.addEventListener("click", function (ev) {
     var t = ev.target.closest && ev.target.closest("button");
     if (!t || t.disabled) return;
+    if (t.hasAttribute("data-apoio")) return abrirApoio();
     if (t.hasAttribute("data-leitura")) return abrirLeitura();
     if (t.hasAttribute("data-ouvir")) return falando ? parar() : ouvir();
     if (t.hasAttribute("data-escolher")) return abrirEscolha(pos.i);
@@ -290,7 +386,7 @@
   });
 
   document.addEventListener("keydown", function (ev) {
-    if (!canon.length || (dlg && dlg.open) || (dlgLeitura && dlgLeitura.open) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    if (!canon.length || (dlg && dlg.open) || (dlgLeitura && dlgLeitura.open) || (dlgApoio && dlgApoio.open) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
     var alvo = ev.key === "ArrowLeft" ? anterior() : ev.key === "ArrowRight" ? proximo() : null;
     if (alvo) ir(alvo.i, alvo.c);
   });
@@ -357,8 +453,10 @@
     fetch("dados/canon.json").then(function (r) { return r.json(); }),
     fetch("../data/nvi.json").then(function (r) { return r.json(); }),
     comMapa ? fetch("dados/mapas.json").then(function (r) { return r.json(); }) : null,
-    comMapa ? fetch("dados/eras.json").then(function (r) { return r.json(); }) : null
+    comMapa ? fetch("dados/eras.json").then(function (r) { return r.json(); }) : null,
+    fetch("dados/materiais.json").then(function (r) { return r.json(); }).catch(function () { return { materiais: [] }; })
   ]).then(function (r) {
+    materiais = r[4].materiais || [];
     iniciar(r[0], r[1], r[2], r[3]);
   }, function () {
     raiz.innerHTML = '<p class="vazio">Não consegui carregar o texto. Abra por um servidor local (<code>python -m http.server</code>).</p>';
