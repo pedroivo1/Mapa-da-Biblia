@@ -33,8 +33,22 @@
     evangelho: "Evangelho",
     atos: "Histórico (NT)",
     carta: "Carta",
-    apocalipse: "Apocalíptico"
+    apocalipse: "Apocalíptico",
+    "profeta-maior": "Profeta maior",
+    "profeta-menor": "Profeta menor"
   };
+  // grupos de livros do filtro (Livros ▾)
+  var GRUPOS = [
+    { id: "lei", nome: "Pentateuco", ta: "Antigo Testamento" },
+    { id: "historia", nome: "Históricos", ta: "Antigo Testamento" },
+    { id: "poesia", nome: "Poéticos e sapienciais", ta: "Antigo Testamento" },
+    { id: "profeta-maior", nome: "Profetas maiores", ta: "Antigo Testamento" },
+    { id: "profeta-menor", nome: "Profetas menores", ta: "Antigo Testamento" },
+    { id: "evangelho", nome: "Evangelhos", ta: "Novo Testamento" },
+    { id: "atos", nome: "Histórico", ta: "Novo Testamento" },
+    { id: "carta", nome: "Cartas", ta: "Novo Testamento" },
+    { id: "apocalipse", nome: "Profético", ta: "Novo Testamento" }
+  ];
 
   function ler(chave, padrao) {
     try {
@@ -57,6 +71,18 @@
       : { eras: true, livros: true, reis: true, potencias: true }
   );
   if (colunas.eras === undefined) colunas.eras = true;
+  // filtro de livros por grupo; progressos antigos só tinham "livros" ligado ou desligado
+  if (!colunas.grupos) {
+    colunas.grupos = {};
+    GRUPOS.forEach(function (g) {
+      colunas.grupos[g.id] = colunas.livros !== false;
+    });
+  }
+  function livrosAtivos() {
+    return GRUPOS.some(function (g) {
+      return colunas.grupos[g.id];
+    });
+  }
   var dados = null;
   var itens = {};
   var raiz = document.getElementById("vista");
@@ -287,7 +313,10 @@
 
     var blocos = {};
     var n = {};
-    [["livros", dados.livros], ["potencias", dados.potencias]].forEach(function (c) {
+    var livrosVisiveis = dados.livros.filter(function (l) {
+      return colunas.grupos[l.grupo];
+    });
+    [["livros", livrosVisiveis], ["potencias", dados.potencias]].forEach(function (c) {
       blocos[c[0]] = blocosDe(c[1].slice());
       n[c[0]] = empacotar(blocos[c[0]]);
     });
@@ -295,7 +324,7 @@
     // ajusta as larguras ao espaço disponível, para o mapa caber sem rolagem lateral
     var larguraEra = 116;
     var flex = (colunas.eras ? larguraEra : 0) +
-      (colunas.livros ? n.livros * SUB.livros : 0) +
+      (livrosAtivos() ? n.livros * SUB.livros : 0) +
       (colunas.reis ? 2 * (BAR + GUT) : 0) +
       (colunas.potencias ? n.potencias * SUB.potencias : 0);
     var disponivel = (raiz.clientWidth || 1100) - 2;
@@ -320,7 +349,7 @@
       return c;
     }
     var cEra = colunas.eras ? col("era", "Eras", larguraEra) : null;
-    var cLiv = colunas.livros ? col("livros", "Livros", n.livros * SUB.livros) : null;
+    var cLiv = livrosAtivos() ? col("livros", "Livros", n.livros * SUB.livros) : null;
     var cJuda = colunas.reis ? col("juda", "Judá", BAR + GUT) : null;
     var cIsrael = colunas.reis ? col("israel", "Israel", BAR + GUT) : null;
     var cPot = colunas.potencias ? col("potencias", "Potências", n.potencias * SUB.potencias) : null;
@@ -395,7 +424,7 @@
     function desenhar(lista, c, sub, cls, nomeDe) {
       lista.forEach(function (b) {
         var bx = c.x + b.sub * sub;
-        var g = grupo(b.item, cls + (b.item.incerta ? " incerta" : ""));
+        var g = grupo(b.item, cls + (b.item.grupo ? " g-" + b.item.grupo : "") + (b.item.incerta ? " incerta" : ""));
         rect(g, bx + 2, b.y1, sub - 4, b.y2 - b.y1);
         rotulo(g, bx + 2, sub - 4, b.y1, b.y2, nomeDe(b.item));
         s.appendChild(g);
@@ -558,6 +587,24 @@
     var cont = document.createElement("div");
     var tog = '<div class="colunas hud" role="group" aria-label="Colunas visíveis">';
     COLUNAS.forEach(function (c) {
+      if (c.id === "livros") {
+        var n = GRUPOS.filter(function (g) {
+          return colunas.grupos[g.id];
+        }).length;
+        tog += '<details class="filtro"><summary><span class="amostra c-livro"></span>Livros <span class="faint">' +
+          n + "/" + GRUPOS.length + '</span></summary><div class="filtro-menu">';
+        var ta = "";
+        GRUPOS.forEach(function (g) {
+          if (g.ta !== ta) {
+            ta = g.ta;
+            tog += '<p class="filtro-ta">' + ta + "</p>";
+          }
+          tog += '<label><input type="checkbox" data-grupo="' + g.id + '"' + (colunas.grupos[g.id] ? " checked" : "") +
+            '><span class="amostra g-' + g.id + '"></span>' + g.nome + "</label>";
+        });
+        tog += "</div></details>";
+        return;
+      }
       tog += '<label><input type="checkbox" data-coluna="' + c.id + '"' + (colunas[c.id] ? " checked" : "") +
         '><span class="amostra c-' + c.cor + '"></span>' + c.nome + "</label>";
     });
@@ -583,6 +630,8 @@
     raiz.appendChild(vistaFaixas());
     var novo = raiz.querySelector(".mapa-scroll");
     if (novo && esq) novo.scrollLeft = esq;
+    var leg = raiz.querySelector(".colunas");
+    if (leg) document.documentElement.style.setProperty("--colunas-h", leg.offsetHeight + "px");
   }
 
   function abrir(key) {
@@ -600,6 +649,8 @@
   }
 
   document.addEventListener("click", function (ev) {
+    var filtro = document.querySelector(".filtro");
+    if (filtro && filtro.open && !ev.target.closest(".filtro")) filtro.open = false;
     var alvo = ev.target.closest && ev.target.closest("[data-abrir]");
     if (alvo) abrir(alvo.getAttribute("data-abrir"));
     else if (ev.target.closest && ev.target.closest("[data-fechar]")) fechar();
@@ -617,7 +668,16 @@
 
   document.addEventListener("change", function (ev) {
     var t = ev.target;
-    if (t.hasAttribute("data-coluna")) {
+    if (t.hasAttribute("data-grupo")) {
+      colunas.grupos[t.getAttribute("data-grupo")] = t.checked;
+      colunas.livros = livrosAtivos();
+      gravar(KEY_COL, colunas);
+      var abertoPainel = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      var f = document.querySelector(".filtro");
+      if (f) f.open = true;
+      if (abertoPainel) abrir(abertoPainel);
+    } else if (t.hasAttribute("data-coluna")) {
       colunas[t.getAttribute("data-coluna")] = t.checked;
       gravar(KEY_COL, colunas);
       var aberto = painel && painel.dataset.key;

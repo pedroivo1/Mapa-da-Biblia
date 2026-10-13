@@ -153,8 +153,67 @@ button.chip:hover {
   font-size: 0.9rem;
 }
 
+/* filtro de livros por grupo */
+.filtro {
+  position: relative;
+}
+
+.filtro summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--muted);
+  cursor: pointer;
+  list-style: none;
+}
+
+.filtro summary::-webkit-details-marker {
+  display: none;
+}
+
+.filtro summary::after {
+  content: "▾";
+  margin-left: 0.15rem;
+}
+
+.filtro[open] summary::after {
+  content: "▴";
+}
+
+.filtro-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: -0.5rem;
+  z-index: 80;
+  min-width: 16rem;
+  padding: 0.4rem 0;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+}
+
+.filtro-ta {
+  margin: 0;
+  padding: 0.5rem 0.9rem 0.25rem;
+  color: var(--faint);
+  font-size: 10px;
+}
+
+.colunas .filtro-menu label {
+  display: flex;
+  width: 100%;
+  padding: 0.4rem 0.9rem;
+}
+
+.colunas .filtro-menu label:hover {
+  background: var(--bg-sunken);
+}
+
 /* faixas */
 .colunas {
+  position: sticky;
+  top: 48px;
+  z-index: 40;
+  background: var(--bg);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -196,7 +255,7 @@ button.chip:hover {
 
 .mapa-cab {
   position: sticky;
-  top: 48px;
+  top: calc(48px + var(--colunas-h, 41px));
   z-index: 25;
   overflow: hidden;
   height: 28px;
@@ -245,7 +304,7 @@ button.chip:hover {
   pointer-events: auto;
   cursor: pointer;
   position: sticky;
-  top: 78px;
+  top: calc(78px + var(--colunas-h, 41px));
   overflow: hidden;
   padding: 3px 3px 0;
   color: #0b0b0c;
@@ -301,6 +360,12 @@ button.chip:hover {
 .barra.rei.israel rect { fill: var(--c-israel); }
 .barra.rei.unido rect { fill: var(--c-unido); }
 .barra.livro rect { fill: var(--c-livro); }
+/* cor por tipo de livro; os testamentos reaproveitam as cores */
+.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: #f5a31a; background: #f5a31a; }
+.barra.g-historia rect, .barra.g-atos rect, .amostra.g-historia, .amostra.g-atos { fill: #1ea7c7; background: #1ea7c7; }
+.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: #8b5cf6; background: #8b5cf6; }
+.barra.g-profeta-maior rect, .barra.g-apocalipse rect, .amostra.g-profeta-maior, .amostra.g-apocalipse { fill: #7cb518; background: #7cb518; }
+.barra.g-profeta-menor rect, .amostra.g-profeta-menor { fill: #ec6f9a; background: #ec6f9a; }
 .barra.lider rect { fill: var(--c-lider); }
 .barra.lider .rot { fill: #fff; }
 .barra.livro.incerta rect,

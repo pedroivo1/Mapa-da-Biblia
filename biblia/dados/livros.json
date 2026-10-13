@@ -1,809 +1,972 @@
 {
- "livros": [
-  {
-   "id": "genesis",
-   "nome": "Gênesis",
-   "abrev": "Gn",
-   "grupo": "lei",
-   "inicio": 2400,
-   "fim": 1805,
-   "refs": "Gn 1–50",
-   "nota": "Criação, queda, dilúvio, Babel e os patriarcas Abraão, Isaque, Jacó e José.",
-   "periodo": "Origens (sem data) até c. 1805 a.C."
-  },
-  {
-   "id": "exodo",
-   "nome": "Êxodo",
-   "abrev": "Êx",
-   "grupo": "lei",
-   "inicio": 1526,
-   "fim": 1445,
-   "refs": "Êx 1–40",
-   "nota": "Opressão no Egito, o êxodo, o Sinai e o tabernáculo."
-  },
-  {
-   "id": "levitico",
-   "nome": "Levítico",
-   "abrev": "Lv",
-   "grupo": "lei",
-   "inicio": 1446,
-   "fim": 1445,
-   "refs": "Lv 1–27",
-   "nota": "Leis de sacrifício e de santidade, dadas no Sinai."
-  },
-  {
-   "id": "numeros",
-   "nome": "Números",
-   "abrev": "Nm",
-   "grupo": "lei",
-   "inicio": 1445,
-   "fim": 1407,
-   "refs": "Nm 1–36",
-   "nota": "Do Sinai às planícies de Moabe: os 40 anos no deserto."
-  },
-  {
-   "id": "deuteronomio",
-   "nome": "Deuteronômio",
-   "abrev": "Dt",
-   "grupo": "lei",
-   "inicio": 1407,
-   "fim": 1406,
-   "refs": "Dt 1–34",
-   "nota": "Discursos de Moisés em Moabe e a sua morte."
-  },
-  {
-   "id": "josue",
-   "nome": "Josué",
-   "abrev": "Js",
-   "grupo": "historia",
-   "inicio": 1406,
-   "fim": 1380,
-   "refs": "Js 1–24",
-   "nota": "Travessia do Jordão, conquista e divisão da terra."
-  },
-  {
-   "id": "juizes",
-   "nome": "Juízes",
-   "abrev": "Jz",
-   "grupo": "historia",
-   "inicio": 1380,
-   "fim": 1051,
-   "refs": "Jz 1–21",
-   "nota": "Ciclos de apostasia e livramento; termina sem rei."
-  },
-  {
-   "id": "rute",
-   "nome": "Rute",
-   "abrev": "Rt",
-   "grupo": "historia",
-   "inicio": 1140,
-   "fim": 1120,
-   "refs": "Rt 1–4",
-   "nota": "Uma moabita entra na linhagem de Davi.",
-   "periodo": "Época dos juízes (datas aproximadas)",
-   "incerta": true
-  },
-  {
-   "id": "1samuel",
-   "nome": "1 Samuel",
-   "abrev": "1Sm",
-   "grupo": "historia",
-   "inicio": 1105,
-   "fim": 1011,
-   "refs": "1Sm 1–31",
-   "nota": "Samuel, Saul e a ascensão de Davi."
-  },
-  {
-   "id": "2samuel",
-   "nome": "2 Samuel",
-   "abrev": "2Sm",
-   "grupo": "historia",
-   "inicio": 1011,
-   "fim": 971,
-   "refs": "2Sm 1–24",
-   "nota": "O reinado de Davi."
-  },
-  {
-   "id": "1reis",
-   "nome": "1 Reis",
-   "abrev": "1Rs",
-   "grupo": "historia",
-   "inicio": 971,
-   "fim": 852,
-   "refs": "1Rs 1–22",
-   "nota": "Salomão, a divisão do reino e Elias."
-  },
-  {
-   "id": "2reis",
-   "nome": "2 Reis",
-   "abrev": "2Rs",
-   "grupo": "historia",
-   "inicio": 852,
-   "fim": 561,
-   "refs": "2Rs 1–25",
-   "nota": "Da morte de Acabe ao exílio: queda de Samaria e de Jerusalém."
-  },
-  {
-   "id": "1cronicas",
-   "nome": "1 Crônicas",
-   "abrev": "1Cr",
-   "grupo": "historia",
-   "inicio": 1011,
-   "fim": 971,
-   "refs": "1Cr 1–29",
-   "nota": "Relê a história a partir das genealogias e de Davi. Escrito depois do exílio.",
-   "periodo": "Genealogias e o reinado de Davi"
-  },
-  {
-   "id": "2cronicas",
-   "nome": "2 Crônicas",
-   "abrev": "2Cr",
-   "grupo": "historia",
-   "inicio": 971,
-   "fim": 538,
-   "refs": "2Cr 1–36",
-   "nota": "De Salomão ao decreto de Ciro, do ponto de vista de Judá e do templo."
-  },
-  {
-   "id": "esdras",
-   "nome": "Esdras",
-   "abrev": "Ed",
-   "grupo": "historia",
-   "inicio": 538,
-   "fim": 457,
-   "refs": "Ed 1–10",
-   "nota": "Primeiro retorno, o templo e a chegada de Esdras."
-  },
-  {
-   "id": "neemias",
-   "nome": "Neemias",
-   "abrev": "Ne",
-   "grupo": "historia",
-   "inicio": 445,
-   "fim": 432,
-   "refs": "Ne 1–13",
-   "nota": "Reconstrução dos muros e reformas."
-  },
-  {
-   "id": "ester",
-   "nome": "Ester",
-   "abrev": "Et",
-   "grupo": "historia",
-   "inicio": 483,
-   "fim": 473,
-   "refs": "Et 1–10",
-   "nota": "Uma judia rainha da Pérsia salva o seu povo."
-  },
-  {
-   "id": "jo",
-   "nome": "Jó",
-   "abrev": "Jó",
-   "grupo": "poesia",
-   "inicio": 2000,
-   "fim": 1900,
-   "refs": "Jó 1–42",
-   "nota": "O sofrimento do justo.",
-   "periodo": "Data incerta; ambientado na era patriarcal",
-   "incerta": true
-  },
-  {
-   "id": "salmos",
-   "nome": "Salmos",
-   "abrev": "Sl",
-   "grupo": "poesia",
-   "inicio": 1020,
-   "fim": 450,
-   "refs": "Sl 1–150",
-   "nota": "Cinco livros de cânticos; boa parte é de Davi.",
-   "periodo": "Compostos de c. 1020 a c. 450 a.C."
-  },
-  {
-   "id": "proverbios",
-   "nome": "Provérbios",
-   "abrev": "Pv",
-   "grupo": "poesia",
-   "inicio": 971,
-   "fim": 700,
-   "refs": "Pv 1–31",
-   "nota": "Sabedoria prática.",
-   "periodo": "Salomão e a coleção de Ezequias"
-  },
-  {
-   "id": "eclesiastes",
-   "nome": "Eclesiastes",
-   "abrev": "Ec",
-   "grupo": "poesia",
-   "inicio": 971,
-   "fim": 931,
-   "refs": "Ec 1–12",
-   "nota": "Reflexão sobre o sentido da vida.",
-   "periodo": "Atribuído a Salomão"
-  },
-  {
-   "id": "cantares",
-   "nome": "Cantares",
-   "abrev": "Ct",
-   "grupo": "poesia",
-   "inicio": 971,
-   "fim": 931,
-   "refs": "Ct 1–8",
-   "nota": "Poema de amor.",
-   "periodo": "Atribuído a Salomão"
-  },
-  {
-   "id": "lamentacoes",
-   "nome": "Lamentações",
-   "abrev": "Lm",
-   "grupo": "poesia",
-   "inicio": 586,
-   "fim": 580,
-   "refs": "Lm 1–5",
-   "nota": "Lamento pela queda de Jerusalém."
-  },
-  {
-   "id": "mateus",
-   "nome": "Mateus",
-   "abrev": "Mt",
-   "grupo": "evangelho",
-   "inicio": 5,
-   "fim": -30,
-   "refs": "Mt 1–28",
-   "nota": "Jesus como Messias e rei, da linhagem de Davi.",
-   "periodo": "c. 5 a.C. – 30 d.C."
-  },
-  {
-   "id": "marcos",
-   "nome": "Marcos",
-   "abrev": "Mc",
-   "grupo": "evangelho",
-   "inicio": -26,
-   "fim": -30,
-   "refs": "Mc 1–16",
-   "nota": "O ministério de Jesus, em ritmo rápido.",
-   "periodo": "c. 26–30 d.C."
-  },
-  {
-   "id": "lucas",
-   "nome": "Lucas",
-   "abrev": "Lc",
-   "grupo": "evangelho",
-   "inicio": 6,
-   "fim": -30,
-   "refs": "Lc 1–24",
-   "nota": "Do nascimento de João Batista à ascensão.",
-   "periodo": "c. 6 a.C. – 30 d.C."
-  },
-  {
-   "id": "joao",
-   "nome": "João",
-   "abrev": "Jo",
-   "grupo": "evangelho",
-   "inicio": -26,
-   "fim": -30,
-   "refs": "Jo 1–21",
-   "nota": "Os sinais e o ensino de Jesus.",
-   "periodo": "c. 26–30 d.C."
-  },
-  {
-   "id": "atos",
-   "nome": "Atos",
-   "abrev": "At",
-   "grupo": "atos",
-   "inicio": -30,
-   "fim": -62,
-   "refs": "At 1–28",
-   "nota": "De Pentecostes à prisão de Paulo em Roma."
-  },
-  {
-   "id": "tiago",
-   "nome": "Tiago",
-   "abrev": "Tg",
-   "grupo": "carta",
-   "inicio": -48,
-   "fim": -48,
-   "refs": "Tg 1–5",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 48 d.C. (data debatida)",
-   "incerta": true,
-   "escrita": true
-  },
-  {
-   "id": "galatas",
-   "nome": "Gálatas",
-   "abrev": "Gl",
-   "grupo": "carta",
-   "inicio": -49,
-   "fim": -49,
-   "refs": "Gl 1–6",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 49 d.C. (data debatida)",
-   "incerta": true,
-   "escrita": true
-  },
-  {
-   "id": "1tessalonicenses",
-   "nome": "1 Tessalonicenses",
-   "abrev": "1Ts",
-   "grupo": "carta",
-   "inicio": -51,
-   "fim": -51,
-   "refs": "1Ts 1–5",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 51 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "2tessalonicenses",
-   "nome": "2 Tessalonicenses",
-   "abrev": "2Ts",
-   "grupo": "carta",
-   "inicio": -51,
-   "fim": -51,
-   "refs": "2Ts 1–3",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 51 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "1corintios",
-   "nome": "1 Coríntios",
-   "abrev": "1Co",
-   "grupo": "carta",
-   "inicio": -55,
-   "fim": -55,
-   "refs": "1Co 1–16",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 55 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "2corintios",
-   "nome": "2 Coríntios",
-   "abrev": "2Co",
-   "grupo": "carta",
-   "inicio": -56,
-   "fim": -56,
-   "refs": "2Co 1–13",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 56 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "romanos",
-   "nome": "Romanos",
-   "abrev": "Rm",
-   "grupo": "carta",
-   "inicio": -57,
-   "fim": -57,
-   "refs": "Rm 1–16",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 57 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "efesios",
-   "nome": "Efésios",
-   "abrev": "Ef",
-   "grupo": "carta",
-   "inicio": -61,
-   "fim": -61,
-   "refs": "Ef 1–6",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 61 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "filipenses",
-   "nome": "Filipenses",
-   "abrev": "Fp",
-   "grupo": "carta",
-   "inicio": -61,
-   "fim": -61,
-   "refs": "Fp 1–4",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 61 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "colossenses",
-   "nome": "Colossenses",
-   "abrev": "Cl",
-   "grupo": "carta",
-   "inicio": -61,
-   "fim": -61,
-   "refs": "Cl 1–4",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 61 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "filemom",
-   "nome": "Filemom",
-   "abrev": "Fm",
-   "grupo": "carta",
-   "inicio": -61,
-   "fim": -61,
-   "refs": "Fm 1",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 61 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "1timoteo",
-   "nome": "1 Timóteo",
-   "abrev": "1Tm",
-   "grupo": "carta",
-   "inicio": -63,
-   "fim": -63,
-   "refs": "1Tm 1–6",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 63 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "tito",
-   "nome": "Tito",
-   "abrev": "Tt",
-   "grupo": "carta",
-   "inicio": -63,
-   "fim": -63,
-   "refs": "Tt 1–3",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 63 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "1pedro",
-   "nome": "1 Pedro",
-   "abrev": "1Pe",
-   "grupo": "carta",
-   "inicio": -63,
-   "fim": -63,
-   "refs": "1Pe 1–5",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 63 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "hebreus",
-   "nome": "Hebreus",
-   "abrev": "Hb",
-   "grupo": "carta",
-   "inicio": -65,
-   "fim": -65,
-   "refs": "Hb 1–13",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 65 d.C. (data debatida)",
-   "incerta": true,
-   "escrita": true
-  },
-  {
-   "id": "2timoteo",
-   "nome": "2 Timóteo",
-   "abrev": "2Tm",
-   "grupo": "carta",
-   "inicio": -66,
-   "fim": -66,
-   "refs": "2Tm 1–4",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 66 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "2pedro",
-   "nome": "2 Pedro",
-   "abrev": "2Pe",
-   "grupo": "carta",
-   "inicio": -66,
-   "fim": -66,
-   "refs": "2Pe 1–3",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 66 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "judas",
-   "nome": "Judas",
-   "abrev": "Jd",
-   "grupo": "carta",
-   "inicio": -67,
-   "fim": -67,
-   "refs": "Jd 1",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 67 d.C. (data debatida)",
-   "incerta": true,
-   "escrita": true
-  },
-  {
-   "id": "1joao",
-   "nome": "1 João",
-   "abrev": "1Jo",
-   "grupo": "carta",
-   "inicio": -90,
-   "fim": -90,
-   "refs": "1Jo 1–5",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 90 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "2joao",
-   "nome": "2 João",
-   "abrev": "2Jo",
-   "grupo": "carta",
-   "inicio": -90,
-   "fim": -90,
-   "refs": "2Jo 1",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 90 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "3joao",
-   "nome": "3 João",
-   "abrev": "3Jo",
-   "grupo": "carta",
-   "inicio": -90,
-   "fim": -90,
-   "refs": "3Jo 1",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 90 d.C.",
-   "escrita": true
-  },
-  {
-   "id": "apocalipse",
-   "nome": "Apocalipse",
-   "abrev": "Ap",
-   "grupo": "apocalipse",
-   "inicio": -95,
-   "fim": -95,
-   "refs": "Ap 1–22",
-   "nota": "Data de escrita aproximada.",
-   "periodo": "Escrito c. 95 d.C.",
-   "escrita": true
-  }
- ],
- "lideres": [
-  {
-   "id": "abraao",
-   "nome": "Abraão",
-   "inicio": 2166,
-   "fim": 1991,
-   "refs": [
-    "Gn 11:27 – 25:10"
-   ],
-   "nota": "Chamado de Ur. Promessa da terra e da descendência.",
-   "periodo": "c. 2166–1991 a.C."
-  },
-  {
-   "id": "isaque",
-   "nome": "Isaque",
-   "inicio": 2066,
-   "fim": 1886,
-   "refs": [
-    "Gn 21–35"
-   ],
-   "nota": "Filho da promessa.",
-   "periodo": "c. 2066–1886 a.C."
-  },
-  {
-   "id": "jaco",
-   "nome": "Jacó",
-   "inicio": 2006,
-   "fim": 1859,
-   "refs": [
-    "Gn 25–50"
-   ],
-   "nota": "Chamado Israel; pai das doze tribos. Desce ao Egito com a família c. 1876.",
-   "periodo": "c. 2006–1859 a.C."
-  },
-  {
-   "id": "jose",
-   "nome": "José",
-   "inicio": 1915,
-   "fim": 1805,
-   "refs": [
-    "Gn 37–50"
-   ],
-   "nota": "Vendido ao Egito, torna-se governador e salva a família.",
-   "periodo": "c. 1915–1805 a.C."
-  },
-  {
-   "id": "moises",
-   "nome": "Moisés",
-   "inicio": 1526,
-   "fim": 1406,
-   "refs": [
-    "Êx 2 – Dt 34"
-   ],
-   "nota": "Libertador e legislador. Morre antes de entrar em Canaã.",
-   "periodo": "c. 1526–1406 a.C."
-  },
-  {
-   "id": "josue",
-   "nome": "Josué",
-   "inicio": 1406,
-   "fim": 1380,
-   "refs": [
-    "Js 1–24"
-   ],
-   "nota": "Sucede Moisés e conduz a conquista.",
-   "periodo": "c. 1406–1380 a.C."
-  },
-  {
-   "id": "juizes",
-   "nome": "Juízes",
-   "inicio": 1380,
-   "fim": 1051,
-   "refs": [
-    "Jz 1–21"
-   ],
-   "nota": "Otniel, Eúde, Sangar, Débora e Baraque, Gideão, Tola, Jair, Jefté, Ibsã, Elom, Abdom e Sansão.",
-   "periodo": "c. 1380–1051 a.C."
-  },
-  {
-   "id": "samuel",
-   "nome": "Samuel",
-   "inicio": 1105,
-   "fim": 1015,
-   "refs": [
-    "1Sm 1–25"
-   ],
-   "nota": "Último juiz e profeta; unge Saul e Davi.",
-   "periodo": "c. 1105–1015 a.C.",
-   "incerta": true
-  },
-  {
-   "id": "zorobabel",
-   "nome": "Zorobabel",
-   "inicio": 538,
-   "fim": 516,
-   "refs": [
-    "Ed 2–6",
-    "Ag 1–2"
-   ],
-   "nota": "Governador de Judá; lidera o primeiro retorno e a reconstrução do templo.",
-   "periodo": "c. 538–516 a.C."
-  },
-  {
-   "id": "ester",
-   "nome": "Ester",
-   "inicio": 479,
-   "fim": 473,
-   "refs": [
-    "Et 1–10"
-   ],
-   "nota": "Rainha da Pérsia, no reinado de Assuero (Xerxes).",
-   "periodo": "c. 479–473 a.C."
-  },
-  {
-   "id": "esdras",
-   "nome": "Esdras",
-   "inicio": 458,
-   "fim": 440,
-   "refs": [
-    "Ed 7–10",
-    "Ne 8"
-   ],
-   "nota": "Sacerdote e escriba; ensina a lei.",
-   "periodo": "c. 458–440 a.C. (fim aproximado)",
-   "incerta": true
-  },
-  {
-   "id": "neemias",
-   "nome": "Neemias",
-   "inicio": 445,
-   "fim": 432,
-   "refs": [
-    "Ne 1–13"
-   ],
-   "nota": "Governador; reconstrói os muros de Jerusalém.",
-   "periodo": "c. 445–432 a.C."
-  },
-  {
-   "id": "alexandre",
-   "nome": "Alexandre, o Grande",
-   "inicio": 336,
-   "fim": 323,
-   "refs": [
-    "Dn 8:5-8",
-    "Dn 11:3-4"
-   ],
-   "nota": "Conquista o Império Persa; o reino se divide em quatro depois da sua morte.",
-   "periodo": "336–323 a.C."
-  },
-  {
-   "id": "macabeus",
-   "nome": "Macabeus (Hasmoneus)",
-   "inicio": 167,
-   "fim": 63,
-   "refs": [
-    "1–2 Macabeus (deuterocanônicos)"
-   ],
-   "nota": "Revolta contra Antíoco IV e dinastia que governa a Judeia até Pompeu.",
-   "periodo": "167–63 a.C."
-  },
-  {
-   "id": "herodes",
-   "nome": "Herodes, o Grande",
-   "inicio": 37,
-   "fim": 4,
-   "refs": [
-    "Mt 2",
-    "Lc 1:5"
-   ],
-   "nota": "Rei da Judeia sob Roma; reforma o templo.",
-   "periodo": "37–4 a.C."
-  },
-  {
-   "id": "joao-batista",
-   "nome": "João Batista",
-   "inicio": -26,
-   "fim": -29,
-   "refs": [
-    "Mt 3",
-    "Mc 1",
-    "Lc 3",
-    "Jo 1"
-   ],
-   "nota": "Prepara o caminho de Jesus.",
-   "periodo": "c. 26–29 d.C. (ministério)",
-   "incerta": true
-  },
-  {
-   "id": "jesus",
-   "nome": "Jesus",
-   "inicio": 5,
-   "fim": -30,
-   "refs": [
-    "Mt",
-    "Mc",
-    "Lc",
-    "Jo"
-   ],
-   "nota": "Nascimento c. 5 a.C.; ministério c. 27–30 d.C.; crucificado e ressuscitado c. 30 d.C.",
-   "periodo": "c. 5 a.C. – 30 d.C."
-  },
-  {
-   "id": "pedro",
-   "nome": "Pedro",
-   "inicio": -30,
-   "fim": -64,
-   "refs": [
-    "At 1–12",
-    "1Pe",
-    "2Pe"
-   ],
-   "nota": "Líder da igreja em Jerusalém; martírio em Roma c. 64.",
-   "periodo": "c. 30–64 d.C.",
-   "incerta": true
-  },
-  {
-   "id": "paulo",
-   "nome": "Paulo",
-   "inicio": -34,
-   "fim": -64,
-   "refs": [
-    "At 9–28",
-    "Cartas de Paulo"
-   ],
-   "nota": "Convertido c. 34; três viagens missionárias; preso em Roma. Martírio c. 64–67.",
-   "periodo": "c. 34–64 d.C.",
-   "incerta": true
-  },
-  {
-   "id": "joao-apostolo",
-   "nome": "João (apóstolo)",
-   "inicio": -30,
-   "fim": -95,
-   "refs": [
-    "Jo",
-    "1–3Jo",
-    "Ap"
-   ],
-   "nota": "Apóstolo; exilado em Patmos, onde recebe o Apocalipse.",
-   "periodo": "c. 30–95 d.C.",
-   "incerta": true
-  }
- ]
+  "livros": [
+    {
+      "id": "genesis",
+      "nome": "Gênesis",
+      "abrev": "Gn",
+      "grupo": "lei",
+      "inicio": 2400,
+      "fim": 1805,
+      "refs": "Gn 1–50",
+      "nota": "Criação, queda, dilúvio, Babel e os patriarcas Abraão, Isaque, Jacó e José.",
+      "periodo": "Origens (sem data) até c. 1805 a.C."
+    },
+    {
+      "id": "exodo",
+      "nome": "Êxodo",
+      "abrev": "Êx",
+      "grupo": "lei",
+      "inicio": 1526,
+      "fim": 1445,
+      "refs": "Êx 1–40",
+      "nota": "Opressão no Egito, o êxodo, o Sinai e o tabernáculo."
+    },
+    {
+      "id": "levitico",
+      "nome": "Levítico",
+      "abrev": "Lv",
+      "grupo": "lei",
+      "inicio": 1446,
+      "fim": 1445,
+      "refs": "Lv 1–27",
+      "nota": "Leis de sacrifício e de santidade, dadas no Sinai."
+    },
+    {
+      "id": "numeros",
+      "nome": "Números",
+      "abrev": "Nm",
+      "grupo": "lei",
+      "inicio": 1445,
+      "fim": 1407,
+      "refs": "Nm 1–36",
+      "nota": "Do Sinai às planícies de Moabe: os 40 anos no deserto."
+    },
+    {
+      "id": "deuteronomio",
+      "nome": "Deuteronômio",
+      "abrev": "Dt",
+      "grupo": "lei",
+      "inicio": 1407,
+      "fim": 1406,
+      "refs": "Dt 1–34",
+      "nota": "Discursos de Moisés em Moabe e a sua morte."
+    },
+    {
+      "id": "josue",
+      "nome": "Josué",
+      "abrev": "Js",
+      "grupo": "historia",
+      "inicio": 1406,
+      "fim": 1380,
+      "refs": "Js 1–24",
+      "nota": "Travessia do Jordão, conquista e divisão da terra."
+    },
+    {
+      "id": "juizes",
+      "nome": "Juízes",
+      "abrev": "Jz",
+      "grupo": "historia",
+      "inicio": 1380,
+      "fim": 1051,
+      "refs": "Jz 1–21",
+      "nota": "Ciclos de apostasia e livramento; termina sem rei."
+    },
+    {
+      "id": "rute",
+      "nome": "Rute",
+      "abrev": "Rt",
+      "grupo": "historia",
+      "inicio": 1140,
+      "fim": 1120,
+      "refs": "Rt 1–4",
+      "nota": "Uma moabita entra na linhagem de Davi.",
+      "periodo": "Época dos juízes (datas aproximadas)",
+      "incerta": true
+    },
+    {
+      "id": "1samuel",
+      "nome": "1 Samuel",
+      "abrev": "1Sm",
+      "grupo": "historia",
+      "inicio": 1105,
+      "fim": 1011,
+      "refs": "1Sm 1–31",
+      "nota": "Samuel, Saul e a ascensão de Davi."
+    },
+    {
+      "id": "2samuel",
+      "nome": "2 Samuel",
+      "abrev": "2Sm",
+      "grupo": "historia",
+      "inicio": 1011,
+      "fim": 971,
+      "refs": "2Sm 1–24",
+      "nota": "O reinado de Davi."
+    },
+    {
+      "id": "1reis",
+      "nome": "1 Reis",
+      "abrev": "1Rs",
+      "grupo": "historia",
+      "inicio": 971,
+      "fim": 852,
+      "refs": "1Rs 1–22",
+      "nota": "Salomão, a divisão do reino e Elias."
+    },
+    {
+      "id": "2reis",
+      "nome": "2 Reis",
+      "abrev": "2Rs",
+      "grupo": "historia",
+      "inicio": 852,
+      "fim": 561,
+      "refs": "2Rs 1–25",
+      "nota": "Da morte de Acabe ao exílio: queda de Samaria e de Jerusalém."
+    },
+    {
+      "id": "1cronicas",
+      "nome": "1 Crônicas",
+      "abrev": "1Cr",
+      "grupo": "historia",
+      "inicio": 1011,
+      "fim": 971,
+      "refs": "1Cr 1–29",
+      "nota": "Relê a história a partir das genealogias e de Davi. Escrito depois do exílio.",
+      "periodo": "Genealogias e o reinado de Davi"
+    },
+    {
+      "id": "2cronicas",
+      "nome": "2 Crônicas",
+      "abrev": "2Cr",
+      "grupo": "historia",
+      "inicio": 971,
+      "fim": 538,
+      "refs": "2Cr 1–36",
+      "nota": "De Salomão ao decreto de Ciro, do ponto de vista de Judá e do templo."
+    },
+    {
+      "id": "esdras",
+      "nome": "Esdras",
+      "abrev": "Ed",
+      "grupo": "historia",
+      "inicio": 538,
+      "fim": 457,
+      "refs": "Ed 1–10",
+      "nota": "Primeiro retorno, o templo e a chegada de Esdras."
+    },
+    {
+      "id": "neemias",
+      "nome": "Neemias",
+      "abrev": "Ne",
+      "grupo": "historia",
+      "inicio": 445,
+      "fim": 432,
+      "refs": "Ne 1–13",
+      "nota": "Reconstrução dos muros e reformas."
+    },
+    {
+      "id": "ester",
+      "nome": "Ester",
+      "abrev": "Et",
+      "grupo": "historia",
+      "inicio": 483,
+      "fim": 473,
+      "refs": "Et 1–10",
+      "nota": "Uma judia rainha da Pérsia salva o seu povo."
+    },
+    {
+      "id": "jo",
+      "nome": "Jó",
+      "abrev": "Jó",
+      "grupo": "poesia",
+      "inicio": 2000,
+      "fim": 1900,
+      "refs": "Jó 1–42",
+      "nota": "O sofrimento do justo.",
+      "periodo": "Data incerta; ambientado na era patriarcal",
+      "incerta": true
+    },
+    {
+      "id": "salmos",
+      "nome": "Salmos",
+      "abrev": "Sl",
+      "grupo": "poesia",
+      "inicio": 1020,
+      "fim": 450,
+      "refs": "Sl 1–150",
+      "nota": "Cinco livros de cânticos; boa parte é de Davi.",
+      "periodo": "Compostos de c. 1020 a c. 450 a.C."
+    },
+    {
+      "id": "proverbios",
+      "nome": "Provérbios",
+      "abrev": "Pv",
+      "grupo": "poesia",
+      "inicio": 971,
+      "fim": 700,
+      "refs": "Pv 1–31",
+      "nota": "Sabedoria prática.",
+      "periodo": "Salomão e a coleção de Ezequias"
+    },
+    {
+      "id": "eclesiastes",
+      "nome": "Eclesiastes",
+      "abrev": "Ec",
+      "grupo": "poesia",
+      "inicio": 971,
+      "fim": 931,
+      "refs": "Ec 1–12",
+      "nota": "Reflexão sobre o sentido da vida.",
+      "periodo": "Atribuído a Salomão"
+    },
+    {
+      "id": "cantares",
+      "nome": "Cantares",
+      "abrev": "Ct",
+      "grupo": "poesia",
+      "inicio": 971,
+      "fim": 931,
+      "refs": "Ct 1–8",
+      "nota": "Poema de amor.",
+      "periodo": "Atribuído a Salomão"
+    },
+    {
+      "id": "lamentacoes",
+      "nome": "Lamentações",
+      "abrev": "Lm",
+      "grupo": "profeta-maior",
+      "inicio": 586,
+      "fim": 580,
+      "refs": "Lm 1–5",
+      "nota": "Lamento pela queda de Jerusalém."
+    },
+    {
+      "id": "mateus",
+      "nome": "Mateus",
+      "abrev": "Mt",
+      "grupo": "evangelho",
+      "inicio": 5,
+      "fim": -30,
+      "refs": "Mt 1–28",
+      "nota": "Jesus como Messias e rei, da linhagem de Davi.",
+      "periodo": "c. 5 a.C. – 30 d.C."
+    },
+    {
+      "id": "marcos",
+      "nome": "Marcos",
+      "abrev": "Mc",
+      "grupo": "evangelho",
+      "inicio": -26,
+      "fim": -30,
+      "refs": "Mc 1–16",
+      "nota": "O ministério de Jesus, em ritmo rápido.",
+      "periodo": "c. 26–30 d.C."
+    },
+    {
+      "id": "lucas",
+      "nome": "Lucas",
+      "abrev": "Lc",
+      "grupo": "evangelho",
+      "inicio": 6,
+      "fim": -30,
+      "refs": "Lc 1–24",
+      "nota": "Do nascimento de João Batista à ascensão.",
+      "periodo": "c. 6 a.C. – 30 d.C."
+    },
+    {
+      "id": "joao",
+      "nome": "João",
+      "abrev": "Jo",
+      "grupo": "evangelho",
+      "inicio": -26,
+      "fim": -30,
+      "refs": "Jo 1–21",
+      "nota": "Os sinais e o ensino de Jesus.",
+      "periodo": "c. 26–30 d.C."
+    },
+    {
+      "id": "atos",
+      "nome": "Atos",
+      "abrev": "At",
+      "grupo": "atos",
+      "inicio": -30,
+      "fim": -62,
+      "refs": "At 1–28",
+      "nota": "De Pentecostes à prisão de Paulo em Roma."
+    },
+    {
+      "id": "tiago",
+      "nome": "Tiago",
+      "abrev": "Tg",
+      "grupo": "carta",
+      "inicio": -48,
+      "fim": -48,
+      "refs": "Tg 1–5",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 48 d.C. (data debatida)",
+      "incerta": true,
+      "escrita": true
+    },
+    {
+      "id": "galatas",
+      "nome": "Gálatas",
+      "abrev": "Gl",
+      "grupo": "carta",
+      "inicio": -49,
+      "fim": -49,
+      "refs": "Gl 1–6",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 49 d.C. (data debatida)",
+      "incerta": true,
+      "escrita": true
+    },
+    {
+      "id": "1tessalonicenses",
+      "nome": "1 Tessalonicenses",
+      "abrev": "1Ts",
+      "grupo": "carta",
+      "inicio": -51,
+      "fim": -51,
+      "refs": "1Ts 1–5",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 51 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "2tessalonicenses",
+      "nome": "2 Tessalonicenses",
+      "abrev": "2Ts",
+      "grupo": "carta",
+      "inicio": -51,
+      "fim": -51,
+      "refs": "2Ts 1–3",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 51 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "1corintios",
+      "nome": "1 Coríntios",
+      "abrev": "1Co",
+      "grupo": "carta",
+      "inicio": -55,
+      "fim": -55,
+      "refs": "1Co 1–16",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 55 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "2corintios",
+      "nome": "2 Coríntios",
+      "abrev": "2Co",
+      "grupo": "carta",
+      "inicio": -56,
+      "fim": -56,
+      "refs": "2Co 1–13",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 56 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "romanos",
+      "nome": "Romanos",
+      "abrev": "Rm",
+      "grupo": "carta",
+      "inicio": -57,
+      "fim": -57,
+      "refs": "Rm 1–16",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 57 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "efesios",
+      "nome": "Efésios",
+      "abrev": "Ef",
+      "grupo": "carta",
+      "inicio": -61,
+      "fim": -61,
+      "refs": "Ef 1–6",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 61 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "filipenses",
+      "nome": "Filipenses",
+      "abrev": "Fp",
+      "grupo": "carta",
+      "inicio": -61,
+      "fim": -61,
+      "refs": "Fp 1–4",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 61 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "colossenses",
+      "nome": "Colossenses",
+      "abrev": "Cl",
+      "grupo": "carta",
+      "inicio": -61,
+      "fim": -61,
+      "refs": "Cl 1–4",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 61 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "filemom",
+      "nome": "Filemom",
+      "abrev": "Fm",
+      "grupo": "carta",
+      "inicio": -61,
+      "fim": -61,
+      "refs": "Fm 1",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 61 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "1timoteo",
+      "nome": "1 Timóteo",
+      "abrev": "1Tm",
+      "grupo": "carta",
+      "inicio": -63,
+      "fim": -63,
+      "refs": "1Tm 1–6",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 63 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "tito",
+      "nome": "Tito",
+      "abrev": "Tt",
+      "grupo": "carta",
+      "inicio": -63,
+      "fim": -63,
+      "refs": "Tt 1–3",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 63 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "1pedro",
+      "nome": "1 Pedro",
+      "abrev": "1Pe",
+      "grupo": "carta",
+      "inicio": -63,
+      "fim": -63,
+      "refs": "1Pe 1–5",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 63 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "hebreus",
+      "nome": "Hebreus",
+      "abrev": "Hb",
+      "grupo": "carta",
+      "inicio": -65,
+      "fim": -65,
+      "refs": "Hb 1–13",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 65 d.C. (data debatida)",
+      "incerta": true,
+      "escrita": true
+    },
+    {
+      "id": "2timoteo",
+      "nome": "2 Timóteo",
+      "abrev": "2Tm",
+      "grupo": "carta",
+      "inicio": -66,
+      "fim": -66,
+      "refs": "2Tm 1–4",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 66 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "2pedro",
+      "nome": "2 Pedro",
+      "abrev": "2Pe",
+      "grupo": "carta",
+      "inicio": -66,
+      "fim": -66,
+      "refs": "2Pe 1–3",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 66 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "judas",
+      "nome": "Judas",
+      "abrev": "Jd",
+      "grupo": "carta",
+      "inicio": -67,
+      "fim": -67,
+      "refs": "Jd 1",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 67 d.C. (data debatida)",
+      "incerta": true,
+      "escrita": true
+    },
+    {
+      "id": "1joao",
+      "nome": "1 João",
+      "abrev": "1Jo",
+      "grupo": "carta",
+      "inicio": -90,
+      "fim": -90,
+      "refs": "1Jo 1–5",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 90 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "2joao",
+      "nome": "2 João",
+      "abrev": "2Jo",
+      "grupo": "carta",
+      "inicio": -90,
+      "fim": -90,
+      "refs": "2Jo 1",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 90 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "3joao",
+      "nome": "3 João",
+      "abrev": "3Jo",
+      "grupo": "carta",
+      "inicio": -90,
+      "fim": -90,
+      "refs": "3Jo 1",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 90 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "apocalipse",
+      "nome": "Apocalipse",
+      "abrev": "Ap",
+      "grupo": "apocalipse",
+      "inicio": -95,
+      "fim": -95,
+      "refs": "Ap 1–22",
+      "nota": "Data de escrita aproximada.",
+      "periodo": "Escrito c. 95 d.C.",
+      "escrita": true
+    },
+    {
+      "id": "joel",
+      "nome": "Joel",
+      "abrev": "Jl",
+      "grupo": "profeta-menor",
+      "inicio": 830,
+      "fim": 796,
+      "refs": "Jl 1–3",
+      "nota": "Data incerta: o livro não cita rei. Aqui, na linha tradicional (Joás).",
+      "incerta": true
+    },
+    {
+      "id": "jonas",
+      "nome": "Jonas",
+      "abrev": "Jn",
+      "grupo": "profeta-menor",
+      "inicio": 785,
+      "fim": 760,
+      "refs": "Jn 1–4",
+      "nota": "Mencionado em 2Reis 14:25 no reinado de Jeroboão II. Datas aproximadas."
+    },
+    {
+      "id": "amos",
+      "nome": "Amós",
+      "abrev": "Am",
+      "grupo": "profeta-menor",
+      "inicio": 760,
+      "fim": 750,
+      "refs": "Am 1–9",
+      "nota": "Pastor de Judá que profetiza no norte, dois anos antes do terremoto."
+    },
+    {
+      "id": "oseias",
+      "nome": "Oseias",
+      "abrev": "Os",
+      "grupo": "profeta-menor",
+      "inicio": 755,
+      "fim": 715,
+      "refs": "Os 1–14",
+      "nota": "Casamento com Gômer como imagem da infidelidade de Israel."
+    },
+    {
+      "id": "isaias",
+      "nome": "Isaías",
+      "abrev": "Is",
+      "grupo": "profeta-maior",
+      "inicio": 740,
+      "fim": 681,
+      "refs": "Is 1–66",
+      "nota": "Chamado no ano da morte de Uzias. Atua em Judá até Senaqueribe."
+    },
+    {
+      "id": "miqueias",
+      "nome": "Miqueias",
+      "abrev": "Mq",
+      "grupo": "profeta-menor",
+      "inicio": 735,
+      "fim": 700,
+      "refs": "Mq 1–7",
+      "nota": "Contemporâneo de Isaías; anuncia Belém (Mq 5:2)."
+    },
+    {
+      "id": "nau",
+      "nome": "Naum",
+      "abrev": "Na",
+      "grupo": "profeta-menor",
+      "inicio": 663,
+      "fim": 612,
+      "refs": "Na 1–3",
+      "nota": "Anuncia a queda de Nínive, que ocorre em 612."
+    },
+    {
+      "id": "sofonias",
+      "nome": "Sofonias",
+      "abrev": "Sf",
+      "grupo": "profeta-menor",
+      "inicio": 640,
+      "fim": 621,
+      "refs": "Sf 1–3",
+      "nota": "Dia do Senhor, antes ou durante a reforma de Josias."
+    },
+    {
+      "id": "jeremias",
+      "nome": "Jeremias",
+      "abrev": "Jr",
+      "grupo": "profeta-maior",
+      "inicio": 627,
+      "fim": 580,
+      "refs": "Jr 1–52",
+      "nota": "Chamado no 13º ano de Josias. Vê a queda de Jerusalém e vai ao Egito."
+    },
+    {
+      "id": "habacuque",
+      "nome": "Habacuque",
+      "abrev": "Hc",
+      "grupo": "profeta-menor",
+      "inicio": 609,
+      "fim": 598,
+      "refs": "Hc 1–3",
+      "nota": "Pergunta a Deus sobre a ascensão da Babilônia. Datas aproximadas.",
+      "incerta": true
+    },
+    {
+      "id": "obadias",
+      "nome": "Obadias",
+      "abrev": "Ob",
+      "grupo": "profeta-menor",
+      "inicio": 586,
+      "fim": 580,
+      "refs": "Ob 1–1",
+      "nota": "Contra Edom pela queda de Jerusalém. Alguns datam mais cedo, sob Jeorão.",
+      "incerta": true
+    },
+    {
+      "id": "ezequiel",
+      "nome": "Ezequiel",
+      "abrev": "Ez",
+      "grupo": "profeta-maior",
+      "inicio": 593,
+      "fim": 571,
+      "refs": "Ez 1–48",
+      "nota": "Deportado em 597. Profetiza sobre Jerusalém e depois a restauração."
+    },
+    {
+      "id": "daniel",
+      "nome": "Daniel",
+      "abrev": "Dn",
+      "grupo": "profeta-maior",
+      "inicio": 605,
+      "fim": 536,
+      "refs": "Dn 1–12",
+      "nota": "Levado à Babilônia em 605. Serve até o primeiro ano de Ciro."
+    },
+    {
+      "id": "ageu",
+      "nome": "Ageu",
+      "abrev": "Ag",
+      "grupo": "profeta-menor",
+      "inicio": 520,
+      "fim": 520,
+      "refs": "Ag 1–2",
+      "nota": "Chama o povo a reconstruir o templo, no 2º ano de Dario."
+    },
+    {
+      "id": "zacarias",
+      "nome": "Zacarias",
+      "abrev": "Zc",
+      "grupo": "profeta-menor",
+      "inicio": 520,
+      "fim": 518,
+      "refs": "Zc 1–14",
+      "nota": "Visões noturnas e promessas messiânicas, junto com Ageu."
+    },
+    {
+      "id": "malaquias",
+      "nome": "Malaquias",
+      "abrev": "Ml",
+      "grupo": "profeta-menor",
+      "inicio": 435,
+      "fim": 425,
+      "refs": "Ml 1–4",
+      "nota": "Último livro profético do AT. Data aproximada, no tempo de Neemias."
+    }
+  ],
+  "lideres": [
+    {
+      "id": "abraao",
+      "nome": "Abraão",
+      "inicio": 2166,
+      "fim": 1991,
+      "refs": [
+        "Gn 11:27 – 25:10"
+      ],
+      "nota": "Chamado de Ur. Promessa da terra e da descendência.",
+      "periodo": "c. 2166–1991 a.C."
+    },
+    {
+      "id": "isaque",
+      "nome": "Isaque",
+      "inicio": 2066,
+      "fim": 1886,
+      "refs": [
+        "Gn 21–35"
+      ],
+      "nota": "Filho da promessa.",
+      "periodo": "c. 2066–1886 a.C."
+    },
+    {
+      "id": "jaco",
+      "nome": "Jacó",
+      "inicio": 2006,
+      "fim": 1859,
+      "refs": [
+        "Gn 25–50"
+      ],
+      "nota": "Chamado Israel; pai das doze tribos. Desce ao Egito com a família c. 1876.",
+      "periodo": "c. 2006–1859 a.C."
+    },
+    {
+      "id": "jose",
+      "nome": "José",
+      "inicio": 1915,
+      "fim": 1805,
+      "refs": [
+        "Gn 37–50"
+      ],
+      "nota": "Vendido ao Egito, torna-se governador e salva a família.",
+      "periodo": "c. 1915–1805 a.C."
+    },
+    {
+      "id": "moises",
+      "nome": "Moisés",
+      "inicio": 1526,
+      "fim": 1406,
+      "refs": [
+        "Êx 2 – Dt 34"
+      ],
+      "nota": "Libertador e legislador. Morre antes de entrar em Canaã.",
+      "periodo": "c. 1526–1406 a.C."
+    },
+    {
+      "id": "josue",
+      "nome": "Josué",
+      "inicio": 1406,
+      "fim": 1380,
+      "refs": [
+        "Js 1–24"
+      ],
+      "nota": "Sucede Moisés e conduz a conquista.",
+      "periodo": "c. 1406–1380 a.C."
+    },
+    {
+      "id": "juizes",
+      "nome": "Juízes",
+      "inicio": 1380,
+      "fim": 1051,
+      "refs": [
+        "Jz 1–21"
+      ],
+      "nota": "Otniel, Eúde, Sangar, Débora e Baraque, Gideão, Tola, Jair, Jefté, Ibsã, Elom, Abdom e Sansão.",
+      "periodo": "c. 1380–1051 a.C."
+    },
+    {
+      "id": "samuel",
+      "nome": "Samuel",
+      "inicio": 1105,
+      "fim": 1015,
+      "refs": [
+        "1Sm 1–25"
+      ],
+      "nota": "Último juiz e profeta; unge Saul e Davi.",
+      "periodo": "c. 1105–1015 a.C.",
+      "incerta": true
+    },
+    {
+      "id": "zorobabel",
+      "nome": "Zorobabel",
+      "inicio": 538,
+      "fim": 516,
+      "refs": [
+        "Ed 2–6",
+        "Ag 1–2"
+      ],
+      "nota": "Governador de Judá; lidera o primeiro retorno e a reconstrução do templo.",
+      "periodo": "c. 538–516 a.C."
+    },
+    {
+      "id": "ester",
+      "nome": "Ester",
+      "inicio": 479,
+      "fim": 473,
+      "refs": [
+        "Et 1–10"
+      ],
+      "nota": "Rainha da Pérsia, no reinado de Assuero (Xerxes).",
+      "periodo": "c. 479–473 a.C."
+    },
+    {
+      "id": "esdras",
+      "nome": "Esdras",
+      "inicio": 458,
+      "fim": 440,
+      "refs": [
+        "Ed 7–10",
+        "Ne 8"
+      ],
+      "nota": "Sacerdote e escriba; ensina a lei.",
+      "periodo": "c. 458–440 a.C. (fim aproximado)",
+      "incerta": true
+    },
+    {
+      "id": "neemias",
+      "nome": "Neemias",
+      "inicio": 445,
+      "fim": 432,
+      "refs": [
+        "Ne 1–13"
+      ],
+      "nota": "Governador; reconstrói os muros de Jerusalém.",
+      "periodo": "c. 445–432 a.C."
+    },
+    {
+      "id": "alexandre",
+      "nome": "Alexandre, o Grande",
+      "inicio": 336,
+      "fim": 323,
+      "refs": [
+        "Dn 8:5-8",
+        "Dn 11:3-4"
+      ],
+      "nota": "Conquista o Império Persa; o reino se divide em quatro depois da sua morte.",
+      "periodo": "336–323 a.C."
+    },
+    {
+      "id": "macabeus",
+      "nome": "Macabeus (Hasmoneus)",
+      "inicio": 167,
+      "fim": 63,
+      "refs": [
+        "1–2 Macabeus (deuterocanônicos)"
+      ],
+      "nota": "Revolta contra Antíoco IV e dinastia que governa a Judeia até Pompeu.",
+      "periodo": "167–63 a.C."
+    },
+    {
+      "id": "herodes",
+      "nome": "Herodes, o Grande",
+      "inicio": 37,
+      "fim": 4,
+      "refs": [
+        "Mt 2",
+        "Lc 1:5"
+      ],
+      "nota": "Rei da Judeia sob Roma; reforma o templo.",
+      "periodo": "37–4 a.C."
+    },
+    {
+      "id": "joao-batista",
+      "nome": "João Batista",
+      "inicio": -26,
+      "fim": -29,
+      "refs": [
+        "Mt 3",
+        "Mc 1",
+        "Lc 3",
+        "Jo 1"
+      ],
+      "nota": "Prepara o caminho de Jesus.",
+      "periodo": "c. 26–29 d.C. (ministério)",
+      "incerta": true
+    },
+    {
+      "id": "jesus",
+      "nome": "Jesus",
+      "inicio": 5,
+      "fim": -30,
+      "refs": [
+        "Mt",
+        "Mc",
+        "Lc",
+        "Jo"
+      ],
+      "nota": "Nascimento c. 5 a.C.; ministério c. 27–30 d.C.; crucificado e ressuscitado c. 30 d.C.",
+      "periodo": "c. 5 a.C. – 30 d.C."
+    },
+    {
+      "id": "pedro",
+      "nome": "Pedro",
+      "inicio": -30,
+      "fim": -64,
+      "refs": [
+        "At 1–12",
+        "1Pe",
+        "2Pe"
+      ],
+      "nota": "Líder da igreja em Jerusalém; martírio em Roma c. 64.",
+      "periodo": "c. 30–64 d.C.",
+      "incerta": true
+    },
+    {
+      "id": "paulo",
+      "nome": "Paulo",
+      "inicio": -34,
+      "fim": -64,
+      "refs": [
+        "At 9–28",
+        "Cartas de Paulo"
+      ],
+      "nota": "Convertido c. 34; três viagens missionárias; preso em Roma. Martírio c. 64–67.",
+      "periodo": "c. 34–64 d.C.",
+      "incerta": true
+    },
+    {
+      "id": "joao-apostolo",
+      "nome": "João (apóstolo)",
+      "inicio": -30,
+      "fim": -95,
+      "refs": [
+        "Jo",
+        "1–3Jo",
+        "Ap"
+      ],
+      "nota": "Apóstolo; exilado em Patmos, onde recebe o Apocalipse.",
+      "periodo": "c. 30–95 d.C.",
+      "incerta": true
+    }
+  ]
 }
