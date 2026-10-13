@@ -6,7 +6,6 @@
    "tipo": "Mapa",
    "ref": "Gn 11:27 – 12:9",
    "resumo": "De Ur dos caldeus a Harã e a Canaã.",
-   "camadas": true,
    "url": "apoio.html",
    "capitulos": [
     {
@@ -17,63 +16,67 @@
    ]
   },
   {
+   "id": "abraao-canaa",
+   "titulo": "Abraão em Canaã",
+   "tipo": "Mapa",
+   "ref": "Gn 12–25",
+   "resumo": "Do Egito a Hebrom, da guerra dos reis a Moriá: onde Abraão viveu depois de chegar a Canaã.",
+   "url": "apoio.html?m=abraao-canaa",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 12,
+     "ate": 25
+    }
+   ]
+  },
+  {
+   "id": "isaque",
+   "titulo": "As viagens de Isaque",
+   "tipo": "Mapa",
+   "ref": "Gn 24–27; 35",
+   "resumo": "De Harã, de onde veio Rebeca, a Gerar, aos poços do vale, a Berseba e a Hebrom.",
+   "url": "apoio.html?m=isaque",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 24,
+     "ate": 27
+    },
+    {
+     "livro": "genesis",
+     "de": 35,
+     "ate": 35
+    }
+   ]
+  },
+  {
+   "id": "jaco",
+   "titulo": "A jornada de Jacó",
+   "tipo": "Mapa",
+   "ref": "Gn 28–36",
+   "resumo": "Da fuga de Berseba a Harã e de volta: Betel, Peniel, Siquém, Belém e Hebrom.",
+   "url": "apoio.html?m=jaco",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 27,
+     "ate": 36
+    }
+   ]
+  },
+  {
    "id": "jo-lugares",
    "titulo": "Os lugares de Jó",
    "tipo": "Mapa",
    "ref": "Jó 1–42",
    "resumo": "Uz, Sabá, Caldeia, Temã, Sua e Buz num mapa-múndi, com curiosidades da época.",
-   "camadas": true,
    "url": "apoio.html?m=jo",
    "capitulos": [
     {
      "livro": "jo",
      "de": 1,
      "ate": 42
-    }
-   ]
-  },
-  {
-   "id": "jo-esboco",
-   "titulo": "Esboço do livro",
-   "tipo": "Esboço",
-   "ref": "Jó 1–42",
-   "resumo": "Prólogo, três ciclos de discursos, Eliú, Deus responde e epílogo.",
-   "url": "guia.html?m=jo-esboco",
-   "capitulos": [
-    {
-     "livro": "jo",
-     "de": 1,
-     "ate": 42
-    }
-   ]
-  },
-  {
-   "id": "jo-personagens",
-   "titulo": "Personagens",
-   "tipo": "Personagens",
-   "ref": "Jó 1–42",
-   "resumo": "Jó, a mulher, os três amigos, Eliú, Satanás e Deus.",
-   "url": "guia.html?m=jo-personagens",
-   "capitulos": [
-    {
-     "livro": "jo",
-     "de": 1,
-     "ate": 42
-    }
-   ]
-  },
-  {
-   "id": "jo-animais",
-   "titulo": "Os animais",
-   "tipo": "Lista",
-   "ref": "Jó 38–41",
-   "resumo": "Dos corvos ao Leviatã: as criaturas dos discursos de Deus.",
-   "url": "guia.html?m=jo-animais",
-   "capitulos": [
-    {
-     "livro": "jo",
-     "de": 38,
-     "ate": 41
     }
    ]
   }

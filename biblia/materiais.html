@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Material de apoio — Mapa da Bíblia</title>
-    <meta name="description" content="Material de apoio para a leitura da Bíblia: esboços, personagens e curiosidades." />
+    <title>Apoio — Mapa da Bíblia</title>
+    <meta name="description" content="Mapas de apoio à leitura da Bíblia, livro por livro." />
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/conta.js"></script>
-    <script src="guia.js" defer></script>
+    <script src="materiais.js" defer></script>
   </head>
   <body>
     <header class="nav">
@@ -37,7 +37,7 @@
           <a class="nav-link hud" href="index.html"><span>Linha do tempo</span></a>
           <a class="nav-link hud" href="mapa.html"><span>Mapa</span></a>
           <a class="nav-link hud" href="ler.html"><span>Bíblia</span></a>
-          <a class="nav-link hud" href="apoio.html" aria-current="page"><span>Apoio</span></a>
+          <a class="nav-link hud" href="materiais.html" aria-current="page"><span>Apoio</span></a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
@@ -53,11 +53,11 @@
 
     <main class="frame apoio-pagina">
       <header class="biblia-topo">
-        <h1 id="guia-titulo">Material de <em>apoio.</em></h1>
-        <p class="hud muted" id="guia-sub"></p>
+        <h1>Material de <em>apoio.</em></h1>
+        <p class="hud muted">Mapas, livro por livro. Também aparecem no botão Apoio do leitor.</p>
       </header>
 
-      <section id="guia" class="guia"><p class="vazio hud faint">Carregando…</p></section>
+      <section id="materiais" class="materiais" aria-live="polite"><p class="vazio hud faint">Carregando…</p></section>
     </main>
 
     <footer>

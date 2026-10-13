@@ -815,3 +815,12 @@ a.btn {
     padding-left: 0;
   }
 }
+
+/* telas de toque: alvos maiores e sem o atraso de toque duplo nos botões */
+@media (pointer: coarse) {
+  button,
+  .chip,
+  .btn {
+    touch-action: manipulation;
+  }
+}

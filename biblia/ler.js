@@ -306,12 +306,6 @@
       if (j === k) abas[j].setAttribute("aria-current", "true");
       else abas[j].removeAttribute("aria-current");
     }
-    var cams = dlgApoio.querySelector(".apoio-camadas");
-    if (cams) {
-      cams.hidden = !m.camadas;
-      cams.querySelector('[data-camada="apoio"]').setAttribute("aria-pressed", "true");
-      cams.querySelector('[data-camada="curio"]').setAttribute("aria-pressed", "false");
-    }
     dlgApoio.querySelector(".apoio-resumo").textContent = m.tipo + " · " + m.ref + " — " + m.resumo;
     quadro.setAttribute("title", m.titulo);
     quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c);
@@ -330,11 +324,6 @@
     lista.forEach(function (m, k) {
       h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";
     });
-    if (lista.some(function (m) { return m.camadas; })) {
-      h += '<span class="apoio-camadas" hidden>' +
-        '<button type="button" data-camada="apoio" aria-pressed="true" title="Rota e etapas">Apoio</button>' +
-        '<button type="button" data-camada="curio" aria-pressed="false">Curiosidades</button></span>';
-    }
     h += '<span class="apoio-passos">' +
       '<button type="button" data-apoio-passo="-1">← Anterior</button>' +
       '<button type="button" data-apoio-passo="1">Próximo →</button></span>';
@@ -344,12 +333,6 @@
       if (ev.target === dlgApoio || ev.target.closest("[data-fechar]")) return dlgApoio.close();
       var aba = ev.target.closest("[data-aba]");
       if (aba) return mostrarApoio(lista, Number(aba.getAttribute("data-aba")));
-      var cam = ev.target.closest("[data-camada]");
-      if (cam) {
-        var quadro = dlgApoio.querySelector("iframe");
-        if (quadro.contentWindow) quadro.contentWindow.postMessage({ tipo: "apoio-camada", camada: cam.getAttribute("data-camada") }, location.origin);
-        return;
-      }
       var passo = ev.target.closest("[data-apoio-passo]");
       if (passo && !passo.disabled) {
         var k = Number(dlgApoio.getAttribute("data-k")) + Number(passo.getAttribute("data-apoio-passo"));
@@ -359,15 +342,6 @@
     mostrarApoio(lista, 0);
     if (!dlgApoio.open) dlgApoio.showModal();
   }
-
-  // o mapa avisa quando liga ou desliga uma camada
-  window.addEventListener("message", function (ev) {
-    if (ev.origin !== location.origin || !ev.data || ev.data.tipo !== "apoio-estado" || !dlgApoio) return;
-    var cams = dlgApoio.querySelector(".apoio-camadas");
-    if (!cams) return;
-    cams.querySelector('[data-camada="apoio"]').setAttribute("aria-pressed", String(!!ev.data.apoio));
-    cams.querySelector('[data-camada="curio"]').setAttribute("aria-pressed", String(!!ev.data.curiosidades));
-  });
 
   raiz.addEventListener("click", function (ev) {
     var t = ev.target.closest && ev.target.closest("button");
@@ -384,6 +358,23 @@
     var alvo = t.getAttribute("data-nav") === "ant" ? anterior() : t.getAttribute("data-nav") === "prox" ? proximo() : null;
     if (alvo) ir(alvo.i, alvo.c);
   });
+
+  // deslizar para o lado troca de capítulo (no celular), respeitando o modo mapa
+  var toqueIni = null;
+  raiz.addEventListener("touchstart", function (ev) {
+    if (ev.touches.length !== 1 || ev.target.closest("button, a")) return (toqueIni = null);
+    toqueIni = { x: ev.touches[0].clientX, y: ev.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+  raiz.addEventListener("touchend", function (ev) {
+    var ini = toqueIni;
+    toqueIni = null;
+    if (!ini || !ev.changedTouches.length || !canon.length) return;
+    var dx = ev.changedTouches[0].clientX - ini.x;
+    var dy = ev.changedTouches[0].clientY - ini.y;
+    if (Date.now() - ini.t > 700 || Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+    var alvo = dx > 0 ? anterior() : proximo();
+    if (alvo) ir(alvo.i, alvo.c);
+  }, { passive: true });
 
   document.addEventListener("keydown", function (ev) {
     if (!canon.length || (dlg && dlg.open) || (dlgLeitura && dlgLeitura.open) || (dlgApoio && dlgApoio.open) || ev.altKey || ev.ctrlKey || ev.metaKey) return;

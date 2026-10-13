@@ -15,9 +15,8 @@
   var marcadores = [];
   var embutido = /[?&]embutido/.test(location.search); // aberto no popup do leitor
   var ZOOM_MAX = 64; // quantas vezes se pode ampliar a partir do mapa inteiro
-  var camadaApoio = true; // rota e números da viagem
-  var curiosidades = false; // losangos da mesma época
-  var regiao = ""; // filtro das curiosidades ("" = todas)
+  var etapasLigadas = []; // por etapa: aparece no mapa? (começam todas ligadas)
+  var curiosLigadas = {}; // por curiosidade: aparece no mapa? (começam desligadas)
   var curioAtual = -1; // curiosidade escolhida
   var curioMarcadores = []; // [{el, i}], um por curiosidade que tem lugar no mapa
 
@@ -92,13 +91,6 @@
     aplicar();
   }
 
-  function verTudo() {
-    vb.x = 0;
-    vb.y = 0;
-    vb.w = L;
-    aplicar();
-  }
-
   function pontosDaEtapa(e) {
     return e.caminho && e.caminho.length ? e.caminho : [[lugares[e.lugar].lon, lugares[e.lugar].lat]];
   }
@@ -106,9 +98,11 @@
   // vista inicial: a região por onde passam todas as etapas, um pouco mais perto que o mapa inteiro
   function vistaInicial() {
     var pts = [];
-    dados.etapas.forEach(function (e) {
-      pts = pts.concat(pontosDaEtapa(e));
-    });
+    if (dados.vista) pts = dados.vista; // o material pode escolher o enquadramento de abertura
+    else
+      dados.etapas.forEach(function (e) {
+        pts = pts.concat(pontosDaEtapa(e));
+      });
     focarPontos(pts);
   }
 
@@ -128,8 +122,9 @@
     var x1 = Math.max.apply(null, xs);
     var y0 = Math.min.apply(null, ys);
     var y1 = Math.max.apply(null, ys);
-    var pad = folga || 70;
-    var w = Math.max(x1 - x0 + 2 * pad, (y1 - y0 + 2 * pad) / razao(), L / 25);
+    // folga proporcional ao tamanho da região, para mapas de uma cidade ou de um continente
+    var pad = folga || Math.max(20, 0.12 * Math.max(x1 - x0, y1 - y0));
+    var w = Math.max(x1 - x0 + 2 * pad, (y1 - y0 + 2 * pad) / razao(), L / ZOOM_MAX);
     vb.w = limitar(w, L / ZOOM_MAX, Math.min(L, A / razao()));
     vb.x = (x0 + x1) / 2 - vb.w / 2;
     vb.y = (y0 + y1) / 2 - (vb.w * razao()) / 2;
@@ -182,16 +177,29 @@
       rotas.push(svg("polyline", { "class": "apoio-rota" + (e.incerto ? " incerto" : ""), points: pontos(e.caminho), fill: "none" }, svgEl));
     });
 
+    // etapas no mesmo lugar (Hebrom, por exemplo) ficam lado a lado, e só a primeira leva o nome
+    var porLugar = {};
+    dados.etapas.forEach(function (e, i) {
+      (porLugar[e.lugar] = porLugar[e.lugar] || []).push(i);
+    });
+
     dados.etapas.forEach(function (e, i) {
       var lg = lugares[e.lugar];
       var q = proj([lg.lon, lg.lat]);
+      var grupo = porLugar[e.lugar];
+      var pos = grupo.indexOf(i);
+      var meio = ((grupo.length - 1) * 26) / 2;
+      var dx = pos * 26 - meio; // deslocamento em pixels de tela; o grupo é escalado por escalaveis
       var g = svg("g", { "class": "apoio-marcador", tabindex: 0, role: "button", "data-i": i, "aria-label": (i + 1) + ". " + lg.nome + ", " + e.ref }, svgEl);
-      svg("circle", { r: 11, cx: 0, cy: 0 }, g);
-      var n = svg("text", { "class": "apoio-num", "text-anchor": "middle", y: 4 }, g);
+      svg("circle", { r: 11, cx: dx, cy: 0 }, g);
+      var n = svg("text", { "class": "apoio-num", "text-anchor": "middle", x: dx, y: 4 }, g);
       n.textContent = i + 1;
-      var direita = q[0] > L * 0.7; // perto da borda, o nome vai para a esquerda
-      var nome = svg("text", { "class": "apoio-nome", x: direita ? -16 : 16, y: 4, "text-anchor": direita ? "end" : "start" }, g);
-      nome.textContent = lg.nome;
+      // o nome vai para a esquerda perto da borda direita, ou onde o lugar pedir (lado: "esq" ou "dir")
+      var direita = lg.lado ? lg.lado === "esq" : q[0] > L * 0.7;
+      if (pos === 0) {
+        var nome = svg("text", { "class": "apoio-nome", x: direita ? -meio - 16 : meio + 16, y: 4, "text-anchor": direita ? "end" : "start" }, g);
+        nome.textContent = lg.nome;
+      }
       escalaveis.push({ el: g, x: q[0], y: q[1] });
       marcadores.push(g);
     });
@@ -209,7 +217,7 @@
     });
   }
 
-  /* cartão de texto, barra de camadas e interação */
+  /* cartão de texto, caixas de seleção (apoio e curiosidades) e interação */
 
   function cartao() {
     var el = document.getElementById("apoio-cartao");
@@ -218,7 +226,6 @@
       var e = dados.etapas[atual];
       h += '<p class="hud muted">' + (atual + 1) + " de " + dados.etapas.length + " · " + esc(e.ref) + "</p>";
       h += "<h2>" + esc(e.titulo) + "</h2><p>" + esc(e.texto) + "</p>";
-      if (e.incerto) h += '<p class="apoio-nota hud"><strong>Traçado aproximado.</strong> ' + esc(e.nota || "") + "</p>";
       if (!embutido) h += '<p><a class="btn" href="ler.html#' + dados.livro + "/" + e.cap + '">Ler ' + esc(dados.livroNome) + " " + e.cap + "</a></p>";
     } else if (curioAtual >= 0) {
       var c = dados.curiosidades[curioAtual];
@@ -229,77 +236,84 @@
     el.innerHTML = h ? '<button type="button" class="apoio-fechar" data-fechar aria-label="Fechar">×</button>' + h : "";
   }
 
-  function barra() {
+  // dois grupos recolhíveis, cada um com uma caixa "tudo" e uma caixa por item
+  function construirBarra() {
     var curios = dados.curiosidades || [];
-    var h = "";
-    // no popup do leitor esses dois botões ficam na linha das abas, lá em cima
-    if (!embutido) {
-      h += '<button type="button" class="chip" data-camada="apoio" aria-pressed="' + camadaApoio + '" title="Rota e etapas da viagem">Apoio</button> ';
-      if (curios.length) h += '<button type="button" class="chip" data-camada="curio" aria-pressed="' + curiosidades + '">Curiosidades</button>';
-    }
-    var f = "";
-    if (curiosidades) {
+    var h = '<details class="apoio-grupo" data-grupo="apoio"><summary>' +
+      '<input type="checkbox" data-mestre="apoio" aria-label="Mostrar ou esconder todas as etapas">' +
+      '<span class="apoio-grupo-nome">Apoio</span><span class="hud faint" data-contagem="apoio"></span></summary><div class="apoio-itens">';
+    dados.etapas.forEach(function (e, i) {
+      h += '<label class="apoio-item"><input type="checkbox" data-etapa="' + i + '"><span class="apoio-n hud">' + (i + 1) + "</span><span>" + esc(e.titulo) + "</span></label>";
+    });
+    h += "</div></details>";
+    if (curios.length) {
       var regioes = [];
       curios.forEach(function (c) {
         if (regioes.indexOf(c.regiao) < 0) regioes.push(c.regiao);
       });
-      f += '<span class="apoio-filtros">';
-      [""].concat(regioes).forEach(function (r) {
-        f += '<button type="button" class="chip" data-regiao="' + esc(r) + '"' + (r === regiao ? ' aria-pressed="true"' : "") + ">" + esc(r || "Todas") + "</button> ";
-      });
-      f += "</span>";
-      var fora = curios.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
-        return x.c.lon == null && (!regiao || x.c.regiao === regiao);
-      });
-      if (fora.length) {
-        f += '<span class="apoio-filtros"><span class="hud faint">Fora do mapa:</span> ';
-        fora.forEach(function (x) {
-          f += '<button type="button" class="chip" data-ci="' + x.i + '"' + (x.i === curioAtual ? ' aria-pressed="true"' : "") + ">" + esc(x.c.titulo) + "</button> ";
+      h += '<details class="apoio-grupo" data-grupo="curio"><summary>' +
+        '<input type="checkbox" data-mestre="curio" aria-label="Mostrar ou esconder todas as curiosidades">' +
+        '<span class="apoio-grupo-nome">Curiosidades</span><span class="hud faint" data-contagem="curio"></span></summary><div class="apoio-itens">';
+      regioes.forEach(function (r) {
+        h += '<label class="apoio-item regiao"><input type="checkbox" data-regiao-grupo="' + esc(r) + '"><strong>' + esc(r) + "</strong></label>";
+        curios.forEach(function (c, i) {
+          if (c.regiao === r) h += '<label class="apoio-item sub"><input type="checkbox" data-curio="' + i + '"><span>' + esc(c.titulo) + "</span></label>";
         });
-        f += "</span>";
-      }
+      });
+      h += "</div></details>";
     }
-    var el = document.getElementById("apoio-barra");
-    el.innerHTML = h + f;
-    el.hidden = !(h || f);
+    document.getElementById("apoio-barra").innerHTML = h;
   }
 
-  // popup do leitor: os botões da linha das abas mandam mensagens e recebem o estado
-  function alternarCamada(nome) {
-    if (nome === "apoio") {
-      camadaApoio = !camadaApoio;
-      if (!camadaApoio && atual >= 0) {
-        atual = -1;
-        limparHash();
-      }
-      return marcar();
+  // põe cada caixa no estado certo (marcada, desmarcada ou "alguns") e atualiza as contagens
+  function sincronizarBarra() {
+    var barraEl = document.getElementById("apoio-barra");
+    function estado(caixa, n, total) {
+      if (!caixa) return;
+      caixa.checked = total > 0 && n === total;
+      caixa.indeterminate = n > 0 && n < total;
     }
-    curiosidades = !curiosidades;
-    if (!curiosidades) curioAtual = -1;
-    marcar();
-    if (curiosidades) enquadrarCurio();
-  }
+    var nE = 0;
+    dados.etapas.forEach(function (e, i) {
+      if (etapasLigadas[i]) nE++;
+      var c = barraEl.querySelector('[data-etapa="' + i + '"]');
+      if (c) c.checked = !!etapasLigadas[i];
+    });
+    estado(barraEl.querySelector('[data-mestre="apoio"]'), nE, dados.etapas.length);
+    var ca = barraEl.querySelector('[data-contagem="apoio"]');
+    if (ca) ca.textContent = nE + "/" + dados.etapas.length;
 
-  function avisarPai() {
-    if (!embutido || window.parent === window) return;
-    window.parent.postMessage({ tipo: "apoio-estado", apoio: camadaApoio, curiosidades: curiosidades }, location.origin);
+    var curios = dados.curiosidades || [];
+    var nC = 0;
+    var porRegiao = {};
+    curios.forEach(function (c, i) {
+      var on = !!curiosLigadas[i];
+      if (on) nC++;
+      var r = (porRegiao[c.regiao] = porRegiao[c.regiao] || { n: 0, total: 0 });
+      r.total++;
+      if (on) r.n++;
+      var cx = barraEl.querySelector('[data-curio="' + i + '"]');
+      if (cx) cx.checked = on;
+    });
+    Object.keys(porRegiao).forEach(function (r) {
+      var cx = barraEl.querySelector('[data-regiao-grupo="' + r.replace(/"/g, '\\"') + '"]');
+      estado(cx, porRegiao[r].n, porRegiao[r].total);
+    });
+    estado(barraEl.querySelector('[data-mestre="curio"]'), nC, curios.length);
+    var cc = barraEl.querySelector('[data-contagem="curio"]');
+    if (cc) cc.textContent = nC + "/" + curios.length;
   }
-
-  window.addEventListener("message", function (ev) {
-    if (ev.origin !== location.origin || !ev.data || ev.data.tipo !== "apoio-camada" || !dados || !svgEl) return;
-    alternarCamada(ev.data.camada === "curio" ? "curio" : "apoio");
-  });
 
   function marcar() {
     marcadores.forEach(function (g, i) {
-      g.setAttribute("class", "apoio-marcador" + (i === atual ? " ativo" : atual >= 0 && i < atual ? " feito" : ""));
-      g.style.display = camadaApoio ? "" : "none";
+      g.setAttribute("class", "apoio-marcador" + (i === atual ? " ativo" : ""));
+      g.style.display = etapasLigadas[i] ? "" : "none";
     });
     rotas.forEach(function (r, i) {
       if (!r) return;
       var e = dados.etapas[i];
-      r.setAttribute("class", "apoio-rota" + (e.incerto ? " incerto" : "") + (i === atual ? " ativa" : atual >= 0 && i < atual ? " feita" : ""));
-      r.style.display = camadaApoio ? "" : "none";
+      r.setAttribute("class", "apoio-rota" + (e.incerto ? " incerto" : "") + (i === atual ? " ativa" : ""));
+      r.style.display = etapasLigadas[i] ? "" : "none";
     });
     // a etapa selecionada fica por cima das outras
     if (atual >= 0) {
@@ -307,21 +321,19 @@
       svgEl.appendChild(marcadores[atual]);
     }
     curioMarcadores.forEach(function (m) {
-      var c = dados.curiosidades[m.i];
-      var vis = curiosidades && (!regiao || c.regiao === regiao);
-      m.el.style.display = vis ? "" : "none";
+      m.el.style.display = curiosLigadas[m.i] ? "" : "none";
       m.el.setAttribute("class", "apoio-curio-pt" + (m.i === curioAtual ? " atual" : ""));
     });
-    barra();
+    sincronizarBarra();
     cartao();
-    avisarPai();
   }
 
+  // enquadra no mapa as curiosidades que estão ligadas
   function enquadrarCurio() {
     var pts = [];
     curioMarcadores.forEach(function (m) {
       var c = dados.curiosidades[m.i];
-      if (!regiao || c.regiao === regiao) pts.push([c.lon, c.lat]);
+      if (curiosLigadas[m.i]) pts.push([c.lon, c.lat]);
     });
     if (pts.length) focarPontos(pts, 130);
   }
@@ -340,7 +352,7 @@
   function abrirEtapa(i, focar) {
     atual = limitar(i, 0, dados.etapas.length - 1);
     curioAtual = -1;
-    camadaApoio = true;
+    etapasLigadas[atual] = true;
     marcar();
     if (focar) focarEtapa(atual);
   }
@@ -353,6 +365,35 @@
     marcar();
     var c = dados.curiosidades[i];
     if (c.lon != null) focarPontos([[c.lon, c.lat]]);
+  }
+
+  // caixa marcada ou desmarcada na barra
+  function mudouCaixa(cx) {
+    var barraEl = document.getElementById("apoio-barra");
+    var on = cx.checked;
+    var curios = dados.curiosidades || [];
+    var ligouCuriosidades = false;
+    if (cx.hasAttribute("data-mestre")) {
+      if (cx.getAttribute("data-mestre") === "apoio") dados.etapas.forEach(function (e, i) { etapasLigadas[i] = on; });
+      else {
+        curios.forEach(function (c, i) { curiosLigadas[i] = on; });
+        ligouCuriosidades = on;
+      }
+    } else if (cx.hasAttribute("data-etapa")) {
+      etapasLigadas[parseInt(cx.getAttribute("data-etapa"), 10)] = on;
+    } else if (cx.hasAttribute("data-regiao-grupo")) {
+      var r = cx.getAttribute("data-regiao-grupo");
+      curios.forEach(function (c, i) { if (c.regiao === r) curiosLigadas[i] = on; });
+      ligouCuriosidades = on;
+    } else if (cx.hasAttribute("data-curio")) {
+      curiosLigadas[parseInt(cx.getAttribute("data-curio"), 10)] = on;
+    }
+    // o cartão aberto some junto com o que foi desligado
+    if (atual >= 0 && !etapasLigadas[atual]) atual = -1;
+    if (curioAtual >= 0 && !curiosLigadas[curioAtual]) curioAtual = -1;
+    if (atual < 0) limparHash();
+    marcar();
+    if (ligouCuriosidades) enquadrarCurio();
   }
 
   function indiceDoHash() {
@@ -371,25 +412,33 @@
   function ligar() {
     raiz.addEventListener("click", function (ev) {
       if (ev.target.closest("[data-fechar]")) return fecharCartao();
-      var cm = ev.target.closest("[data-camada]");
-      if (cm) return alternarCamada(cm.getAttribute("data-camada"));
-      var rg = ev.target.closest("[data-regiao]");
-      if (rg) {
-        regiao = rg.getAttribute("data-regiao");
-        curioAtual = -1;
-        marcar();
-        return enquadrarCurio();
-      }
       var ci = ev.target.closest("[data-ci]");
       if (ci && raiz.contains(ci)) return abrirCurio(parseInt(ci.getAttribute("data-ci"), 10));
       var b = ev.target.closest("[data-i]");
       if (b && raiz.contains(b)) return ir(parseInt(b.getAttribute("data-i"), 10));
-      var z = ev.target.closest("[data-zoom]");
-      if (!z) return;
-      var a = z.getAttribute("data-zoom");
-      if (a === "mais") zoomEm(0.65);
-      else if (a === "menos") zoomEm(1 / 0.65);
-      else verTudo();
+    });
+
+    // as listas se sobrepõem ao mapa: só uma aberta por vez, e fecham ao tocar fora ou com Esc
+    document.getElementById("apoio-barra").addEventListener("toggle", function (ev) {
+      var d = ev.target;
+      if (!d.open) return;
+      var todas = document.querySelectorAll("#apoio-barra .apoio-grupo");
+      for (var i = 0; i < todas.length; i++) if (todas[i] !== d) todas[i].open = false;
+    }, true);
+    document.addEventListener("click", function (ev) {
+      if (ev.target.closest && ev.target.closest(".apoio-grupo")) return;
+      var abertas = document.querySelectorAll("#apoio-barra .apoio-grupo[open]");
+      for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
+    });
+    document.addEventListener("keydown", function (ev) {
+      if (ev.key !== "Escape") return;
+      var abertas = document.querySelectorAll("#apoio-barra .apoio-grupo[open]");
+      for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
+    });
+
+    raiz.addEventListener("change", function (ev) {
+      var cx = ev.target;
+      if (cx && cx.type === "checkbox") mudouCaixa(cx);
     });
 
     raiz.addEventListener("keydown", function (ev) {
@@ -406,24 +455,99 @@
       }
     });
 
-    // arrastar para mover o mapa
+    // arrastar com um dedo (ou o mouse), pinça com dois, toque duplo para ampliar
+    var dedos = {}; // pointerId -> { x, y }
     var arrasto = null;
+    var pinca = null;
+    var ultimoToque = null;
+
+    function nDedos() {
+      return Object.keys(dedos).length;
+    }
+
+    function iniciarPinca() {
+      var ids = Object.keys(dedos);
+      var a = dedos[ids[0]];
+      var b = dedos[ids[1]];
+      var r = svgEl.getBoundingClientRect();
+      var mx = (a.x + b.x) / 2;
+      var my = (a.y + b.y) / 2;
+      var k = vb.w / r.width;
+      pinca = {
+        d0: Math.max(1, Math.hypot(a.x - b.x, a.y - b.y)),
+        w0: vb.w,
+        wx: vb.x + (mx - r.left) * k, // ponto do mapa sob os dedos, que deve ficar sob eles
+        wy: vb.y + (my - r.top) * k
+      };
+      arrasto = null;
+    }
+
     svgEl.addEventListener("pointerdown", function (ev) {
+      dedos[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+      if (nDedos() === 2) {
+        iniciarPinca();
+        svgEl.classList.add("arrastando");
+        return;
+      }
       if (ev.target.closest(".apoio-marcador, .apoio-curio-pt")) return;
-      arrasto = { x: ev.clientX, y: ev.clientY, vx: vb.x, vy: vb.y };
+      arrasto = { x: ev.clientX, y: ev.clientY, vx: vb.x, vy: vb.y, t: Date.now(), mexeu: false };
       svgEl.setPointerCapture(ev.pointerId);
       svgEl.classList.add("arrastando");
     });
+
     svgEl.addEventListener("pointermove", function (ev) {
+      if (!dedos[ev.pointerId]) return;
+      dedos[ev.pointerId] = { x: ev.clientX, y: ev.clientY };
+      if (pinca && nDedos() >= 2) {
+        var ids = Object.keys(dedos);
+        var a = dedos[ids[0]];
+        var b = dedos[ids[1]];
+        var r = svgEl.getBoundingClientRect();
+        var d = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
+        var h = r.height / r.width;
+        vb.w = pinca.w0 * (pinca.d0 / d);
+        aplicar(); // limita a janela; o centro volta para baixo dos dedos
+        var k = vb.w / r.width;
+        vb.x = pinca.wx - ((a.x + b.x) / 2 - r.left) * k;
+        vb.y = pinca.wy - ((a.y + b.y) / 2 - r.top) * k;
+        aplicar();
+        return;
+      }
       if (!arrasto) return;
-      var k = vb.w / svgEl.clientWidth;
-      vb.x = arrasto.vx - (ev.clientX - arrasto.x) * k;
-      vb.y = arrasto.vy - (ev.clientY - arrasto.y) * k;
+      var kk = vb.w / svgEl.clientWidth;
+      if (Math.abs(ev.clientX - arrasto.x) + Math.abs(ev.clientY - arrasto.y) > 6) arrasto.mexeu = true;
+      vb.x = arrasto.vx - (ev.clientX - arrasto.x) * kk;
+      vb.y = arrasto.vy - (ev.clientY - arrasto.y) * kk;
       aplicar();
     });
-    function soltar() {
+
+    function soltar(ev) {
+      var a = arrasto;
+      delete dedos[ev.pointerId];
+      if (pinca) {
+        if (nDedos() < 2) {
+          pinca = null;
+          // o dedo que sobrou continua arrastando a partir de onde está
+          var resto = Object.keys(dedos)[0];
+          if (resto != null) arrasto = { x: dedos[resto].x, y: dedos[resto].y, vx: vb.x, vy: vb.y, t: 0, mexeu: true };
+          else svgEl.classList.remove("arrastando");
+        }
+        return;
+      }
       arrasto = null;
       svgEl.classList.remove("arrastando");
+      // toque duplo no mapa (fora dos marcadores) amplia nesse ponto
+      if (ev.type === "pointerup" && a && !a.mexeu && a.t && Date.now() - a.t < 300) {
+        var agora = Date.now();
+        if (ultimoToque && agora - ultimoToque.t < 350 && Math.abs(ev.clientX - ultimoToque.x) + Math.abs(ev.clientY - ultimoToque.y) < 30) {
+          var r = svgEl.getBoundingClientRect();
+          var k = vb.w / r.width;
+          zoomEm(0.5, vb.x + (ev.clientX - r.left) * k, vb.y + (ev.clientY - r.top) * k);
+          ultimoToque = null;
+        } else {
+          ultimoToque = { t: agora, x: ev.clientX, y: ev.clientY };
+        }
+      }
     }
     svgEl.addEventListener("pointerup", soltar);
     svgEl.addEventListener("pointercancel", soltar);
@@ -455,18 +579,13 @@
     raiz.innerHTML =
       '<div class="apoio-barra" id="apoio-barra"></div>' +
       '<div class="apoio-mapa">' +
-      (embutido
-        ? ""
-        : '<div class="apoio-ctrl">' +
-          '<button type="button" class="btn secundario" data-zoom="mais" aria-label="Ampliar">+</button>' +
-          '<button type="button" class="btn secundario" data-zoom="menos" aria-label="Reduzir">−</button>' +
-          '<button type="button" class="btn secundario" data-zoom="tudo">Ver tudo</button>' +
-          "</div>") +
       '<div id="apoio-svg"></div>' +
       '<div class="apoio-cartao" id="apoio-cartao" aria-live="polite" hidden></div>' +
       "</div>" +
       "";
     document.getElementById("apoio-svg").appendChild(svgEl);
+    dados.etapas.forEach(function (e, i) { etapasLigadas[i] = true; });
+    construirBarra();
     ligar();
     var i = indiceDoHash();
     aplicar();
