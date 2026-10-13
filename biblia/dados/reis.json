@@ -324,6 +324,451 @@
    "nota": "Último rei de Judá. Rebela-se contra a Babilônia; Jerusalém cai em 586."
   },
   {
+   "id": "gedalias",
+   "nome": "Gedalias",
+   "reino": "juda",
+   "regime": "Judá",
+   "cor": "governo",
+   "inicio": 586,
+   "fim": 582,
+   "duracao": "poucos anos",
+   "refs": {
+    "reis": "2Rs 25:22–26",
+    "outros": "Jr 40–43"
+   },
+   "nota": "Governador nomeado pelos babilônios sobre os que ficaram em Judá. É assassinado por Ismael, e o povo foge para o Egito levando Jeremias."
+  },
+  {
+   "id": "exilio-sem-rei",
+   "nome": "Exílio",
+   "reino": "juda",
+   "regime": "Sem rei",
+   "cor": "governo",
+   "inicio": 582,
+   "fim": 538,
+   "duracao": "c. 44 anos",
+   "refs": {
+    "outros": "2Cr 36:20–21; Sl 137; Dn 1; Ez 1"
+   },
+   "nota": "Sem rei em Judá: o povo está exilado na Babilônia, e a terra fica quase vazia. Daniel e Ezequiel falam a partir daqui."
+  },
+  {
+   "id": "sesbazar",
+   "nome": "Sesbazar",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 538,
+   "fim": 530,
+   "duracao": "alguns anos",
+   "refs": {
+    "outros": "Ed 1:8–11; 5:14–16"
+   },
+   "nota": "“Príncipe de Judá” e primeiro governador depois do decreto de Ciro. Leva de volta os utensílios do templo e lança os alicerces. As datas do seu governo são incertas."
+  },
+  {
+   "id": "persas-1",
+   "nome": "Governadores persas",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 530,
+   "fim": 520,
+   "duracao": "c. 10 anos",
+   "refs": {
+    "outros": "Ed 4:1–5, 24"
+   },
+   "nota": "Os nomes dos governadores nessa época não aparecem na Bíblia. A obra do templo para."
+  },
+  {
+   "id": "zorobabel",
+   "nome": "Zorobabel",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 520,
+   "fim": 515,
+   "duracao": "c. 5 anos",
+   "refs": {
+    "outros": "Ed 3–6; Ag 1–2; Zc 4"
+   },
+   "nota": "Governador de Judá e descendente de Davi. Com o sumo sacerdote Josué, reconstrói o templo, concluído em 516 a.C., no tempo de Ageu e Zacarias."
+  },
+  {
+   "id": "persas-2",
+   "nome": "Governadores persas",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 515,
+   "fim": 445,
+   "duracao": "c. 70 anos",
+   "refs": {
+    "outros": "Ed 7–10; Et"
+   },
+   "nota": "Judá é uma província do império persa. Nesse período chega Esdras (458 a.C.), que ensina a Lei, e acontece a história de Ester, na corte."
+  },
+  {
+   "id": "neemias",
+   "nome": "Neemias",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 445,
+   "fim": 432,
+   "duracao": "c. 12 anos",
+   "refs": {
+    "outros": "Ne 1–13"
+   },
+   "nota": "Governador nomeado por Artaxerxes. Reconstrói os muros de Jerusalém em 52 dias e promove reformas. Volta depois ao rei e retorna a Jerusalém."
+  },
+  {
+   "id": "persas-3",
+   "nome": "Governadores persas",
+   "reino": "juda",
+   "regime": "Yehud",
+   "cor": "governo",
+   "inicio": 432,
+   "fim": 332,
+   "duracao": "c. 100 anos",
+   "refs": {
+    "outros": "Ml 1–4"
+   },
+   "nota": "Judá segue como província persa, em volta do templo e do sumo sacerdote, até a conquista de Alexandre. Os livros do Antigo Testamento terminam nesse período."
+  },
+  {
+   "id": "alexandre",
+   "nome": "Alexandre e sucessores",
+   "reino": "juda",
+   "regime": "Judeia",
+   "cor": "governo",
+   "inicio": 332,
+   "fim": 301,
+   "duracao": "c. 31 anos",
+   "refs": {
+    "outros": "Dn 8:5–8, 21; 11:3–4"
+   },
+   "nota": "Alexandre, o Grande, conquista a região em 332 a.C. Com a sua morte, os generais disputam o império e dividem a Judeia entre eles."
+  },
+  {
+   "id": "ptolomeus",
+   "nome": "Ptolomeus",
+   "reino": "juda",
+   "regime": "Judeia",
+   "cor": "governo",
+   "inicio": 301,
+   "fim": 200,
+   "duracao": "c. 100 anos",
+   "refs": {
+    "outros": "Dn 11:5–9"
+   },
+   "nota": "A Judeia fica sob os reis do Egito, descendentes de Ptolomeu. Nesse tempo o Antigo Testamento é traduzido para o grego (Septuaginta)."
+  },
+  {
+   "id": "seleucidas",
+   "nome": "Selêucidas",
+   "reino": "juda",
+   "regime": "Judeia",
+   "cor": "governo",
+   "inicio": 200,
+   "fim": 167,
+   "duracao": "c. 33 anos",
+   "refs": {
+    "outros": "Dn 11:10–35; 1Mc 1"
+   },
+   "nota": "A Judeia passa para os reis da Síria. Antíoco IV Epifânio proíbe a Lei e profana o templo em 167 a.C., o que provoca a revolta."
+  },
+  {
+   "id": "matatias",
+   "nome": "Matatias",
+   "curto": "Matat.",
+   "reino": "juda",
+   "regime": "Macabeus",
+   "inicio": 167,
+   "fim": 166,
+   "duracao": "c. 1 ano",
+   "refs": {
+    "outros": "1Mc 2"
+   },
+   "nota": "Sacerdote de Modin. Mata o oficial que obriga a sacrificar aos ídolos e dá início à revolta dos macabeus."
+  },
+  {
+   "id": "judas-macabeu",
+   "nome": "Judas Macabeu",
+   "curto": "Judas",
+   "reino": "juda",
+   "regime": "Macabeus",
+   "inicio": 166,
+   "fim": 160,
+   "duracao": "6 anos",
+   "refs": {
+    "outros": "1Mc 3–9; Jo 10:22"
+   },
+   "nota": "Filho de Matatias. Vence os selêucidas, retoma Jerusalém e purifica o templo em 164 a.C. (festa da Dedicação). Morre em batalha."
+  },
+  {
+   "id": "jonatas",
+   "nome": "Jônatas",
+   "reino": "juda",
+   "regime": "Macabeus",
+   "inicio": 160,
+   "fim": 143,
+   "duracao": "17 anos",
+   "refs": {
+    "outros": "1Mc 9:23 – 12:53"
+   },
+   "nota": "Irmão de Judas. Torna-se sumo sacerdote em 152 a.C. e governa a Judeia por alianças com os reis da Síria. É traído e morto."
+  },
+  {
+   "id": "simao",
+   "nome": "Simão",
+   "reino": "juda",
+   "regime": "Macabeus",
+   "inicio": 143,
+   "fim": 135,
+   "duracao": "8 anos",
+   "refs": {
+    "outros": "1Mc 13–16"
+   },
+   "nota": "Último filho de Matatias. Conquista a independência da Judeia e é reconhecido como sumo sacerdote e líder, com o direito de passar o cargo aos filhos. É assassinado."
+  },
+  {
+   "id": "hircano-1",
+   "nome": "João Hircano I",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 135,
+   "fim": 104,
+   "duracao": "31 anos",
+   "refs": {
+    "outros": "1Mc 16:23–24"
+   },
+   "nota": "Filho de Simão. Amplia o território da Judeia e destrói o templo samaritano do monte Gerizim."
+  },
+  {
+   "id": "aristobulo-1",
+   "nome": "Aristóbulo I",
+   "curto": "Ar. I",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 104,
+   "fim": 103,
+   "duracao": "1 ano",
+   "refs": {},
+   "nota": "Primeiro a tomar o título de rei, além de sumo sacerdote."
+  },
+  {
+   "id": "janeu",
+   "nome": "Alexandre Janeu",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 103,
+   "fim": 76,
+   "duracao": "27 anos",
+   "refs": {},
+   "nota": "Rei e sumo sacerdote. Expande o reino e enfrenta os fariseus. Uma guerra civil marca o seu governo."
+  },
+  {
+   "id": "alexandra",
+   "nome": "Salomé Alexandra",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 76,
+   "fim": 67,
+   "duracao": "9 anos",
+   "refs": {},
+   "nota": "Viúva de Janeu. Governa como rainha, com o filho Hircano II como sumo sacerdote. É a última época de paz antes de Roma."
+  },
+  {
+   "id": "aristobulo-2",
+   "nome": "Aristóbulo II",
+   "curto": "Ar. II",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 67,
+   "fim": 63,
+   "duracao": "4 anos",
+   "refs": {},
+   "nota": "Disputa o trono com o irmão Hircano II. Os dois pedem a ajuda de Roma, e Pompeu toma Jerusalém em 63 a.C., e a Judeia passa ao domínio romano."
+  },
+  {
+   "id": "hircano-2",
+   "nome": "João Hircano II",
+   "curto": "Hirc. II",
+   "reino": "juda",
+   "regime": "Judeia",
+   "cor": "governo",
+   "inicio": 63,
+   "fim": 40,
+   "duracao": "c. 23 anos",
+   "refs": {},
+   "nota": "Pompeu o mantém como sumo sacerdote e etnarca, sem o título de rei, sob a autoridade de Roma. Antípatro, o idumeu, governa de fato, e o seu filho Herodes ganha poder."
+  },
+  {
+   "id": "antigono",
+   "nome": "Antígono",
+   "curto": "Antíg.",
+   "reino": "juda",
+   "regime": "Hasmoneus",
+   "inicio": 40,
+   "fim": 37,
+   "duracao": "3 anos",
+   "refs": {},
+   "nota": "Último rei hasmoneu. Toma Jerusalém com a ajuda dos partos, mas Herodes volta com os romanos e o derrota em 37 a.C."
+  },
+  {
+   "id": "herodes",
+   "nome": "Herodes, o Grande",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": 37,
+   "fim": 4,
+   "duracao": "33 anos",
+   "refs": {
+    "outros": "Mt 2:1–19; Lc 1:5; Jo 2:20"
+   },
+   "nota": "Idumeu, nomeado “rei dos judeus” pelo senado romano em 40 a.C. Reconstrói o templo de Jerusalém, uma obra de décadas. É o rei que se perturba com a notícia do nascimento de Jesus e manda matar os meninos de Belém. Morre em 4 a.C."
+  },
+  {
+   "id": "arquelau",
+   "nome": "Arquelau",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": 4,
+   "fim": -6,
+   "duracao": "10 anos",
+   "refs": {
+    "outros": "Mt 2:22–23"
+   },
+   "nota": "Filho de Herodes. Recebe a Judeia, Samaria e Idumeia, com o título de etnarca. É cruel e depois deposto por Roma. Por isso José teme voltar à Judeia e leva Jesus a Nazaré."
+  },
+  {
+   "id": "prefeitos-1",
+   "nome": "Prefeitos romanos",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -6,
+   "fim": -26,
+   "duracao": "20 anos",
+   "refs": {
+    "outros": "At 5:37"
+   },
+   "nota": "A Judeia passa a ser governada diretamente por prefeitos romanos, que moram em Cesareia. O recenseamento do ano 6 provoca a revolta de Judas, o galileu."
+  },
+  {
+   "id": "pilatos",
+   "nome": "Pôncio Pilatos",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -26,
+   "fim": -36,
+   "duracao": "10 anos",
+   "refs": {
+    "outros": "Lc 3:1; Mt 27; Jo 18–19"
+   },
+   "nota": "Prefeito de Roma na Judeia. Em seu governo João Batista e Jesus iniciam o ministério, e Jesus é crucificado por ordem dele."
+  },
+  {
+   "id": "prefeitos-2",
+   "nome": "Prefeitos romanos",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -36,
+   "fim": -41,
+   "duracao": "5 anos",
+   "refs": {
+    "outros": "At 8–11"
+   },
+   "nota": "Pilatos é chamado de volta a Roma. Marcelo e Marulo governam a Judeia. A igreja cresce em Jerusalém e nas regiões vizinhas; Saulo se converte."
+  },
+  {
+   "id": "agripa-1",
+   "nome": "Herodes Agripa I",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -41,
+   "fim": -44,
+   "duracao": "3 anos",
+   "refs": {
+    "outros": "At 12:1–23"
+   },
+   "nota": "Neto de Herodes, o Grande. Reina sobre toda a antiga terra do avô e agrada aos judeus. Manda matar Tiago e prender Pedro, e morre repentinamente em Cesareia."
+  },
+  {
+   "id": "procuradores-1",
+   "nome": "Procuradores romanos",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -44,
+   "fim": -52,
+   "duracao": "8 anos",
+   "refs": {
+    "outros": "At 11:27–30"
+   },
+   "nota": "Depois da morte de Agripa, a Judeia volta ao governo romano direto, agora com procuradores. Há uma grande fome no tempo de Cláudio, e Paulo e Barnabé levam socorro a Jerusalém."
+  },
+  {
+   "id": "felix",
+   "nome": "Félix",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -52,
+   "fim": -60,
+   "duracao": "c. 8 anos",
+   "refs": {
+    "outros": "At 23:23 – 24:27"
+   },
+   "nota": "Procurador da Judeia. Mantém Paulo preso em Cesareia por dois anos, esperando suborno. Tem medo quando Paulo fala de justiça e juízo."
+  },
+  {
+   "id": "festo",
+   "nome": "Festo",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -60,
+   "fim": -62,
+   "duracao": "c. 2 anos",
+   "refs": {
+    "outros": "At 25–26"
+   },
+   "nota": "Sucede Félix. Ouve Paulo e o rei Agripa II, e Paulo apela a César."
+  },
+  {
+   "id": "procuradores-2",
+   "nome": "Procuradores romanos",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -62,
+   "fim": -66,
+   "duracao": "4 anos",
+   "refs": {},
+   "nota": "Albino e Floro governam com dureza. Segundo Josefo, Tiago, irmão do Senhor, é morto em 62. O descontentamento cresce até a revolta."
+  },
+  {
+   "id": "guerra-judaica",
+   "nome": "Guerra judaica",
+   "reino": "juda",
+   "regime": "Judeia (Roma)",
+   "cor": "roma",
+   "inicio": -66,
+   "fim": -70,
+   "duracao": "4 anos",
+   "refs": {
+    "outros": "Mt 24:1–2; Lc 21:5–24"
+   },
+   "nota": "Os judeus se revoltam contra Roma. Vespasiano e depois seu filho Tito cercam Jerusalém. Em 70 d.C. a cidade e o templo são destruídos, como Jesus havia dito, e o povo é morto ou levado cativo e disperso."
+  },
+  {
    "id": "jeroboao-1",
    "nome": "Jeroboão I",
    "reino": "israel",

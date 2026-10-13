@@ -492,9 +492,10 @@ body > .frame {
 
 /* cores de apoio (palette dos ícones) */
 :root {
-  /* Terra prometida (reis) usa só o vermelho; o azul e o roxo ficam para os livros */
   --c-juda: #2e7df7;
   --c-israel: #e8563a;
+  --c-governo: #8db4f5;
+  --c-roma: #d23a4a;
   --c-unido: #8b5cf6;
   --c-profeta: #f5a31a;
   --c-potencia: #14a58a;

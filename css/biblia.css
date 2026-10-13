@@ -380,12 +380,17 @@ button.chip:hover {
 .rot-txt:hover { text-decoration: underline; }
 .barra .guia { fill: none; stroke: var(--muted); stroke-width: 1; }
 
-.barra.rei rect { fill: var(--c-israel); }
+.barra.rei.juda rect { fill: var(--c-juda); }
+.barra.rei.israel rect { fill: var(--c-israel); }
+.barra.rei.unido rect { fill: var(--c-unido); }
+/* depois do exílio: governadores e domínio estrangeiro em azul claro; os reis macabeus e hasmoneus seguem o azul de Judá; Roma e os reis nomeados por ela (Herodes) em vermelho */
+.barra.rei.governo rect { fill: var(--c-governo); }
+.barra.rei.roma rect { fill: var(--c-roma); }
 .barra.livro rect { fill: var(--c-livro); }
 /* cor por tipo de livro; os testamentos reaproveitam as cores */
-.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: var(--c-unido); background: var(--c-unido); }
+.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: #c9915c; background: #c9915c; }
 .barra.g-historia rect, .barra.g-atos rect, .barra.g-historico-nt rect, .amostra.g-historia, .amostra.g-atos, .amostra.g-historico-nt { fill: #1ea7c7; background: #1ea7c7; }
-.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: var(--c-juda); background: var(--c-juda); }
+.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: #8fa3b8; background: #8fa3b8; }
 .barra.g-profeta-maior rect, .barra.g-apocalipse rect, .barra.g-profeta rect, .amostra.g-profeta-maior, .amostra.g-apocalipse, .amostra.g-profeta { fill: #e8c11c; background: #e8c11c; }
 .barra.g-profeta-menor rect, .amostra.g-profeta-menor { fill: #ff9f43; background: #ff9f43; }
 .barra.lider rect { fill: var(--c-lider); }

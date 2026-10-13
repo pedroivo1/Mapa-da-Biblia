@@ -228,12 +228,13 @@
     }
     var h = '<h3 class="item-nome">' + esc(item.nome) + "</h3>";
     if (item.tipo === "rei") {
-      h += '<p class="hud faint">' + esc(REINO[item.reino]) + " · " + periodo(item.inicio, item.fim) + " · " + esc(item.duracao) + "</p>";
+      h += '<p class="hud faint">' + esc(item.regime || REINO[item.reino]) + " · " + periodo(item.inicio, item.fim) + " · " + esc(item.duracao) + "</p>";
       if (item.avaliacao) h += '<p class="item-aval ' + item.avaliacao + '">' + AVALIACAO[item.avaliacao] + "</p>";
       h += '<p class="item-nota">' + esc(item.nota) + "</p>";
       h += '<dl class="refs">';
       if (item.refs.reis) h += "<dt>Reis / Samuel</dt><dd>" + esc(item.refs.reis) + "</dd>";
       if (item.refs.cronicas) h += "<dt>Crônicas e outros</dt><dd>" + esc(item.refs.cronicas) + "</dd>";
+      if (item.refs.outros) h += "<dt>Leia</dt><dd>" + esc(item.refs.outros) + "</dd>";
       h += "</dl>";
       if (item.profetas.length) {
         h += '<p class="hud muted">Profetas na época (★ citado no livro)</p><p class="chips">';
@@ -780,12 +781,12 @@
           return;
         }
         var c = r.reino === "juda" ? cJuda : cIsrael;
-        var g = grupo(r, "rei " + r.reino);
+        var g = grupo(r, "rei " + r.reino + (r.cor ? " " + r.cor : ""));
         rect(g, c.x + 3, y1, BAR - 3, h);
         if (h >= 16) {
           // o reino em cima e o rei embaixo, como nas potências (Judá / Roboão)
           var duas = h >= 30;
-          rotulo(g, c.x + 3, BAR - 3, y1, y2, duas ? REINO[r.reino] : r.nome, duas, duas ? r.nome : null);
+          rotulo(g, c.x + 3, BAR - 3, y1, y2, duas ? r.regime || REINO[r.reino] : r.nome, duas, duas ? r.nome : null);
         }
         else {
           pendentes[r.reino].push({ g: g, r: r, c: c, y1: y1, h: h });
@@ -805,7 +806,8 @@
           var bx = p.c.x + BAR;
           p.g.appendChild(svg("polyline", { points: bx + "," + cy + " " + (bx + 4) + "," + cy + " " + (bx + 8) + "," + (ly - 4), class: "guia" }));
           var maxs = Math.max(2, Math.floor((GUT - 6) / 6.2));
-          texto(p.g, bx + 10, ly, p.r.nome.length > maxs ? p.r.nome.slice(0, maxs - 1) + "…" : p.r.nome, "fora");
+          var nomeCurto = p.r.curto || p.r.nome;
+          texto(p.g, bx + 10, ly, nomeCurto.length > maxs ? nomeCurto.slice(0, maxs - 1) + "…" : nomeCurto, "fora");
         });
       });
     }
