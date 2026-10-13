@@ -1,0 +1,435 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A história de",
+ "destaque": "José.",
+ "subtitulo": "Mapa · Gênesis 37 – 50",
+ "livro": "genesis",
+ "livroNome": "Gênesis",
+ "aria": "Mapa-múndi com os lugares da história de José, de Hebrom e Dotã ao Egito",
+ "vista": [
+  [
+   31.0,
+   29.5
+  ],
+  [
+   35.7,
+   32.6
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "hebrom",
+   "nome": "Hebrom",
+   "lon": 35.1,
+   "lat": 31.53,
+   "lado": "dir"
+  },
+  {
+   "id": "siquem",
+   "nome": "Siquém",
+   "lon": 35.28,
+   "lat": 32.21,
+   "lado": "dir"
+  },
+  {
+   "id": "dota",
+   "nome": "Dotã",
+   "lon": 35.17,
+   "lat": 32.42,
+   "lado": "esq"
+  },
+  {
+   "id": "berseba",
+   "nome": "Berseba",
+   "lon": 34.84,
+   "lat": 31.25,
+   "lado": "esq"
+  },
+  {
+   "id": "atade",
+   "nome": "Eira de Atade",
+   "lon": 35.6,
+   "lat": 31.83,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "egito",
+   "nome": "Egito (corte do faraó)",
+   "lon": 31.25,
+   "lat": 29.85,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "on",
+   "nome": "On (Heliópolis)",
+   "lon": 31.29,
+   "lat": 30.13,
+   "lado": "esq"
+  },
+  {
+   "id": "gosen",
+   "nome": "Gósen",
+   "lon": 31.95,
+   "lat": 30.55,
+   "lado": "dir"
+  }
+ ],
+ "etapas": [
+  {
+   "id": "sonhos",
+   "lugar": "hebrom",
+   "titulo": "Os sonhos de José",
+   "ref": "Gn 37:1–11",
+   "cap": 37,
+   "texto": "José, com 17 anos, apascenta o rebanho com os irmãos e conta ao pai as más notícias que ouve deles. Jacó o ama mais que aos outros e lhe dá uma túnica especial. José sonha que os feixes dos irmãos e depois o sol, a lua e onze estrelas se curvam diante dele, e os irmãos passam a odiá-lo (37:5–11).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "dota",
+   "lugar": "dota",
+   "titulo": "Vendido em Dotã",
+   "ref": "Gn 37:12–28",
+   "cap": 37,
+   "texto": "Jacó manda José de Hebrom a Siquém, ver como estão os irmãos. Um homem o informa de que eles foram para Dotã. Ali os irmãos o lançam numa cisterna seca; Rúben tenta salvá-lo e Judá propõe vendê-lo aos ismaelitas (midianitas) por vinte peças de prata (37:28). Molham a túnica no sangue de um bode e levam-na ao pai, que o dá por morto.",
+   "incerto": false,
+   "caminho": [
+    [
+     35.1,
+     31.53
+    ],
+    [
+     35.28,
+     32.21
+    ],
+    [
+     35.17,
+     32.42
+    ]
+   ]
+  },
+  {
+   "id": "egito",
+   "lugar": "egito",
+   "titulo": "Levado ao Egito",
+   "ref": "Gn 37:28–36; 39:1",
+   "cap": 37,
+   "texto": "A caravana desce pelo caminho da costa, rumo ao Egito, e vende José a Potifar, oficial do faraó e capitão da guarda (37:36; 39:1). A Bíblia não diz em que cidade ficava a casa de Potifar; o ponto no mapa é só uma referência para a corte do faraó.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.17,
+     32.42
+    ],
+    [
+     34.95,
+     32.25
+    ],
+    [
+     34.78,
+     31.9
+    ],
+    [
+     34.55,
+     31.62
+    ],
+    [
+     34.2,
+     31.3
+    ],
+    [
+     33.4,
+     31.1
+    ],
+    [
+     32.55,
+     31.0
+    ],
+    [
+     32.1,
+     30.6
+    ],
+    [
+     31.5,
+     30.2
+    ],
+    [
+     31.25,
+     29.85
+    ]
+   ]
+  },
+  {
+   "id": "potifar",
+   "lugar": "egito",
+   "titulo": "Na casa de Potifar e na prisão",
+   "ref": "Gn 39:1–23",
+   "cap": 39,
+   "texto": "O Senhor está com José, e tudo o que ele faz prospera; Potifar o põe como administrador da casa. A mulher de Potifar o acusa falsamente, e José é lançado na prisão do rei. Ali também o Senhor está com ele, e o carcereiro lhe entrega os presos (39:21–23).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "palacio",
+   "lugar": "egito",
+   "titulo": "Da prisão ao palácio",
+   "ref": "Gn 40:1 – 41:36",
+   "cap": 41,
+   "texto": "Na prisão, José interpreta os sonhos do copeiro e do padeiro do faraó. O copeiro se esquece dele por dois anos (41:1). Quando o faraó sonha com sete vacas gordas e sete magras, e sete espigas cheias e sete murchas, o copeiro se lembra. José diz que o interpretar é de Deus: haverá sete anos de fartura e sete de fome, e o faraó deve escolher um homem para guardar o trigo (41:33–36).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "governador",
+   "lugar": "on",
+   "titulo": "Governador do Egito",
+   "ref": "Gn 41:37–57",
+   "cap": 41,
+   "texto": "O faraó põe José, com 30 anos, sobre toda a terra do Egito, dá-lhe o nome Zafenate-Panéia e o casa com Asenate, filha de Potífera, sacerdote de On (41:45–46). Nascem Manassés e Efraim (41:50–52). Nos anos de fartura, José enche os armazéns; quando a fome chega, vende o trigo ao Egito e a gente de todas as terras (41:56–57).",
+   "incerto": false,
+   "caminho": [
+    [
+     31.25,
+     29.85
+    ],
+    [
+     31.29,
+     30.13
+    ]
+   ]
+  },
+  {
+   "id": "irmaos1",
+   "lugar": "egito",
+   "titulo": "Os irmãos descem ao Egito",
+   "ref": "Gn 42",
+   "cap": 42,
+   "texto": "Dez irmãos vão de Canaã ao Egito comprar trigo. José os reconhece e eles não o reconhecem; ele os acusa de espiões, prende Simeão e exige que voltem com Benjamim, o caçula, que Jacó havia mantido em casa (42:4, 19–20). Nos sacos, os irmãos encontram o dinheiro de volta.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.1,
+     31.53
+    ],
+    [
+     34.84,
+     31.25
+    ],
+    [
+     34.2,
+     31.0
+    ],
+    [
+     33.3,
+     30.8
+    ],
+    [
+     32.6,
+     30.7
+    ],
+    [
+     32.1,
+     30.6
+    ],
+    [
+     31.5,
+     30.2
+    ],
+    [
+     31.25,
+     29.85
+    ]
+   ]
+  },
+  {
+   "id": "irmaos2",
+   "lugar": "egito",
+   "titulo": "A segunda viagem, com Benjamim",
+   "ref": "Gn 43–44",
+   "cap": 43,
+   "texto": "Quando o trigo acaba, Jacó cede, e Judá se faz fiador de Benjamim (43:8–10). José recebe os irmãos à mesa, mas manda esconder a taça de prata no saco de Benjamim. Judá se oferece para ficar como escravo no lugar do menino (44:33–34).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.1,
+     31.53
+    ],
+    [
+     34.84,
+     31.25
+    ],
+    [
+     34.2,
+     31.0
+    ],
+    [
+     33.3,
+     30.8
+    ],
+    [
+     32.6,
+     30.7
+    ],
+    [
+     32.1,
+     30.6
+    ],
+    [
+     31.5,
+     30.2
+    ],
+    [
+     31.25,
+     29.85
+    ]
+   ]
+  },
+  {
+   "id": "revelacao",
+   "lugar": "egito",
+   "titulo": "“Eu sou José”",
+   "ref": "Gn 45",
+   "cap": 45,
+   "texto": "José não se contém, manda sair os egípcios e se dá a conhecer aos irmãos. Diz que não foram eles, mas Deus, que o enviou adiante para preservar a vida (45:5–8). Manda buscar Jacó com carros do faraó e promete-lhe a terra de Gósen.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "jaco",
+   "lugar": "gosen",
+   "titulo": "Jacó desce ao Egito",
+   "ref": "Gn 46:1–7, 28–34",
+   "cap": 46,
+   "texto": "Jacó parte de Hebrom e oferece sacrifícios em Berseba. Ali Deus lhe diz: “Não temas descer ao Egito, porque eu te farei ali uma grande nação” (46:3). A família de Jacó que entra no Egito soma setenta pessoas (46:27). Judá vai adiante a Gósen, e José sobe de carro para encontrar o pai.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.1,
+     31.53
+    ],
+    [
+     34.84,
+     31.25
+    ],
+    [
+     34.2,
+     31.0
+    ],
+    [
+     33.3,
+     30.8
+    ],
+    [
+     32.6,
+     30.7
+    ],
+    [
+     32.1,
+     30.6
+    ],
+    [
+     31.95,
+     30.55
+    ]
+   ]
+  },
+  {
+   "id": "gosen",
+   "lugar": "gosen",
+   "titulo": "Em Gósen, durante a fome",
+   "ref": "Gn 47:1–26",
+   "cap": 47,
+   "texto": "O faraó dá à família a melhor parte da terra, a região de Gósen (também chamada terra de Ramessés), e Jacó, com 130 anos, abençoa o faraó (47:9–11). Enquanto dura a fome, o povo do Egito entrega a José dinheiro, gado e por fim as terras e a si mesmo; passa a dar a quinta parte da colheita ao faraó (47:24).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "bencaos",
+   "lugar": "gosen",
+   "titulo": "As bênçãos de Jacó",
+   "ref": "Gn 48–49",
+   "cap": 48,
+   "texto": "Jacó adota Efraim e Manassés e abençoa o mais novo antes do mais velho (48:13–20). Depois reúne os doze filhos e anuncia o que acontecerá a cada um. Pede para ser sepultado na caverna de Macpela, em Hebrom, onde estão Abraão, Sara, Isaque, Rebeca e Lia (49:29–32).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "atade",
+   "lugar": "atade",
+   "titulo": "O cortejo até Atade",
+   "ref": "Gn 50:1–11",
+   "cap": 50,
+   "texto": "José manda embalsamar o pai, e os egípcios o choram setenta dias. Com autorização do faraó, sobe um grande cortejo, com carros e cavaleiros. Na eira de Atade, “além do Jordão”, fazem grande e dolorosa lamentação por sete dias (50:10). A Bíblia não diz onde ficava Atade; o ponto é só uma referência.",
+   "incerto": true,
+   "caminho": [
+    [
+     31.95,
+     30.55
+    ],
+    [
+     32.6,
+     30.7
+    ],
+    [
+     33.3,
+     30.8
+    ],
+    [
+     34.84,
+     31.25
+    ],
+    [
+     35.3,
+     31.0
+    ],
+    [
+     35.5,
+     31.0
+    ],
+    [
+     35.65,
+     31.4
+    ],
+    [
+     35.6,
+     31.83
+    ]
+   ]
+  },
+  {
+   "id": "macpela",
+   "lugar": "hebrom",
+   "titulo": "Sepultado em Macpela",
+   "ref": "Gn 50:12–14",
+   "cap": 50,
+   "texto": "Os filhos de Jacó fazem como ele mandou e o sepultam na caverna de Macpela, em frente a Manre, que Abraão comprara de Efrom, o heteu (50:13). Depois todos voltam ao Egito.",
+   "incerto": false,
+   "caminho": [
+    [
+     35.6,
+     31.83
+    ],
+    [
+     35.4,
+     31.7
+    ],
+    [
+     35.1,
+     31.53
+    ]
+   ]
+  },
+  {
+   "id": "morte",
+   "lugar": "egito",
+   "titulo": "A morte de José",
+   "ref": "Gn 50:15–26",
+   "cap": 50,
+   "texto": "Com a morte do pai, os irmãos temem a vingança, mas José os consola: “Vós intentastes mal contra mim, porém Deus o tornou em bem” (50:20). José vive 110 anos e vê os netos de Efraim. Antes de morrer, faz Israel jurar que levará os seus ossos quando Deus os visitar. É embalsamado e posto num caixão no Egito (50:24–26).",
+   "incerto": false,
+   "caminho": []
+  }
+ ]
+}

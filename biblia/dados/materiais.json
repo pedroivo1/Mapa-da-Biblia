@@ -84,6 +84,85 @@
     }
    ],
    "ano": 1930
+  },
+  {
+   "id": "jose",
+   "titulo": "A história de José",
+   "tipo": "Mapa",
+   "ref": "Gn 37–50",
+   "resumo": "De Hebrom e Dotã ao Egito: a cisterna, a prisão, o governo, a descida de Jacó a Gósen e o sepultamento em Macpela.",
+   "url": "apoio.html?m=jose",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 37,
+     "ate": 50
+    }
+   ],
+   "ano": 1898
+  },
+  {
+   "id": "moises-antes",
+   "titulo": "Moisés antes de libertar o povo",
+   "tipo": "Mapa",
+   "ref": "Êx 1–4",
+   "resumo": "Do nascimento no Egito à fuga para Midiã, à sarça ardente em Horebe e à volta para libertar Israel.",
+   "url": "apoio.html?m=moises-antes",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 1,
+     "ate": 4
+    }
+   ],
+   "ano": 1526
+  },
+  {
+   "id": "exodo",
+   "titulo": "O Êxodo",
+   "tipo": "Mapa",
+   "ref": "Êx 5–19",
+   "resumo": "As pragas, a Páscoa, a saída de Ramessés, a travessia do mar e o caminho até o Sinai.",
+   "url": "apoio.html?m=exodo",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 5,
+     "ate": 19
+    }
+   ],
+   "ano": 1446
+  },
+  {
+   "id": "moises-depois",
+   "titulo": "Moisés depois de libertar o povo",
+   "tipo": "Mapa",
+   "ref": "Êx 19 – Dt 34",
+   "resumo": "Do Sinai a Cades, ao redor de Edom e de Moabe, até as planícies de Moabe e o monte Nebo.",
+   "url": "apoio.html?m=moises-depois",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 19,
+     "ate": 40
+    },
+    {
+     "livro": "levitico",
+     "de": 1,
+     "ate": 27
+    },
+    {
+     "livro": "numeros",
+     "de": 1,
+     "ate": 36
+    },
+    {
+     "livro": "deuteronomio",
+     "de": 1,
+     "ate": 34
+    }
+   ],
+   "ano": 1406
   }
  ]
 }

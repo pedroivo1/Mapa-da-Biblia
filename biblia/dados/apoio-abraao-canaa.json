@@ -71,14 +71,16 @@
    "nome": "Beer-Laai-Roi",
    "lon": 34.35,
    "lat": 30.75,
-   "lado": "esq"
+   "lado": "esq",
+   "incerto": true
   },
   {
    "id": "sodoma",
    "nome": "Sodoma e Gomorra",
    "lon": 35.5,
    "lat": 31.3,
-   "lado": "dir"
+   "lado": "dir",
+   "incerto": true
   },
   {
    "id": "zoar",

@@ -11,7 +11,8 @@
    "id": "uz",
    "nome": "Uz",
    "lon": 35.61,
-   "lat": 30.72
+   "lat": 30.72,
+   "incerto": true
   },
   {
    "id": "saba",
@@ -35,13 +36,15 @@
    "id": "sua",
    "nome": "Sua",
    "lon": 38.0,
-   "lat": 30.4
+   "lat": 30.4,
+   "incerto": true
   },
   {
    "id": "buz",
    "nome": "Buz",
    "lon": 38.0,
-   "lat": 28.2
+   "lat": 28.2,
+   "incerto": true
   },
   {
    "id": "nilo",

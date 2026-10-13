@@ -339,7 +339,8 @@
       svg("circle", { r: 5, cx: 0, cy: 0 }, g);
       // o nome vai para a esquerda perto da borda direita, ou onde o lugar pedir (lado: "esq" ou "dir")
       var esquerda = lg.lado ? lg.lado === "esq" : q[0] > L * 0.7;
-      var nome = svg("text", { "class": "apoio-nome", x: esquerda ? -10 : 10, y: 4, "text-anchor": esquerda ? "end" : "start" }, g);
+      // localização desconhecida ou debatida: nome com sublinhado tracejado
+      var nome = svg("text", { "class": "apoio-nome" + (lg.incerto ? " incerto" : ""), x: esquerda ? -10 : 10, y: 4, "text-anchor": esquerda ? "end" : "start" }, g);
       nome.textContent = lg.nome;
       escalaveis.push({ el: g, x: q[0], y: q[1] });
       lugaresNoMapa.push({ el: g, etapas: porLugar[id], x: q[0], y: q[1], nome: lg.nome, esq: esquerda, ordem: lugaresNoMapa.length, ligado: true });
@@ -378,6 +379,10 @@
       if (rotas[i]) h += '<label class="apoio-item"><input type="checkbox" data-etapa="' + i + '"><span>' + esc(nomeDaRota(e)) + "</span></label>";
     });
     h += "</div></details>";
+    var temIncerto = dados.lugares.some(function (l) {
+      return l.incerto;
+    });
+    if (temIncerto) h += '<span class="apoio-legenda hud faint"><span class="apoio-nome-incerto">Nome</span> localização incerta</span>';
     document.getElementById("apoio-barra").innerHTML = h;
   }
 

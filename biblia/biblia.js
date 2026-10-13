@@ -304,6 +304,264 @@
     return TOP;
   }
 
+  // o início do eixo (Origens, Gn 1–11) não tem data: a régua não conta anos ali
+  var SEM_DATA_ATE = SEGMENTOS[0].ate;
+
+  // inverso de Y: o ano que está numa altura do mapa (null no trecho sem data)
+  function anoDeY(y) {
+    if (y < Y(SEM_DATA_ATE)) return null;
+    for (var i = 0; i < SEGMENTOS.length; i++) {
+      var s = SEGMENTOS[i];
+      var a0 = TOP + s.off;
+      var a1 = a0 + (s.de - s.ate) * s.px;
+      if (y <= a1) return s.de - Math.max(0, y - a0) / s.px;
+    }
+    return AXIS_FIM;
+  }
+
+  var REGUA_Y = 72; // largura da régua de rolagem, em px
+
+  // em tela larga (quadro de 1280 px + régua de cada lado) a régua fica no canto da tela,
+  // fora do quadro, e não tira espaço da linha do tempo; em tela estreita ela divide o espaço
+  function reguaNaBorda() {
+    return window.innerWidth >= 1280 + 2 * REGUA_Y;
+  }
+
+  function rotuloAno(a) {
+    if (a === null) return "sem data";
+    a = Math.round(a);
+    return a > 0 ? a + " a.C." : a === 0 ? "0" : -a + " d.C.";
+  }
+
+  // a barra de rolagem vira uma régua de tempo, dinâmica como a do Artcraft:
+  // parada, mostra as datas na escala do mapa, andando junto com ele, com o ano do centro da tela;
+  // com o cursor em cima, mostra o mapa inteiro, a janela visível e o ano sob o cursor.
+  // As mesmas marcas se movem de uma visão para a outra (p vai de 0 a 1), sem corte.
+  function reguaDeRolagem(rolagem) {
+    var regua = document.createElement("div");
+    regua.className = "regua-y";
+    regua.setAttribute("aria-hidden", "true");
+    var area = document.createElement("div");
+    area.className = "regua-marcas";
+    var tr = document.createElement("div");
+    tr.className = "regua-tr";
+    area.appendChild(tr);
+    var janela = document.createElement("div");
+    janela.className = "regua-janela";
+    var centro = document.createElement("div");
+    centro.className = "regua-centro";
+    var centroAno = document.createElement("span");
+    centro.appendChild(centroAno);
+    var guia = document.createElement("div");
+    guia.className = "regua-guia";
+    guia.hidden = true;
+    var guiaAno = document.createElement("span");
+    guia.appendChild(guiaAno);
+    regua.appendChild(area);
+    regua.appendChild(janela);
+    regua.appendChild(centro);
+    regua.appendChild(guia);
+
+    var LARG = { g: 16, m: 10, p: 5, s: 0 };
+    var marcas = []; // { el, rot, y, visL, visG, rotL, rotG, tipoL, tipoG }
+    var p = 0; // 0: na escala do mapa; 1: mapa inteiro
+    var alvo = 0;
+    var quadro = null;
+    var aplicado = -1; // última visão pintada por inteiro (0 ou 1)
+    var sujo = true;
+
+    function trilha() {
+      return { h: rolagem.clientHeight, total: rolagem.scrollHeight };
+    }
+
+    function construir() {
+      var t = trilha();
+      if (!t.h || !t.total) return;
+      var k = t.h / t.total;
+      tr.innerHTML = "";
+      tr.style.height = t.total + "px";
+      marcas = [];
+      var ultimo = -100;
+      // trecho sem data: um rótulo no meio, sem marcas de ano
+      var sd = document.createElement("i");
+      var sdRot = document.createElement("b");
+      sdRot.textContent = "sem data";
+      sd.appendChild(sdRot);
+      marcas.push({ el: sd, rot: sdRot, y: (TOP + Y(SEM_DATA_ATE)) / 2, visL: 1, visG: 1, rotL: 1, rotG: 1, tipoL: "s", tipoG: "s" });
+      tr.appendChild(sd);
+      for (var a = SEM_DATA_ATE; a >= AXIS_FIM; a -= 5) {
+        var y = Y(a);
+        var seculo = a % 100 === 0;
+        var el = document.createElement("i");
+        var rot = null;
+        if (seculo && a !== SEM_DATA_ATE) {
+          rot = document.createElement("b");
+          rot.textContent = rotuloAno(a);
+          el.appendChild(rot);
+        }
+        var m = {
+          el: el,
+          rot: rot,
+          y: y,
+          visL: a % 10 === 0 ? 1 : 0,
+          visG: a % 25 === 0 ? 1 : 0,
+          rotL: rot ? 1 : 0,
+          rotG: 0,
+          tipoL: seculo ? "g" : a % 50 === 0 ? "m" : "p",
+          tipoG: a % 500 === 0 ? "g" : seculo ? "m" : "p"
+        };
+        // na visão geral só rotula o século que cabe
+        if (rot && (a % 500 === 0 || y * k - ultimo >= 26)) {
+          m.rotG = 1;
+          ultimo = y * k;
+        }
+        marcas.push(m);
+        tr.appendChild(el);
+      }
+      sujo = true;
+    }
+
+    // põe cada marca entre a posição da escala do mapa e a da visão geral
+    function pintar(q, st, k) {
+      for (var i = 0; i < marcas.length; i++) {
+        var m = marcas[i];
+        var y = q === 0 ? m.y : q === 1 ? m.y * k : (m.y - st) * (1 - q) + m.y * k * q;
+        var tipo = q < 0.5 ? m.tipoL : m.tipoG;
+        var el = m.el;
+        el.style.top = y.toFixed(1) + "px";
+        el.style.width = LARG[m.tipoL] + (LARG[m.tipoG] - LARG[m.tipoL]) * q + "px";
+        el.style.opacity = (m.visL * (1 - q) + m.visG * q).toFixed(2);
+        el.className = tipo;
+        if (m.rot) m.rot.style.opacity = (m.rotL * (1 - q) + m.rotG * q).toFixed(2);
+      }
+    }
+
+    function posicionar() {
+      var t = trilha();
+      if (!t.h || !t.total) return;
+      var k = t.h / t.total;
+      var st = rolagem.scrollTop;
+      var meioDoc = st + t.h / 2;
+      if (p === 0) {
+        if (aplicado !== 0 || sujo) pintar(0, st, k);
+        tr.style.transform = "translateY(" + -st + "px)";
+        aplicado = 0;
+      } else if (p === 1) {
+        if (aplicado !== 1 || sujo) pintar(1, st, k);
+        tr.style.transform = "none";
+        aplicado = 1;
+      } else {
+        pintar(p, st, k);
+        tr.style.transform = "none";
+        aplicado = -1;
+      }
+      sujo = false;
+      janela.style.top = st * k + "px";
+      janela.style.height = Math.max(3, t.h * k) + "px";
+      janela.style.opacity = p;
+      // o ano do centro da tela: parada, a linha fica no meio da régua; na visão geral, acompanha a janela
+      centro.style.top = t.h / 2 + (meioDoc * k - t.h / 2) * p + "px";
+      centroAno.textContent = rotuloAno(anoDeY(meioDoc));
+    }
+
+    function animar() {
+      var inicio = p;
+      var t0 = null;
+      var duracao = 240;
+      if (quadro) cancelAnimationFrame(quadro);
+      function passo(agora) {
+        if (t0 === null) t0 = agora;
+        var f = Math.min(1, (agora - t0) / duracao);
+        var e = 1 - Math.pow(1 - f, 3);
+        p = f >= 1 ? alvo : inicio + (alvo - inicio) * e;
+        posicionar();
+        quadro = f < 1 ? requestAnimationFrame(passo) : null;
+      }
+      quadro = requestAnimationFrame(passo);
+    }
+
+    function visaoGeral(sim) {
+      var novo = sim ? 1 : 0;
+      if (alvo === novo) return;
+      alvo = novo;
+      if (!sim) guia.hidden = true;
+      if (window.requestAnimationFrame) animar();
+      else {
+        p = alvo;
+        posicionar();
+      }
+    }
+
+    function aPartirDoPonteiro(ev) {
+      var r = regua.getBoundingClientRect();
+      var t = trilha();
+      var y = Math.min(Math.max(ev.clientY - r.top, 0), r.height);
+      return { y: y, doc: (y / r.height) * t.total };
+    }
+
+    var arrastando = false;
+    function levar(ev) {
+      var q = aPartirDoPonteiro(ev);
+      rolagem.scrollTop = q.doc - rolagem.clientHeight / 2;
+    }
+    regua.addEventListener("pointerenter", function () {
+      visaoGeral(true);
+    });
+    regua.addEventListener("pointerdown", function (ev) {
+      visaoGeral(true);
+      arrastando = true;
+      regua.setPointerCapture(ev.pointerId);
+      levar(ev);
+      ev.preventDefault();
+    });
+    regua.addEventListener("pointermove", function (ev) {
+      var q = aPartirDoPonteiro(ev);
+      guia.hidden = alvo === 0;
+      guia.style.top = q.y + "px";
+      guiaAno.textContent = rotuloAno(anoDeY(q.doc));
+      if (arrastando) levar(ev);
+    });
+    function soltar() {
+      arrastando = false;
+    }
+    regua.addEventListener("pointerup", soltar);
+    regua.addEventListener("pointercancel", soltar);
+    regua.addEventListener("pointerleave", function () {
+      if (!arrastando) visaoGeral(false);
+    });
+    // a roda do mouse sobre a régua rola o mapa
+    regua.addEventListener(
+      "wheel",
+      function (ev) {
+        rolagem.scrollTop += ev.deltaY;
+        ev.preventDefault();
+      },
+      { passive: false }
+    );
+
+    rolagem.addEventListener("scroll", posicionar);
+    // no canto da tela, a régua (position: fixed) acompanha a altura e o topo da área do mapa
+    function encaixar() {
+      if (reguaNaBorda()) {
+        var r = rolagem.getBoundingClientRect();
+        regua.style.top = r.top + "px";
+        regua.style.height = r.height + "px";
+      } else {
+        regua.style.top = "";
+        regua.style.height = "";
+      }
+    }
+    function atualizar() {
+      encaixar();
+      construir();
+      posicionar();
+    }
+    window.addEventListener("resize", encaixar);
+    if (window.ResizeObserver) new ResizeObserver(atualizar).observe(rolagem);
+    else window.addEventListener("resize", atualizar);
+    return regua;
+  }
+
   function larg(s) {
     return s.length * 6.2 + 8;
   }
@@ -327,12 +585,12 @@
   var COLUNAS = [
     { id: "eras", nome: "Eras", cor: "era" },
     { id: "livros", nome: "Livros", cor: "livro" },
-    { id: "reis", nome: "Reis", cor: "juda" },
+    { id: "reis", nome: "Terra prometida", cor: "terra" },
     { id: "potencias", nome: "Potências", cor: "potencia" }
   ];
 
   function vistaFaixas() {
-    var RULER = 52;
+    var RULER = 0; // sem coluna de anos à esquerda: a régua de rolagem, à direita, mostra as datas
     var BAR = 96;
     var GUT = 52;
     var SUB = { livros: 44, potencias: 88 };
@@ -380,9 +638,8 @@
       (livrosAtivos() ? n.livros * SUB.livros : 0) +
       (colunas.reis ? 2 * (BAR + GUT) : 0) +
       (colunas.potencias ? n.potencias * SUB.potencias : 0);
-    var disponivel = (raiz.clientWidth || 1100) - 2;
-    // a barra de rolagem da página ainda não existe nesta primeira medição
-    if (window.innerWidth === document.documentElement.clientWidth) disponivel -= 14;
+    // a régua de rolagem fica ao lado do mapa e tira a sua largura do espaço
+    var disponivel = (raiz.clientWidth || 1100) - 2 - (reguaNaBorda() ? 0 : REGUA_Y);
     if (disponivel < 600) MARGEM = 0;
     else if (disponivel < 900) MARGEM = 56;
     var f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM) / flex));
@@ -403,8 +660,10 @@
     }
     var cEra = colunas.eras ? col("era", "Eras", larguraEra) : null;
     var cLiv = livrosAtivos() ? col("livros", "Livros", n.livros * SUB.livros) : null;
-    var cJuda = colunas.reis ? col("juda", "Judá", BAR + GUT) : null;
-    var cIsrael = colunas.reis ? col("israel", "Israel", BAR + GUT) : null;
+    // Judá e Israel dividem uma só coluna, a Terra prometida, em duas faixas lado a lado
+    var cTerra = colunas.reis ? col("terra", "Terra prometida", 2 * (BAR + GUT)) : null;
+    var cJuda = cTerra ? { x: cTerra.x } : null;
+    var cIsrael = cTerra ? { x: cTerra.x + BAR + GUT } : null;
     var cPot = colunas.potencias ? col("potencias", "Potências", n.potencias * SUB.potencias) : null;
     var W = x + MARGEM;
 
@@ -420,7 +679,7 @@
       s.appendChild(svg("rect", { x: c.x, y: 0, width: c.w, height: H, class: "col-fundo " + (i % 2 ? "b" : "a") }));
     });
 
-    // régua
+    // linhas de grade, nos anos redondos
     var marcas = [];
     var a;
     for (a = 2100; a >= 1500; a -= 100) marcas.push(a);
@@ -429,14 +688,8 @@
     marcas.push(-1, -25, -50, -75);
     marcas.forEach(function (m) {
       var gy = Y(m);
-      s.appendChild(svg("line", { x1: RULER - 6, y1: gy, x2: x, y2: gy, class: "grade" }));
-      var t = svg("text", { x: RULER - 10, y: gy + 4, class: "regua", "text-anchor": "end" });
-      t.textContent = m > 0 ? m : -m + " d.C.";
-      s.appendChild(t);
+      s.appendChild(svg("line", { x1: RULER, y1: gy, x2: x, y2: gy, class: "grade" }));
     });
-    var sd = svg("text", { x: RULER - 4, y: Y(2300) + 4, class: "regua", "text-anchor": "end" });
-    sd.textContent = "sem data";
-    s.appendChild(sd);
 
     function grupo(item, cls) {
       var g = svg("g", {
@@ -533,8 +786,10 @@
         var h = y2 - y1;
         if (r.reino === "unido") {
           var gu = grupo(r, "rei unido");
+          var duasU = h >= 30;
           rect(gu, cJuda.x + 3, y1, cIsrael.x + BAR - cJuda.x - 3, h);
-          rotulo(gu, cJuda.x + 3, cIsrael.x + BAR - cJuda.x - 3, y1, y2, r.nome);
+          // o reino unido também se chama Israel: "Israel" em cima e o rei embaixo
+          rotulo(gu, cJuda.x + 3, cIsrael.x + BAR - cJuda.x - 3, y1, y2, duasU ? "Israel" : r.nome, duasU, duasU ? r.nome : null);
           s.appendChild(gu);
           return;
         }
@@ -542,7 +797,9 @@
         var g = grupo(r, "rei " + r.reino);
         rect(g, c.x + 3, y1, BAR - 3, h);
         if (h >= 16) {
-          rotulo(g, c.x + 3, BAR - 3, y1, y2, r.nome);
+          // o reino em cima e o rei embaixo, como nas potências (Judá / Roboão)
+          var duas = h >= 30;
+          rotulo(g, c.x + 3, BAR - 3, y1, y2, duas ? REINO[r.reino] : r.nome, duas, duas ? r.nome : null);
         }
         else {
           pendentes[r.reino].push({ g: g, r: r, c: c, y1: y1, h: h });
@@ -572,8 +829,8 @@
       var my = Y(m.ano);
       var g = svg("g", { class: "marco-g", "data-abrir": m.key, role: "button", tabindex: 0 });
       g.setAttribute("aria-label", ano(m.ano) + " · " + m.nome);
-      g.appendChild(svg("line", { x1: RULER - 6, y1: my, x2: x + 6, y2: my, class: "marco-hit" }));
-      g.appendChild(svg("line", { x1: RULER - 6, y1: my, x2: x + 6, y2: my, class: "marco-linha" }));
+      g.appendChild(svg("line", { x1: RULER, y1: my, x2: x + 6, y2: my, class: "marco-hit" }));
+      g.appendChild(svg("line", { x1: RULER, y1: my, x2: x + 6, y2: my, class: "marco-linha" }));
       if (MARGEM > 0) {
         var t = svg("text", { x: x + 10, y: my + 4, class: "marco-rot" });
         t.textContent = (m.ano > 0 ? m.ano : -m.ano + " d.C.") + (curto ? "" : " · " + m.nome);
@@ -715,7 +972,11 @@
     tog += "</div>";
     cont.innerHTML = tog;
     cont.appendChild(cab);
-    cont.appendChild(scroll);
+    var vistaMapa = document.createElement("div");
+    vistaMapa.className = "mapa-vista";
+    vistaMapa.appendChild(scroll);
+    vistaMapa.appendChild(reguaDeRolagem(scroll));
+    cont.appendChild(vistaMapa);
     painel = document.createElement("section");
     painel.className = "detalhe";
     painel.setAttribute("aria-live", "polite");
@@ -729,16 +990,17 @@
   function renderizar() {
     var antigo = raiz.querySelector(".mapa-scroll");
     var esq = antigo ? antigo.scrollLeft : 0;
-    // esvaziar a vista encolhe a página e a rolagem iria para o topo: guarda a altura e a posição
-    var topo = window.pageYOffset;
-    raiz.style.minHeight = raiz.offsetHeight + "px";
+    // refazer a vista zera a rolagem: guarda a posição e devolve depois
+    var topo = antigo ? antigo.scrollTop : 0;
     larguraAnterior = raiz.clientWidth;
+    bordaAnterior = reguaNaBorda();
     raiz.innerHTML = "";
     raiz.appendChild(vistaFaixas());
-    raiz.style.minHeight = "";
-    window.scrollTo(0, topo);
     var novo = raiz.querySelector(".mapa-scroll");
-    if (novo && esq) novo.scrollLeft = esq;
+    if (novo) {
+      if (esq) novo.scrollLeft = esq;
+      if (topo) novo.scrollTop = topo;
+    }
     var leg = raiz.querySelector(".colunas");
     if (leg) document.documentElement.style.setProperty("--colunas-h", leg.offsetHeight + "px");
   }
@@ -837,12 +1099,30 @@
     }
   });
 
+  // a página não rola: a roda do mouse em qualquer lugar da tela rola o mapa
+  // (menos nos painéis que têm rolagem própria, nos menus e nos popups)
+  document.addEventListener(
+    "wheel",
+    function (ev) {
+      if (ev.ctrlKey || ev.metaKey || ev.defaultPrevented) return;
+      var rolagem = raiz.querySelector(".mapa-scroll");
+      if (!rolagem || rolagem.contains(ev.target)) return;
+      if (ev.target.closest && ev.target.closest(".detalhe, .filtro-menu, dialog, .regua-y")) return;
+      var f = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? rolagem.clientHeight : 1;
+      rolagem.scrollTop += ev.deltaY * f;
+      rolagem.scrollLeft += ev.deltaX * f;
+      ev.preventDefault();
+    },
+    { passive: false }
+  );
+
   var temporizador = null;
   var larguraAnterior = 0;
+  var bordaAnterior = false;
   window.addEventListener("resize", function () {
     clearTimeout(temporizador);
     temporizador = setTimeout(function () {
-      if (!dados || raiz.clientWidth === larguraAnterior) return;
+      if (!dados || (raiz.clientWidth === larguraAnterior && reguaNaBorda() === bordaAnterior)) return;
       var aberto = painel && !painel.hidden && painel.dataset.key;
       renderizar();
       if (aberto) abrir(aberto);

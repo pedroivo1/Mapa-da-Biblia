@@ -36,7 +36,8 @@
    "nome": "Beer-Laai-Roi",
    "lon": 34.35,
    "lat": 30.75,
-   "lado": "esq"
+   "lado": "esq",
+   "incerto": true
   },
   {
    "id": "gerar",
@@ -50,14 +51,16 @@
    "nome": "Vale de Gerar",
    "lon": 34.62,
    "lat": 31.28,
-   "lado": "esq"
+   "lado": "esq",
+   "incerto": true
   },
   {
    "id": "reobote",
    "nome": "Reobote",
    "lon": 34.62,
    "lat": 30.98,
-   "lado": "esq"
+   "lado": "esq",
+   "incerto": true
   },
   {
    "id": "berseba",

@@ -1,0 +1,159 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "Moisés antes de",
+ "destaque": "libertar o povo.",
+ "subtitulo": "Mapa · Êxodo 1 – 4",
+ "livro": "exodo",
+ "livroNome": "Êxodo",
+ "aria": "Mapa-múndi com os lugares da vida de Moisés antes do Êxodo: Egito, Midiã e o monte Horebe",
+ "vista": [
+  [
+   31.0,
+   28.2
+  ],
+  [
+   35.6,
+   30.9
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "gosen",
+   "nome": "Gósen",
+   "lon": 31.95,
+   "lat": 30.55,
+   "lado": "dir"
+  },
+  {
+   "id": "egito",
+   "nome": "Casa do faraó",
+   "lon": 31.25,
+   "lat": 29.85,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "midia",
+   "nome": "Midiã",
+   "lon": 35.2,
+   "lat": 28.4,
+   "lado": "dir"
+  },
+  {
+   "id": "horebe",
+   "nome": "Horebe (monte de Deus)",
+   "lon": 33.97,
+   "lat": 28.54,
+   "lado": "esq",
+   "incerto": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "opressao",
+   "lugar": "gosen",
+   "titulo": "Israel oprimido no Egito",
+   "ref": "Êx 1",
+   "cap": 1,
+   "texto": "Os israelitas se multiplicam no Egito. Surge um novo rei que não conhecia José (1:8) e os escraviza, obrigando-os a construir as cidades-armazéns de Pitom e Ramessés (1:11). Como ainda crescem, o faraó manda as parteiras Sifrá e Puá matarem os meninos hebreus; elas temem a Deus e não obedecem. Então ordena que todo menino seja lançado ao rio (1:22).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "nascimento",
+   "lugar": "egito",
+   "titulo": "Moisés nasce e é salvo",
+   "ref": "Êx 2:1–10",
+   "cap": 2,
+   "texto": "Um menino de uma família de Levi é escondido por três meses. Sua mãe o põe num cesto de papiro, calafetado com betume, entre os juncos da beira do rio, e a irmã fica de longe vigiando. A filha do faraó o encontra, tem compaixão e o adota; a própria mãe é chamada para amamentá-lo. Ela lhe dá o nome Moisés, “porque das águas o tirei” (2:10).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "principe",
+   "lugar": "gosen",
+   "titulo": "O homem que matou um egípcio",
+   "ref": "Êx 2:11–14; At 7:22–25",
+   "cap": 2,
+   "texto": "Criado na casa do faraó, Moisés é instruído em toda a sabedoria dos egípcios (At 7:22). Já adulto, vai ver seus irmãos, vê um egípcio ferindo um hebreu e o mata, escondendo-o na areia. No dia seguinte, um hebreu lhe pergunta: “Quem te pôs por príncipe e juiz sobre nós?” (2:14). Moisés tem medo, porque o caso se soube. Segundo Atos 7:23, ele tinha 40 anos.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "fuga",
+   "lugar": "midia",
+   "titulo": "A fuga para Midiã",
+   "ref": "Êx 2:15–25",
+   "cap": 2,
+   "texto": "O faraó procura matá-lo, e Moisés foge para a terra de Midiã. Junto a um poço, defende as sete filhas do sacerdote de Midiã (chamado Reuel em 2:18 e Jetro em 3:1). É acolhido, casa com Zípora e tem o filho Gérson, “peregrino em terra estranha” (2:22). Segundo Atos 7:30, passam-se mais 40 anos. Enquanto isso, os israelitas clamam, e Deus se lembra da sua aliança (2:24).",
+   "incerto": true,
+   "caminho": [
+    [
+     31.25,
+     29.85
+    ],
+    [
+     32.4,
+     30.0
+    ],
+    [
+     33.3,
+     29.6
+    ],
+    [
+     34.3,
+     29.5
+    ],
+    [
+     34.97,
+     29.55
+    ],
+    [
+     35.1,
+     29.0
+    ],
+    [
+     35.2,
+     28.4
+    ]
+   ]
+  },
+  {
+   "id": "sarca",
+   "lugar": "horebe",
+   "titulo": "A sarça ardente",
+   "ref": "Êx 3:1 – 4:17",
+   "cap": 3,
+   "texto": "Moisés apascenta as ovelhas do sogro e chega a Horebe, o monte de Deus. Uma sarça arde sem se consumir, e Deus o chama pelo nome: tirará o povo do Egito e o levará a uma terra que mana leite e mel (3:8). Moisés hesita; Deus responde com o seu nome, “Eu sou o que sou” (3:14), dá-lhe sinais (a vara que vira serpente, a mão leprosa) e designa Aarão, seu irmão, como porta-voz (4:14–16). A localização de Horebe é incerta; o ponto no mapa segue a tradição do Jebel Musa, no Sinai.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "volta",
+   "lugar": "gosen",
+   "titulo": "De volta ao Egito",
+   "ref": "Êx 4:18–31",
+   "cap": 4,
+   "texto": "Moisés pede licença a Jetro e volta com a mulher e os filhos, levando a vara de Deus. Deus lhe diz que morreram todos os que procuravam a sua vida (4:19) e anuncia que Israel é o seu filho primogênito (4:22). Aarão vem ao seu encontro no monte de Deus (4:27). Os dois reúnem os anciãos de Israel, fazem os sinais, e o povo crê e adora (4:29–31).",
+   "incerto": true,
+   "caminho": [
+    [
+     33.97,
+     28.54
+    ],
+    [
+     33.3,
+     29.0
+    ],
+    [
+     32.6,
+     29.9
+    ],
+    [
+     31.95,
+     30.55
+    ]
+   ]
+  }
+ ]
+}

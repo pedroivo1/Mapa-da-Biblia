@@ -15,6 +15,7 @@
   --line: rgba(11, 11, 12, 0.14);
   --invert-bg: #0b0b0c;
   --invert-fg: #f2f1ee;
+  --regua-centro: #0a6a85;
   color-scheme: light;
 }
 
@@ -28,6 +29,7 @@
   --line: rgba(242, 241, 238, 0.14);
   --invert-bg: #f2f1ee;
   --invert-fg: #0b0b0c;
+  --regua-centro: #1ea7c7;
   color-scheme: dark;
 }
 
@@ -490,6 +492,7 @@ body > .frame {
 
 /* cores de apoio (palette dos ícones) */
 :root {
+  /* Terra prometida (reis) usa só o vermelho; o azul e o roxo ficam para os livros */
   --c-juda: #2e7df7;
   --c-israel: #e8563a;
   --c-unido: #8b5cf6;

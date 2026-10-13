@@ -1,0 +1,373 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "Moisés depois de",
+ "destaque": "libertar o povo.",
+ "subtitulo": "Mapa · Êxodo 19 – Deuteronômio 34",
+ "livro": "exodo",
+ "livroNome": "Êxodo",
+ "aria": "Mapa-múndi com a jornada de Moisés do Sinai até o monte Nebo",
+ "vista": [
+  [
+   33.8,
+   28.3
+  ],
+  [
+   36.3,
+   32.8
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "sinai",
+   "nome": "Monte Sinai",
+   "lon": 33.97,
+   "lat": 28.54,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "hazerote",
+   "nome": "Hazerote",
+   "lon": 34.55,
+   "lat": 28.85,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "cades",
+   "nome": "Cades-Barneia",
+   "lon": 34.42,
+   "lat": 30.62,
+   "lado": "esq"
+  },
+  {
+   "id": "hor",
+   "nome": "Monte Hor",
+   "lon": 35.4,
+   "lat": 30.32,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "eziom",
+   "nome": "Eziom-Geber",
+   "lon": 34.97,
+   "lat": 29.54,
+   "lado": "esq"
+  },
+  {
+   "id": "arnom",
+   "nome": "Arnom",
+   "lon": 35.8,
+   "lat": 31.48,
+   "lado": "dir"
+  },
+  {
+   "id": "hesbom",
+   "nome": "Hesbom",
+   "lon": 35.8,
+   "lat": 31.8,
+   "lado": "dir"
+  },
+  {
+   "id": "edrei",
+   "nome": "Edrei (Basã)",
+   "lon": 36.0,
+   "lat": 32.63,
+   "lado": "dir"
+  },
+  {
+   "id": "sitim",
+   "nome": "Planícies de Moabe",
+   "lon": 35.64,
+   "lat": 31.83,
+   "lado": "esq"
+  },
+  {
+   "id": "nebo",
+   "nome": "Monte Nebo",
+   "lon": 35.73,
+   "lat": 31.77,
+   "lado": "dir"
+  }
+ ],
+ "etapas": [
+  {
+   "id": "alianca",
+   "lugar": "sinai",
+   "titulo": "A aliança e a lei",
+   "ref": "Êx 19–24",
+   "cap": 20,
+   "texto": "Do Sinai, Deus fala as dez palavras (20:1–17) e entrega as leis do povo (21–23). Moisés lê o livro da aliança, e o povo responde: “Tudo o que o Senhor tem falado, faremos” (24:3). Depois Moisés sobe ao monte e fica ali quarenta dias e quarenta noites (24:18).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "bezerro",
+   "lugar": "sinai",
+   "titulo": "O bezerro de ouro",
+   "ref": "Êx 32–34",
+   "cap": 32,
+   "texto": "Com a demora de Moisés, o povo pede um deus visível, e Arão faz um bezerro de ouro. Moisés desce, quebra as tábuas e intercede por Israel (32:19, 31–32). Deus renova a aliança, e Moisés sobe de novo com tábuas novas; ao descer, o seu rosto resplandece (34:29).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "tabernaculo",
+   "lugar": "sinai",
+   "titulo": "O tabernáculo e a Lei",
+   "ref": "Êx 25–31; 35–40; Lv; Nm 1–10",
+   "cap": 40,
+   "texto": "Moisés recebe o modelo do tabernáculo; Bezalel e Aoliabe o constroem. No primeiro dia do primeiro mês do segundo ano, ele é levantado, e a glória do Senhor o enche (40:17, 34). Seguem-se as leis dos sacrifícios, dos sacerdotes e das festas (Levítico) e o censo das tribos (Números 1).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "partida",
+   "lugar": "hazerote",
+   "titulo": "A partida do Sinai",
+   "ref": "Nm 10:11 – 12:16",
+   "cap": 10,
+   "texto": "No vigésimo dia do segundo mês do segundo ano, a nuvem se levanta e o povo parte (10:11–12). Pelo caminho, murmura e é consumido por fogo em Tabera; em Quibrote-Hataava, tem saudade das comidas do Egito (11:4–6, 34). Em Hazerote, Miriã e Arão falam contra Moisés, e Miriã fica leprosa por sete dias (12:1–15). Os pontos entre o Sinai e Cades são aproximados.",
+   "incerto": true,
+   "caminho": [
+    [
+     33.97,
+     28.54
+    ],
+    [
+     34.2,
+     28.7
+    ],
+    [
+     34.55,
+     28.85
+    ]
+   ]
+  },
+  {
+   "id": "espias",
+   "lugar": "cades",
+   "titulo": "Os doze espias",
+   "ref": "Nm 13–14",
+   "cap": 13,
+   "texto": "Moisés envia doze homens, um de cada tribo, a espiar Canaã durante quarenta dias. Dez trazem relatório de medo; só Calebe e Josué confiam em Deus (14:6–9). O povo chora e quer voltar ao Egito, e Deus decreta quarenta anos no deserto, um ano por dia de espionagem (14:33–34).",
+   "incerto": true,
+   "caminho": [
+    [
+     34.55,
+     28.85
+    ],
+    [
+     34.5,
+     29.7
+    ],
+    [
+     34.42,
+     30.62
+    ]
+   ]
+  },
+  {
+   "id": "deserto",
+   "lugar": "cades",
+   "titulo": "Os anos no deserto",
+   "ref": "Nm 15–19; Dt 1:46",
+   "cap": 16,
+   "texto": "Israel passa muitos dias em Cades e depois anda por todo o deserto. Nesse tempo, Coré, Datã e Abirão se rebelam contra Moisés e Arão (16); a vara de Arão floresce (17:8); e é instituída a água da purificação com as cinzas da novilha vermelha (19).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "meriba",
+   "lugar": "cades",
+   "titulo": "Meribá: a rocha ferida",
+   "ref": "Nm 20:1–13",
+   "cap": 20,
+   "texto": "Em Cades morre Miriã (20:1). Sem água, o povo se queixa. Deus manda Moisés falar à rocha, mas ele a fere duas vezes com a vara. O Senhor lhe diz que, por não ter crido, ele e Arão não levarão a congregação à terra prometida (20:12).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "hor",
+   "lugar": "hor",
+   "titulo": "A morte de Arão no monte Hor",
+   "ref": "Nm 20:14–29",
+   "cap": 20,
+   "texto": "Moisés pede ao rei de Edom passagem pela estrada real; ele recusa, e Israel se desvia (20:14–21). Em Hor, Moisés despe Arão das vestes sacerdotais e as veste em Eleazar, seu filho. Arão morre no cume do monte, e todo o povo o chora trinta dias (20:28–29).",
+   "incerto": true,
+   "caminho": [
+    [
+     34.42,
+     30.62
+    ],
+    [
+     34.9,
+     30.5
+    ],
+    [
+     35.4,
+     30.32
+    ]
+   ]
+  },
+  {
+   "id": "serpente",
+   "lugar": "eziom",
+   "titulo": "Pelo caminho do Mar Vermelho",
+   "ref": "Nm 21:1–9",
+   "cap": 21,
+   "texto": "Do monte Hor, o povo segue pelo caminho do Mar Vermelho, para rodear a terra de Edom (21:4). Desanimado, fala contra Deus e contra Moisés. O Senhor envia serpentes abrasadoras; Moisés faz uma serpente de bronze e quem olha para ela vive (21:8–9).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.4,
+     30.32
+    ],
+    [
+     35.2,
+     30.0
+    ],
+    [
+     34.97,
+     29.54
+    ]
+   ]
+  },
+  {
+   "id": "arnom",
+   "lugar": "arnom",
+   "titulo": "Rodeando Edom e Moabe",
+   "ref": "Nm 21:10–20; Dt 2:1–25",
+   "cap": 21,
+   "texto": "Os israelitas contornam Edom e Moabe pelo deserto, passando por Obote, Ije-Abarim e pelo vale de Zerede, até chegar ao Arnom, limite de Moabe (21:10–13). Moisés lembra depois que se passaram trinta e oito anos desde Cades até atravessarem o Zerede (Dt 2:14).",
+   "incerto": true,
+   "caminho": [
+    [
+     34.97,
+     29.54
+    ],
+    [
+     35.6,
+     29.9
+    ],
+    [
+     36.1,
+     30.6
+    ],
+    [
+     36.0,
+     31.1
+    ],
+    [
+     35.8,
+     31.48
+    ]
+   ]
+  },
+  {
+   "id": "seom",
+   "lugar": "hesbom",
+   "titulo": "A vitória sobre Seom",
+   "ref": "Nm 21:21–32; Dt 2:26–37",
+   "cap": 21,
+   "texto": "Israel pede passagem a Seom, rei dos amorreus, em Hesbom. Ele recusa e ataca em Jaza, e Israel o derrota e ocupa a sua terra, do Arnom ao Jaboque (21:24).",
+   "incerto": false,
+   "caminho": [
+    [
+     35.8,
+     31.48
+    ],
+    [
+     35.8,
+     31.8
+    ]
+   ]
+  },
+  {
+   "id": "ogue",
+   "lugar": "edrei",
+   "titulo": "Ogue, rei de Basã",
+   "ref": "Nm 21:33–35; Dt 3:1–11",
+   "cap": 21,
+   "texto": "Subindo o caminho de Basã, Ogue sai com todo o seu povo para a batalha em Edrei. Deus o entrega a Israel (21:34–35). Dt 3:11 menciona a sua cama de ferro, de nove côvados de comprimento.",
+   "incerto": false,
+   "caminho": [
+    [
+     35.8,
+     31.8
+    ],
+    [
+     35.9,
+     32.2
+    ],
+    [
+     36.0,
+     32.63
+    ]
+   ]
+  },
+  {
+   "id": "balaao",
+   "lugar": "sitim",
+   "titulo": "Balaão e as planícies de Moabe",
+   "ref": "Nm 22–25",
+   "cap": 22,
+   "texto": "Israel acampa nas planícies de Moabe, do Jordão em frente a Jericó. Balaque, rei de Moabe, contrata o adivinho Balaão para amaldiçoar Israel, mas ele o abençoa três vezes (23–24). Em Sitim, o povo se prostitui com as moabitas e adora Baal-Peor (25:1–3).",
+   "incerto": false,
+   "caminho": [
+    [
+     36.0,
+     32.63
+    ],
+    [
+     35.8,
+     32.2
+    ],
+    [
+     35.64,
+     31.83
+    ]
+   ]
+  },
+  {
+   "id": "censo",
+   "lugar": "sitim",
+   "titulo": "O segundo censo e Josué",
+   "ref": "Nm 26–36",
+   "cap": 26,
+   "texto": "Faz-se o segundo censo, e a primeira geração, exceto Calebe e Josué, já não existe (26:63–65). Deus mostra a Moisés a terra e designa Josué como sucessor, que é consagrado diante de Eleazar e de toda a congregação (27:18–23). Rúben, Gade e metade de Manassés recebem terras a leste do Jordão (32).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "discursos",
+   "lugar": "sitim",
+   "titulo": "Os discursos de Moisés",
+   "ref": "Dt 1–33",
+   "cap": 1,
+   "texto": "No primeiro dia do décimo primeiro mês do quadragésimo ano, Moisés começa a falar a Israel, às margens do Jordão (1:3). Recapitula o caminho, repete a lei e exorta o povo: “Ouve, Israel: o Senhor, nosso Deus, é o único Senhor” (6:4). Termina com a bênção das tribos (33).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "nebo",
+   "lugar": "nebo",
+   "titulo": "O monte Nebo: a morte de Moisés",
+   "ref": "Dt 34",
+   "cap": 34,
+   "texto": "Moisés sobe das planícies de Moabe ao monte Nebo, ao cume do Pisga, em frente a Jericó. O Senhor lhe mostra toda a terra, mas ele não entra nela (34:1–4). Morre ali com 120 anos, sem que a sua vista tivesse enfraquecido, e o Senhor o sepulta no vale, em Moabe; ninguém sabe o lugar até hoje (34:6–7). Josué, cheio do espírito de sabedoria, assume o comando.",
+   "incerto": false,
+   "caminho": [
+    [
+     35.64,
+     31.83
+    ],
+    [
+     35.73,
+     31.77
+    ]
+   ]
+  }
+ ]
+}

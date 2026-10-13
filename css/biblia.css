@@ -272,9 +272,7 @@ button.chip:hover {
 
 .amostra.c-livro { background: var(--c-livro); }
 .amostra.c-lider { background: var(--c-lider); }
-.amostra.c-juda { background: var(--c-juda); }
-.amostra.c-israel { background: var(--c-israel); }
-.amostra.c-unido { background: var(--c-unido); }
+.amostra.c-terra { background: var(--c-israel); }
 .amostra.c-profeta { background: var(--c-profeta); }
 .amostra.c-potencia { background: var(--c-potencia); }
 .amostra.c-era { background: var(--c-era); }
@@ -308,8 +306,7 @@ button.chip:hover {
 .mapa-cab-in .c-era { background: var(--c-era); }
 .mapa-cab-in .c-livros { background: var(--c-livro); }
 .mapa-cab-in .c-lideres { background: var(--c-lider); color: #fff; }
-.mapa-cab-in .c-juda { background: var(--c-juda); }
-.mapa-cab-in .c-israel { background: var(--c-israel); }
+.mapa-cab-in .c-terra { background: var(--c-israel); }
 .mapa-cab-in .c-profetas { background: var(--c-profeta); }
 .mapa-cab-in .c-potencias { background: var(--c-potencia); }
 
@@ -331,7 +328,7 @@ button.chip:hover {
   pointer-events: auto;
   cursor: pointer;
   position: sticky;
-  top: calc(78px + var(--colunas-h, 41px));
+  top: 0;
   overflow: hidden;
   padding: 3px 3px 0;
   color: #0b0b0c;
@@ -383,14 +380,12 @@ button.chip:hover {
 .rot-txt:hover { text-decoration: underline; }
 .barra .guia { fill: none; stroke: var(--muted); stroke-width: 1; }
 
-.barra.rei.juda rect { fill: var(--c-juda); }
-.barra.rei.israel rect { fill: var(--c-israel); }
-.barra.rei.unido rect { fill: var(--c-unido); }
+.barra.rei rect { fill: var(--c-israel); }
 .barra.livro rect { fill: var(--c-livro); }
 /* cor por tipo de livro; os testamentos reaproveitam as cores */
-.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: #c9915c; background: #c9915c; }
+.barra.g-lei rect, .barra.g-evangelho rect, .amostra.g-lei, .amostra.g-evangelho { fill: var(--c-unido); background: var(--c-unido); }
 .barra.g-historia rect, .barra.g-atos rect, .barra.g-historico-nt rect, .amostra.g-historia, .amostra.g-atos, .amostra.g-historico-nt { fill: #1ea7c7; background: #1ea7c7; }
-.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: #8fa3b8; background: #8fa3b8; }
+.barra.g-poesia rect, .barra.g-carta rect, .amostra.g-poesia, .amostra.g-carta { fill: var(--c-juda); background: var(--c-juda); }
 .barra.g-profeta-maior rect, .barra.g-apocalipse rect, .barra.g-profeta rect, .amostra.g-profeta-maior, .amostra.g-apocalipse, .amostra.g-profeta { fill: #e8c11c; background: #e8c11c; }
 .barra.g-profeta-menor rect, .amostra.g-profeta-menor { fill: #ff9f43; background: #ff9f43; }
 .barra.lider rect { fill: var(--c-lider); }
@@ -1260,6 +1255,21 @@ html.embutido .biblia-topo {
   pointer-events: none;
 }
 
+/* localização incerta: sublinhado tracejado */
+.apoio-nome.incerto {
+  text-decoration: underline dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.apoio-nome-incerto {
+  color: var(--ink-strong);
+  font-weight: 600;
+  text-decoration: underline dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
 /* celular: o mapa usa quase toda a altura da tela; os botões ficam numa linha rolável */
 @media (max-width: 720px) {
   .apoio-pagina .biblia-topo {
@@ -1544,3 +1554,194 @@ html.embutido .apoio-svg {
   accent-color: var(--c-era);
 }
 
+
+/* linha do tempo: só o mapa rola; nav, colunas e cabeçalhos ficam fixos, e a rolagem é uma régua de tempo */
+body.linha-tempo {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body.linha-tempo > .frame {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+}
+
+body.linha-tempo #vista,
+body.linha-tempo #vista > div {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+body.linha-tempo .colunas,
+body.linha-tempo .mapa-cab {
+  position: relative;
+  top: auto;
+  flex: none;
+}
+
+body.linha-tempo .colunas {
+  z-index: 40;
+}
+
+body.linha-tempo .mapa-cab {
+  padding-right: 72px;
+}
+
+.mapa-vista {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  border-bottom: 1px solid var(--line);
+}
+
+body.linha-tempo .mapa-scroll {
+  min-width: 0;
+  flex: 1;
+  overflow: auto;
+  border-bottom: 0;
+  scrollbar-width: none;
+}
+
+body.linha-tempo .mapa-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+body.linha-tempo .detalhe {
+  flex: none;
+}
+
+/* régua de tempo no lugar da barra de rolagem */
+.regua-y {
+  position: relative;
+  z-index: 10;
+  width: 72px;
+  flex: none;
+  border-left: 1px solid var(--line);
+  background: var(--bg);
+  cursor: ns-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.regua-marcas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.regua-tr {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.regua-y i {
+  position: absolute;
+  right: 0;
+  height: 0;
+  border-top: 1px solid var(--faint);
+}
+
+.regua-y i.g { border-top-color: var(--ink-strong); }
+
+/* trecho sem data: só o rótulo, sem marca */
+.regua-y i.s {
+  border-top: 0;
+}
+
+.regua-y i.s b {
+  right: 8px;
+  color: var(--faint);
+  font-style: italic;
+}
+
+.regua-y i b {
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  color: var(--faint);
+  font: 400 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}
+
+.regua-y i.g b {
+  right: 22px;
+  color: var(--ink);
+}
+
+/* janela visível, na visão do mapa inteiro */
+.regua-janela {
+  position: absolute;
+  right: 0;
+  left: 0;
+  background: color-mix(in srgb, var(--ink-strong) 10%, transparent);
+  border-top: 1px solid var(--faint);
+  border-bottom: 1px solid var(--faint);
+  pointer-events: none;
+}
+
+/* o ano do centro da tela */
+.regua-centro {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 0;
+  border-top: 1px solid var(--regua-centro);
+  pointer-events: none;
+}
+
+.regua-centro span {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  padding: 0 3px;
+  background: var(--bg);
+  color: var(--regua-centro);
+  font: 500 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}
+
+/* o ano sob o cursor */
+.regua-guia {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 0;
+  border-top: 1px solid var(--ink-strong);
+  pointer-events: none;
+}
+
+.regua-guia span {
+  position: absolute;
+  top: -7px;
+  right: 100%;
+  padding: 1px 5px;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font: 500 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}
+
+.regua-guia[hidden] {
+  display: none;
+}
+
+/* tela larga: a régua de tempo fica no canto da tela, fora do quadro, sem tirar espaço do mapa */
+@media (min-width: 1424px) {
+  body.linha-tempo .regua-y {
+    position: fixed;
+    right: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  body.linha-tempo .mapa-cab {
+    padding-right: 0;
+  }
+}

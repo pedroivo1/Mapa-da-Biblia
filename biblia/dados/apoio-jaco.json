@@ -50,14 +50,16 @@
    "nome": "Maanaim",
    "lon": 35.7,
    "lat": 32.3,
-   "lado": "dir"
+   "lado": "dir",
+   "incerto": true
   },
   {
    "id": "peniel",
    "nome": "Peniel",
    "lon": 35.7,
    "lat": 32.2,
-   "lado": "dir"
+   "lado": "dir",
+   "incerto": true
   },
   {
    "id": "sucote",

@@ -1,0 +1,333 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O",
+ "destaque": "Êxodo.",
+ "subtitulo": "Mapa · Êxodo 5 – 19",
+ "livro": "exodo",
+ "livroNome": "Êxodo",
+ "aria": "Mapa-múndi com a rota do Êxodo, de Ramessés ao monte Sinai",
+ "vista": [
+  [
+   31.4,
+   28.3
+  ],
+  [
+   34.2,
+   31.0
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "egito",
+   "nome": "Egito (corte do faraó)",
+   "lon": 31.25,
+   "lat": 29.85,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "ramesses",
+   "nome": "Ramessés",
+   "lon": 31.83,
+   "lat": 30.8,
+   "lado": "esq"
+  },
+  {
+   "id": "sucote",
+   "nome": "Sucote",
+   "lon": 32.1,
+   "lat": 30.55,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "etam",
+   "nome": "Etã",
+   "lon": 32.45,
+   "lat": 30.45,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "pihairote",
+   "nome": "Pi-Hairote",
+   "lon": 32.45,
+   "lat": 30.15,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "mar",
+   "nome": "Travessia do mar",
+   "lon": 32.65,
+   "lat": 29.73,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "mara",
+   "nome": "Mara",
+   "lon": 32.93,
+   "lat": 29.28,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "elim",
+   "nome": "Elim",
+   "lon": 33.05,
+   "lat": 29.1,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "sim",
+   "nome": "Deserto de Sim",
+   "lon": 33.3,
+   "lat": 28.8,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "refidim",
+   "nome": "Refidim",
+   "lon": 33.6,
+   "lat": 28.68,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "sinai",
+   "nome": "Monte Sinai",
+   "lon": 33.97,
+   "lat": 28.54,
+   "lado": "dir",
+   "incerto": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "confronto",
+   "lugar": "egito",
+   "titulo": "Moisés e Aarão diante do faraó",
+   "ref": "Êx 5–6",
+   "cap": 5,
+   "texto": "Moisés e Aarão pedem ao faraó que deixe o povo ir três dias ao deserto para servir ao Senhor. Ele responde: “Quem é o Senhor para que eu lhe ouça a voz?” (5:2) e piora o trabalho, exigindo os mesmos tijolos sem que lhes deem a palha. O povo se queixa, e Deus renova a promessa: “Eu vos tirarei… vos livrarei… vos resgatarei… vos tomarei por meu povo” (6:6–7).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "pragas",
+   "lugar": "egito",
+   "titulo": "As dez pragas: as nove primeiras",
+   "ref": "Êx 7–10",
+   "cap": 7,
+   "texto": "Água em sangue, rãs, piolhos, moscas, peste no gado, úlceras, saraiva, gafanhotos e trevas. A partir da quarta, Deus distingue o povo de Israel: em Gósen não há moscas (8:22), o gado não morre (9:6), a saraiva não cai (9:26) e há luz (10:23). O faraó cede e volta atrás várias vezes, e seu coração se endurece.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "pascoa",
+   "lugar": "ramesses",
+   "titulo": "A Páscoa e a décima praga",
+   "ref": "Êx 11:1 – 12:36",
+   "cap": 12,
+   "texto": "Cada família toma um cordeiro sem defeito, e o sangue é posto nas ombreiras e na verga das portas. Come-se a ceia às pressas, com pão sem fermento e ervas amargas. À meia-noite morre todo primogênito do Egito, do faraó ao cativo e ao gado (12:29). Os egípcios apressam os israelitas a sair e lhes dão ouro, prata e roupas (12:35–36).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "saida",
+   "lugar": "sucote",
+   "titulo": "De Ramessés a Sucote",
+   "ref": "Êx 12:37 – 13:19",
+   "cap": 12,
+   "texto": "Cerca de seiscentos mil homens a pé, sem contar mulheres e crianças, partem de Ramessés para Sucote, com muita gente misturada e rebanhos (12:37–38). Estiveram no Egito 430 anos (12:40). Deus não os leva pelo caminho da terra dos filisteus, que era o mais curto, para que não desistam ao ver a guerra (13:17). Moisés leva consigo os ossos de José (13:19).",
+   "incerto": false,
+   "caminho": [
+    [
+     31.83,
+     30.8
+    ],
+    [
+     32.1,
+     30.55
+    ]
+   ]
+  },
+  {
+   "id": "nuvem",
+   "lugar": "etam",
+   "titulo": "A coluna de nuvem e de fogo",
+   "ref": "Êx 13:20–22",
+   "cap": 13,
+   "texto": "Acampam em Etã, na orla do deserto. O Senhor vai adiante deles, de dia numa coluna de nuvem para guiá-los e de noite numa coluna de fogo para os alumiar, de modo que pudessem caminhar de dia e de noite (13:21).",
+   "incerto": true,
+   "caminho": [
+    [
+     32.1,
+     30.55
+    ],
+    [
+     32.45,
+     30.45
+    ]
+   ]
+  },
+  {
+   "id": "pihairote",
+   "lugar": "pihairote",
+   "titulo": "Acampados diante do mar",
+   "ref": "Êx 14:1–14",
+   "cap": 14,
+   "texto": "Deus manda voltar e acampar em frente de Pi-Hairote, entre Migdol e o mar, diante de Baal-Zefom (14:2). O faraó se arrepende e persegue Israel com seiscentos carros escolhidos (14:7). O povo grita de medo; Moisés responde: “O Senhor pelejará por vós, e vós vos calareis” (14:14).",
+   "incerto": true,
+   "caminho": [
+    [
+     32.45,
+     30.45
+    ],
+    [
+     32.45,
+     30.15
+    ]
+   ]
+  },
+  {
+   "id": "travessia",
+   "lugar": "mar",
+   "titulo": "A travessia do mar",
+   "ref": "Êx 14:15–31",
+   "cap": 14,
+   "texto": "Moisés estende a mão, e o Senhor faz soprar um forte vento oriental toda a noite. As águas se dividem, e Israel passa em seco, com um muro de água à direita e à esquerda. Quando os egípcios os seguem, as águas voltam e cobrem carros e cavaleiros (14:28). O povo vê o grande poder do Senhor, teme-o e crê (14:31). O local exato da travessia, o “mar dos Juncos”, é debatido; o mapa a mostra cruzando o Golfo de Suez, a leitura tradicional, e o traçado é aproximado.",
+   "incerto": true,
+   "caminho": [
+    [
+     32.45,
+     30.15
+    ],
+    [
+     32.45,
+     29.9
+    ],
+    [
+     32.44,
+     29.77
+    ],
+    [
+     32.55,
+     29.75
+    ],
+    [
+     32.65,
+     29.73
+    ]
+   ]
+  },
+  {
+   "id": "cantico",
+   "lugar": "mar",
+   "titulo": "O cântico de Moisés e de Miriã",
+   "ref": "Êx 15:1–21",
+   "cap": 15,
+   "texto": "Moisés e os israelitas cantam ao Senhor: “Cantarei ao Senhor, porque gloriosamente triunfou” (15:1). Miriã, a profetisa, irmã de Arão, toma o tamborim e todas as mulheres a seguem com tamborins e danças (15:20–21).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "mara",
+   "lugar": "mara",
+   "titulo": "Mara: as águas amargas",
+   "ref": "Êx 15:22–26",
+   "cap": 15,
+   "texto": "Andam três dias no deserto de Sur sem achar água. Em Mara, a água é amarga e o povo murmura. O Senhor mostra a Moisés um pau; ele o lança na água, e ela se torna doce (15:25). Ali Deus se apresenta como “o Senhor, que te sara” (15:26).",
+   "incerto": true,
+   "caminho": [
+    [
+     32.65,
+     29.73
+    ],
+    [
+     32.93,
+     29.28
+    ]
+   ]
+  },
+  {
+   "id": "elim",
+   "lugar": "elim",
+   "titulo": "Elim: doze fontes",
+   "ref": "Êx 15:27",
+   "cap": 15,
+   "texto": "Chegam a Elim, onde há doze fontes de água e setenta palmeiras, e acampam junto às águas.",
+   "incerto": true,
+   "caminho": [
+    [
+     32.93,
+     29.28
+    ],
+    [
+     33.05,
+     29.1
+    ]
+   ]
+  },
+  {
+   "id": "sim",
+   "lugar": "sim",
+   "titulo": "O deserto de Sim: maná e codornizes",
+   "ref": "Êx 16",
+   "cap": 16,
+   "texto": "No dia 15 do segundo mês depois da saída, o povo murmura no deserto de Sim por falta de pão. À tarde vêm codornizes, e pela manhã aparece o maná, “pão do céu” (16:4, 13–15). Cada um recolhe o que precisa por dia, e na sexta-feira, o dobro, porque no sábado não há (16:22–26).",
+   "incerto": true,
+   "caminho": [
+    [
+     33.05,
+     29.1
+    ],
+    [
+     33.3,
+     28.8
+    ]
+   ]
+  },
+  {
+   "id": "refidim",
+   "lugar": "refidim",
+   "titulo": "Refidim: a rocha e Amaleque",
+   "ref": "Êx 17",
+   "cap": 17,
+   "texto": "Sem água em Refidim, o povo se queixa. Deus manda Moisés ferir a rocha em Horebe, e dela sai água (17:6). Amaleque ataca; Josué luta no vale enquanto Moisés, no alto, mantém a vara erguida. Quando as mãos se cansam, Arão e Hur o sustentam até o pôr do sol (17:12).",
+   "incerto": true,
+   "caminho": [
+    [
+     33.3,
+     28.8
+    ],
+    [
+     33.6,
+     28.68
+    ]
+   ]
+  },
+  {
+   "id": "sinai",
+   "lugar": "sinai",
+   "titulo": "A chegada ao Sinai",
+   "ref": "Êx 18–19",
+   "cap": 18,
+   "texto": "Jetro leva a Moisés a mulher e os filhos, e o aconselha a repartir o julgamento do povo entre chefes de mil, cem, cinquenta e dez (18:21–22). No terceiro mês depois da saída, Israel acampa diante do monte, no deserto do Sinai (19:1–2). Deus diz que, se guardarem a aliança, serão seu tesouro, “um reino de sacerdotes e gente santa” (19:5–6). O local do Sinai é debatido; o ponto no mapa segue a tradição do Jebel Musa.",
+   "incerto": true,
+   "caminho": [
+    [
+     33.6,
+     28.68
+    ],
+    [
+     33.97,
+     28.54
+    ]
+   ]
+  }
+ ]
+}

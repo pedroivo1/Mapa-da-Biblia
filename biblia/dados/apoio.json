@@ -7,7 +7,7 @@
   "livroNome": "Gênesis",
   "aria": "Mapa-múndi com a viagem de Abrão, de Ur dos caldeus a Harã e a Canaã",
   "lugares": [
-    {"id":"ur","nome":"Ur dos caldeus","lon":46.1,"lat":30.96,"lado":"esq"},
+    {"id":"ur","nome":"Ur dos caldeus","lon":46.1,"lat":30.96,"lado":"esq","incerto":true},
     {"id":"hara","nome":"Harã","lon":39.03,"lat":36.87,"lado":"dir"},
     {"id":"siquem","nome":"Siquém","lon":35.28,"lat":32.22,"lado":"esq"},
     {"id":"betel","nome":"Betel","lon":35.22,"lat":31.94,"lado":"esq"},
