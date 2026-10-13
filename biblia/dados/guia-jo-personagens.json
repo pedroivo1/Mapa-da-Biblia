@@ -1,0 +1,79 @@
+{
+ "titulo": "Os personagens do livro de",
+ "destaque": "Jó.",
+ "subtitulo": "Material de apoio · Jó 1 – 42",
+ "livro": "jo",
+ "intro": "Quem fala e quem é citado, na ordem em que aparecem.",
+ "secoes": [
+  {
+   "titulo": "Jó",
+   "ref": "Jó 1–42",
+   "de": 1,
+   "ate": 42,
+   "texto": "Homem íntegro e reto da terra de Uz, rico e pai de dez filhos. Perde tudo, discute com os amigos e é restaurado. Ezequiel 14:14,20 o cita ao lado de Noé e Daniel, e Tiago 5:11 lembra a perseverança dele."
+  },
+  {
+   "titulo": "Os filhos de Jó",
+   "ref": "Jó 1:2–5, 18–19",
+   "de": 1,
+   "ate": 1,
+   "texto": "Sete filhos e três filhas, que faziam banquetes juntos. Jó oferecia holocaustos por eles, por precaução (1:5). Morrem quando a casa do irmão mais velho desaba (1:18–19)."
+  },
+  {
+   "titulo": "Satanás, “o acusador”",
+   "ref": "Jó 1–2",
+   "de": 1,
+   "ate": 2,
+   "texto": "Aparece diante do Senhor e propõe testar Jó. Só age dentro do limite que Deus fixa (1:12; 2:6). Depois do prólogo não volta a aparecer no livro."
+  },
+  {
+   "titulo": "A mulher de Jó",
+   "ref": "Jó 2:9–10",
+   "de": 2,
+   "ate": 2,
+   "texto": "Diz a Jó: “Amaldiçoe a Deus e morra!”. Jó responde que, se aceitam o bem de Deus, também devem aceitar o mal. Não fala mais; Jó a menciona em 19:17."
+  },
+  {
+   "titulo": "Elifaz de Temã",
+   "ref": "Jó 4–5; 15; 22",
+   "de": 4,
+   "ate": 22,
+   "texto": "Fala primeiro em cada ciclo. Apoia-se numa visão noturna (4:12–21) e na experiência: o inocente não perece. No terceiro ciclo acusa Jó de pecados concretos (22:5–9)."
+  },
+  {
+   "titulo": "Bildade de Sua",
+   "ref": "Jó 8; 18; 25",
+   "de": 8,
+   "ate": 25,
+   "texto": "Apela à tradição dos antepassados (8:8–10) e à justiça de Deus. Seus discursos vão ficando mais curtos."
+  },
+  {
+   "titulo": "Zofar de Naamate",
+   "ref": "Jó 11; 20",
+   "de": 11,
+   "ate": 20,
+   "texto": "Fala duas vezes, com dureza, e defende que Deus castiga menos do que Jó merece (11:6). Não responde no terceiro ciclo."
+  },
+  {
+   "titulo": "Eliú, filho de Baraquel, de Buz",
+   "ref": "Jó 32–37",
+   "de": 32,
+   "ate": 37,
+   "texto": "O mais jovem. Espera os outros terminarem e depois fala, irritado com todos. É o único dos quatro que Deus não reprova nem cita no final."
+  },
+  {
+   "titulo": "Deus",
+   "ref": "Jó 38–42",
+   "de": 38,
+   "ate": 42,
+   "texto": "Nos diálogos de Jó e dos amigos, Deus é “Deus” ou “o Todo-poderoso”; o nome “Senhor” aparece quase só na narrativa. Deus fala do meio da tempestade (38:1) e depois defende Jó diante dos amigos (42:7)."
+  },
+  {
+   "titulo": "As filhas de Jó",
+   "ref": "Jó 42:13–15",
+   "de": 42,
+   "ate": 42,
+   "texto": "Jemima, Quézia e Quéren-Hapuque, as mulheres mais bonitas de toda a terra, recebem herança junto com os irmãos (42:15), algo incomum no texto bíblico."
+  }
+ ]
+}

@@ -1462,3 +1462,74 @@ html.embutido .apoio-svg {
 .apoio-barra[hidden] {
   display: none;
 }
+
+/* guias de apoio (esboço, personagens, listas) */
+.guia {
+  max-width: 46rem;
+  padding: 0 1.5rem 2.5rem;
+}
+
+.guia-intro {
+  margin: 1.25rem 0;
+}
+
+.guia-secao {
+  padding: 1rem 0 1rem 1rem;
+  border-top: 1px solid var(--line);
+  border-left: 3px solid transparent;
+}
+
+.guia-secao.atual {
+  border-left-color: var(--c-era);
+  background: var(--bg-sunken);
+}
+
+.guia-secao p {
+  margin: 0;
+}
+
+.guia-secao h2 {
+  margin: 0.15rem 0 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.guia-secao a {
+  color: var(--muted);
+}
+
+.guia-itens {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guia-itens li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 0.5rem;
+  border-top: 1px solid var(--line);
+}
+
+.guia-itens li.atual {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.guia-itens li.atual .faint {
+  color: inherit;
+}
+
+html.embutido .guia {
+  max-width: none;
+  padding: 0 1rem 1.5rem;
+}
+
+@media (max-width: 720px) {
+  .guia { padding-right: 1.25rem; padding-left: 1.25rem; }
+}
+
+.apoio-camadas[hidden] {
+  display: none;
+}
