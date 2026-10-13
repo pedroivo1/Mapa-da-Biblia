@@ -1,0 +1,684 @@
+{
+ "mapas": [
+  {
+   "id": "historico",
+   "nome": "Mapa histórico",
+   "resumo": "A Bíblia na ordem em que os fatos aconteceram: Reis com Crônicas, e cada profeta no momento do seu tempo.",
+   "etapas": [
+    {
+     "era": "origens",
+     "trechos": [
+      {
+       "livro": "genesis",
+       "de": 1,
+       "ate": 11
+      }
+     ]
+    },
+    {
+     "era": "patriarcas",
+     "trechos": [
+      {
+       "livro": "jo",
+       "de": 1,
+       "ate": 42,
+       "nota": "Época patriarcal; data incerta."
+      },
+      {
+       "livro": "genesis",
+       "de": 12,
+       "ate": 36
+      }
+     ]
+    },
+    {
+     "era": "egito",
+     "trechos": [
+      {
+       "livro": "genesis",
+       "de": 37,
+       "ate": 50
+      },
+      {
+       "livro": "exodo",
+       "de": 1,
+       "ate": 12
+      }
+     ]
+    },
+    {
+     "era": "exodo",
+     "trechos": [
+      {
+       "livro": "exodo",
+       "de": 13,
+       "ate": 40
+      },
+      {
+       "livro": "levitico",
+       "de": 1,
+       "ate": 27
+      },
+      {
+       "livro": "numeros",
+       "de": 1,
+       "ate": 36
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 1,
+       "ate": 34
+      }
+     ]
+    },
+    {
+     "era": "conquista",
+     "trechos": [
+      {
+       "livro": "josue",
+       "de": 1,
+       "ate": 24
+      }
+     ]
+    },
+    {
+     "era": "juizes",
+     "trechos": [
+      {
+       "livro": "juizes",
+       "de": 1,
+       "ate": 21
+      },
+      {
+       "livro": "rute",
+       "de": 1,
+       "ate": 4,
+       "nota": "Da mesma época dos juízes."
+      },
+      {
+       "livro": "1samuel",
+       "de": 1,
+       "ate": 8
+      }
+     ]
+    },
+    {
+     "era": "unido",
+     "trechos": [
+      {
+       "livro": "1samuel",
+       "de": 9,
+       "ate": 31,
+       "nota": "Saul."
+      },
+      {
+       "livro": "2samuel",
+       "de": 1,
+       "ate": 24,
+       "nota": "Davi."
+      },
+      {
+       "livro": "1cronicas",
+       "de": 1,
+       "ate": 29,
+       "nota": "Genealogias e o reinado de Davi, em paralelo com Samuel."
+      },
+      {
+       "livro": "salmos",
+       "de": 1,
+       "ate": 72,
+       "nota": "Salmos de Davi e de Salomão."
+      },
+      {
+       "livro": "1reis",
+       "de": 1,
+       "ate": 11,
+       "nota": "Salomão."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 1,
+       "ate": 9,
+       "nota": "Salomão, em paralelo com Reis."
+      },
+      {
+       "livro": "proverbios",
+       "de": 1,
+       "ate": 31,
+       "nota": "Salomão."
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 1,
+       "ate": 12,
+       "nota": "Atribuído a Salomão."
+      },
+      {
+       "livro": "cantares",
+       "de": 1,
+       "ate": 8,
+       "nota": "Atribuído a Salomão."
+      }
+     ]
+    },
+    {
+     "era": "dividido",
+     "trechos": [
+      {
+       "livro": "1reis",
+       "de": 12,
+       "ate": 14,
+       "nota": "Roboão e Jeroboão I: o reino se divide."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 10,
+       "ate": 12,
+       "nota": "Roboão, em paralelo."
+      },
+      {
+       "livro": "1reis",
+       "de": 15,
+       "ate": 16,
+       "nota": "De Abias e Asa a Onri."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 13,
+       "ate": 16,
+       "nota": "Abias e Asa, em paralelo."
+      },
+      {
+       "livro": "1reis",
+       "de": 17,
+       "ate": 19,
+       "nota": "Elias e Acabe."
+      },
+      {
+       "livro": "1reis",
+       "de": 20,
+       "ate": 22,
+       "nota": "Acabe e Josafá."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 17,
+       "ate": 20,
+       "nota": "Josafá, em paralelo."
+      },
+      {
+       "livro": "2reis",
+       "de": 1,
+       "ate": 8,
+       "nota": "Elias, Eliseu e Jorão."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 21,
+       "ate": 22,
+       "nota": "Jeorão e Acazias de Judá."
+      },
+      {
+       "livro": "2reis",
+       "de": 9,
+       "ate": 10,
+       "nota": "Jeú."
+      },
+      {
+       "livro": "2reis",
+       "de": 11,
+       "ate": 12,
+       "nota": "Atalia e Joás."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 23,
+       "ate": 24,
+       "nota": "Atalia e Joás, em paralelo."
+      },
+      {
+       "livro": "joel",
+       "de": 1,
+       "ate": 3,
+       "nota": "Data incerta; colocado aqui."
+      },
+      {
+       "livro": "2reis",
+       "de": 13,
+       "ate": 14,
+       "nota": "Jeoás e Jeroboão II."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 25,
+       "ate": 25,
+       "nota": "Amazias."
+      },
+      {
+       "livro": "jonas",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "amos",
+       "de": 1,
+       "ate": 9,
+       "nota": "Profeta no reino do norte."
+      },
+      {
+       "livro": "oseias",
+       "de": 1,
+       "ate": 14,
+       "nota": "Profeta no reino do norte."
+      },
+      {
+       "livro": "2reis",
+       "de": 15,
+       "ate": 15,
+       "nota": "Uzias a Peca."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 26,
+       "ate": 27,
+       "nota": "Uzias e Jotão."
+      },
+      {
+       "livro": "isaias",
+       "de": 1,
+       "ate": 12,
+       "nota": "Isaías começa em Judá."
+      },
+      {
+       "livro": "miqueias",
+       "de": 1,
+       "ate": 7
+      },
+      {
+       "livro": "2reis",
+       "de": 16,
+       "ate": 16,
+       "nota": "Acaz."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 28,
+       "ate": 28,
+       "nota": "Acaz, em paralelo."
+      },
+      {
+       "livro": "2reis",
+       "de": 17,
+       "ate": 17,
+       "nota": "Queda de Samaria."
+      }
+     ]
+    },
+    {
+     "era": "juda-sozinho",
+     "trechos": [
+      {
+       "livro": "2reis",
+       "de": 18,
+       "ate": 20,
+       "nota": "Ezequias."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 29,
+       "ate": 32,
+       "nota": "Ezequias, em paralelo."
+      },
+      {
+       "livro": "isaias",
+       "de": 13,
+       "ate": 66,
+       "nota": "O restante de Isaías."
+      },
+      {
+       "livro": "2reis",
+       "de": 21,
+       "ate": 21,
+       "nota": "Manassés e Amom."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 33,
+       "ate": 33,
+       "nota": "Manassés, em paralelo."
+      },
+      {
+       "livro": "nau",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "2reis",
+       "de": 22,
+       "ate": 23,
+       "nota": "Josias."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 34,
+       "ate": 35,
+       "nota": "Josias, em paralelo."
+      },
+      {
+       "livro": "sofonias",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "jeremias",
+       "de": 1,
+       "ate": 25,
+       "nota": "Josias e Jeoaquim."
+      },
+      {
+       "livro": "habacuque",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "2reis",
+       "de": 24,
+       "ate": 24,
+       "nota": "Jeoaquim a Zedequias."
+      },
+      {
+       "livro": "jeremias",
+       "de": 26,
+       "ate": 39,
+       "nota": "Zedequias até a queda de Jerusalém."
+      },
+      {
+       "livro": "2reis",
+       "de": 25,
+       "ate": 25,
+       "nota": "A queda de Jerusalém."
+      },
+      {
+       "livro": "jeremias",
+       "de": 40,
+       "ate": 52,
+       "nota": "Depois da queda."
+      }
+     ]
+    },
+    {
+     "era": "exilio",
+     "trechos": [
+      {
+       "livro": "lamentacoes",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "obadias",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "ezequiel",
+       "de": 1,
+       "ate": 48
+      },
+      {
+       "livro": "daniel",
+       "de": 1,
+       "ate": 12
+      },
+      {
+       "livro": "salmos",
+       "de": 73,
+       "ate": 106,
+       "nota": "Salmos ligados à crise e ao exílio (datação aproximada)."
+      },
+      {
+       "livro": "2cronicas",
+       "de": 36,
+       "ate": 36,
+       "nota": "Do exílio ao decreto de Ciro."
+      }
+     ]
+    },
+    {
+     "era": "retorno",
+     "trechos": [
+      {
+       "livro": "esdras",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "ageu",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "zacarias",
+       "de": 1,
+       "ate": 14
+      },
+      {
+       "livro": "salmos",
+       "de": 107,
+       "ate": 150,
+       "nota": "Salmos do retorno e das subidas."
+      },
+      {
+       "livro": "ester",
+       "de": 1,
+       "ate": 10
+      },
+      {
+       "livro": "esdras",
+       "de": 7,
+       "ate": 10
+      },
+      {
+       "livro": "neemias",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "malaquias",
+       "de": 1,
+       "ate": 4
+      }
+     ]
+    },
+    {
+     "era": "entre",
+     "trechos": []
+    },
+    {
+     "era": "jesus",
+     "trechos": [
+      {
+       "livro": "lucas",
+       "de": 1,
+       "ate": 2,
+       "nota": "O nascimento e a infância."
+      },
+      {
+       "livro": "mateus",
+       "de": 1,
+       "ate": 28
+      },
+      {
+       "livro": "marcos",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "lucas",
+       "de": 3,
+       "ate": 24
+      },
+      {
+       "livro": "joao",
+       "de": 1,
+       "ate": 21
+      }
+     ]
+    },
+    {
+     "era": "igreja",
+     "trechos": [
+      {
+       "livro": "atos",
+       "de": 1,
+       "ate": 12,
+       "nota": "Jerusalém e Judeia."
+      },
+      {
+       "livro": "tiago",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "atos",
+       "de": 13,
+       "ate": 14,
+       "nota": "Primeira viagem de Paulo."
+      },
+      {
+       "livro": "galatas",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "atos",
+       "de": 15,
+       "ate": 17
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "2tessalonicenses",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "atos",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "1corintios",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "atos",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "2corintios",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "atos",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "romanos",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "atos",
+       "de": 21,
+       "ate": 28,
+       "nota": "Paulo preso, até Roma."
+      },
+      {
+       "livro": "efesios",
+       "de": 1,
+       "ate": 6,
+       "nota": "Cartas da prisão."
+      },
+      {
+       "livro": "filipenses",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "colossenses",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "filemom",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "1timoteo",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "tito",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "1pedro",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "hebreus",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "2timoteo",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "2pedro",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "judas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "1joao",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "2joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "3joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "apocalipse",
+       "de": 1,
+       "ate": 22
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

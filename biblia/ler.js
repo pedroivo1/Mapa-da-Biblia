@@ -2,6 +2,7 @@
   "use strict";
 
   var KEY = "biblia-leitor";
+  var KEY_MAPA = "biblia-mapa"; // { padrao: id do mapa escolhido, pos: { id do mapa: "livro/cap" } }
   var TAM_MIN = 0.9;
   var TAM_MAX = 2;
   var raiz = document.getElementById("leitor");
@@ -13,6 +14,11 @@
   var dlgLeitura = null;
   var voz = window.speechSynthesis || null;
   var falando = false;
+  // modo mapa: só quando aberto pelo botão do mapa (?mapa=id); pela aba Bíblia segue a ordem dos livros
+  var mapa = null;
+  var eras = {};
+  var ordem = [];
+  var indice = {};
 
   function ler(chave, padrao) {
     try {
@@ -49,17 +55,30 @@
     if (!mantemVoz) parar();
     pos = { i: i, c: c };
     gravar(KEY, { livro: canon[i].id, cap: c, tam: tam });
+    if (mapa) {
+      var m = ler(KEY_MAPA, {});
+      m.pos = m.pos || {};
+      m.pos[mapa.id] = canon[i].id + "/" + c;
+      gravar(KEY_MAPA, m);
+    }
     history.replaceState(null, "", "#" + canon[i].id + "/" + c);
     render();
     window.scrollTo(0, 0);
   }
 
+  function noMapa(delta) {
+    var n = indice[pos.i + ":" + pos.c];
+    return n == null ? null : ordem[n + delta] || null;
+  }
+
   function anterior() {
+    if (mapa) return noMapa(-1);
     if (pos.c > 1) return { i: pos.i, c: pos.c - 1 };
     if (pos.i > 0) return { i: pos.i - 1, c: texto[pos.i - 1].chapters.length };
     return null;
   }
   function proximo() {
+    if (mapa) return noMapa(1);
     if (pos.c < texto[pos.i].chapters.length) return { i: pos.i, c: pos.c + 1 };
     if (pos.i < canon.length - 1) return { i: pos.i + 1, c: 1 };
     return null;
@@ -160,6 +179,20 @@
     return h + "</p>";
   }
 
+  function bannerMapa() {
+    var n = indice[pos.i + ":" + pos.c];
+    var p = n == null ? null : ordem[n];
+    if (!p) return "";
+    var etapa = mapa.etapas[p.e];
+    var era = eras[etapa.era] || {};
+    var tr = etapa.trechos[p.t];
+    var sai = location.pathname.replace(/[^\/]*$/, "") + "ler.html" + location.hash;
+    return '<div class="leitor-mapa"><p class="hud muted"><strong>' + esc(mapa.nome) + "</strong> · " + esc(era.nome || "") +
+      (era.periodo ? " (" + esc(era.periodo) + ")" : "") + " · " + (n + 1) + "/" + ordem.length + "</p>" +
+      (tr.nota ? '<p class="hud faint">' + esc(tr.nota) + "</p>" : "") +
+      '<p class="hud"><a href="mapa.html">Ver o mapa</a> · <a href="' + esc(sai) + '">Sair do mapa (ordem dos livros)</a></p></div>';
+  }
+
   function render() {
     var b = canon[pos.i];
     var versos = texto[pos.i].chapters[pos.c - 1];
@@ -173,6 +206,7 @@
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
       '<button type="button" data-fonte="1" aria-label="Aumentar letra"' + (tam >= TAM_MAX ? " disabled" : "") + ">A+</button>" +
       "</span></div>";
+    if (mapa) h += bannerMapa();
     h += '<p class="leitor-aviso hud muted" role="status" hidden></p>';
     h += '<article class="leitor-texto"><h1>' + esc(b.nome) + " " + pos.c + "</h1>";
     h += paragrafos(versos) + "</article>";
@@ -275,13 +309,41 @@
     if (voz) voz.cancel();
   });
 
-  function iniciar(listaCanon, biblia) {
+  function montarMapa(lista, listaEras) {
+    var id = (/[?&]mapa=([a-z0-9-]+)/.exec(location.search) || [])[1];
+    if (!id || !lista) return;
+    var porId = {};
+    canon.forEach(function (b, i) { porId[b.id] = i; });
+    (lista.mapas || []).forEach(function (m) { if (m.id === id) mapa = m; });
+    if (!mapa) return;
+    (listaEras.eras || []).forEach(function (e) { eras[e.id] = e; });
+    mapa.etapas.forEach(function (et, e) {
+      et.trechos.forEach(function (tr, t) {
+        for (var c = tr.de; c <= tr.ate; c++) {
+          indice[porId[tr.livro] + ":" + c] = ordem.length;
+          ordem.push({ i: porId[tr.livro], c: c, e: e, t: t });
+        }
+      });
+    });
+  }
+
+  function iniciar(listaCanon, biblia, mapas, listaEras) {
     canon = listaCanon;
     texto = biblia;
+    montarMapa(mapas, listaEras);
     var salvo = ler(KEY, {});
     if (typeof salvo.tam === "number" && salvo.tam >= TAM_MIN && salvo.tam <= TAM_MAX) tam = salvo.tam;
     var p = doHash();
-    if (!p && salvo.livro) {
+    if (mapa && !p) {
+      var guardado = (ler(KEY_MAPA, {}).pos || {})[mapa.id];
+      var m = guardado && /^([a-z0-9]+)\/(\d+)$/.exec(guardado);
+      var s = 0;
+      for (var k = 0; m && k < canon.length; k++) {
+        if (canon[k].id === m[1] && indice[k + ":" + m[2]] != null) s = indice[k + ":" + m[2]];
+      }
+      p = ordem[s];
+    }
+    if (!p && !mapa && salvo.livro) {
       for (var i = 0; i < canon.length; i++) {
         if (canon[i].id === salvo.livro && salvo.cap >= 1 && salvo.cap <= texto[i].chapters.length) p = { i: i, c: salvo.cap };
       }
@@ -290,11 +352,14 @@
     render();
   }
 
+  var comMapa = /[?&]mapa=/.test(location.search);
   Promise.all([
     fetch("dados/canon.json").then(function (r) { return r.json(); }),
-    fetch("../data/nvi.json").then(function (r) { return r.json(); })
+    fetch("../data/nvi.json").then(function (r) { return r.json(); }),
+    comMapa ? fetch("dados/mapas.json").then(function (r) { return r.json(); }) : null,
+    comMapa ? fetch("dados/eras.json").then(function (r) { return r.json(); }) : null
   ]).then(function (r) {
-    iniciar(r[0], r[1]);
+    iniciar(r[0], r[1], r[2], r[3]);
   }, function () {
     raiz.innerHTML = '<p class="vazio">Não consegui carregar o texto. Abra por um servidor local (<code>python -m http.server</code>).</p>';
   });

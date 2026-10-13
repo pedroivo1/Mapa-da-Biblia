@@ -81,6 +81,15 @@
     for (var c = 1; c <= b.v.length; c++) if (lidosCap(b, c) > 0) n++;
     return n;
   }
+  function totalVersos(b) {
+    var n = 0;
+    for (var c = 0; c < b.v.length; c++) n += b.v[c];
+    return n;
+  }
+  // área colorida do quadrado = porcentagem de versículos lidos
+  function pct(feitos, total) {
+    return total ? Math.round((feitos / total) * 1000) / 10 : 0;
+  }
   function livroCompleto(b) {
     return capsCompletos(b) === b.v.length;
   }
@@ -149,7 +158,7 @@
           var c = capsCompletos(x);
           var st = c === x.v.length ? "feito" : capsComAlgo(x) ? "parcial" : "";
           h += '<div class="l-livro ' + st + '">' +
-            '<button type="button" class="l-check ' + st + '" data-l-livro-tog="' + x.id + '"' + off + ' aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
+            '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(versosLidos(x), totalVersos(x)) + '%" data-l-livro-tog="' + x.id + '"' + off + ' aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
             '<button type="button" class="l-nome" data-l-abrir="' + x.id + '">' + esc(x.nome) + "</button>" +
             '<span class="hud faint">' + c + "/" + x.v.length + " cap.</span>" +
             '<progress value="' + c + '" max="' + x.v.length + '"></progress></div>';
@@ -165,7 +174,7 @@
       for (var c = 1; c <= b.v.length; c++) {
         var lc = lidosCap(b, c);
         var st = estado(lc, b.v[c - 1]);
-        h += '<div class="l-cap ' + st + '"><button type="button" class="l-cap-num" data-l-cap="' + c + '" title="' + lc + "/" + b.v[c - 1] + ' versículos">' + c + "</button>" +
+        h += '<div class="l-cap ' + st + '"><button type="button" class="l-cap-num" style="--pct:' + pct(lc, b.v[c - 1]) + '%" data-l-cap="' + c + '" title="' + lc + "/" + b.v[c - 1] + ' versículos">' + c + "</button>" +
           '<button type="button" class="l-check ' + st + '" data-l-cap-tog="' + c + '"' + off + ' aria-label="Marcar capítulo ' + c + '" title="Marcar o capítulo inteiro"></button></div>';
       }
       h += "</div>";
