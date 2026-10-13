@@ -651,11 +651,12 @@
     if (disponivel < 600) MARGEM = 0;
     else if (disponivel < 900) MARGEM = 56;
     var f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM) / flex));
-    BAR = Math.round(BAR * f);
-    GUT = Math.round(GUT * f);
-    SUB.livros = Math.round(SUB.livros * f);
-    SUB.potencias = Math.round(SUB.potencias * f);
-    larguraEra = Math.round(larguraEra * f);
+    // arredonda para baixo: arredondar para cima pode estourar a largura e criar rolagem lateral
+    BAR = Math.floor(BAR * f);
+    GUT = Math.floor(GUT * f);
+    SUB.livros = Math.floor(SUB.livros * f);
+    SUB.potencias = Math.floor(SUB.potencias * f);
+    larguraEra = Math.floor(larguraEra * f);
     var curto = MARGEM < 100;
 
     var cols = [];
@@ -1156,7 +1157,6 @@
       if (ev.target.closest && ev.target.closest(".detalhe, .filtro-menu, dialog, .regua-y")) return;
       var f = ev.deltaMode === 1 ? 16 : ev.deltaMode === 2 ? rolagem.clientHeight : 1;
       rolarSuave(rolagem, ev.deltaY * f);
-      rolagem.scrollLeft += ev.deltaX * f;
       ev.preventDefault();
     },
     { passive: false }

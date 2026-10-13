@@ -368,7 +368,8 @@ button.chip:hover {
 }
 
 .rot-txt.quebra {
-  overflow: visible;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   white-space: normal;
 }
 
@@ -1634,7 +1635,8 @@ body.linha-tempo .mapa-cab {
 body.linha-tempo .mapa-scroll {
   min-width: 0;
   flex: 1;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   border-bottom: 0;
   scrollbar-width: none;
 }
@@ -1773,5 +1775,32 @@ body.linha-tempo .detalhe {
 
   body.linha-tempo .mapa-cab {
     padding-right: 0;
+  }
+}
+
+/* celular estreito (até 360 px): o menu de livros cabe na tela e os nomes das colunas encolhem */
+@media (max-width: 720px) {
+  body.linha-tempo .colunas .filtro {
+    position: static;
+  }
+
+  body.linha-tempo .filtro-menu {
+    top: 100%;
+    right: 0.75rem;
+    left: 0.75rem;
+    min-width: 0;
+  }
+
+  body.linha-tempo .mapa-cab-in div {
+    padding: 0 2px;
+    font-size: 9px;
+    letter-spacing: 0;
+    line-height: 1.15;
+    text-align: center;
+  }
+
+  body.linha-tempo .rot-txt {
+    font-size: 10px;
+    line-height: 12px;
   }
 }
