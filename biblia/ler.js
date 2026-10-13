@@ -16,7 +16,7 @@
   var materiais = [];
   var voz = window.speechSynthesis || null;
   var falando = false;
-  // modo mapa: só quando aberto pelo botão do mapa (?mapa=id); pela aba Bíblia segue a ordem dos livros
+  // modo plano: só quando aberto pelo botão do plano (?mapa=id); pela aba Bíblia segue a ordem dos livros
   var mapa = null;
   var eras = {};
   var ordem = [];
@@ -192,7 +192,7 @@
     return '<div class="leitor-mapa"><p class="hud muted"><strong>' + esc(mapa.nome) + "</strong> · " + esc(era.nome || "") +
       (era.periodo ? " (" + esc(era.periodo) + ")" : "") + " · " + (n + 1) + "/" + ordem.length + "</p>" +
       (tr.nota ? '<p class="hud faint">' + esc(tr.nota) + "</p>" : "") +
-      '<p class="hud"><a href="mapa.html">Ver o mapa</a> · <a href="' + esc(sai) + '">Sair do mapa (ordem dos livros)</a></p></div>';
+      '<p class="hud"><a href="mapa.html">Ver o plano</a> · <a href="' + esc(sai) + '">Sair do plano (ordem dos livros)</a></p></div>';
   }
 
   // materiais de apoio ligados ao capítulo que está na tela
@@ -214,7 +214,7 @@
     var h = '<div class="leitor-barra">' +
       '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> ▾</button>" +
       '<span class="leitor-fonte">' +
-      (apoio.length ? '<button type="button" data-apoio aria-haspopup="dialog">Apoio (' + apoio.length + ")</button>" : "") +
+      (apoio.length ? '<button type="button" data-apoio aria-haspopup="dialog">Mapas (' + apoio.length + ")</button>" : "") +
       (voz ? '<button type="button" data-ouvir>' + (falando ? "Parar" : "Ouvir") + "</button>" : "") +
       '<button type="button" data-leitura aria-haspopup="dialog">Marcar leitura</button>' +
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
@@ -319,7 +319,7 @@
       dlgApoio.className = "leitor-dlg leitor-dlg-leitura leitor-dlg-apoio";
       document.body.appendChild(dlgApoio);
     }
-    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Material de apoio</span><button type="button" data-fechar>Fechar</button></div>' +
+    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Mapas</span><button type="button" data-fechar>Fechar</button></div>' +
       '<div class="apoio-abas" role="tablist">';
     lista.forEach(function (m, k) {
       h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";

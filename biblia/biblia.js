@@ -143,7 +143,7 @@
 
   /* ---------- dados ---------- */
 
-  function preparar(reis, livros, eras) {
+  function preparar(reis, livros, eras, materiais) {
     var lista = [];
     function reg(arr, tipo) {
       arr.forEach(function (i) {
@@ -158,6 +158,20 @@
     reg(livros.livros, "livro");
     reg(livros.lideres, "lider");
     reg(eras.eras, "era");
+    reis.potencias.forEach(function (p) {
+      (p.periodos || []).forEach(function (q) {
+        q.tipo = "periodo";
+        q.key = "periodo:" + q.id;
+        q.potencia = p;
+        lista.push(q);
+      });
+    });
+    var mapas = materiais.materiais.filter(function (m) {
+      return m.ano != null;
+    });
+    mapas.sort(function (a, b) {
+      return b.ano - a.ano;
+    });
     MARCOS.forEach(function (m) {
       m.tipo = "marco";
       m.key = "marco:" + m.ano;
@@ -194,6 +208,7 @@
       livros: livros.livros,
       lideres: livros.lideres,
       eras: eras.eras,
+      mapas: mapas,
       aviso: reis.aviso
     };
   }
@@ -249,6 +264,10 @@
           return "<li><strong>" + ano(e.ano) + "</strong> " + esc(e.texto) + ' <span class="faint">' + esc(e.ref) + "</span></li>";
         }).join("") + "</ul>";
       }
+    } else if (item.tipo === "periodo") {
+      h += '<p class="hud faint">' + esc(item.potencia.nome) + " · " + periodo(item.inicio, item.fim) + "</p>";
+      h += '<p class="item-nota">' + esc(item.nota) + "</p>";
+      h += '<p class="chips">' + chip(item.potencia) + "</p>";
     } else if (item.tipo === "livro") {
       h += '<p class="hud faint">' + esc(GRUPO[item.grupo]) + " · " + esc(rotuloPeriodo(item)) + (item.incerta ? " · data incerta" : "") + "</p>";
       h += '<p class="item-nota">' + esc(item.nota) + "</p>";
@@ -441,8 +460,8 @@
     }
     // nomes dos blocos: camada HTML por cima do mapa, com position: sticky nativo
     var rotulos = [];
-    function rotulo(g, bx, w, y1, y2, nome, quebra) {
-      rotulos.push({ x: bx, w: w, y1: y1, h: y2 - y1, nome: nome, quebra: !!quebra, key: g.getAttribute("data-abrir") });
+    function rotulo(g, bx, w, y1, y2, nome, quebra, sub) {
+      rotulos.push({ x: bx, w: w, y1: y1, h: y2 - y1, nome: nome, sub: sub, quebra: !!quebra, key: g.getAttribute("data-abrir") });
     }
 
     // eras
@@ -453,6 +472,14 @@
       rotulo(g, cEra.x + 3, cEra.w - 6, y1 + 1, y2 - 1, e.nome, true);
       s.appendChild(g);
     });
+
+    // pontos dos mapas, na coluna das eras
+    var pontosMapa = [];
+    if (cEra) {
+      dados.mapas.forEach(function (m) {
+        pontosMapa.push({ m: m, x: cEra.x + cEra.w - 15, y: Y(m.ano) });
+      });
+    }
 
     // livros e líderes (blocos empacotados)
     function desenhar(lista, c, sub, cls, nomeDe) {
@@ -472,8 +499,28 @@
         var bx = cPot.x + b.sub * SUB.potencias;
         var g = grupo(b.item, "potencia");
         rect(g, bx + 2, b.y1, SUB.potencias - 4, b.y2 - b.y1);
-        rotulo(g, bx + 2, SUB.potencias - 4, b.y1, b.y2, b.item.nome);
+        var periodos = b.item.periodos || [];
+        if (!periodos.length) {
+          rotulo(g, bx + 2, SUB.potencias - 4, b.y1, b.y2, b.item.nome);
+          s.appendChild(g);
+          return;
+        }
         s.appendChild(g);
+        // um bloco só: cada período leva o nome da potência e, abaixo, o seu próprio nome
+        var ate = b.item.inicio;
+        periodos.forEach(function (q) {
+          // vão entre períodos: fica só o nome da potência
+          if (q.inicio < ate) rotulo(g, bx + 2, SUB.potencias - 4, Y(ate), Y(q.inicio), b.item.nome, true);
+          ate = q.fim;
+          var qy1 = Y(q.inicio);
+          var qy2 = Math.max(Y(q.fim), qy1 + 8);
+          var gq = grupo(q, "periodo");
+          rect(gq, bx + 2, qy1, SUB.potencias - 4, qy2 - qy1);
+          if (q.inicio !== b.item.inicio) gq.appendChild(svg("line", { x1: bx + 2, y1: qy1, x2: bx + SUB.potencias - 2, y2: qy1, class: "divisor" }));
+          var baixo = qy2 - qy1 < 30;
+          rotulo(gq, bx + 2, SUB.potencias - 4, qy1, qy2, baixo ? q.nome : b.item.nome, true, baixo ? null : q.nome);
+          s.appendChild(gq);
+        });
       });
     }
 
@@ -538,7 +585,7 @@
     // contorno do hover: um retângulo fino desenhado por último, para ficar acima de tudo
     var contorno = svg("rect", { class: "contorno", visibility: "hidden" });
     s.appendChild(contorno);
-    // blocos muito curtos (menos de 12px, como Acazias, Zinri e Salum): só uma linha de 1px
+    // blocos mínimos (5px: reinados de meses, como Zinri e Salum): só uma linha de 1px
     var linhaHover = svg("line", { class: "contorno-linha", visibility: "hidden" });
     s.appendChild(linhaHover);
     function esconderHover() {
@@ -581,9 +628,27 @@
         t.style.lineHeight = r.h + "px";
       }
       t.textContent = r.nome;
+      if (r.sub) {
+        t.style.fontWeight = "600";
+        var sub = document.createElement("span");
+        sub.className = "rot-sub";
+        sub.textContent = r.sub;
+        t.appendChild(sub);
+      }
       if (r.key) t.setAttribute("data-abrir", r.key);
       bloco.appendChild(t);
       corpoMapa.appendChild(bloco);
+    });
+    pontosMapa.forEach(function (p) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "era-mapa";
+      b.style.left = p.x - 9 + "px";
+      b.style.top = p.y - 9 + "px";
+      b.setAttribute("data-mapa", p.m.id);
+      b.setAttribute("aria-label", "Mapa: " + p.m.titulo + " · " + ano(p.m.ano));
+      b.setAttribute("data-dica", p.m.titulo + " · " + ano(p.m.ano));
+      corpoMapa.appendChild(b);
     });
     scroll.appendChild(corpoMapa);
     corpoMapa.addEventListener("mouseover", function (ev) {
@@ -598,7 +663,7 @@
       if (!r) return;
       var rx = Number(r.getAttribute("x")), ry = Number(r.getAttribute("y"));
       var rw = Number(r.getAttribute("width")), rh = Number(r.getAttribute("height"));
-      if (rh < 12) {
+      if (rh < 6) {
         var ly = ry; // no vão que separa este período do anterior
         linhaHover.setAttribute("x1", rx);
         linhaHover.setAttribute("x2", rx + rw);
@@ -664,9 +729,14 @@
   function renderizar() {
     var antigo = raiz.querySelector(".mapa-scroll");
     var esq = antigo ? antigo.scrollLeft : 0;
+    // esvaziar a vista encolhe a página e a rolagem iria para o topo: guarda a altura e a posição
+    var topo = window.pageYOffset;
+    raiz.style.minHeight = raiz.offsetHeight + "px";
     larguraAnterior = raiz.clientWidth;
     raiz.innerHTML = "";
     raiz.appendChild(vistaFaixas());
+    raiz.style.minHeight = "";
+    window.scrollTo(0, topo);
     var novo = raiz.querySelector(".mapa-scroll");
     if (novo && esq) novo.scrollLeft = esq;
     var leg = raiz.querySelector(".colunas");
@@ -679,6 +749,35 @@
     painel.innerHTML = '<button type="button" class="fechar" data-fechar aria-label="Fechar">×</button>' + corpo(item);
     painel.dataset.key = key;
     painel.hidden = false;
+  }
+
+  /* mapa do período, num popup */
+
+  var dlgMapa = null;
+
+  function abrirMapa(id) {
+    var m = null;
+    dados.mapas.forEach(function (x) {
+      if (x.id === id) m = x;
+    });
+    if (!m) return;
+    if (!dlgMapa) {
+      dlgMapa = document.createElement("dialog");
+      dlgMapa.className = "leitor-dlg leitor-dlg-leitura leitor-dlg-apoio";
+      dlgMapa.innerHTML = '<div class="leitor-dlg-topo"><span class="hud muted" data-mapa-info></span><button type="button" data-fechar-mapa>Fechar</button></div><iframe></iframe>';
+      dlgMapa.onclick = function (ev) {
+        if (ev.target === dlgMapa || ev.target.closest("[data-fechar-mapa]")) dlgMapa.close();
+      };
+      dlgMapa.addEventListener("close", function () {
+        dlgMapa.querySelector("iframe").removeAttribute("src");
+      });
+      document.body.appendChild(dlgMapa);
+    }
+    dlgMapa.querySelector("[data-mapa-info]").textContent = ano(m.ano) + " · " + m.ref;
+    var quadro = dlgMapa.querySelector("iframe");
+    quadro.setAttribute("title", m.titulo);
+    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido");
+    if (!dlgMapa.open) dlgMapa.showModal();
   }
 
   function fechar() {
@@ -701,6 +800,8 @@
     }
     var filtro = document.querySelector(".filtro");
     if (filtro && filtro.open && !ev.target.closest(".filtro")) filtro.open = false;
+    var pm = ev.target.closest && ev.target.closest("[data-mapa]");
+    if (pm) return abrirMapa(pm.getAttribute("data-mapa"));
     var alvo = ev.target.closest && ev.target.closest("[data-abrir]");
     if (alvo) abrir(alvo.getAttribute("data-abrir"));
     else if (ev.target.closest && ev.target.closest("[data-fechar]")) fechar();
@@ -749,14 +850,14 @@
   });
 
   Promise.all(
-    ["reis", "livros", "eras"].map(function (n) {
+    ["reis", "livros", "eras", "materiais"].map(function (n) {
       return fetch("dados/" + n + ".json").then(function (r) {
         return r.json();
       });
     })
   ).then(
     function (res) {
-      dados = preparar(res[0], res[1], res[2]);
+      dados = preparar(res[0], res[1], res[2], res[3]);
       renderizar();
     },
     function () {

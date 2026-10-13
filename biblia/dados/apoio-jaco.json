@@ -1,42 +1,413 @@
 {
-  "mundo": "mundo.json",
-  "titulo": "A jornada de",
-  "destaque": "Jacó.",
-  "subtitulo": "Material de apoio · Gênesis 27 – 36",
-  "livro": "genesis",
-  "livroNome": "Gênesis",
-  "aria": "Mapa-múndi com a jornada de Jacó de Berseba a Harã e de volta a Canaã",
-  "vista": [[34.7, 30.1], [35.9, 32.5]],
-  "lugares": [
-    {"id":"berseba","nome":"Berseba","lon":34.84,"lat":31.25,"lado":"esq"},
-    {"id":"betel","nome":"Betel","lon":35.24,"lat":31.93,"lado":"esq"},
-    {"id":"hara","nome":"Harã","lon":39.03,"lat":36.87,"lado":"dir"},
-    {"id":"galaade","nome":"Galaade","lon":35.75,"lat":32.4,"lado":"dir"},
-    {"id":"maanaim","nome":"Maanaim","lon":35.7,"lat":32.3,"lado":"dir"},
-    {"id":"peniel","nome":"Peniel","lon":35.7,"lat":32.2,"lado":"dir"},
-    {"id":"sucote","nome":"Sucote","lon":35.62,"lat":32.19,"lado":"esq"},
-    {"id":"siquem","nome":"Siquém","lon":35.28,"lat":32.21,"lado":"esq"},
-    {"id":"efrata","nome":"Efrata (Belém)","lon":35.2,"lat":31.7,"lado":"esq"},
-    {"id":"hebrom","nome":"Hebrom","lon":35.1,"lat":31.53,"lado":"esq"},
-    {"id":"seir","nome":"Seir","lon":35.5,"lat":30.2,"lado":"dir"}
+ "mundo": "mundo.json",
+ "titulo": "A jornada de",
+ "destaque": "Jacó.",
+ "subtitulo": "Mapa · Gênesis 27 – 36",
+ "livro": "genesis",
+ "livroNome": "Gênesis",
+ "aria": "Mapa-múndi com a jornada de Jacó de Berseba a Harã e de volta a Canaã",
+ "vista": [
+  [
+   34.7,
+   30.1
   ],
-  "etapas": [
-    {"id":"fuga","lugar":"berseba","titulo":"A fuga de Jacó","ref":"Gn 27:41 – 28:5","cap":27,"texto":"Esaú guarda ódio de Jacó e planeja matá-lo depois da morte do pai. Rebeca o manda para a casa do irmão dela, Labão, em Harã, “por algum tempo”. Isaque o abençoa de novo e o envia a Padã-Arã para casar-se com uma das filhas de Labão (28:1–5).","incerto":false,"caminho":[]},
-    {"id":"betel","lugar":"betel","titulo":"O sonho de Betel","ref":"Gn 28:10–22","cap":28,"texto":"Jacó dorme com uma pedra por travesseiro e sonha com uma escada entre a terra e o céu. Deus renova a promessa de Abraão e Isaque. Jacó chama o lugar de Betel, “casa de Deus”; antes se chamava Luz.","incerto":true,"caminho":[[34.84,31.25],[35.1,31.53],[35.24,31.93]]},
-    {"id":"poco","lugar":"hara","titulo":"O poço dos pastores","ref":"Gn 29:1–14","cap":29,"texto":"Jacó chega à terra dos povos do oriente. Junto a um poço com uma grande pedra, os pastores, que são de Harã, dizem que Raquel, filha de Labão, está chegando com as ovelhas. Jacó remove a pedra sozinho, beija Raquel e chora. Labão o acolhe em casa.","incerto":true,"caminho":[[35.24,31.93],[35.28,32.21],[35.65,33.25],[36.3,33.51],[36.72,34.73],[37.16,36.2],[39.03,36.87]]},
-    {"id":"familia","lugar":"hara","titulo":"Lia, Raquel e os filhos","ref":"Gn 29:15 – 30:24","cap":29,"texto":"Jacó trabalha sete anos por Raquel, mas Labão lhe dá Lia; ele serve mais sete anos por Raquel. Em Padã-Arã nascem Rúben, Simeão, Levi, Judá, Dã, Naftali, Gade, Aser, Issacar, Zebulom, Diná e José.","incerto":false,"caminho":[]},
-    {"id":"rebanhos","lugar":"hara","titulo":"Os rebanhos de Jacó","ref":"Gn 30:25 – 31:16","cap":30,"texto":"Depois do nascimento de José, Jacó pede para voltar. Labão pede que fique, e Jacó propõe ficar com os animais malhados e pintados; enriquece muito. Labão e os filhos se voltam contra ele. Deus manda Jacó voltar a Canaã, e Lia e Raquel concordam.","incerto":false,"caminho":[]},
-    {"id":"galaade","lugar":"galaade","titulo":"O pacto no monte Galaade","ref":"Gn 31:17–55","cap":31,"texto":"Jacó foge com mulheres, filhos e rebanhos, atravessa o Eufrates e segue em direção à região montanhosa de Galaade (31:21). Labão só sabe no terceiro dia e o persegue por sete dias. Deus o avisa em sonho a não falar mal de Jacó. Raquel tinha roubado os ídolos do pai (31:19, 34). Os dois fazem aliança e levantam um monte de pedras: Galeede, “monte do testemunho”, e Mispá.","incerto":true,"caminho":[[39.03,36.87],[37.16,36.2],[36.72,34.73],[36.3,33.51],[36.0,32.9],[35.75,32.4]]},
-    {"id":"maanaim","lugar":"maanaim","titulo":"Maanaim: os anjos de Deus","ref":"Gn 32:1–2","cap":32,"texto":"Jacó segue seu caminho e os anjos de Deus o encontram. Ao vê-los, ele diz: “Este é o acampamento de Deus!” e chama o lugar de Maanaim.","incerto":true,"caminho":[[35.75,32.4],[35.7,32.3]]},
-    {"id":"mensageiros","lugar":"seir","titulo":"Mensageiros a Esaú","ref":"Gn 32:3–21","cap":32,"texto":"Jacó envia mensageiros a Esaú, na terra de Seir, campo de Edom. Eles voltam dizendo que Esaú vem com 400 homens. Com medo, Jacó divide o grupo em dois acampamentos, ora pedindo livramento (32:9–12) e manda à frente 550 animais, em grupos, como presente (32:13–21).","incerto":true,"caminho":[[35.7,32.3],[35.55,31.0],[35.5,30.2]]},
-    {"id":"peniel","lugar":"peniel","titulo":"A luta em Peniel","ref":"Gn 32:22–32","cap":32,"texto":"Jacó atravessa o vau do Jaboque com a família. Sozinho, à noite, luta com um homem até o amanhecer. Recebe o nome Israel e fica manco, e chama o lugar de Peniel, “face de Deus”.","incerto":true,"caminho":[[35.5,30.2],[35.55,31.0],[35.7,32.2]]},
-    {"id":"encontro","lugar":"peniel","titulo":"O encontro com Esaú","ref":"Gn 33:1–16","cap":33,"texto":"Jacó se curva sete vezes diante de Esaú, que corre ao seu encontro, o abraça e chora. Jacó insiste, e Esaú aceita os presentes. Esaú oferece acompanhá-lo; Jacó recusa, e Esaú volta a Seir naquele mesmo dia.","incerto":false,"caminho":[]},
-    {"id":"sucote","lugar":"sucote","titulo":"Sucote","ref":"Gn 33:17","cap":33,"texto":"Jacó segue para Sucote, onde constrói uma casa para si e abrigos para o gado. Por isso o lugar se chama Sucote, “abrigos”.","incerto":true,"caminho":[[35.7,32.2],[35.62,32.19]]},
-    {"id":"terreno","lugar":"siquem","titulo":"O terreno de Siquém","ref":"Gn 33:18–20","cap":33,"texto":"Jacó chega em paz a Siquém, em Canaã, vindo de Padã-Arã, e acampa diante da cidade. Compra dos filhos de Hamor, por cem peças de prata, a parte do campo onde armou a tenda e levanta um altar: El-Elohe-Israel.","incerto":true,"caminho":[[35.62,32.19],[35.28,32.21]]},
-    {"id":"dina","lugar":"siquem","titulo":"Diná e a vingança","ref":"Gn 34:1–31","cap":34,"texto":"Diná sai para visitar as mulheres da terra, e Siquém, filho de Hamor, a violenta. Os filhos de Jacó exigem que os homens da cidade sejam circuncidados e, no terceiro dia, Simeão e Levi matam todos os homens. Os outros filhos saqueiam a cidade. Jacó teme as represálias.","incerto":false,"caminho":[]},
-    {"id":"betel2","lugar":"betel","titulo":"De volta a Betel","ref":"Gn 35:1–15","cap":35,"texto":"Deus manda Jacó subir a Betel. Ele manda a família lançar fora os deuses estrangeiros e se purificar. Em Betel morre Débora, ama de Rebeca, e Deus confirma o nome Israel e renova a promessa.","incerto":true,"caminho":[[35.28,32.21],[35.24,31.93]]},
-    {"id":"efrata","lugar":"efrata","titulo":"Efrata, a morte de Raquel","ref":"Gn 35:16–21","cap":35,"texto":"A caminho de Efrata, isto é, Belém, Raquel morre ao dar à luz Benjamim. Jacó levanta uma coluna sobre o túmulo e segue para além de Migdal-Éder.","incerto":true,"caminho":[[35.24,31.93],[35.2,31.7]]},
-    {"id":"hebrom","lugar":"hebrom","titulo":"Hebrom","ref":"Gn 35:27–29","cap":35,"texto":"Jacó chega à casa de Isaque em Manre, Hebrom. Gênesis 35:22–26 lista os doze filhos de Jacó.","incerto":true,"caminho":[[35.2,31.7],[35.1,31.53]]},
-    {"id":"seir","lugar":"seir","titulo":"Esaú em Seir","ref":"Gn 36:1–8","cap":36,"texto":"Esaú, chamado também Edom, tem muitos bens e se muda com a família para a região montanhosa de Seir, para não estar junto de Jacó. O capítulo lista seus descendentes e os reis de Edom.","incerto":false,"caminho":[]}
+  [
+   35.9,
+   32.5
   ]
+ ],
+ "lugares": [
+  {
+   "id": "berseba",
+   "nome": "Berseba",
+   "lon": 34.84,
+   "lat": 31.25,
+   "lado": "esq"
+  },
+  {
+   "id": "betel",
+   "nome": "Betel",
+   "lon": 35.24,
+   "lat": 31.93,
+   "lado": "esq"
+  },
+  {
+   "id": "hara",
+   "nome": "Harã",
+   "lon": 39.03,
+   "lat": 36.87,
+   "lado": "dir"
+  },
+  {
+   "id": "galaade",
+   "nome": "Galaade",
+   "lon": 35.75,
+   "lat": 32.4,
+   "lado": "dir"
+  },
+  {
+   "id": "maanaim",
+   "nome": "Maanaim",
+   "lon": 35.7,
+   "lat": 32.3,
+   "lado": "dir"
+  },
+  {
+   "id": "peniel",
+   "nome": "Peniel",
+   "lon": 35.7,
+   "lat": 32.2,
+   "lado": "dir"
+  },
+  {
+   "id": "sucote",
+   "nome": "Sucote",
+   "lon": 35.62,
+   "lat": 32.19,
+   "lado": "esq"
+  },
+  {
+   "id": "siquem",
+   "nome": "Siquém",
+   "lon": 35.28,
+   "lat": 32.21,
+   "lado": "esq"
+  },
+  {
+   "id": "efrata",
+   "nome": "Efrata (Belém)",
+   "lon": 35.2,
+   "lat": 31.7,
+   "lado": "esq"
+  },
+  {
+   "id": "hebrom",
+   "nome": "Hebrom",
+   "lon": 35.1,
+   "lat": 31.53,
+   "lado": "esq"
+  },
+  {
+   "id": "seir",
+   "nome": "Seir",
+   "lon": 35.5,
+   "lat": 30.2,
+   "lado": "dir"
+  }
+ ],
+ "etapas": [
+  {
+   "id": "fuga",
+   "lugar": "berseba",
+   "titulo": "A fuga de Jacó",
+   "ref": "Gn 27:41 – 28:5",
+   "cap": 27,
+   "texto": "Esaú guarda ódio de Jacó e planeja matá-lo depois da morte do pai. Rebeca o manda para a casa do irmão dela, Labão, em Harã, “por algum tempo”. Isaque o abençoa de novo e o envia a Padã-Arã para casar-se com uma das filhas de Labão (28:1–5).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "betel",
+   "lugar": "betel",
+   "titulo": "O sonho de Betel",
+   "ref": "Gn 28:10–22",
+   "cap": 28,
+   "texto": "Jacó dorme com uma pedra por travesseiro e sonha com uma escada entre a terra e o céu. Deus renova a promessa de Abraão e Isaque. Jacó chama o lugar de Betel, “casa de Deus”; antes se chamava Luz.",
+   "incerto": true,
+   "caminho": [
+    [
+     34.84,
+     31.25
+    ],
+    [
+     35.1,
+     31.53
+    ],
+    [
+     35.24,
+     31.93
+    ]
+   ]
+  },
+  {
+   "id": "poco",
+   "lugar": "hara",
+   "titulo": "O poço dos pastores",
+   "ref": "Gn 29:1–14",
+   "cap": 29,
+   "texto": "Jacó chega à terra dos povos do oriente. Junto a um poço com uma grande pedra, os pastores, que são de Harã, dizem que Raquel, filha de Labão, está chegando com as ovelhas. Jacó remove a pedra sozinho, beija Raquel e chora. Labão o acolhe em casa.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.24,
+     31.93
+    ],
+    [
+     35.28,
+     32.21
+    ],
+    [
+     35.65,
+     33.25
+    ],
+    [
+     36.3,
+     33.51
+    ],
+    [
+     36.72,
+     34.73
+    ],
+    [
+     37.16,
+     36.2
+    ],
+    [
+     39.03,
+     36.87
+    ]
+   ]
+  },
+  {
+   "id": "familia",
+   "lugar": "hara",
+   "titulo": "Lia, Raquel e os filhos",
+   "ref": "Gn 29:15 – 30:24",
+   "cap": 29,
+   "texto": "Jacó trabalha sete anos por Raquel, mas Labão lhe dá Lia; ele serve mais sete anos por Raquel. Em Padã-Arã nascem Rúben, Simeão, Levi, Judá, Dã, Naftali, Gade, Aser, Issacar, Zebulom, Diná e José.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "rebanhos",
+   "lugar": "hara",
+   "titulo": "Os rebanhos de Jacó",
+   "ref": "Gn 30:25 – 31:16",
+   "cap": 30,
+   "texto": "Depois do nascimento de José, Jacó pede para voltar. Labão pede que fique, e Jacó propõe ficar com os animais malhados e pintados; enriquece muito. Labão e os filhos se voltam contra ele. Deus manda Jacó voltar a Canaã, e Lia e Raquel concordam.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "galaade",
+   "lugar": "galaade",
+   "titulo": "O pacto no monte Galaade",
+   "ref": "Gn 31:17–55",
+   "cap": 31,
+   "texto": "Jacó foge com mulheres, filhos e rebanhos, atravessa o Eufrates e segue em direção à região montanhosa de Galaade (31:21). Labão só sabe no terceiro dia e o persegue por sete dias. Deus o avisa em sonho a não falar mal de Jacó. Raquel tinha roubado os ídolos do pai (31:19, 34). Os dois fazem aliança e levantam um monte de pedras: Galeede, “monte do testemunho”, e Mispá.",
+   "incerto": true,
+   "caminho": [
+    [
+     39.03,
+     36.87
+    ],
+    [
+     37.16,
+     36.2
+    ],
+    [
+     36.72,
+     34.73
+    ],
+    [
+     36.3,
+     33.51
+    ],
+    [
+     36.0,
+     32.9
+    ],
+    [
+     35.75,
+     32.4
+    ]
+   ]
+  },
+  {
+   "id": "maanaim",
+   "lugar": "maanaim",
+   "titulo": "Maanaim: os anjos de Deus",
+   "ref": "Gn 32:1–2",
+   "cap": 32,
+   "texto": "Jacó segue seu caminho e os anjos de Deus o encontram. Ao vê-los, ele diz: “Este é o acampamento de Deus!” e chama o lugar de Maanaim.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.75,
+     32.4
+    ],
+    [
+     35.7,
+     32.3
+    ]
+   ]
+  },
+  {
+   "id": "mensageiros",
+   "lugar": "seir",
+   "titulo": "Mensageiros a Esaú",
+   "ref": "Gn 32:3–21",
+   "cap": 32,
+   "texto": "Jacó envia mensageiros a Esaú, na terra de Seir, campo de Edom. Eles voltam dizendo que Esaú vem com 400 homens. Com medo, Jacó divide o grupo em dois acampamentos, ora pedindo livramento (32:9–12) e manda à frente 550 animais, em grupos, como presente (32:13–21).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.7,
+     32.3
+    ],
+    [
+     35.55,
+     31.0
+    ],
+    [
+     35.5,
+     30.2
+    ]
+   ]
+  },
+  {
+   "id": "peniel",
+   "lugar": "peniel",
+   "titulo": "A luta em Peniel",
+   "ref": "Gn 32:22–32",
+   "cap": 32,
+   "texto": "Jacó atravessa o vau do Jaboque com a família. Sozinho, à noite, luta com um homem até o amanhecer. Recebe o nome Israel e fica manco, e chama o lugar de Peniel, “face de Deus”.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.7,
+     32.3
+    ],
+    [
+     35.7,
+     32.2
+    ]
+   ]
+  },
+  {
+   "id": "encontro",
+   "lugar": "peniel",
+   "titulo": "O encontro com Esaú",
+   "ref": "Gn 33:1–16",
+   "cap": 33,
+   "texto": "Jacó se curva sete vezes diante de Esaú, que corre ao seu encontro, o abraça e chora. Jacó insiste, e Esaú aceita os presentes. Esaú oferece acompanhá-lo; Jacó recusa, e Esaú volta a Seir naquele mesmo dia.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "sucote",
+   "lugar": "sucote",
+   "titulo": "Sucote",
+   "ref": "Gn 33:17",
+   "cap": 33,
+   "texto": "Jacó segue para Sucote, onde constrói uma casa para si e abrigos para o gado. Por isso o lugar se chama Sucote, “abrigos”.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.7,
+     32.2
+    ],
+    [
+     35.62,
+     32.19
+    ]
+   ]
+  },
+  {
+   "id": "terreno",
+   "lugar": "siquem",
+   "titulo": "O terreno de Siquém",
+   "ref": "Gn 33:18–20",
+   "cap": 33,
+   "texto": "Jacó chega em paz a Siquém, em Canaã, vindo de Padã-Arã, e acampa diante da cidade. Compra dos filhos de Hamor, por cem peças de prata, a parte do campo onde armou a tenda e levanta um altar: El-Elohe-Israel.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.62,
+     32.19
+    ],
+    [
+     35.28,
+     32.21
+    ]
+   ]
+  },
+  {
+   "id": "dina",
+   "lugar": "siquem",
+   "titulo": "Diná e a vingança",
+   "ref": "Gn 34:1–31",
+   "cap": 34,
+   "texto": "Diná sai para visitar as mulheres da terra, e Siquém, filho de Hamor, a violenta. Os filhos de Jacó exigem que os homens da cidade sejam circuncidados e, no terceiro dia, Simeão e Levi matam todos os homens. Os outros filhos saqueiam a cidade. Jacó teme as represálias.",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "betel2",
+   "lugar": "betel",
+   "titulo": "De volta a Betel",
+   "ref": "Gn 35:1–15",
+   "cap": 35,
+   "texto": "Deus manda Jacó subir a Betel. Ele manda a família lançar fora os deuses estrangeiros e se purificar. Em Betel morre Débora, ama de Rebeca, e Deus confirma o nome Israel e renova a promessa.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.28,
+     32.21
+    ],
+    [
+     35.24,
+     31.93
+    ]
+   ]
+  },
+  {
+   "id": "efrata",
+   "lugar": "efrata",
+   "titulo": "Efrata, a morte de Raquel",
+   "ref": "Gn 35:16–21",
+   "cap": 35,
+   "texto": "A caminho de Efrata, isto é, Belém, Raquel morre ao dar à luz Benjamim. Jacó levanta uma coluna sobre o túmulo e segue para além de Migdal-Éder.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.24,
+     31.93
+    ],
+    [
+     35.2,
+     31.7
+    ]
+   ]
+  },
+  {
+   "id": "hebrom",
+   "lugar": "hebrom",
+   "titulo": "Hebrom",
+   "ref": "Gn 35:27–29",
+   "cap": 35,
+   "texto": "Jacó chega à casa de Isaque em Manre, Hebrom. Gênesis 35:22–26 lista os doze filhos de Jacó.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.2,
+     31.7
+    ],
+    [
+     35.1,
+     31.53
+    ]
+   ]
+  },
+  {
+   "id": "seir",
+   "lugar": "seir",
+   "titulo": "Esaú em Seir",
+   "ref": "Gn 36:1–8",
+   "cap": 36,
+   "texto": "Esaú, chamado também Edom, tem muitos bens e se muda com a família para a região montanhosa de Seir, para não estar junto de Jacó. O capítulo lista seus descendentes e os reis de Edom.",
+   "incerto": false,
+   "caminho": []
+  }
+ ]
 }

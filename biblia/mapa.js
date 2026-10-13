@@ -48,7 +48,7 @@
     });
     var aberto = null;
     mapas.forEach(function (m) { if (location.hash === "#" + m.id) aberto = m; });
-    var h = aberto ? '<p class="mapa-voltar hud"><a href="#">← Mapas</a></p>' : "";
+    var h = aberto ? '<p class="mapa-voltar hud"><a href="#">← Planos</a></p>' : "";
     lista.forEach(function (m) {
       if (aberto && m !== aberto) return;
       var escolhido = m.id === padrao;
@@ -57,7 +57,7 @@
       var primeiro = m.etapas[0].trechos[0];
       h += '<article class="mapa-card' + (escolhido ? " escolhido" : "") + (aberto ? "" : " abrivel") + '"' +
         (aberto ? "" : ' data-abrir="' + esc(m.id) + '" tabindex="0" role="link" aria-label="Abrir ' + esc(m.nome) + '"') + ">" +
-        '<h2 class="item-nome">' + esc(m.nome) + (escolhido ? ' <span class="hud faint">· seu mapa padrão</span>' : "") + "</h2>" +
+        '<h2 class="item-nome">' + esc(m.nome) + (escolhido ? ' <span class="hud faint">· seu plano padrão</span>' : "") + "</h2>" +
         '<p class="muted">' + esc(m.resumo) + "</p>" +
         '<p class="hud faint">' + m.etapas.length + " épocas · " + totalCaps(m) + " capítulos</p>" +
         '<p class="mapa-acoes">' +
@@ -65,7 +65,7 @@
         (g && nomes[g[1]] ? "Continuar a Bíblia · " + esc(nomes[g[1]].nome) + " " + g[2] : "Ler a Bíblia") + "</a> " +
         (g ? '<a class="chip" href="ler.html?mapa=' + esc(m.id) + "#" + primeiro.livro + "/" + primeiro.de + '">Do início</a> ' : "") +
         '<button type="button" class="chip" data-padrao="' + esc(m.id) + '" aria-pressed="' + escolhido + '">' +
-        (escolhido ? "✓ Meu mapa padrão" : "Definir como meu mapa") + "</button></p></article>";
+        (escolhido ? "✓ Meu plano padrão" : "Definir como meu plano") + "</button></p></article>";
     });
 
     var ativo = aberto;
@@ -131,6 +131,6 @@
     r[2].forEach(function (b) { nomes[b.id] = { nome: b.nome, n: b.v.length }; });
     render();
   }, function () {
-    raiz.innerHTML = '<p class="vazio">Não consegui carregar o mapa. Abra por um servidor local (<code>python -m http.server</code>).</p>';
+    raiz.innerHTML = '<p class="vazio">Não consegui carregar o plano. Abra por um servidor local (<code>python -m http.server</code>).</p>';
   });
 })();

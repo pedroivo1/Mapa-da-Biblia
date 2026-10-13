@@ -14,19 +14,19 @@ e acesse `http://localhost:8000/`. Sem `js/config.js` preenchido, o mapa abre s�
 
 ## Linha do tempo bíblica (`biblia/`)
 
-- `biblia/dados/reis.json`: reis, profetas e potências.
+- `biblia/dados/reis.json`: reis, profetas e potências. Uma potência pode ter `periodos` (`id`, `nome`, `inicio`, `fim`, `nota`: dinastias, reis), mostrados dentro do bloco da potência: cada período leva o nome da potência e, abaixo, o seu próprio nome.
 - `biblia/dados/livros.json`: livros (com o período que cobrem ou a data de escrita) e líderes (patriarcas, juízes, apóstolos).
 - `biblia/dados/eras.json`: eras, com livros e ordem de leitura.
 - `biblia/dados/canon.json`: os 66 livros com o número de versículos de cada capítulo (Almeida Corrigida Fiel), usado na página Leitura.
 - `biblia/biblia.js`: mapa em colunas paralelas, com o tempo na vertical.
 - `data/nvi.json`: texto da Bíblia (NVI), na mesma ordem de `canon.json`.
-- `biblia/dados/mapas.json`: mapas de leitura. Cada mapa é uma lista de épocas (`era` de `eras.json`) com trechos `{livro, de, ate, nota}`; todo capítulo da Bíblia aparece uma única vez.
-- `biblia/mapa.html` e `biblia/mapa.js`: página Mapa: lista os mapas, deixa escolher o mapa padrão e abre a leitura no modo mapa.
+- `biblia/dados/mapas.json`: planos de leitura (o primeiro é o Plano histórico). Cada mapa é uma lista de épocas (`era` de `eras.json`) com trechos `{livro, de, ate, nota}`; todo capítulo da Bíblia aparece uma única vez.
+- `biblia/mapa.html` e `biblia/mapa.js`: página Plano de leitura: lista os planos, deixa escolher o plano padrão e abre a leitura no modo mapa.
 - `biblia/ler.html` e `biblia/ler.js`: leitor do texto, com livros, capítulos, tamanho da letra e última posição. Aberto pela aba Bíblia, o Próximo segue a ordem dos livros; aberto pelo botão do mapa (`ler.html?mapa=historico`), segue a ordem do mapa.
-- `biblia/apoio.html` e `biblia/apoio.js`: material de apoio. O primeiro é o mapa da viagem de Abrão (Gn 11:27 – 12:9), em SVG próprio, que ocupa a tela toda, com zoom e arrastar. Duas listas recolhíveis com caixas de seleção, Apoio (etapas numeradas) e Curiosidades (losangos da época, por região), escolhem o que aparece no mapa; o texto de cada etapa ou curiosidade abre num cartão ao tocar no número ou no losango. Zoom por pinça, toque duplo ou roda do mouse. Os dados ficam em `biblia/dados/apoio.json` (contornos e lugares em longitude/latitude, rotas por etapa e `curiosidades` da época, com `lon`/`lat` quando cabem no mapa). O mapa é um mapa-múndi (projeção Mercator, de 58° S a 80° N); qualquer curiosidade com `lon`/`lat` aparece nele. Costas, lagos e rios são simplificados do Natural Earth (domínio público), com mais detalhe da Europa ao Oriente Médio.
-- `biblia/dados/mundo.json`: base comum dos mapas de apoio (mapa-múndi, nomes e curiosidades da época). `biblia/dados/apoio.json` (viagem de Abrão) e `apoio-jo.json` (lugares de Jó) trazem só `lugares` e `etapas`; `apoio.html?m=jo` abre o segundo.
-- `biblia/materiais.html` e `biblia/materiais.js`: aba Apoio, a lista dos materiais de `materiais.json`, por livro. Por enquanto só há mapas. Material novo entra ali sozinho.
-- `biblia/dados/materiais.json`: lista dos materiais de apoio e os capítulos a que se ligam (`capitulos`: `livro`, `de`, `ate`). Quando o capítulo aberto no leitor tem materiais, aparece o botão Apoio, que abre um popup com abas para trocar de material (a `url` abre com `?embutido`).
+- `biblia/apoio.html` e `biblia/apoio.js`: Mapas (material de apoio), um mapa-múndi em SVG próprio (projeção Mercator, de 58° S a 80° N) que ocupa a tela toda, com zoom e arrastar (roda do mouse, pinça, toque duplo). O mapa traz só o nome dos lugares e as rotas de viagem tracejadas, com uma seta no sentido do caminho: quem lê liga os pontos com o texto do leitor. Uma lista recolhível de caixas de seleção, Rotas ("Origem → Destino"), mostra ou esconde cada rota. Rotas que seguem o mesmo caminho correm lado a lado, em faixas paralelas de largura fixa na tela. Os nomes são filtrados pelo zoom: de longe ficam os lugares mais citados e, ao ampliar, os outros aparecem sem se sobrepor. Costas, lagos e rios são simplificados do Natural Earth (domínio público), com mais detalhe da Europa ao Oriente Médio.
+- `biblia/dados/mundo.json`: base comum dos mapas de apoio (mapa-múndi e nomes de regiões). Cada material (`apoio.json`, `apoio-jo.json`, `apoio-jaco.json`...) traz só `lugares` (`id`, `nome`, `lon`, `lat`, `lado`) e `etapas` (`lugar`, `titulo`, `caminho` com a rota em longitude/latitude); `apoio.html?m=jo` abre o de Jó. Os campos `texto` e `ref` das etapas não aparecem no mapa por enquanto.
+- `biblia/materiais.html` e `biblia/materiais.js`: aba Mapas, a lista dos materiais de `materiais.json`, por livro. Por enquanto só há mapas. Material novo entra ali sozinho.
+- `biblia/dados/materiais.json`: lista dos materiais de apoio e os capítulos a que se ligam (`capitulos`: `livro`, `de`, `ate`). Os materiais com `ano` aparecem como pontos na coluna Eras da linha do tempo; o ponto abre o mapa num popup, com o ano e o texto da Bíblia no cabeçalho. Quando o capítulo aberto no leitor tem materiais, aparece o botão Mapas, que abre um popup com abas para trocar de material (a `url` abre com `?embutido`).
 - `biblia/leitura.html` e `biblia/leitura.js`: Leitura, aberta como popup (botão Leitura) no leitor, onde se marca livros, capítulos e versículos lidos e se vê o progresso.
 
 Anos: a.C. positivo e d.C. negativo (30 d.C. = `-30`). `inicio` é sempre o ano mais antigo. Cada trecho do eixo tem sua escala (`SEGMENTOS` em `biblia.js`).
@@ -43,6 +43,6 @@ Adicionar um profeta: copie um objeto em `profetas`. Os reis contemporâneos sae
 
 Sem login, a Leitura só consulta: nada é marcado. Com login, cada marcação é salva na conta cerca de 1 s depois. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
 
-No navegador ficam só o tema (`notas-theme`) as colunas visíveis (`biblioteca-colunas`) a posição e o tamanho da letra do leitor (`biblia-leitor`) e o mapa padrão e a posição em cada mapa (`biblia-mapa`).
+No navegador ficam só o tema (`notas-theme`) as colunas visíveis (`biblioteca-colunas`) a posição e o tamanho da letra do leitor (`biblia-leitor`) e o plano padrão e a posição em cada plano (`biblia-mapa`).
 
 Configuração do Supabase, do Google e da Vercel: veja `plan.md`.

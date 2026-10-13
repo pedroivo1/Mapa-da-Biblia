@@ -916,6 +916,78 @@
      "texto": "Neco mata Josias em Megido e depõe Jeoacaz",
      "ref": "2Rs 23:29-35"
     }
+   ],
+   "periodos": [
+    {
+     "id": "egito-interm1",
+     "nome": "1º Interm. (VII–XI)",
+     "inicio": 2166,
+     "fim": 2055,
+     "nota": "Primeiro Período Intermediário: o poder central se fragmenta em governos regionais. É o Egito do tempo da chamada de Abraão, pelas datas deste site."
+    },
+    {
+     "id": "egito-medio",
+     "nome": "Reino Médio (XI–XIII)",
+     "inicio": 2055,
+     "fim": 1650,
+     "nota": "Reino Médio: Egito reunificado, com capital perto do Faium e grande atividade na fronteira de Canaã. Pelas datas do site, é o período de José e da descida de Jacó ao Egito (Gn 37–50)."
+    },
+    {
+     "id": "egito-hicsos",
+     "nome": "Hicsos (XV–XVI)",
+     "inicio": 1650,
+     "fim": 1550,
+     "nota": "Segundo Período Intermediário: povos asiáticos, os hicsos, governam o delta do Nilo a partir de Avaris, enquanto Tebas resiste ao sul."
+    },
+    {
+     "id": "egito-d18",
+     "nome": "XVIII dinastia",
+     "inicio": 1550,
+     "fim": 1292,
+     "nota": "Início do Reino Novo: Tutmés III, Hatshepsut e Amenotep II. Pelas datas do site, o êxodo (1446 a.C.) ocorre nesta dinastia."
+    },
+    {
+     "id": "egito-d19",
+     "nome": "XIX dinastia",
+     "inicio": 1292,
+     "fim": 1189,
+     "nota": "Ramsés II e Merneptá. Merneptá deixa a primeira menção a Israel fora da Bíblia, numa estela."
+    },
+    {
+     "id": "egito-d20",
+     "nome": "XX dinastia",
+     "inicio": 1189,
+     "fim": 1077,
+     "nota": "Ramsés III e os últimos faraós do Reino Novo; o Egito perde a influência sobre Canaã."
+    },
+    {
+     "id": "egito-d21",
+     "nome": "XXI dinastia",
+     "inicio": 1077,
+     "fim": 943,
+     "nota": "Faraós de Tânis, no delta. Um deles dá sua filha por esposa a Salomão (1Rs 3:1)."
+    },
+    {
+     "id": "egito-d22",
+     "nome": "XXII (Sisaque)",
+     "inicio": 943,
+     "fim": 720,
+     "nota": "Dinastia líbia fundada por Sisaque (Sheshonq I), que invade Judá no quinto ano de Roboão (1Rs 14:25-26)."
+    },
+    {
+     "id": "egito-d25",
+     "nome": "XXV (cuxita)",
+     "inicio": 720,
+     "fim": 664,
+     "nota": "Faraós núbios, como Tiraca, que se opõem à Assíria no tempo de Ezequias (2Rs 19:9)."
+    },
+    {
+     "id": "egito-d26",
+     "nome": "XXVI (saíta)",
+     "inicio": 664,
+     "fim": 525,
+     "nota": "Último período independente. Neco II mata Josias em Megido (609 a.C.); Hofra é o faraó do tempo de Jeremias. Cambises, da Pérsia, conquista o Egito em 525 a.C."
+    }
    ]
   },
   {
@@ -943,6 +1015,29 @@
      "texto": "Damasco cai para Tiglate-Pileser III",
      "ref": "2Rs 16:9"
     }
+   ],
+   "periodos": [
+    {
+     "id": "ara-benhadade",
+     "nome": "Ben-Hadade I e II",
+     "inicio": 890,
+     "fim": 842,
+     "nota": "Reis de Damasco que guerreiam contra Israel e Judá e cercam Samaria (1Rs 20; 2Rs 6–7)."
+    },
+    {
+     "id": "ara-hazael",
+     "nome": "Hazael",
+     "inicio": 842,
+     "fim": 800,
+     "nota": "Usurpa o trono de Damasco por palavra de Eliseu e oprime Israel durante os reinados de Jeú e Jeoacaz (2Rs 8–13)."
+    },
+    {
+     "id": "ara-rezim",
+     "nome": "Rezim",
+     "inicio": 750,
+     "fim": 732,
+     "nota": "Aliado de Peca contra Judá; Tiglate-Pileser III o derrota e toma Damasco em 732 a.C. (2Rs 16)."
+    }
    ]
   },
   {
@@ -966,6 +1061,50 @@
      "ano": 612,
      "texto": "Queda de Nínive",
      "ref": "Naum"
+    }
+   ],
+   "periodos": [
+    {
+     "id": "assiria-salmaneser3",
+     "nome": "Salmaneser III",
+     "inicio": 858,
+     "fim": 824,
+     "nota": "Rei que registra o tributo de Jeú, rei de Israel, no Obelisco Negro."
+    },
+    {
+     "id": "assiria-tiglate",
+     "nome": "Tiglate-Pileser III",
+     "inicio": 745,
+     "fim": 727,
+     "nota": "Conquista Damasco e parte de Israel e leva cativos do norte (2Rs 15–16)."
+    },
+    {
+     "id": "assiria-salmaneser5",
+     "nome": "Salmaneser V",
+     "inicio": 727,
+     "fim": 722,
+     "nota": "Cerca Samaria por três anos (2Rs 17:3-6)."
+    },
+    {
+     "id": "assiria-sargao",
+     "nome": "Sargão II",
+     "inicio": 722,
+     "fim": 705,
+     "nota": "Termina a conquista de Samaria e deporta Israel (2Rs 17; Is 20)."
+    },
+    {
+     "id": "assiria-senaqueribe",
+     "nome": "Senaqueribe",
+     "inicio": 705,
+     "fim": 681,
+     "nota": "Invade Judá em 701 a.C. e cerca Jerusalém no reinado de Ezequias (2Rs 18–19)."
+    },
+    {
+     "id": "assiria-declinio",
+     "nome": "Esar-Hadom e declínio",
+     "inicio": 681,
+     "fim": 612,
+     "nota": "Esar-Hadom e Assurbanípal; Nínive cai diante de babilônios e medos em 612 a.C. (Naum)."
     }
    ]
   },
@@ -995,6 +1134,29 @@
      "ano": 539,
      "texto": "A Babilônia cai para Ciro",
      "ref": "Dn 5"
+    }
+   ],
+   "periodos": [
+    {
+     "id": "babilonia-nabopolassar",
+     "nome": "Nabopolassar",
+     "inicio": 626,
+     "fim": 605,
+     "nota": "Funda o império neobabilônico e destrói Nínive."
+    },
+    {
+     "id": "babilonia-nabucodonosor",
+     "nome": "Nabucodonosor II",
+     "inicio": 605,
+     "fim": 562,
+     "nota": "Primeira deportação (605), segunda (597) e destruição de Jerusalém (586 a.C.) (2Rs 24–25; Dn 1–4)."
+    },
+    {
+     "id": "babilonia-sucessores",
+     "nome": "Últimos reis",
+     "inicio": 562,
+     "fim": 539,
+     "nota": "Evil-Merodaque libera Joaquim (2Rs 25:27); Belsazar governa quando Ciro conquista a cidade (Dn 5)."
     }
    ]
   },
@@ -1030,6 +1192,50 @@
      "texto": "Neemias reconstrói os muros",
      "ref": "Ne 2–6"
     }
+   ],
+   "periodos": [
+    {
+     "id": "persia-ciro",
+     "nome": "Ciro",
+     "inicio": 539,
+     "fim": 530,
+     "nota": "Conquista a Babilônia e decreta o retorno dos exilados (Ed 1)."
+    },
+    {
+     "id": "persia-cambises",
+     "nome": "Cambises",
+     "inicio": 530,
+     "fim": 522,
+     "nota": "Conquista o Egito em 525 a.C."
+    },
+    {
+     "id": "persia-dario",
+     "nome": "Dario I",
+     "inicio": 522,
+     "fim": 486,
+     "nota": "Retoma a reconstrução do templo, concluída em 516 a.C. (Ed 4–6; Ag; Zc)."
+    },
+    {
+     "id": "persia-xerxes",
+     "nome": "Xerxes (Assuero)",
+     "inicio": 486,
+     "fim": 465,
+     "nota": "O rei do livro de Ester."
+    },
+    {
+     "id": "persia-artaxerxes",
+     "nome": "Artaxerxes I",
+     "inicio": 465,
+     "fim": 424,
+     "nota": "Envia Esdras (458) e Neemias (445) a Jerusalém (Ed 7; Ne 2)."
+    },
+    {
+     "id": "persia-final",
+     "nome": "Últimos reis",
+     "inicio": 424,
+     "fim": 331,
+     "nota": "Período do silêncio profético; o império cai diante de Alexandre em 331 a.C."
+    }
    ]
   },
   {
@@ -1053,6 +1259,29 @@
      "ano": 164,
      "texto": "Templo purificado (Hanucá)",
      "ref": "Jo 10:22"
+    }
+   ],
+   "periodos": [
+    {
+     "id": "grecia-alexandre",
+     "nome": "Alexandre",
+     "inicio": 331,
+     "fim": 323,
+     "nota": "Conquista o Oriente Médio e espalha a língua e a cultura gregas (Dn 8; 11:3)."
+    },
+    {
+     "id": "grecia-ptolomeus",
+     "nome": "Ptolomeus e Selêucidas",
+     "inicio": 323,
+     "fim": 167,
+     "nota": "O império se divide: Ptolomeus no Egito e Selêucidas na Síria disputam a Judeia (Dn 11)."
+    },
+    {
+     "id": "grecia-macabeus",
+     "nome": "Macabeus e hasmoneus",
+     "inicio": 167,
+     "fim": 63,
+     "nota": "A revolta contra Antíoco IV e o reino judeu independente (1 e 2Mc). Pompeu toma Jerusalém em 63 a.C."
     }
    ]
   },
@@ -1082,6 +1311,50 @@
      "ano": -70,
      "texto": "Tito destrói Jerusalém e o templo",
      "ref": "Mt 24:1-2"
+    }
+   ],
+   "periodos": [
+    {
+     "id": "roma-republica",
+     "nome": "República",
+     "inicio": 63,
+     "fim": 27,
+     "nota": "Pompeu toma Jerusalém; Herodes, o Grande, é feito rei dos judeus em 40 a.C. (Mt 2)."
+    },
+    {
+     "id": "roma-augusto",
+     "nome": "Augusto",
+     "inicio": 27,
+     "fim": -14,
+     "nota": "Primeiro imperador; o recenseamento no nascimento de Jesus (Lc 2:1)."
+    },
+    {
+     "id": "roma-tiberio",
+     "nome": "Tibério",
+     "inicio": -14,
+     "fim": -37,
+     "nota": "Imperador do ministério e da morte de Jesus (Lc 3:1)."
+    },
+    {
+     "id": "roma-claudio",
+     "nome": "Calígula e Cláudio",
+     "inicio": -37,
+     "fim": -54,
+     "nota": "Expansão da igreja (At 11–15); Cláudio expulsa os judeus de Roma (At 18:2)."
+    },
+    {
+     "id": "roma-nero",
+     "nome": "Nero",
+     "inicio": -54,
+     "fim": -68,
+     "nota": "Perseguição aos cristãos; Paulo e Pedro morrem em Roma, segundo a tradição."
+    },
+    {
+     "id": "roma-flavios",
+     "nome": "Flavianos",
+     "inicio": -68,
+     "fim": -100,
+     "nota": "Tito destrói Jerusalém em 70 d.C.; Domiciano governa quando Apocalipse é escrito, segundo a tradição."
     }
    ]
   }

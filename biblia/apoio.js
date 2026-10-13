@@ -8,17 +8,13 @@
   var L = 0; // largura do mapa em unidades do SVG
   var A = 0; // altura
   var vb = { x: 0, y: 0, w: 0 }; // janela visível; a altura segue a proporção do mapa
-  var atual = -1; // índice da etapa com o cartão aberto
   var svgEl = null;
   var escalaveis = []; // elementos que mantêm o tamanho na tela ao ampliar
   var rotas = [];
-  var marcadores = [];
-  var embutido = /[?&]embutido/.test(location.search); // aberto no popup do leitor
-  var ZOOM_MAX = 64; // quantas vezes se pode ampliar a partir do mapa inteiro
-  var etapasLigadas = []; // por etapa: aparece no mapa? (começam todas ligadas)
-  var curiosLigadas = {}; // por curiosidade: aparece no mapa? (começam desligadas)
-  var curioAtual = -1; // curiosidade escolhida
-  var curioMarcadores = []; // [{el, i}], um por curiosidade que tem lugar no mapa
+  var geo = []; // por etapa com rota: { pts, faixas, seta, poli, ent }
+  var lugaresNoMapa = []; // [{el, etapas: [índices]}], um por lugar
+  var ZOOM_MAX = 160; // quantas vezes se pode ampliar a partir do mapa inteiro
+  var etapasLigadas = []; // por etapa: a rota aparece no mapa? (começam todas ligadas)
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -72,8 +68,152 @@
     vb.y = limitar(vb.y, 0, A - h);
     svgEl.setAttribute("viewBox", vb.x.toFixed(1) + " " + vb.y.toFixed(1) + " " + vb.w.toFixed(1) + " " + h.toFixed(1));
     var k = vb.w / (svgEl.clientWidth || L);
+    redesenharRotas(k);
     escalaveis.forEach(function (e) {
       e.el.setAttribute("transform", "translate(" + e.x.toFixed(1) + " " + e.y.toFixed(1) + ") scale(" + k.toFixed(4) + ")");
+    });
+    filtrarLugares();
+  }
+
+  /* rotas lado a lado: trechos que seguem o mesmo caminho ganham faixas paralelas, em pixels de tela */
+
+  var FAIXA = 10; // distância entre faixas, em pixels
+
+  function distSeg(p, a, b) {
+    var dx = b[0] - a[0];
+    var dy = b[1] - a[1];
+    var t = dx || dy ? limitar(((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / (dx * dx + dy * dy), 0, 1) : 0;
+    return Math.hypot(p[0] - a[0] - t * dx, p[1] - a[1] - t * dy);
+  }
+
+  function faixaPx(f) {
+    return f === 0 ? 0 : (f % 2 ? 1 : -1) * Math.ceil(f / 2) * FAIXA;
+  }
+
+  // normal de um trecho, sempre do mesmo lado do eixo para trechos em sentidos opostos
+  function normal(a, b) {
+    var dx = b[0] - a[0];
+    var dy = b[1] - a[1];
+    var d = Math.hypot(dx, dy) || 1;
+    dx /= d;
+    dy /= d;
+    if (dx < 0 || (dx === 0 && dy < 0)) {
+      dx = -dx;
+      dy = -dy;
+    }
+    return [-dy, dx];
+  }
+
+  // faixa de cada trecho: a menor ainda não usada pelas rotas anteriores que passam pelo mesmo lugar
+  function calcularFaixas() {
+    var TOL = 1.4; // unidades do mapa (cerca de 0,14 grau)
+    var anteriores = [];
+    geo.forEach(function (g) {
+      if (!g) return;
+      g.faixas = [];
+      for (var j = 0; j < g.pts.length - 1; j++) {
+        var a = g.pts[j];
+        var b = g.pts[j + 1];
+        var len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+        var usadas = {};
+        anteriores.forEach(function (o) {
+          for (var q = 0; q < o.pts.length - 1; q++) {
+            var c = o.pts[q];
+            var d = o.pts[q + 1];
+            var ld = Math.hypot(d[0] - c[0], d[1] - c[1]) || 1;
+            var par = Math.abs(((b[0] - a[0]) * (d[0] - c[0]) + (b[1] - a[1]) * (d[1] - c[1])) / (len * ld));
+            if (par < 0.6) continue;
+            for (var t = 0.2; t < 0.9; t += 0.3) {
+              var p = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+              if (distSeg(p, c, d) < TOL) {
+                usadas[o.faixas[q]] = true;
+                break;
+              }
+            }
+          }
+        });
+        var f = 0;
+        while (usadas[f]) f++;
+        g.faixas.push(f);
+      }
+      anteriores.push(g);
+    });
+  }
+
+  function redesenharRotas(k) {
+    var N = 12; // pontos intermediários por trecho, para a curva afastar-se suavemente
+    var rampa = 40 * k;
+    geo.forEach(function (g) {
+      if (!g) return;
+      var n = g.pts.length;
+      var seg = [];
+      for (var j = 0; j < n - 1; j++) {
+        var nv = normal(g.pts[j], g.pts[j + 1]);
+        var o = faixaPx(g.faixas[j]);
+        seg.push([nv[0] * o, nv[1] * o]);
+      }
+      // deslocamento de cada vértice: média dos trechos vizinhos
+      var V = g.pts.map(function (p, v) {
+        var a = seg[Math.max(0, v - 1)];
+        var b = seg[Math.min(seg.length - 1, v)];
+        return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+      });
+      var P = [];
+      var D = [];
+      var acum = 0;
+      for (j = 0; j < n - 1; j++) {
+        var a = g.pts[j];
+        var b = g.pts[j + 1];
+        var l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+        for (var s = 0; s < N; s++) {
+          var t = s / N;
+          P.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, V[j][0] + (V[j + 1][0] - V[j][0]) * t, V[j][1] + (V[j + 1][1] - V[j][1]) * t]);
+          D.push(acum + l * t);
+        }
+        acum += l;
+      }
+      P.push([g.pts[n - 1][0], g.pts[n - 1][1], V[n - 1][0], V[n - 1][1]]);
+      D.push(acum);
+      var R = P.map(function (p, i) {
+        var m = limitar(Math.min(D[i], acum - D[i]) / rampa, 0, 1);
+        return [p[0] + p[2] * k * m, p[1] + p[3] * k * m];
+      });
+      g.poli.setAttribute("points", R.map(function (p) { return p[0].toFixed(2) + "," + p[1].toFixed(2); }).join(" "));
+      // seta no meio do último trecho
+      var i = (n - 2) * N + N / 2;
+      var ang = (Math.atan2(R[i + 1][1] - R[i - 1][1], R[i + 1][0] - R[i - 1][0]) * 180) / Math.PI;
+      g.ent.x = R[i][0];
+      g.ent.y = R[i][1];
+      g.seta.setAttribute("transform", "rotate(" + ang.toFixed(1) + ")");
+    });
+  }
+
+  // com o mapa afastado, só os lugares mais citados cabem; ao ampliar, os outros aparecem
+  function filtrarLugares() {
+    var k = svgEl.clientWidth / vb.w;
+    var h = vb.w * razao();
+    var ocupados = [];
+    var ordem = lugaresNoMapa.slice().sort(function (a, b) {
+      return b.etapas.length - a.etapas.length || a.ordem - b.ordem;
+    });
+    ordem.forEach(function (p) {
+      var x = (p.x - vb.x) * k;
+      var y = (p.y - vb.y) * k;
+      var fora = p.x < vb.x || p.x > vb.x + vb.w || p.y < vb.y || p.y > vb.y + h;
+      var larg = p.nome.length * 7.2 + 16;
+      var c = { x0: p.esq ? x - 10 - larg : x - 3, x1: p.esq ? x + 3 : x + 10 + larg, y0: y - 10, y1: y + 10 };
+      var cabe = !fora && p.ligado;
+      if (cabe) {
+        for (var i = 0; i < ocupados.length; i++) {
+          var o = ocupados[i];
+          if (c.x0 < o.x1 && c.x1 > o.x0 && c.y0 < o.y1 && c.y1 > o.y0) {
+            cabe = false;
+            break;
+          }
+        }
+      }
+      if (cabe) ocupados.push(c);
+      p.el.style.visibility = cabe || fora || !p.ligado ? "" : "hidden";
     });
   }
 
@@ -91,6 +231,7 @@
     aplicar();
   }
 
+
   function pontosDaEtapa(e) {
     return e.caminho && e.caminho.length ? e.caminho : [[lugares[e.lugar].lon, lugares[e.lugar].lat]];
   }
@@ -106,9 +247,6 @@
     focarPontos(pts);
   }
 
-  function focarEtapa(i) {
-    focarPontos(pontosDaEtapa(dados.etapas[i]));
-  }
 
   function focarPontos(pts, folga) {
     var xs = [];
@@ -169,262 +307,128 @@
       escalaveis.push({ el: t, x: q[0], y: q[1] });
     });
 
-    dados.etapas.forEach(function (e, i) {
+
+    // rotas tracejadas, com uma seta no meio do último trecho para mostrar o sentido
+    dados.etapas.forEach(function (e) {
       if (!e.caminho || e.caminho.length < 2) {
         rotas.push(null);
         return;
       }
-      rotas.push(svg("polyline", { "class": "apoio-rota" + (e.incerto ? " incerto" : ""), points: pontos(e.caminho), fill: "none" }, svgEl));
+      var grupo = svg("g", { "class": "apoio-rota" }, svgEl);
+      var poli = svg("polyline", { points: pontos(e.caminho), fill: "none" }, grupo);
+      var m = svg("g", {}, svgEl);
+      var seta = svg("path", { "class": "apoio-seta", d: "M-7,-6 L7,0 L-7,6 Z" }, m);
+      var ent = { el: m, x: 0, y: 0 };
+      escalaveis.push(ent);
+      geo[rotas.length] = { pts: e.caminho.map(proj), poli: poli, seta: seta, ent: ent };
+      grupo.seta = m;
+      rotas.push(grupo);
     });
 
-    // etapas no mesmo lugar (Hebrom, por exemplo) ficam lado a lado, e só a primeira leva o nome
+    calcularFaixas();
+
+    // um ponto por lugar, só com o nome
     var porLugar = {};
     dados.etapas.forEach(function (e, i) {
       (porLugar[e.lugar] = porLugar[e.lugar] || []).push(i);
     });
-
-    dados.etapas.forEach(function (e, i) {
-      var lg = lugares[e.lugar];
+    Object.keys(porLugar).forEach(function (id) {
+      var lg = lugares[id];
       var q = proj([lg.lon, lg.lat]);
-      var grupo = porLugar[e.lugar];
-      var pos = grupo.indexOf(i);
-      var meio = ((grupo.length - 1) * 26) / 2;
-      var dx = pos * 26 - meio; // deslocamento em pixels de tela; o grupo é escalado por escalaveis
-      var g = svg("g", { "class": "apoio-marcador", tabindex: 0, role: "button", "data-i": i, "aria-label": (i + 1) + ". " + lg.nome + ", " + e.ref }, svgEl);
-      svg("circle", { r: 11, cx: dx, cy: 0 }, g);
-      var n = svg("text", { "class": "apoio-num", "text-anchor": "middle", x: dx, y: 4 }, g);
-      n.textContent = i + 1;
+      var g = svg("g", { "class": "apoio-lugar" }, svgEl);
+      svg("circle", { r: 5, cx: 0, cy: 0 }, g);
       // o nome vai para a esquerda perto da borda direita, ou onde o lugar pedir (lado: "esq" ou "dir")
-      var direita = lg.lado ? lg.lado === "esq" : q[0] > L * 0.7;
-      if (pos === 0) {
-        var nome = svg("text", { "class": "apoio-nome", x: direita ? -meio - 16 : meio + 16, y: 4, "text-anchor": direita ? "end" : "start" }, g);
-        nome.textContent = lg.nome;
+      var esquerda = lg.lado ? lg.lado === "esq" : q[0] > L * 0.7;
+      var nome = svg("text", { "class": "apoio-nome", x: esquerda ? -10 : 10, y: 4, "text-anchor": esquerda ? "end" : "start" }, g);
+      nome.textContent = lg.nome;
+      escalaveis.push({ el: g, x: q[0], y: q[1] });
+      lugaresNoMapa.push({ el: g, etapas: porLugar[id], x: q[0], y: q[1], nome: lg.nome, esq: esquerda, ordem: lugaresNoMapa.length, ligado: true });
+    });
+  }
+
+  /* lista de rotas (caixas de seleção) */
+
+  // lugar mais próximo de um ponto (longitude, latitude)
+  function lugarPerto(p) {
+    var melhor = null;
+    var d0 = 1e9;
+    dados.lugares.forEach(function (l) {
+      var d = Math.pow(l.lon - p[0], 2) + Math.pow(l.lat - p[1], 2);
+      if (d < d0) {
+        d0 = d;
+        melhor = l;
       }
-      escalaveis.push({ el: g, x: q[0], y: q[1] });
-      marcadores.push(g);
     });
-
-    // curiosidades: aparecem só quando o painel delas está aberto
-    (dados.curiosidades || []).forEach(function (c, i) {
-      if (c.lon == null) return;
-      var q = proj([c.lon, c.lat]);
-      var g = svg("g", { "class": "apoio-curio-pt", tabindex: 0, role: "button", "data-ci": i, "aria-label": c.titulo + ", " + c.quando }, svgEl);
-      svg("rect", { x: -6, y: -6, width: 12, height: 12, transform: "rotate(45)" }, g);
-      svg("title", {}, g).textContent = c.titulo + " · " + c.quando;
-      g.style.display = "none";
-      escalaveis.push({ el: g, x: q[0], y: q[1] });
-      curioMarcadores.push({ el: g, i: i });
-    });
+    return melhor;
   }
 
-  /* cartão de texto, caixas de seleção (apoio e curiosidades) e interação */
-
-  function cartao() {
-    var el = document.getElementById("apoio-cartao");
-    var h = "";
-    if (atual >= 0) {
-      var e = dados.etapas[atual];
-      h += '<p class="hud muted">' + (atual + 1) + " de " + dados.etapas.length + " · " + esc(e.ref) + "</p>";
-      h += "<h2>" + esc(e.titulo) + "</h2><p>" + esc(e.texto) + "</p>";
-      if (!embutido) h += '<p><a class="btn" href="ler.html#' + dados.livro + "/" + e.cap + '">Ler ' + esc(dados.livroNome) + " " + e.cap + "</a></p>";
-    } else if (curioAtual >= 0) {
-      var c = dados.curiosidades[curioAtual];
-      h += '<p class="hud muted">' + esc(c.regiao) + " · " + esc(c.quando) + "</p>";
-      h += "<h2>" + esc(c.titulo) + "</h2><p>" + esc(c.texto) + "</p>";
-    }
-    el.hidden = !h;
-    el.innerHTML = h ? '<button type="button" class="apoio-fechar" data-fechar aria-label="Fechar">×</button>' + h : "";
+  // "Origem → Destino", pelos extremos do caminho
+  function nomeDaRota(e) {
+    var a = lugarPerto(e.caminho[0]);
+    var b = lugarPerto(e.caminho[e.caminho.length - 1]);
+    return a && b && a !== b ? a.nome + " → " + b.nome : e.titulo;
   }
 
-  // dois grupos recolhíveis, cada um com uma caixa "tudo" e uma caixa por item
+  // só as etapas que têm rota entram na lista
   function construirBarra() {
-    var curios = dados.curiosidades || [];
     var h = '<details class="apoio-grupo" data-grupo="apoio"><summary>' +
-      '<input type="checkbox" data-mestre="apoio" aria-label="Mostrar ou esconder todas as etapas">' +
-      '<span class="apoio-grupo-nome">Apoio</span><span class="hud faint" data-contagem="apoio"></span></summary><div class="apoio-itens">';
+      '<input type="checkbox" data-mestre="apoio" aria-label="Mostrar ou esconder todas as rotas">' +
+      '<span class="apoio-grupo-nome">Rotas</span><span class="hud faint" data-contagem="apoio"></span></summary><div class="apoio-itens">';
     dados.etapas.forEach(function (e, i) {
-      h += '<label class="apoio-item"><input type="checkbox" data-etapa="' + i + '"><span class="apoio-n hud">' + (i + 1) + "</span><span>" + esc(e.titulo) + "</span></label>";
+      if (rotas[i]) h += '<label class="apoio-item"><input type="checkbox" data-etapa="' + i + '"><span>' + esc(nomeDaRota(e)) + "</span></label>";
     });
     h += "</div></details>";
-    if (curios.length) {
-      var regioes = [];
-      curios.forEach(function (c) {
-        if (regioes.indexOf(c.regiao) < 0) regioes.push(c.regiao);
-      });
-      h += '<details class="apoio-grupo" data-grupo="curio"><summary>' +
-        '<input type="checkbox" data-mestre="curio" aria-label="Mostrar ou esconder todas as curiosidades">' +
-        '<span class="apoio-grupo-nome">Curiosidades</span><span class="hud faint" data-contagem="curio"></span></summary><div class="apoio-itens">';
-      regioes.forEach(function (r) {
-        h += '<label class="apoio-item regiao"><input type="checkbox" data-regiao-grupo="' + esc(r) + '"><strong>' + esc(r) + "</strong></label>";
-        curios.forEach(function (c, i) {
-          if (c.regiao === r) h += '<label class="apoio-item sub"><input type="checkbox" data-curio="' + i + '"><span>' + esc(c.titulo) + "</span></label>";
-        });
-      });
-      h += "</div></details>";
-    }
     document.getElementById("apoio-barra").innerHTML = h;
   }
 
-  // põe cada caixa no estado certo (marcada, desmarcada ou "alguns") e atualiza as contagens
+  // põe cada caixa no estado certo (marcada, desmarcada ou "alguns") e atualiza a contagem
   function sincronizarBarra() {
     var barraEl = document.getElementById("apoio-barra");
-    function estado(caixa, n, total) {
-      if (!caixa) return;
-      caixa.checked = total > 0 && n === total;
-      caixa.indeterminate = n > 0 && n < total;
-    }
-    var nE = 0;
+    var n = 0;
+    var total = 0;
     dados.etapas.forEach(function (e, i) {
-      if (etapasLigadas[i]) nE++;
+      if (!rotas[i]) return;
+      total++;
+      if (etapasLigadas[i]) n++;
       var c = barraEl.querySelector('[data-etapa="' + i + '"]');
       if (c) c.checked = !!etapasLigadas[i];
     });
-    estado(barraEl.querySelector('[data-mestre="apoio"]'), nE, dados.etapas.length);
+    var mestre = barraEl.querySelector('[data-mestre="apoio"]');
+    if (mestre) {
+      mestre.checked = total > 0 && n === total;
+      mestre.indeterminate = n > 0 && n < total;
+    }
     var ca = barraEl.querySelector('[data-contagem="apoio"]');
-    if (ca) ca.textContent = nE + "/" + dados.etapas.length;
-
-    var curios = dados.curiosidades || [];
-    var nC = 0;
-    var porRegiao = {};
-    curios.forEach(function (c, i) {
-      var on = !!curiosLigadas[i];
-      if (on) nC++;
-      var r = (porRegiao[c.regiao] = porRegiao[c.regiao] || { n: 0, total: 0 });
-      r.total++;
-      if (on) r.n++;
-      var cx = barraEl.querySelector('[data-curio="' + i + '"]');
-      if (cx) cx.checked = on;
-    });
-    Object.keys(porRegiao).forEach(function (r) {
-      var cx = barraEl.querySelector('[data-regiao-grupo="' + r.replace(/"/g, '\\"') + '"]');
-      estado(cx, porRegiao[r].n, porRegiao[r].total);
-    });
-    estado(barraEl.querySelector('[data-mestre="curio"]'), nC, curios.length);
-    var cc = barraEl.querySelector('[data-contagem="curio"]');
-    if (cc) cc.textContent = nC + "/" + curios.length;
+    if (ca) ca.textContent = n + "/" + total;
   }
 
   function marcar() {
-    marcadores.forEach(function (g, i) {
-      g.setAttribute("class", "apoio-marcador" + (i === atual ? " ativo" : ""));
-      g.style.display = etapasLigadas[i] ? "" : "none";
-    });
     rotas.forEach(function (r, i) {
       if (!r) return;
-      var e = dados.etapas[i];
-      r.setAttribute("class", "apoio-rota" + (e.incerto ? " incerto" : "") + (i === atual ? " ativa" : ""));
       r.style.display = etapasLigadas[i] ? "" : "none";
+      r.seta.style.display = etapasLigadas[i] ? "" : "none";
     });
-    // a etapa selecionada fica por cima das outras
-    if (atual >= 0) {
-      if (rotas[atual]) svgEl.insertBefore(rotas[atual], marcadores[0]);
-      svgEl.appendChild(marcadores[atual]);
-    }
-    curioMarcadores.forEach(function (m) {
-      m.el.style.display = curiosLigadas[m.i] ? "" : "none";
-      m.el.setAttribute("class", "apoio-curio-pt" + (m.i === curioAtual ? " atual" : ""));
+    // um lugar some só quando todas as suas rotas estão desligadas
+    lugaresNoMapa.forEach(function (p) {
+      var visivel = p.etapas.some(function (i) { return !rotas[i] || etapasLigadas[i]; });
+      p.el.style.display = visivel ? "" : "none";
+      p.ligado = visivel;
     });
+    filtrarLugares();
     sincronizarBarra();
-    cartao();
-  }
-
-  // enquadra no mapa as curiosidades que estão ligadas
-  function enquadrarCurio() {
-    var pts = [];
-    curioMarcadores.forEach(function (m) {
-      var c = dados.curiosidades[m.i];
-      if (curiosLigadas[m.i]) pts.push([c.lon, c.lat]);
-    });
-    if (pts.length) focarPontos(pts, 130);
-  }
-
-  function limparHash() {
-    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
-  }
-
-  function fecharCartao() {
-    atual = -1;
-    curioAtual = -1;
-    limparHash();
-    marcar();
-  }
-
-  function abrirEtapa(i, focar) {
-    atual = limitar(i, 0, dados.etapas.length - 1);
-    curioAtual = -1;
-    etapasLigadas[atual] = true;
-    marcar();
-    if (focar) focarEtapa(atual);
-  }
-
-  function abrirCurio(i) {
-    if (i === curioAtual) return fecharCartao();
-    atual = -1;
-    curioAtual = i;
-    limparHash();
-    marcar();
-    var c = dados.curiosidades[i];
-    if (c.lon != null) focarPontos([[c.lon, c.lat]]);
-  }
-
-  // caixa marcada ou desmarcada na barra
-  function mudouCaixa(cx) {
-    var barraEl = document.getElementById("apoio-barra");
-    var on = cx.checked;
-    var curios = dados.curiosidades || [];
-    var ligouCuriosidades = false;
-    if (cx.hasAttribute("data-mestre")) {
-      if (cx.getAttribute("data-mestre") === "apoio") dados.etapas.forEach(function (e, i) { etapasLigadas[i] = on; });
-      else {
-        curios.forEach(function (c, i) { curiosLigadas[i] = on; });
-        ligouCuriosidades = on;
-      }
-    } else if (cx.hasAttribute("data-etapa")) {
-      etapasLigadas[parseInt(cx.getAttribute("data-etapa"), 10)] = on;
-    } else if (cx.hasAttribute("data-regiao-grupo")) {
-      var r = cx.getAttribute("data-regiao-grupo");
-      curios.forEach(function (c, i) { if (c.regiao === r) curiosLigadas[i] = on; });
-      ligouCuriosidades = on;
-    } else if (cx.hasAttribute("data-curio")) {
-      curiosLigadas[parseInt(cx.getAttribute("data-curio"), 10)] = on;
-    }
-    // o cartão aberto some junto com o que foi desligado
-    if (atual >= 0 && !etapasLigadas[atual]) atual = -1;
-    if (curioAtual >= 0 && !curiosLigadas[curioAtual]) curioAtual = -1;
-    if (atual < 0) limparHash();
-    marcar();
-    if (ligouCuriosidades) enquadrarCurio();
-  }
-
-  function indiceDoHash() {
-    var id = decodeURIComponent((location.hash || "").slice(1));
-    for (var i = 0; i < dados.etapas.length; i++) if (dados.etapas[i].id === id) return i;
-    return -1;
-  }
-
-  function ir(i) {
-    if (i === atual) return fecharCartao();
-    var id = dados.etapas[limitar(i, 0, dados.etapas.length - 1)].id;
-    if (location.hash === "#" + id) abrirEtapa(i, true);
-    else location.hash = id;
   }
 
   function ligar() {
-    raiz.addEventListener("click", function (ev) {
-      if (ev.target.closest("[data-fechar]")) return fecharCartao();
-      var ci = ev.target.closest("[data-ci]");
-      if (ci && raiz.contains(ci)) return abrirCurio(parseInt(ci.getAttribute("data-ci"), 10));
-      var b = ev.target.closest("[data-i]");
-      if (b && raiz.contains(b)) return ir(parseInt(b.getAttribute("data-i"), 10));
+    var barraEl = document.getElementById("apoio-barra");
+    barraEl.addEventListener("change", function (ev) {
+      var cx = ev.target;
+      if (!cx || cx.type !== "checkbox") return;
+      if (cx.hasAttribute("data-mestre")) dados.etapas.forEach(function (e, i) { etapasLigadas[i] = cx.checked; });
+      else etapasLigadas[parseInt(cx.getAttribute("data-etapa"), 10)] = cx.checked;
+      marcar();
     });
 
-    // as listas se sobrepõem ao mapa: só uma aberta por vez, e fecham ao tocar fora ou com Esc
-    document.getElementById("apoio-barra").addEventListener("toggle", function (ev) {
-      var d = ev.target;
-      if (!d.open) return;
-      var todas = document.querySelectorAll("#apoio-barra .apoio-grupo");
-      for (var i = 0; i < todas.length; i++) if (todas[i] !== d) todas[i].open = false;
-    }, true);
+    // a lista se sobrepõe ao mapa: fecha ao tocar fora ou com Esc
     document.addEventListener("click", function (ev) {
       if (ev.target.closest && ev.target.closest(".apoio-grupo")) return;
       var abertas = document.querySelectorAll("#apoio-barra .apoio-grupo[open]");
@@ -436,24 +440,6 @@
       for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
     });
 
-    raiz.addEventListener("change", function (ev) {
-      var cx = ev.target;
-      if (cx && cx.type === "checkbox") mudouCaixa(cx);
-    });
-
-    raiz.addEventListener("keydown", function (ev) {
-      if (ev.key !== "Enter" && ev.key !== " ") return;
-      var g = ev.target.closest && ev.target.closest(".apoio-marcador");
-      if (g) {
-        ev.preventDefault();
-        return ir(parseInt(g.getAttribute("data-i"), 10));
-      }
-      var cp = ev.target.closest && ev.target.closest(".apoio-curio-pt");
-      if (cp) {
-        ev.preventDefault();
-        abrirCurio(parseInt(cp.getAttribute("data-ci"), 10));
-      }
-    });
 
     // arrastar com um dedo (ou o mouse), pinça com dois, toque duplo para ampliar
     var dedos = {}; // pointerId -> { x, y }
@@ -489,7 +475,6 @@
         svgEl.classList.add("arrastando");
         return;
       }
-      if (ev.target.closest(".apoio-marcador, .apoio-curio-pt")) return;
       arrasto = { x: ev.clientX, y: ev.clientY, vx: vb.x, vy: vb.y, t: Date.now(), mexeu: false };
       svgEl.setPointerCapture(ev.pointerId);
       svgEl.classList.add("arrastando");
@@ -564,11 +549,8 @@
       { passive: false }
     );
 
+
     window.addEventListener("resize", aplicar);
-    window.addEventListener("hashchange", function () {
-      var i = indiceDoHash();
-      if (i >= 0) abrirEtapa(i, true);
-    });
   }
 
   function iniciar() {
@@ -578,20 +560,14 @@
     desenhar();
     raiz.innerHTML =
       '<div class="apoio-barra" id="apoio-barra"></div>' +
-      '<div class="apoio-mapa">' +
-      '<div id="apoio-svg"></div>' +
-      '<div class="apoio-cartao" id="apoio-cartao" aria-live="polite" hidden></div>' +
-      "</div>" +
-      "";
+      '<div class="apoio-mapa"><div id="apoio-svg"></div></div>';
     document.getElementById("apoio-svg").appendChild(svgEl);
     dados.etapas.forEach(function (e, i) { etapasLigadas[i] = true; });
     construirBarra();
     ligar();
-    var i = indiceDoHash();
     aplicar();
     marcar();
-    if (i >= 0) abrirEtapa(i, true);
-    else vistaInicial();
+    vistaInicial();
   }
 
   // ?m=jo abre dados/apoio-jo.json; sem parâmetro, dados/apoio.json (viagem de Abrão)
@@ -605,12 +581,11 @@
   var qual = /[?&]m=([a-z0-9-]+)/.exec(location.search);
   carregar(qual ? "dados/apoio-" + qual[1] + ".json" : "dados/apoio.json")
     .then(function (d) {
-      // a base do mundo (costas, rios, nomes e curiosidades da época) é comum a todos os materiais
+      // a base do mundo (costas, rios e nomes) é comum a todos os materiais
       return carregar("dados/" + (d.mundo || "mundo.json")).then(function (w) {
         d.mapa = w.mapa;
         d.fundo = w.fundo;
         d.rotulos = w.rotulos;
-        d.curiosidades = (w.curiosidades || []).concat(d.curiosidades || []);
         return d;
       });
     })

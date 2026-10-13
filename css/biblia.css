@@ -401,6 +401,72 @@ button.chip:hover {
 .barra.profeta.incerta rect { stroke: var(--ink-strong); stroke-dasharray: 3 2; }
 .barra.potencia rect { fill: var(--c-potencia); }
 .barra.era rect { fill: var(--c-era); }
+.barra.periodo rect {
+  fill: transparent;
+}
+
+.barra.periodo .divisor {
+  stroke: rgba(255, 255, 255, 0.55);
+  stroke-width: 1;
+}
+
+.rot-sub {
+  display: block;
+  font-weight: 400;
+}
+
+/* ponto de mapa na coluna das eras */
+.era-mapa {
+  position: absolute;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 2px solid var(--ink-strong);
+  border-radius: 50%;
+  background: var(--bg);
+  cursor: pointer;
+}
+
+.era-mapa::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--ink-strong);
+}
+
+/* dica instantânea (a do navegador demora) */
+.era-mapa::before {
+  content: attr(data-dica);
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 10px);
+  z-index: 5;
+  padding: 5px 9px;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  box-shadow: 3px 3px 0 var(--ink-strong);
+  color: var(--ink-strong);
+  font: 500 11px/1.3 "IBM Plex Mono", monospace;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%);
+}
+
+.era-mapa:hover::before,
+.era-mapa:focus-visible::before {
+  opacity: 1;
+}
+
+.era-mapa:hover,
+.era-mapa:focus-visible {
+  transform: scale(1.2);
+  outline: none;
+}
 
 .detalhe[hidden] {
   display: none;
@@ -1080,7 +1146,7 @@ html.embutido .biblia-topo {
   margin-top: 0.5rem;
 }
 
-/* camadas (apoio e curiosidades) acima do mapa */
+/* lista de rotas acima do mapa */
 .apoio-barra {
   position: relative;
   z-index: 6;
@@ -1095,53 +1161,6 @@ html.embutido .biblia-topo {
 .apoio-mapa {
   position: relative;
   min-width: 0;
-}
-
-/* texto da etapa ou da curiosidade, sobre o mapa */
-.apoio-cartao {
-  position: absolute;
-  right: 0.75rem;
-  bottom: 0.75rem;
-  left: 0.75rem;
-  max-width: 34rem;
-  max-height: 55%;
-  overflow: auto;
-  padding: 1rem 1.25rem;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-}
-
-.apoio-cartao[hidden] {
-  display: none;
-}
-
-.apoio-cartao h2 {
-  margin: 0.2rem 0 0.5rem;
-  padding-right: 2rem;
-  font-size: 1.15rem;
-  font-weight: 500;
-}
-
-.apoio-cartao p {
-  margin: 0.4rem 0;
-}
-
-.apoio-fechar {
-  position: absolute;
-  top: 0.4rem;
-  right: 0.5rem;
-  width: 2rem;
-  height: 2rem;
-  border: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.apoio-fechar:hover {
-  color: var(--ink-strong);
 }
 
 .apoio-nota {
@@ -1202,31 +1221,33 @@ html.embutido .biblia-topo {
   letter-spacing: 0;
 }
 
-.apoio-rota {
+/* rota de viagem tracejada, com seta no sentido do caminho */
+.apoio-rota polyline {
   stroke: var(--c-era);
   stroke-width: 3;
+  stroke-dasharray: 9 7;
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.35;
   vector-effect: non-scaling-stroke;
+}
+
+.apoio-seta {
+  fill: var(--c-era);
+  stroke: var(--bg);
+  stroke-width: 1;
+}
+
+.apoio-rota,
+.apoio-seta,
+.apoio-lugar {
   pointer-events: none;
 }
 
-.apoio-rota.incerto {
-  stroke-dasharray: 7 6;
-}
-
-.apoio-marcador {
-  cursor: pointer;
-  outline: none;
-}
-
-.apoio-num {
+.apoio-lugar circle {
   fill: var(--ink-strong);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 11px;
-  font-weight: 500;
-  pointer-events: none;
+  stroke: var(--bg);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
 }
 
 .apoio-nome {
@@ -1251,12 +1272,6 @@ html.embutido .biblia-topo {
     min-height: 420px;
   }
 
-  .apoio-cartao {
-    right: 0.5rem;
-    bottom: 0.5rem;
-    left: 0.5rem;
-    max-height: 60%;
-  }
 }
 
 /* no popup do leitor o quadro é a própria janela */
@@ -1327,7 +1342,7 @@ html.embutido .apoio-svg {
   color: var(--ink);
 }
 
-/* mapa grande: costa em linha fina e marcadores das curiosidades */
+/* mapa grande: costa em linha fina */
 .apoio-terra {
   stroke: var(--faint);
   stroke-width: 1;
@@ -1336,11 +1351,6 @@ html.embutido .apoio-svg {
 
 .apoio-agua.fundo {
   stroke: none;
-}
-
-.apoio-curio-pt {
-  cursor: pointer;
-  outline: none;
 }
 
 .apoio-barra[hidden] {
@@ -1435,11 +1445,6 @@ html.embutido .apoio-svg {
     min-height: 44px;
   }
 
-  .apoio-fechar {
-    width: 44px;
-    height: 44px;
-  }
-
   .leitor-dlg-lista button,
   .leitor-dlg .l-grade button {
     min-height: 48px;
@@ -1461,7 +1466,7 @@ html.embutido .apoio-svg {
   }
 }
 
-/* apoio e curiosidades: dois grupos recolhíveis, com uma caixa por item */
+/* rotas: grupo recolhível, com uma caixa por item */
 .apoio-grupo {
   position: relative;
 }
@@ -1526,20 +1531,6 @@ html.embutido .apoio-svg {
   background: var(--bg-sunken);
 }
 
-.apoio-item.regiao {
-  margin-top: 0.25rem;
-  border-top: 1px solid var(--line);
-}
-
-.apoio-item.sub {
-  padding-left: 1.9rem;
-}
-
-.apoio-n {
-  min-width: 1.1rem;
-  color: var(--faint);
-}
-
 .apoio-grupo input[type="checkbox"] {
   width: 1.05rem;
   height: 1.05rem;
@@ -1553,47 +1544,3 @@ html.embutido .apoio-svg {
   accent-color: var(--c-era);
 }
 
-.apoio-grupo[data-grupo="curio"] input[type="checkbox"] {
-  accent-color: var(--c-livro);
-}
-
-/* o que está ligado no mapa tem cor viva */
-.apoio-rota {
-  opacity: 1;
-}
-
-.apoio-rota.ativa {
-  stroke-width: 5;
-}
-
-.apoio-marcador circle {
-  fill: var(--c-era);
-  stroke: var(--bg);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.apoio-marcador:hover circle,
-.apoio-marcador:focus-visible circle,
-.apoio-marcador.ativo circle {
-  stroke: var(--ink-strong);
-  stroke-width: 3;
-}
-
-.apoio-num {
-  fill: #fff;
-}
-
-.apoio-curio-pt rect {
-  fill: var(--c-livro);
-  stroke: var(--bg);
-  stroke-width: 2;
-  vector-effect: non-scaling-stroke;
-}
-
-.apoio-curio-pt:hover rect,
-.apoio-curio-pt:focus-visible rect,
-.apoio-curio-pt.atual rect {
-  stroke: var(--ink-strong);
-  stroke-width: 3;
-}
