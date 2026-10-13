@@ -17,8 +17,9 @@ e acesse `http://localhost:8000/`. Sem `js/config.js` preenchido, o mapa abre s�
 - `biblia/dados/reis.json`: reis, profetas e potências.
 - `biblia/dados/livros.json`: livros (com o período que cobrem ou a data de escrita) e líderes (patriarcas, juízes, apóstolos).
 - `biblia/dados/eras.json`: eras, com livros e ordem de leitura.
-- `biblia/dados/canon.json`: os 66 livros com o número de versículos de cada capítulo (Almeida Corrigida Fiel), usado no popup de leitura.
-- `biblia/biblia.js`: mapa em colunas paralelas, com o tempo na vertical, e progresso.
+- `biblia/dados/canon.json`: os 66 livros com o número de versículos de cada capítulo (Almeida Corrigida Fiel), usado na página Leitura.
+- `biblia/biblia.js`: mapa em colunas paralelas, com o tempo na vertical.
+- `biblia/leitura.html` e `biblia/leitura.js`: página Leitura, onde se marca livros, capítulos e versículos lidos e se vê o progresso.
 
 Anos: a.C. positivo e d.C. negativo (30 d.C. = `-30`). `inicio` é sempre o ano mais antigo. Cada trecho do eixo tem sua escala (`SEGMENTOS` em `biblia.js`).
 
@@ -32,7 +33,7 @@ Adicionar um profeta: copie um objeto em `profetas`. Os reis contemporâneos sae
 - `entrar.html`: entrar, criar conta, esqueci a senha e nova senha. `privacidade.html`: o que é guardado.
 - `supabase/migrations/0001_progresso.sql`: tabela `progresso` (uma linha por usuário: `lido` e `versiculos` em JSONB) com RLS.
 
-Sem login, o mapa só consulta: nada é marcado. Com login, cada marcação é salva na conta cerca de 1 s depois. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
+Sem login, a página Leitura só consulta: nada é marcado. Com login, cada marcação é salva na conta cerca de 1 s depois. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
 
 No navegador ficam só o tema (`notas-theme`) e as colunas visíveis (`biblioteca-colunas`).
 
