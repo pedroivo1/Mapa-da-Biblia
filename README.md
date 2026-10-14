@@ -11,7 +11,7 @@ cd frontend
 python -m http.server
 ```
 
-e acesse `http://localhost:8000/`. Sem `compartilhado/js/config.js` preenchido, o mapa abre só para consulta.
+e acesse `http://localhost:8000/`. No VS Code, o Live Server já está configurado (`.vscode/settings.json`) para servir a pasta `frontend/` como raiz; abra `http://127.0.0.1:5501/` e não `.../frontend/index.html`. Sem `compartilhado/js/config.js` preenchido, o mapa abre só para consulta.
 
 ## Organização
 

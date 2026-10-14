@@ -96,12 +96,53 @@
     // a margem dos rótulos de marcos encolhe aos poucos abaixo de 1200px, até sumir em 700px
     MARGEM = Math.floor(108 * Math.max(0, Math.min(1, (disponivel - 626) / 500)));
     var f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM) / flex));
+    // a coluna das eras não precisa crescer com a tela: passa de ERA_MAX, o resto vai para as outras
+    var ERA_MAX = 150;
+    var eraFixa = false;
+    function ajustarEra() {
+      var so = colunas.eras ? larguraEra : 0;
+      eraFixa = so > 0 && flex > so && so * f > ERA_MAX;
+      if (eraFixa) f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM - ERA_MAX) / (flex - so)));
+    }
+    ajustarEra();
+    // faixas largas o bastante para o nome inteiro dos livros, se o resto das colunas aguentar o aperto
+    var medidor = document.createElement("canvas").getContext("2d");
+    medidor.font = "500 " + (window.innerWidth <= 720 ? 10 : 11) + "px Archivo, sans-serif";
+    var MARGEM_NOME = 14; // bloco (4), margens internas (6) e folga
+    if (livrosAtivos() && n.livros) {
+      var larguras = [];
+      livrosVisiveis.forEach(function (l) {
+        if (l.nome) larguras.push(Math.ceil(medidor.measureText(l.nome).width));
+      });
+      larguras.sort(function (a, b) {
+        return a - b;
+      });
+      var flexAntes = flex, fAntes = f, subAntes = SUB.livros, eraAntes = eraFixa;
+      // tenta caber o maior nome; se apertar demais as outras colunas, o do percentil 85, e assim por diante
+      [1, 0.85, 0.7, 0.55].some(function (q) {
+        if (!larguras.length) return true;
+        var subLargo = larguras[Math.min(larguras.length - 1, Math.floor(larguras.length * q))] + MARGEM_NOME;
+        if (q === 1) subLargo = larguras[larguras.length - 1] + MARGEM_NOME;
+        if (subAntes * fAntes >= subLargo) return true; // já cabe sem mexer
+        flex = flexAntes + n.livros * (subLargo - subAntes);
+        SUB.livros = subLargo;
+        f = Math.min(3, (disponivel - RULER - MARGEM) / flex);
+        eraFixa = eraAntes;
+        ajustarEra();
+        if (f >= 0.75) return true;
+        flex = flexAntes;
+        f = fAntes;
+        SUB.livros = subAntes;
+        eraFixa = eraAntes;
+        return false;
+      });
+    }
     // arredonda para baixo: arredondar para cima pode estourar a largura e criar rolagem lateral
     BAR = Math.floor(BAR * f);
     GUT = Math.floor(GUT * f);
     SUB.livros = Math.floor(SUB.livros * f);
     SUB.potencias = Math.floor(SUB.potencias * f);
-    larguraEra = Math.floor(larguraEra * f);
+    larguraEra = eraFixa ? ERA_MAX : Math.floor(larguraEra * f);
     var curto = MARGEM < 100;
 
     var cols = [];
@@ -210,7 +251,13 @@
         s.appendChild(g);
       });
     }
-    if (cLiv) desenhar(blocos.livros, cLiv, SUB.livros, "livro", function (i) { return i.abrev; });
+    // com espaço na coluna, o nome inteiro do livro; sem espaço, a abreviação
+    var larguraDoNome = SUB.livros - MARGEM_NOME;
+    if (cLiv) {
+      desenhar(blocos.livros, cLiv, SUB.livros, "livro", function (i) {
+        return i.nome && medidor.measureText(i.nome).width <= larguraDoNome ? i.nome : i.abrev;
+      });
+    }
 
     // potências, com marcos dos eventos
     if (cPot) {

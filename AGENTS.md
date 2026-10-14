@@ -8,7 +8,7 @@ Public static site ("Mapa da Bíblia") in plain HTML, CSS and JS. No build step,
 
 ## Running
 
-- The pages fetch JSON, so they only work over HTTP: `cd frontend && python -m http.server` and open `http://localhost:8000/`. Supabase Auth redirects allow `http://localhost:8000/**`, so use port 8000 for login testing. All paths in HTML and JS are root-absolute (`/biblia/`, `/compartilhado/css/base.css`).
+- The pages fetch JSON, so they only work over HTTP: `cd frontend && python -m http.server` and open `http://localhost:8000/`. Supabase Auth redirects allow `http://localhost:8000/**`, so use port 8000 for login testing. VS Code Live Server is set to root `/frontend` in `.vscode/settings.json`; it must serve `frontend/` as `/`. All paths in HTML and JS are root-absolute (`/biblia/`, `/compartilhado/css/base.css`).
 
 ## Repository layout
 

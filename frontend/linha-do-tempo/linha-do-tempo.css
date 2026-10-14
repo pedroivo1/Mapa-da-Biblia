@@ -386,9 +386,10 @@
   fill: transparent;
 }
 
+/* mesma cor das outras separações entre blocos (a do fundo), nos dois temas */
 .barra.periodo .divisor {
-  stroke: rgba(255, 255, 255, 0.55);
-  stroke-width: 1;
+  stroke: var(--bg);
+  stroke-width: 1.5;
 }
 
 .rot-sub {
