@@ -1,0 +1,424 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A vida de",
+ "destaque": "Davi.",
+ "subtitulo": "Mapa · 1 Samuel 16 – 2 Samuel 24",
+ "livro": "1samuel",
+ "livroNome": "1 Samuel",
+ "aria": "Mapa-múndi com os lugares da vida de Davi, de Belém a Hebrom e Jerusalém",
+ "vista": [
+  [
+   34.6,
+   30.9
+  ],
+  [
+   36.2,
+   32.7
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "belem",
+   "nome": "Belém",
+   "lon": 35.2,
+   "lat": 31.7,
+   "lado": "esq"
+  },
+  {
+   "id": "ela",
+   "nome": "Vale de Elá",
+   "lon": 34.96,
+   "lat": 31.69,
+   "lado": "esq"
+  },
+  {
+   "id": "gibea",
+   "nome": "Gibeá de Saul",
+   "lon": 35.23,
+   "lat": 31.83,
+   "lado": "esq"
+  },
+  {
+   "id": "nobe",
+   "nome": "Nobe",
+   "lon": 35.24,
+   "lat": 31.8,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "gate",
+   "nome": "Gate",
+   "lon": 34.85,
+   "lat": 31.7,
+   "lado": "esq"
+  },
+  {
+   "id": "adulao",
+   "nome": "Adulão",
+   "lon": 34.95,
+   "lat": 31.58,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "engedi",
+   "nome": "En-Gedi",
+   "lon": 35.39,
+   "lat": 31.46,
+   "lado": "dir"
+  },
+  {
+   "id": "zife",
+   "nome": "Zife",
+   "lon": 35.15,
+   "lat": 31.45,
+   "lado": "dir"
+  },
+  {
+   "id": "ziclague",
+   "nome": "Ziclague",
+   "lon": 34.7,
+   "lat": 31.4,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "gilboa",
+   "nome": "Monte Gilboa",
+   "lon": 35.4,
+   "lat": 32.48,
+   "lado": "dir"
+  },
+  {
+   "id": "hebrom",
+   "nome": "Hebrom",
+   "lon": 35.1,
+   "lat": 31.53,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "quiriate",
+   "nome": "Quiriate-Jearim",
+   "lon": 35.1,
+   "lat": 31.8,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "maanaim",
+   "nome": "Maanaim",
+   "lon": 35.7,
+   "lat": 32.2,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "raba",
+   "nome": "Rabá",
+   "lon": 35.93,
+   "lat": 31.95,
+   "lado": "dir"
+  },
+  {
+   "id": "filistia",
+   "nome": "Filístia",
+   "lon": 34.6,
+   "lat": 31.65,
+   "cor": "#c0652d",
+   "provincia": true
+  },
+  {
+   "id": "moabe",
+   "nome": "Moabe",
+   "lon": 36.0,
+   "lat": 31.2,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "edom",
+   "nome": "Edom",
+   "lon": 35.6,
+   "lat": 30.3,
+   "incerto": true,
+   "cor": "#a05cd0",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "unge",
+   "lugar": "belem",
+   "titulo": "Davi é ungido em Belém",
+   "ref": "1Sm 16",
+   "cap": 16,
+   "texto": "Samuel é mandado à casa de Jessé, em Belém, e entre os sete filhos nenhum é o escolhido. Chamam Davi, o mais novo, que apascentava as ovelhas, e Samuel o unge “no meio de seus irmãos” (16:13). Davi passa a tocar harpa para Saul."
+  },
+  {
+   "id": "golias",
+   "lugar": "ela",
+   "titulo": "Davi e Golias",
+   "ref": "1Sm 17",
+   "cap": 17,
+   "texto": "Filisteus e israelitas se enfrentam no vale de Elá, entre Socó e Azeca. Golias, de Gate, desafia o exército por quarenta dias, até que Davi, mandado levar provisões aos irmãos, o derruba com uma funda e uma pedra (17:49–50).",
+   "caminho": [
+    [
+     35.2,
+     31.7
+    ],
+    [
+     35.08,
+     31.7
+    ],
+    [
+     34.96,
+     31.69
+    ]
+   ]
+  },
+  {
+   "id": "corte",
+   "lugar": "gibea",
+   "titulo": "Davi na corte de Saul",
+   "ref": "1Sm 18–20",
+   "cap": 18,
+   "texto": "Davi vence batalhas, torna-se amigo inseparável de Jônatas e casa com Mical, filha de Saul. A inveja de Saul cresce e, depois de duas tentativas de matá-lo com a lança, Davi foge (19:10).",
+   "caminho": [
+    [
+     35.2,
+     31.7
+    ],
+    [
+     35.23,
+     31.83
+    ]
+   ]
+  },
+  {
+   "id": "fuga",
+   "lugar": "adulao",
+   "titulo": "Davi foge: Nobe, Gate e Adulão",
+   "ref": "1Sm 21–22",
+   "cap": 21,
+   "texto": "Davi vai a Nobe, onde o sacerdote Aimeleque lhe dá os pães da proposição e a espada de Golias (21:1–9). Foge a Aquis, rei de Gate, finge-se louco e escapa para a caverna de Adulão, onde se reúnem a ele cerca de quatrocentos homens em apuros (22:1–2).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.23,
+     31.83
+    ],
+    [
+     35.24,
+     31.8
+    ],
+    [
+     34.85,
+     31.7
+    ],
+    [
+     34.95,
+     31.58
+    ]
+   ]
+  },
+  {
+   "id": "deserto",
+   "lugar": "engedi",
+   "titulo": "Zife e En-Gedi",
+   "ref": "1Sm 23–24",
+   "cap": 23,
+   "texto": "Davi livra Queila dos filisteus e depois foge para o deserto de Zife e para os rochedos de En-Gedi. Numa caverna ali, Saul entra e Davi corta uma ponta do manto sem lhe fazer mal (24:4–7).",
+   "caminho": [
+    [
+     34.95,
+     31.58
+    ],
+    [
+     35.1,
+     31.45
+    ],
+    [
+     35.15,
+     31.45
+    ],
+    [
+     35.39,
+     31.46
+    ]
+   ]
+  },
+  {
+   "id": "ziclague",
+   "lugar": "ziclague",
+   "titulo": "Davi em Ziclague",
+   "ref": "1Sm 27",
+   "cap": 27,
+   "texto": "Davi passa a servir Aquis, rei de Gate, e recebe a cidade de Ziclague, onde fica um ano e quatro meses (27:6–7). Dali ataca povos do sul e, ao mesmo tempo, faz Aquis acreditar que atacava Judá.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.39,
+     31.46
+    ],
+    [
+     35.1,
+     31.55
+    ],
+    [
+     34.85,
+     31.7
+    ],
+    [
+     34.7,
+     31.4
+    ]
+   ]
+  },
+  {
+   "id": "gilboa",
+   "lugar": "gilboa",
+   "titulo": "A morte de Saul no Gilboa",
+   "ref": "1Sm 31",
+   "cap": 31,
+   "texto": "Os filisteus vencem Israel no monte Gilboa. Jônatas e dois irmãos morrem, e Saul, ferido, se lança sobre a própria espada (31:2–4). Davi lamenta em sua elegia: “Como caíram os poderosos!” (2Sm 1:19)."
+  },
+  {
+   "id": "hebrom",
+   "lugar": "hebrom",
+   "titulo": "Rei de Judá em Hebrom",
+   "ref": "2Sm 2–5",
+   "cap": 2,
+   "texto": "Depois da morte de Saul, Davi sobe a Hebrom e é ungido rei sobre Judá (2:4). Reina ali sete anos e meio. Quando Is-Bosete morre, as tribos de Israel vêm a Hebrom e o ungem rei sobre todo o povo (5:3).",
+   "caminho": [
+    [
+     34.7,
+     31.4
+    ],
+    [
+     34.9,
+     31.45
+    ],
+    [
+     35.1,
+     31.53
+    ]
+   ]
+  },
+  {
+   "id": "jerusalem",
+   "lugar": "jerusalem",
+   "titulo": "Jerusalém, a cidade de Davi",
+   "ref": "2Sm 5",
+   "cap": 5,
+   "texto": "Davi toma a fortaleza de Sião, dos jebuseus, e a torna a sua capital: “a cidade de Davi” (5:7). Hirão, rei de Tiro, manda cedros e artesãos para construir o palácio (5:11).",
+   "caminho": [
+    [
+     35.1,
+     31.53
+    ],
+    [
+     35.17,
+     31.65
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "arca",
+   "lugar": "quiriate",
+   "titulo": "A arca chega a Jerusalém",
+   "ref": "2Sm 6",
+   "cap": 6,
+   "texto": "Davi busca a arca em Baal-Judá (Quiriate-Jearim). Uzá morre ao tocá-la, e a arca fica três meses na casa de Obede-Edom. Depois Davi a leva a Jerusalém com festa, dançando diante do Senhor (6:14).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.1,
+     31.8
+    ],
+    [
+     35.17,
+     31.79
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "raba",
+   "lugar": "raba",
+   "titulo": "A guerra contra Amom e Rabá",
+   "ref": "2Sm 10–12",
+   "cap": 10,
+   "texto": "Os amonitas e os arameus são derrotados. No cerco a Rabá, a capital de Amom, Davi fica em Jerusalém e comete o pecado com Bate-Seba; Natã o confronta com a parábola da ovelha (12:1–7).",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.5,
+     31.85
+    ],
+    [
+     35.93,
+     31.95
+    ]
+   ]
+  },
+  {
+   "id": "absalao",
+   "lugar": "maanaim",
+   "titulo": "Davi foge de Absalão",
+   "ref": "2Sm 15–18",
+   "cap": 15,
+   "texto": "Absalão rouba o coração do povo e se proclama rei em Hebrom. Davi sai de Jerusalém, chorando, pelo monte das Oliveiras, atravessa o Jordão e se refugia em Maanaim. Absalão morre ao ficar preso pelos cabelos num carvalho (18:9–15).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.27,
+     31.78
+    ],
+    [
+     35.45,
+     31.87
+    ],
+    [
+     35.55,
+     31.9
+    ],
+    [
+     35.7,
+     32.2
+    ]
+   ]
+  },
+  {
+   "id": "censo",
+   "lugar": "jerusalem",
+   "titulo": "O censo e a eira de Araúna",
+   "ref": "2Sm 24",
+   "cap": 24,
+   "texto": "Davi manda contar o povo, e uma peste atinge Israel. Perto de Jerusalém, o anjo pára na eira de Araúna, o jebuseu. Davi a compra por cinquenta siclos de prata e levanta ali um altar (24:24–25), no lugar onde mais tarde ficaria o templo."
+  }
+ ],
+ "territorios": 1010
+}

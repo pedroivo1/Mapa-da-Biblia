@@ -1,0 +1,243 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A viagem de Paulo a",
+ "destaque": "Roma.",
+ "subtitulo": "Mapa · Atos 21:27 – 28:31",
+ "livro": "atos",
+ "livroNome": "Atos",
+ "capSomenteLivro": "atos",
+ "aria": "Mapa-múndi com a viagem de Paulo preso, de Jerusalém e Cesareia a Mira, Creta, Malta e Roma",
+ "vista": [
+  [
+   11.5,
+   33.5
+  ],
+  [
+   36.5,
+   42.5
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "cesareia",
+   "nome": "Cesareia",
+   "lon": 34.89,
+   "lat": 32.5,
+   "lado": "dir"
+  },
+  {
+   "id": "mira",
+   "nome": "Mira",
+   "lon": 29.98,
+   "lat": 36.26,
+   "lado": "esq"
+  },
+  {
+   "id": "bonsportos",
+   "nome": "Bons Portos",
+   "lon": 24.9,
+   "lat": 34.9,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "malta",
+   "nome": "Malta",
+   "lon": 14.37,
+   "lat": 35.9,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "siracusa",
+   "nome": "Siracusa",
+   "lon": 15.29,
+   "lat": 37.07,
+   "lado": "dir"
+  },
+  {
+   "id": "puteoli",
+   "nome": "Putéoli",
+   "lon": 14.12,
+   "lat": 40.82,
+   "lado": "dir"
+  },
+  {
+   "id": "roma",
+   "nome": "Roma",
+   "lon": 12.5,
+   "lat": 41.9,
+   "lado": "dir"
+  },
+  {
+   "id": "creta",
+   "nome": "Creta",
+   "lon": 25.0,
+   "lat": 35.2,
+   "cor": "#14a58a",
+   "rotulo": [
+    24.9,
+    35.2
+   ],
+   "provincia": "cirene"
+  }
+ ],
+ "etapas": [
+  {
+   "id": "preso",
+   "lugar": "jerusalem",
+   "titulo": "A prisão no templo",
+   "ref": "At 21:27–23:30",
+   "cap": 21,
+   "texto": "Judeus da Ásia reconhecem Paulo no templo e alvoroçam o povo; ele é preso pelo tribuno romano. Diante do Sinédrio, o Senhor lhe diz: “Tem ânimo! Pois, como deste testemunho de mim em Jerusalém, assim importa que também em Roma o dês” (23:11). Uma conspiração de quarenta homens leva o tribuno a mandá-lo de noite a Cesareia."
+  },
+  {
+   "id": "cesareia",
+   "lugar": "cesareia",
+   "titulo": "Dois anos em Cesareia",
+   "ref": "At 24–26",
+   "cap": 24,
+   "texto": "Em Cesareia, Paulo é julgado pelo governador Félix, que o deixa preso por dois anos, e depois por Festo. Paulo apela a César (25:11). Diante do rei Agripa e de Berenice, faz sua defesa: “Quase me persuades a me tornar cristão” (26:28).",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     34.89,
+     32.5
+    ]
+   ]
+  },
+  {
+   "id": "mira",
+   "lugar": "mira",
+   "titulo": "Pelo mar, até Mira",
+   "ref": "At 27:1–5",
+   "cap": 27,
+   "texto": "Paulo parte de Cesareia sob guarda do centurião Júlio, na companhia de Lucas e Aristarco. Passam por Sidom, contornam Chipre, e em Mira, na Lícia, embarcam num navio de Alexandria que ia para a Itália.",
+   "caminho": [
+    [
+     34.89,
+     32.5
+    ],
+    [
+     35.37,
+     33.56
+    ],
+    [
+     32.5,
+     35.2
+    ],
+    [
+     29.98,
+     36.26
+    ]
+   ]
+  },
+  {
+   "id": "creta",
+   "lugar": "bonsportos",
+   "titulo": "Creta e Bons Portos",
+   "ref": "At 27:6–12",
+   "cap": 27,
+   "texto": "O navio avança com dificuldade até Cnido e, com o vento contrário, contorna Salmone, na costa de Creta, e chega a Bons Portos. O inverno se aproximava e a navegação já era perigosa; Paulo avisa, mas o centurião segue o piloto e o dono do navio.",
+   "incerto": true,
+   "caminho": [
+    [
+     29.98,
+     36.26
+    ],
+    [
+     27.37,
+     36.68
+    ],
+    [
+     26.3,
+     35.2
+    ],
+    [
+     24.9,
+     34.9
+    ]
+   ]
+  },
+  {
+   "id": "tempestade",
+   "lugar": "malta",
+   "titulo": "A tempestade e o naufrágio",
+   "ref": "At 27:13–44",
+   "cap": 27,
+   "texto": "Um vento forte, o Euroaquilão, arrasta o navio por catorze dias. Um anjo diz a Paulo: “Não temas… Deus te concedeu todos os que navegam contigo” (27:23–24). O navio encalha na costa de Malta; todos os 276 a bordo chegam a salvo.",
+   "incerto": true,
+   "caminho": [
+    [
+     24.9,
+     34.9
+    ],
+    [
+     22.0,
+     34.8
+    ],
+    [
+     18.0,
+     35.0
+    ],
+    [
+     14.37,
+     35.9
+    ]
+   ]
+  },
+  {
+   "id": "malta",
+   "lugar": "malta",
+   "titulo": "Os três meses em Malta",
+   "ref": "At 28:1–10",
+   "cap": 28,
+   "texto": "Em Malta, os nativos acendem uma fogueira; uma víbora prende-se à mão de Paulo, que a sacode no fogo sem sofrer nada. Ele cura o pai de Públio, o principal da ilha, e muitos outros doentes. Ficam ali três meses."
+  },
+  {
+   "id": "roma",
+   "lugar": "roma",
+   "titulo": "Chegada a Roma",
+   "ref": "At 28:11–31",
+   "cap": 28,
+   "texto": "Num navio de Alexandria partem de Malta, passam por Siracusa e Régio e chegam a Putéoli. Dali vão por terra pela Via Ápia, e irmãos de Roma vêm ao encontro de Paulo no Foro de Ápio e em Três Tabernas. Em Roma, Paulo vive dois anos em casa alugada, “pregando o reino de Deus e ensinando as coisas do Senhor Jesus Cristo, com toda a liberdade” (28:31).",
+   "caminho": [
+    [
+     14.37,
+     35.9
+    ],
+    [
+     15.29,
+     37.07
+    ],
+    [
+     15.65,
+     38.1
+    ],
+    [
+     14.12,
+     40.82
+    ],
+    [
+     12.9,
+     41.43
+    ],
+    [
+     12.5,
+     41.9
+    ]
+   ]
+  }
+ ],
+ "imperio": 59
+}

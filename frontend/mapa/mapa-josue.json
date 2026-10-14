@@ -1,0 +1,414 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A conquista de",
+ "destaque": "Canaã.",
+ "subtitulo": "Mapa · Josué 1 – 24",
+ "livro": "josue",
+ "livroNome": "Josué",
+ "aria": "Mapa-múndi com a conquista de Canaã por Josué: Jericó, Ai, Gibeão, as cidades do sul e Hazor",
+ "vista": [
+  [
+   34.6,
+   30.9
+  ],
+  [
+   36.1,
+   33.3
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "sitim",
+   "nome": "Sitim",
+   "lon": 35.64,
+   "lat": 31.83,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "jerico",
+   "nome": "Jericó",
+   "lon": 35.44,
+   "lat": 31.87,
+   "lado": "dir"
+  },
+  {
+   "id": "gilgal",
+   "nome": "Gilgal",
+   "lon": 35.5,
+   "lat": 31.88,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "ai",
+   "nome": "Ai",
+   "lon": 35.27,
+   "lat": 31.92,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "siquem",
+   "nome": "Monte Ebal",
+   "lon": 35.26,
+   "lat": 32.24,
+   "lado": "esq"
+  },
+  {
+   "id": "gibeom",
+   "nome": "Gibeão",
+   "lon": 35.18,
+   "lat": 31.84,
+   "lado": "esq"
+  },
+  {
+   "id": "makeda",
+   "nome": "Maquedá",
+   "lon": 34.95,
+   "lat": 31.65,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "laquis",
+   "nome": "Laquis",
+   "lon": 34.85,
+   "lat": 31.56,
+   "lado": "esq"
+  },
+  {
+   "id": "eglom",
+   "nome": "Eglom",
+   "lon": 34.65,
+   "lat": 31.5,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "hebrom",
+   "nome": "Hebrom",
+   "lon": 35.1,
+   "lat": 31.53,
+   "lado": "dir"
+  },
+  {
+   "id": "debir",
+   "nome": "Debir",
+   "lon": 35.02,
+   "lat": 31.43,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "silo",
+   "nome": "Siló",
+   "lon": 35.29,
+   "lat": 32.06,
+   "lado": "dir"
+  },
+  {
+   "id": "hazor",
+   "nome": "Hazor",
+   "lon": 35.57,
+   "lat": 33.02,
+   "lado": "dir"
+  },
+  {
+   "id": "merom",
+   "nome": "Águas de Merom",
+   "lon": 35.52,
+   "lat": 33.14,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "moabe",
+   "nome": "Moabe",
+   "lon": 36.0,
+   "lat": 31.2,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "basa",
+   "nome": "Basã",
+   "lon": 36.1,
+   "lat": 32.8,
+   "incerto": true,
+   "cor": "#2e9e5b",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "espioes",
+   "lugar": "jerico",
+   "titulo": "Os espiões em Jericó",
+   "ref": "Js 2",
+   "cap": 2,
+   "texto": "Josué manda dois homens espiar a terra, “principalmente Jericó”. Eles se hospedam na casa de Raabe, que os esconde no telhado e lhes diz que o terror do povo de Israel caiu sobre a terra (2:9–11). Raabe pede e recebe a promessa de proteção para sua família, com um cordão escarlate na janela.",
+   "caminho": [
+    [
+     35.64,
+     31.83
+    ],
+    [
+     35.5,
+     31.86
+    ],
+    [
+     35.44,
+     31.87
+    ]
+   ]
+  },
+  {
+   "id": "jordao",
+   "lugar": "gilgal",
+   "titulo": "A travessia do Jordão e Gilgal",
+   "ref": "Js 3–5",
+   "cap": 3,
+   "texto": "As águas do Jordão, na cheia, se detêm quando os sacerdotes com a arca entram no rio (3:15–16). O povo passa a seco e levanta doze pedras em Gilgal, onde acampa. Ali nasce o primeiro acampamento em Canaã, circuncidam os homens e celebram a Páscoa (5:2–10). O maná cessa no dia seguinte (5:12).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.64,
+     31.83
+    ],
+    [
+     35.56,
+     31.85
+    ],
+    [
+     35.5,
+     31.88
+    ]
+   ]
+  },
+  {
+   "id": "jerico",
+   "lugar": "jerico",
+   "titulo": "A queda de Jericó",
+   "ref": "Js 6",
+   "cap": 6,
+   "texto": "Durante seis dias o exército dá uma volta por dia em torno da cidade, com os sacerdotes e a arca; no sétimo, dá sete voltas. Ao toque das trombetas e do grito, os muros caem e a cidade é tomada (6:20). Só Raabe e a sua família são poupadas (6:25).",
+   "caminho": [
+    [
+     35.5,
+     31.88
+    ],
+    [
+     35.46,
+     31.875
+    ],
+    [
+     35.44,
+     31.87
+    ]
+   ]
+  },
+  {
+   "id": "ai",
+   "lugar": "ai",
+   "titulo": "Acã e a conquista de Ai",
+   "ref": "Js 7–8",
+   "cap": 7,
+   "texto": "Israel é derrotado em Ai porque Acã havia tomado do que estava consagrado em Jericó (7:1, 21). Descoberto o pecado, Josué volta a Ai com uma emboscada ao oeste, junto a Betel, e a cidade é tomada (8:12–19). A localização de Ai é debatida (et-Tell ou Khirbet el-Maqatir).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.44,
+     31.87
+    ],
+    [
+     35.35,
+     31.9
+    ],
+    [
+     35.27,
+     31.92
+    ]
+   ]
+  },
+  {
+   "id": "ebal",
+   "lugar": "siquem",
+   "titulo": "O altar no monte Ebal",
+   "ref": "Js 8:30–35",
+   "cap": 8,
+   "texto": "Josué constrói um altar de pedras brutas no monte Ebal e lê toda a lei diante do povo, metade em frente ao monte Gerizim e metade em frente ao Ebal, como Moisés havia mandado (Dt 27).",
+   "caminho": [
+    [
+     35.27,
+     31.92
+    ],
+    [
+     35.27,
+     32.08
+    ],
+    [
+     35.26,
+     32.24
+    ]
+   ]
+  },
+  {
+   "id": "gibeom",
+   "lugar": "gibeom",
+   "titulo": "Os gibeonitas enganam Josué",
+   "ref": "Js 9",
+   "cap": 9,
+   "texto": "Os moradores de Gibeão fingem vir de longe, com pão mofado e odres rotos, e conseguem um tratado de paz (9:3–15). Descoberto o engano, são poupados, mas ficam como lenhadores e carregadores de água para a casa de Deus (9:21–27).",
+   "caminho": [
+    [
+     35.5,
+     31.88
+    ],
+    [
+     35.35,
+     31.86
+    ],
+    [
+     35.18,
+     31.84
+    ]
+   ]
+  },
+  {
+   "id": "aijalom",
+   "lugar": "makeda",
+   "titulo": "O sol se detém em Aijalom",
+   "ref": "Js 10:1–27",
+   "cap": 10,
+   "texto": "Cinco reis amorreus atacam Gibeão. Josué sobe a noite toda desde Gilgal, e Deus lança grandes pedras de granizo no caminho de Bete-Horom. Josué diz: “Sol, detém-te sobre Gibeão, e tu, lua, sobre o vale de Aijalom” (10:12). Os cinco reis fogem para a caverna de Maquedá.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.18,
+     31.84
+    ],
+    [
+     35.1,
+     31.88
+    ],
+    [
+     35.0,
+     31.85
+    ],
+    [
+     34.95,
+     31.65
+    ]
+   ]
+  },
+  {
+   "id": "sul",
+   "lugar": "laquis",
+   "titulo": "A campanha do sul",
+   "ref": "Js 10:28–43",
+   "cap": 10,
+   "texto": "Em seguida Josué toma Maquedá, Libna, Laquis, Eglom, Hebrom e Debir. A lista de cidades fecha o resumo da campanha, que vai de Gibeão ao Neguebe (10:40–42). A localização de Debir e Eglom é debatida.",
+   "incerto": true,
+   "caminho": [
+    [
+     34.95,
+     31.65
+    ],
+    [
+     34.85,
+     31.56
+    ],
+    [
+     34.65,
+     31.5
+    ],
+    [
+     35.1,
+     31.53
+    ],
+    [
+     35.02,
+     31.43
+    ]
+   ]
+  },
+  {
+   "id": "hazor",
+   "lugar": "hazor",
+   "titulo": "A campanha do norte: Hazor",
+   "ref": "Js 11",
+   "cap": 11,
+   "texto": "Jabim, rei de Hazor, forma uma coalizão com reis do norte e acampa junto às águas de Merom. Josué os surpreende e os derrota; depois volta a Hazor, “que antes era a capital de todos esses reinos”, e a incendeia (11:10–11). É a única cidade do norte que Josué queima.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.5,
+     31.88
+    ],
+    [
+     35.55,
+     32.5
+    ],
+    [
+     35.52,
+     33.12
+    ],
+    [
+     35.57,
+     33.02
+    ]
+   ]
+  },
+  {
+   "id": "divisao",
+   "lugar": "gilgal",
+   "titulo": "A divisão da terra",
+   "ref": "Js 13–19",
+   "cap": 13,
+   "texto": "A terra é repartida por sorteio entre as tribos: Judá no sul, Efraim e a meia tribo de Manassés no centro, as demais ao norte, e Rúben, Gade e a outra meia tribo de Manassés a leste do Jordão, na terra de Moabe e de Basã tomada antes (13:8–32). Calebe recebe Hebrom (14:13)."
+  },
+  {
+   "id": "silo",
+   "lugar": "silo",
+   "titulo": "A tenda em Siló",
+   "ref": "Js 18",
+   "cap": 18,
+   "texto": "Depois da primeira partilha, Josué reúne o povo em Siló e levanta ali a tenda do encontro (18:1). De Siló, por sorteio, ele reparte o resto da terra entre as sete tribos que ainda faltavam.",
+   "caminho": [
+    [
+     35.5,
+     31.88
+    ],
+    [
+     35.4,
+     31.97
+    ],
+    [
+     35.29,
+     32.06
+    ]
+   ]
+  },
+  {
+   "id": "siquem",
+   "lugar": "siquem",
+   "titulo": "A aliança renovada",
+   "ref": "Js 24",
+   "cap": 24,
+   "texto": "No fim da vida, Josué reúne as tribos em Siquém, relembra a história desde Abraão e propõe a escolha: “Escolhei hoje a quem servireis… eu e a minha casa serviremos ao Senhor” (24:15). O povo responde que servirá ao Senhor, e Josué põe uma grande pedra debaixo do carvalho (24:26).",
+   "caminho": [
+    [
+     35.29,
+     32.06
+    ],
+    [
+     35.28,
+     32.21
+    ]
+   ]
+  }
+ ],
+ "territorios": 1400
+}

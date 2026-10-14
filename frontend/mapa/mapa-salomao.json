@@ -1,0 +1,334 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O reinado de",
+ "destaque": "Salomão.",
+ "subtitulo": "Mapa · 1 Reis 1 – 11",
+ "livro": "1reis",
+ "livroNome": "1 Reis",
+ "capSomenteLivro": "1reis",
+ "aria": "Mapa-múndi com o reinado de Salomão: Gibeão, Jerusalém, Tiro, as cidades fortificadas, Eziom-Geber e Sabá",
+ "vista": [
+  [
+   34.6,
+   29.4
+  ],
+  [
+   36.0,
+   33.6
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "gibeom",
+   "nome": "Gibeão",
+   "lon": 35.18,
+   "lat": 31.84,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "tiro",
+   "nome": "Tiro",
+   "lon": 35.2,
+   "lat": 33.27,
+   "lado": "esq"
+  },
+  {
+   "id": "gezer",
+   "nome": "Gezer",
+   "lon": 34.92,
+   "lat": 31.86,
+   "lado": "esq"
+  },
+  {
+   "id": "megido",
+   "nome": "Megido",
+   "lon": 35.18,
+   "lat": 32.585,
+   "lado": "esq"
+  },
+  {
+   "id": "hazor",
+   "nome": "Hazor",
+   "lon": 35.57,
+   "lat": 33.02,
+   "lado": "dir"
+  },
+  {
+   "id": "ezion",
+   "nome": "Eziom-Geber",
+   "lon": 34.97,
+   "lat": 29.54,
+   "lado": "esq"
+  },
+  {
+   "id": "saba",
+   "nome": "Sabá",
+   "lon": 45.35,
+   "lat": 15.43,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "libano",
+   "nome": "Líbano",
+   "lon": 36.0,
+   "lat": 34.0,
+   "cor": "#14a58a",
+   "area": [
+    [
+     36.18,
+     34.64
+    ],
+    [
+     36.5,
+     34.6
+    ],
+    [
+     36.55,
+     34.24
+    ],
+    [
+     36.52,
+     33.91
+    ],
+    [
+     36.4,
+     33.6
+    ],
+    [
+     36.16,
+     33.66
+    ],
+    [
+     35.92,
+     33.65
+    ],
+    [
+     35.7,
+     33.6
+    ],
+    [
+     35.7,
+     33.96
+    ],
+    [
+     35.64,
+     34.19
+    ],
+    [
+     35.65,
+     34.25
+    ],
+    [
+     35.8,
+     34.44
+    ],
+    [
+     35.98,
+     34.55
+    ],
+    [
+     35.96,
+     34.62
+    ]
+   ]
+  },
+  {
+   "id": "aram",
+   "nome": "Aram (Síria)",
+   "lon": 36.7,
+   "lat": 33.7,
+   "cor": "#3b82c4",
+   "provincia": true
+  },
+  {
+   "id": "edom",
+   "nome": "Edom",
+   "lon": 35.6,
+   "lat": 30.3,
+   "incerto": true,
+   "cor": "#a05cd0",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "sagracao",
+   "lugar": "jerusalem",
+   "titulo": "Salomão é ungido rei",
+   "ref": "1Rs 1",
+   "cap": 1,
+   "texto": "Quando Davi envelhece, Adonias se proclama rei. Natã e Bate-Seba intervêm, e Davi manda ungir Salomão na fonte de Giom, em Jerusalém. A cidade inteira exulta ao som das trombetas (1:39–40)."
+  },
+  {
+   "id": "gibeom",
+   "lugar": "gibeom",
+   "titulo": "O sonho em Gibeão",
+   "ref": "1Rs 3:1–15",
+   "cap": 3,
+   "texto": "Salomão oferece mil holocaustos no alto de Gibeão. De noite, o Senhor lhe aparece em sonho e diz: “Pede o que queres que eu te dê” (3:5). Ele pede coração entendido para julgar o povo, e recebe sabedoria, riquezas e honra.",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.18,
+     31.84
+    ]
+   ]
+  },
+  {
+   "id": "julgamento",
+   "lugar": "jerusalem",
+   "titulo": "O julgamento das duas mulheres",
+   "ref": "1Rs 3:16–28",
+   "cap": 3,
+   "texto": "Duas mulheres disputam um mesmo filho vivo. Salomão manda cortar o menino ao meio; a verdadeira mãe prefere entregá-lo. Todo Israel ouve falar do juízo e teme o rei, porque via nele a sabedoria de Deus."
+  },
+  {
+   "id": "hirao",
+   "lugar": "tiro",
+   "titulo": "Hirão de Tiro e os cedros do Líbano",
+   "ref": "1Rs 5",
+   "cap": 5,
+   "texto": "Hirão, rei de Tiro, que amava Davi, manda cedros e ciprestes do Líbano, descidos pelo mar em jangadas até Jope. Salomão envia trigo e azeite em troca e levanta trabalhadores forçados em Israel, 30 mil homens, para o templo.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.2,
+     33.27
+    ],
+    [
+     35.3,
+     32.8
+    ],
+    [
+     35.3,
+     32.2
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "templo",
+   "lugar": "jerusalem",
+   "titulo": "O templo e a dedicação",
+   "ref": "1Rs 6–8",
+   "cap": 6,
+   "texto": "No quarto ano de seu reinado, Salomão começa o templo, que leva sete anos para ser concluído (6:37–38). Na dedicação, a arca é levada ao santo dos santos e a glória do Senhor enche a casa (8:10–11). Salomão ora: “Os céus dos céus não te podem conter; quanto menos esta casa que eu edifiquei” (8:27)."
+  },
+  {
+   "id": "hazor",
+   "lugar": "hazor",
+   "titulo": "As cidades fortificadas: Hazor",
+   "ref": "1Rs 9:15",
+   "cap": 9,
+   "texto": "Para edificar o templo, o palácio, o Milo e o muro de Jerusalém, Salomão levantou trabalhadores forçados, e fortificou Hazor, Megido e Gezer (9:15). Escavações em Hazor mostram portões semelhantes aos de Megido e Gezer."
+  },
+  {
+   "id": "megido",
+   "lugar": "megido",
+   "titulo": "As cidades fortificadas: Megido",
+   "ref": "1Rs 9:15",
+   "cap": 9,
+   "texto": "Megido, no vale de Jezreel, guardava a rota entre o Egito e a Mesopotâmia. A Bíblia a lista entre as cidades de carros e de cavaleiros de Salomão (9:19; 10:26)."
+  },
+  {
+   "id": "gezer",
+   "lugar": "gezer",
+   "titulo": "As cidades fortificadas: Gezer",
+   "ref": "1Rs 9:16–17",
+   "cap": 9,
+   "texto": "O faraó do Egito tomou Gezer, queimou-a e a deu como dote à sua filha, mulher de Salomão, que a reconstruiu (9:16–17)."
+  },
+  {
+   "id": "ezion",
+   "lugar": "ezion",
+   "titulo": "A frota em Eziom-Geber",
+   "ref": "1Rs 9:26–28",
+   "cap": 9,
+   "texto": "Em Eziom-Geber, junto a Elate, à beira do mar Vermelho, na terra de Edom, Salomão constrói uma frota. Os marinheiros de Hirão vão a Ofir e trazem 420 talentos de ouro (9:28).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.2,
+     31.2
+    ],
+    [
+     35.15,
+     30.3
+    ],
+    [
+     34.97,
+     29.54
+    ]
+   ]
+  },
+  {
+   "id": "saba",
+   "lugar": "saba",
+   "titulo": "A rainha de Sabá",
+   "ref": "1Rs 10:1–13",
+   "cap": 10,
+   "texto": "A rainha de Sabá ouve da fama de Salomão e vem a Jerusalém com camelos carregados de especiarias, ouro e pedras preciosas, para o testar com perguntas difíceis. Admirada, diz: “Metade não me tinha sido contada” (10:7). Dá-lhe cento e vinte talentos de ouro e muitas especiarias.",
+   "incerto": true,
+   "caminho": [
+    [
+     45.35,
+     15.43
+    ],
+    [
+     43.5,
+     19.5
+    ],
+    [
+     40.5,
+     24.0
+    ],
+    [
+     38.5,
+     27.6
+    ],
+    [
+     36.5,
+     30.0
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "adversarios",
+   "lugar": "damasco",
+   "titulo": "Os adversários de Salomão",
+   "ref": "1Rs 11:14–25",
+   "cap": 11,
+   "texto": "Por causa da idolatria de Salomão, o Senhor levanta adversários: Hadade, o edomita, e Rezom, que se instala em Damasco e reina sobre Aram, e depois Jeroboão, o efraimita, a quem o profeta Aías anuncia dez tribos (11:29–31)."
+  }
+ ],
+ "territorios": 970
+}

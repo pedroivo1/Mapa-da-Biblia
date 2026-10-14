@@ -317,7 +317,7 @@
     }
     dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
     quadro.setAttribute("title", m.titulo);
-    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c);
+    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c + "&livro=" + canon[pos.i].id);
   }
 
   // clicar no nome do mapa abre esse mapa e mostra, num balão, o que ele cobre; clicar de novo fecha

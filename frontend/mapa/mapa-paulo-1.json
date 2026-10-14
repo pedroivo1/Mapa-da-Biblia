@@ -1,0 +1,321 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A primeira viagem de",
+ "destaque": "Paulo.",
+ "subtitulo": "Mapa · Atos 9 – 14",
+ "livro": "atos",
+ "livroNome": "Atos",
+ "capSomenteLivro": "atos",
+ "aria": "Mapa-múndi com a conversão de Paulo e a primeira viagem missionária, de Antioquia a Chipre e à Galácia",
+ "vista": [
+  [
+   30.0,
+   34.3
+  ],
+  [
+   37.0,
+   38.6
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "tarso",
+   "nome": "Tarso",
+   "lon": 34.9,
+   "lat": 36.9,
+   "lado": "esq"
+  },
+  {
+   "id": "antioquia",
+   "nome": "Antioquia da Síria",
+   "lon": 36.16,
+   "lat": 36.2,
+   "lado": "dir"
+  },
+  {
+   "id": "salamina",
+   "nome": "Salamina",
+   "lon": 33.95,
+   "lat": 35.18,
+   "lado": "dir"
+  },
+  {
+   "id": "pafos",
+   "nome": "Pafos",
+   "lon": 32.42,
+   "lat": 34.76,
+   "lado": "esq"
+  },
+  {
+   "id": "perge",
+   "nome": "Perge",
+   "lon": 30.85,
+   "lat": 36.96,
+   "lado": "esq"
+  },
+  {
+   "id": "antioquia-pis",
+   "nome": "Antioquia da Pisídia",
+   "lon": 31.19,
+   "lat": 38.3,
+   "lado": "esq"
+  },
+  {
+   "id": "iconio",
+   "nome": "Icônio",
+   "lon": 32.49,
+   "lat": 37.87,
+   "lado": "dir"
+  },
+  {
+   "id": "listra",
+   "nome": "Listra",
+   "lon": 32.45,
+   "lat": 37.58,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "derbe",
+   "nome": "Derbe",
+   "lon": 33.4,
+   "lat": 37.35,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "atalia",
+   "nome": "Atália",
+   "lon": 30.7,
+   "lat": 36.88,
+   "lado": "esq"
+  },
+  {
+   "id": "chipre",
+   "nome": "Chipre",
+   "lon": 33.2,
+   "lat": 35.05,
+   "cor": "#14a58a",
+   "provincia": true
+  },
+  {
+   "id": "cilicia",
+   "nome": "Cilícia",
+   "lon": 35.0,
+   "lat": 37.0,
+   "incerto": true,
+   "cor": "#e08a1e",
+   "provincia": true
+  },
+  {
+   "id": "galacia",
+   "nome": "Galácia",
+   "lon": 33.0,
+   "lat": 38.9,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "damasco",
+   "lugar": "damasco",
+   "titulo": "A estrada de Damasco",
+   "ref": "At 9:1–19",
+   "cap": 9,
+   "texto": "Saulo, perseguidor da igreja, segue de Jerusalém para Damasco com cartas do sumo sacerdote. Perto da cidade, uma luz do céu o cerca; uma voz diz: “Saulo, Saulo, por que me persegues?” (9:4). Fica cego, é levado a Damasco e recebe de novo a vista pelas mãos de Ananias; é batizado.",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.5,
+     32.2
+    ],
+    [
+     35.7,
+     32.9
+    ],
+    [
+     36.3,
+     33.5
+    ]
+   ]
+  },
+  {
+   "id": "tarso",
+   "lugar": "tarso",
+   "titulo": "De Damasco a Tarso",
+   "ref": "At 9:20–30",
+   "cap": 9,
+   "texto": "Saulo prega nas sinagogas de Damasco, escapa pelo muro dentro de um cesto e vai a Jerusalém, onde Barnabé o apresenta aos apóstolos. Ameaçado pelos helenistas, é levado a Cesareia e enviado a Tarso, sua cidade natal (9:30).",
+   "caminho": [
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.235,
+     31.778
+    ],
+    [
+     34.89,
+     32.5
+    ],
+    [
+     34.9,
+     36.9
+    ]
+   ]
+  },
+  {
+   "id": "antioquia",
+   "lugar": "antioquia",
+   "titulo": "Antioquia: o nome de cristãos",
+   "ref": "At 11:19–30; 13:1–3",
+   "cap": 11,
+   "texto": "Barnabé busca Saulo em Tarso e o leva a Antioquia, onde trabalham juntos por um ano. “Em Antioquia, pela primeira vez, os discípulos foram chamados cristãos” (11:26). Em oração e jejum, o Espírito manda separar Barnabé e Saulo para a obra (13:2).",
+   "caminho": [
+    [
+     34.9,
+     36.9
+    ],
+    [
+     36.16,
+     36.2
+    ]
+   ]
+  },
+  {
+   "id": "chipre",
+   "lugar": "salamina",
+   "titulo": "A ilha de Chipre",
+   "ref": "At 13:4–12",
+   "cap": 13,
+   "texto": "De Selêucia, porto de Antioquia, Barnabé, Saulo e João Marcos navegam a Salamina e atravessam a ilha até Pafos. Ali o procônsul Sérgio Paulo crê, e o mago Elimas fica cego (13:11). A partir daqui, Saulo é chamado Paulo (13:9).",
+   "caminho": [
+    [
+     36.16,
+     36.2
+    ],
+    [
+     35.93,
+     36.12
+    ],
+    [
+     33.95,
+     35.18
+    ],
+    [
+     32.42,
+     34.76
+    ]
+   ]
+  },
+  {
+   "id": "perge",
+   "lugar": "antioquia-pis",
+   "titulo": "De Perge a Antioquia da Pisídia",
+   "ref": "At 13:13–52",
+   "cap": 13,
+   "texto": "De Pafos, navegam para Perge, na Panfília, onde João Marcos os deixa. Paulo e Barnabé sobem à Antioquia da Pisídia, e Paulo prega na sinagoga. Os judeus o rejeitam, e ele diz: “Eis que nos voltamos para os gentios” (13:46).",
+   "caminho": [
+    [
+     32.42,
+     34.76
+    ],
+    [
+     30.85,
+     36.96
+    ],
+    [
+     31.19,
+     38.3
+    ]
+   ]
+  },
+  {
+   "id": "iconio",
+   "lugar": "iconio",
+   "titulo": "Icônio, Listra e Derbe",
+   "ref": "At 14:1–21",
+   "cap": 14,
+   "texto": "Em Icônio, a pregação divide a cidade. Em Listra, a cura de um aleijado leva o povo a chamá-los de Zeus e Hermes; depois apedrejam Paulo e o arrastam para fora da cidade, mas ele se levanta (14:19–20). No dia seguinte parte com Barnabé para Derbe.",
+   "incerto": true,
+   "caminho": [
+    [
+     31.19,
+     38.3
+    ],
+    [
+     32.49,
+     37.87
+    ],
+    [
+     32.45,
+     37.58
+    ],
+    [
+     33.4,
+     37.35
+    ]
+   ]
+  },
+  {
+   "id": "volta",
+   "lugar": "atalia",
+   "titulo": "A volta a Antioquia",
+   "ref": "At 14:21–28",
+   "cap": 14,
+   "texto": "Voltam por Listra, Icônio e Antioquia da Pisídia, fortalecendo os discípulos e constituindo anciãos em cada igreja. Descem a Perge, pregam e descem a Atália, de onde navegam de volta a Antioquia e contam o que Deus fizera, “como abrira aos gentios a porta da fé” (14:27).",
+   "incerto": true,
+   "caminho": [
+    [
+     33.4,
+     37.35
+    ],
+    [
+     32.45,
+     37.58
+    ],
+    [
+     32.49,
+     37.87
+    ],
+    [
+     31.19,
+     38.3
+    ],
+    [
+     30.85,
+     36.96
+    ],
+    [
+     30.7,
+     36.88
+    ],
+    [
+     36.16,
+     36.2
+    ]
+   ]
+  }
+ ],
+ "imperio": 47
+}

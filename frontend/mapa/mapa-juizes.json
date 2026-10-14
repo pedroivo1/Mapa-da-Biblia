@@ -1,0 +1,425 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "Os juízes de",
+ "destaque": "Israel.",
+ "subtitulo": "Mapa · Juízes 1 – 21",
+ "livro": "juizes",
+ "livroNome": "Juízes",
+ "aria": "Mapa-múndi com os lugares dos juízes de Israel: Débora e Baraque, Gideão, Jefté, Sansão e a tribo de Dã",
+ "vista": [
+  [
+   34.2,
+   31.2
+  ],
+  [
+   36.3,
+   33.4
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "debir",
+   "nome": "Debir",
+   "lon": 35.02,
+   "lat": 31.43,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "jerico",
+   "nome": "Jericó",
+   "lon": 35.44,
+   "lat": 31.87,
+   "lado": "dir"
+  },
+  {
+   "id": "hazor",
+   "nome": "Hazor",
+   "lon": 35.57,
+   "lat": 33.02,
+   "lado": "dir"
+  },
+  {
+   "id": "quedes",
+   "nome": "Quedes",
+   "lon": 35.52,
+   "lat": 33.11,
+   "lado": "dir"
+  },
+  {
+   "id": "tabor",
+   "nome": "Monte Tabor",
+   "lon": 35.39,
+   "lat": 32.69,
+   "lado": "dir"
+  },
+  {
+   "id": "quisom",
+   "nome": "Rio Quisom",
+   "lon": 35.1,
+   "lat": 32.65,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "harode",
+   "nome": "Fonte de Harode",
+   "lon": 35.36,
+   "lat": 32.55,
+   "lado": "dir"
+  },
+  {
+   "id": "ofra",
+   "nome": "Ofra de Gideão",
+   "lon": 35.4,
+   "lat": 32.4,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "sucote",
+   "nome": "Sucote",
+   "lon": 35.62,
+   "lat": 32.19,
+   "lado": "dir"
+  },
+  {
+   "id": "siquem",
+   "nome": "Siquém",
+   "lon": 35.28,
+   "lat": 32.21,
+   "lado": "esq"
+  },
+  {
+   "id": "mispa-g",
+   "nome": "Mispá de Galaade",
+   "lon": 35.9,
+   "lat": 32.4,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "zora",
+   "nome": "Zorá",
+   "lon": 34.97,
+   "lat": 31.77,
+   "lado": "esq"
+  },
+  {
+   "id": "timna",
+   "nome": "Timna",
+   "lon": 34.91,
+   "lat": 31.78,
+   "lado": "esq"
+  },
+  {
+   "id": "gaza",
+   "nome": "Gaza",
+   "lon": 34.47,
+   "lat": 31.5,
+   "lado": "esq"
+  },
+  {
+   "id": "hebrom",
+   "nome": "Hebrom",
+   "lon": 35.1,
+   "lat": 31.53,
+   "lado": "dir"
+  },
+  {
+   "id": "dan",
+   "nome": "Laís (Dã)",
+   "lon": 35.65,
+   "lat": 33.25,
+   "lado": "dir"
+  },
+  {
+   "id": "gibea",
+   "nome": "Gibeá",
+   "lon": 35.23,
+   "lat": 31.83,
+   "lado": "esq"
+  },
+  {
+   "id": "silo",
+   "nome": "Siló",
+   "lon": 35.29,
+   "lat": 32.06,
+   "lado": "dir"
+  },
+  {
+   "id": "filistia",
+   "nome": "Filístia",
+   "lon": 34.6,
+   "lat": 31.65,
+   "cor": "#c0652d",
+   "provincia": true
+  },
+  {
+   "id": "moabe",
+   "nome": "Moabe",
+   "lon": 36.0,
+   "lat": 31.2,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "amom",
+   "nome": "Amom",
+   "lon": 36.2,
+   "lat": 31.9,
+   "incerto": true,
+   "cor": "#d23a4a",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "otoniel",
+   "lugar": "debir",
+   "titulo": "Otoniel e Debir",
+   "ref": "Jz 1:11–15; 3:7–11",
+   "cap": 3,
+   "texto": "Calebe oferece sua filha Acsa a quem tomar Quiriate-Sefer (Debir), e Otoniel, seu sobrinho, a conquista. Quando Israel serve a Baal e a Aserá, o Senhor o entrega ao rei de Cusã-Risataim, da Mesopotâmia; Otoniel é levantado como libertador, e a terra descansa quarenta anos.",
+   "incerto": true
+  },
+  {
+   "id": "eude",
+   "lugar": "jerico",
+   "titulo": "Eúde e Eglom, rei de Moabe",
+   "ref": "Jz 3:12–30",
+   "cap": 3,
+   "texto": "Eglom, rei de Moabe, toma a “cidade das palmeiras” (Jericó) e domina Israel dezoito anos. Eúde, benjamita canhoto, leva o tributo e mata o rei com uma espada de dois gumes. Os israelitas, sob a sua liderança, tomam os vaus do Jordão e derrotam Moabe.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.44,
+     31.87
+    ],
+    [
+     35.6,
+     31.83
+    ],
+    [
+     35.75,
+     31.8
+    ]
+   ]
+  },
+  {
+   "id": "debora",
+   "lugar": "tabor",
+   "titulo": "Débora e Baraque",
+   "ref": "Jz 4–5",
+   "cap": 4,
+   "texto": "Débora, profetisa e juíza, manda chamar Baraque de Quedes de Naftali. Dez mil homens se reúnem no monte Tabor. O general Sísera, de Jabim, rei de Hazor, vem com novecentos carros de ferro; uma chuva torrencial enche o ribeiro de Quisom, e o exército é arrastado (5:21). Sísera morre pela mão de Jael.",
+   "caminho": [
+    [
+     35.52,
+     33.11
+    ],
+    [
+     35.45,
+     32.9
+    ],
+    [
+     35.39,
+     32.69
+    ],
+    [
+     35.3,
+     32.6
+    ],
+    [
+     35.18,
+     32.585
+    ]
+   ]
+  },
+  {
+   "id": "hazor",
+   "lugar": "hazor",
+   "titulo": "Hazor e Jabim",
+   "ref": "Jz 4:2, 23–24",
+   "cap": 4,
+   "texto": "Jabim, rei de Canaã, reinava em Hazor, e Sísera era o chefe de seu exército, com novecentos carros de ferro. Israel foi oprimido por ele vinte anos. Com a vitória de Débora e Baraque, Israel prevalece cada vez mais sobre Jabim até destruí-lo."
+  },
+  {
+   "id": "gideao",
+   "lugar": "harode",
+   "titulo": "Gideão e os midianitas",
+   "ref": "Jz 6–7",
+   "cap": 6,
+   "texto": "Gideão, de Ofra, derruba o altar de Baal de seu pai e reúne um exército de 32 mil homens; junto à fonte de Harode, o Senhor reduz o exército a trezentos. De noite, com trombetas e jarros com tochas, cercam o acampamento de Midiã no vale de Jezreel, e os midianitas fogem (7:19–22).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.4,
+     32.4
+    ],
+    [
+     35.36,
+     32.55
+    ]
+   ]
+  },
+  {
+   "id": "perseguicao",
+   "lugar": "sucote",
+   "titulo": "A perseguição até Sucote e Penuel",
+   "ref": "Jz 8:4–17",
+   "cap": 8,
+   "texto": "Gideão persegue os reis Zeba e Zalmuna do outro lado do Jordão. Os homens de Sucote e de Penuel recusam dar-lhe pão, e ele os castiga na volta. Depois de capturar os reis, recusa a coroa: “Não dominarei sobre vós… o Senhor dominará sobre vós” (8:23).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.36,
+     32.55
+    ],
+    [
+     35.5,
+     32.45
+    ],
+    [
+     35.62,
+     32.19
+    ],
+    [
+     35.7,
+     32.2
+    ]
+   ]
+  },
+  {
+   "id": "abimeleque",
+   "lugar": "siquem",
+   "titulo": "Abimeleque em Siquém",
+   "ref": "Jz 9",
+   "cap": 9,
+   "texto": "Abimeleque, filho de Gideão, mata setenta irmãos em Ofra e é proclamado rei em Siquém. Só Jotão, o mais novo, escapa e o amaldiçoa com a parábola das árvores (9:7–15). Depois de três anos, Siquém se revolta, e Abimeleque morre em Tebes, atingido por uma pedra de moinho lançada por uma mulher."
+  },
+  {
+   "id": "jefte",
+   "lugar": "mispa-g",
+   "titulo": "Jefté, o galaadita",
+   "ref": "Jz 11–12",
+   "cap": 11,
+   "texto": "Filho de uma prostituta, expulso pelos irmãos, Jefté é chamado de volta pelos anciãos de Galaade para combater os amonitas. Em Mispá faz um voto: oferecer em holocausto o que sair de sua casa ao voltar vitorioso, e sai sua única filha (11:30–40).",
+   "incerto": true
+  },
+  {
+   "id": "sansao",
+   "lugar": "zora",
+   "titulo": "Sansão nasce em Zorá",
+   "ref": "Jz 13",
+   "cap": 13,
+   "texto": "Um anjo anuncia à mulher de Manoá, da tribo de Dã, em Zorá, que ela terá um filho nazireu. Sansão nasce e o Espírito começa a movê-lo no acampamento de Dã."
+  },
+  {
+   "id": "timna",
+   "lugar": "timna",
+   "titulo": "Sansão em Timna",
+   "ref": "Jz 14–15",
+   "cap": 14,
+   "texto": "Sansão desce a Timna, casa-se com uma mulher filisteia e propõe um enigma. Furioso, mata trinta homens em Ascalom. Depois queima as plantações dos filisteus com trezentas raposas e derrota mil homens com uma queixada de jumento (15:15).",
+   "caminho": [
+    [
+     34.97,
+     31.77
+    ],
+    [
+     34.91,
+     31.78
+    ],
+    [
+     34.57,
+     31.66
+    ]
+   ]
+  },
+  {
+   "id": "gaza",
+   "lugar": "gaza",
+   "titulo": "Gaza e os portões",
+   "ref": "Jz 16:1–3",
+   "cap": 16,
+   "texto": "Em Gaza, Sansão passa a noite com uma prostituta; os homens da cidade o cercam, mas ele arranca os portões e os dois batentes e os leva ao cimo do monte diante de Hebrom (16:3).",
+   "caminho": [
+    [
+     34.57,
+     31.66
+    ],
+    [
+     34.47,
+     31.5
+    ],
+    [
+     34.8,
+     31.52
+    ],
+    [
+     35.1,
+     31.53
+    ]
+   ]
+  },
+  {
+   "id": "dalila",
+   "lugar": "gaza",
+   "titulo": "Dalila e a morte em Gaza",
+   "ref": "Jz 16:4–31",
+   "cap": 16,
+   "texto": "Dalila, no vale de Soreque, descobre que a força de Sansão está nos cabelos e o entrega aos filisteus, que lhe furam os olhos e o levam a Gaza. No templo de Dagom, ele se apoia nas colunas e diz: “Morra eu com os filisteus!” (16:30)."
+  },
+  {
+   "id": "dan",
+   "lugar": "dan",
+   "titulo": "Dã conquista Laís",
+   "ref": "Jz 17–18",
+   "cap": 18,
+   "texto": "A tribo de Dã não consegue ocupar a terra que lhe coube, sobe de Zorá e Estaol com seiscentos homens, toma a pacata cidade de Laís e a renomeia Dã (18:27–29). Levam consigo o ídolo de Mica e o seu levita.",
+   "caminho": [
+    [
+     34.97,
+     31.77
+    ],
+    [
+     35.1,
+     32.0
+    ],
+    [
+     35.4,
+     32.6
+    ],
+    [
+     35.65,
+     33.25
+    ]
+   ]
+  },
+  {
+   "id": "gibea",
+   "lugar": "gibea",
+   "titulo": "O crime de Gibeá e a guerra",
+   "ref": "Jz 19–21",
+   "cap": 19,
+   "texto": "Um levita e a sua concubina se hospedam em Gibeá, de Benjamim, onde homens da cidade abusam dela até a morte. O levita divide o corpo em doze partes e as envia a Israel. A assembleia em Mispá decide guerra contra Benjamim, e Betel e Siló são os lugares da última batalha e do consolo (21:2, 12).",
+   "caminho": [
+    [
+     35.23,
+     31.83
+    ],
+    [
+     35.24,
+     31.93
+    ],
+    [
+     35.29,
+     32.06
+    ]
+   ]
+  }
+ ],
+ "territorios": 1200
+}

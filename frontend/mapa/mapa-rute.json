@@ -1,0 +1,165 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A história de",
+ "destaque": "Rute.",
+ "subtitulo": "Mapa · Rute 1 – 4",
+ "livro": "rute",
+ "livroNome": "Rute",
+ "aria": "Mapa-múndi com os lugares do livro de Rute: Belém, os campos de Moabe e o caminho de volta",
+ "vista": [
+  [
+   35.0,
+   31.2
+  ],
+  [
+   36.3,
+   31.95
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "belem",
+   "nome": "Belém",
+   "lon": 35.2,
+   "lat": 31.7,
+   "lado": "esq"
+  },
+  {
+   "id": "moabe-c",
+   "nome": "Campos de Moabe",
+   "lon": 35.85,
+   "lat": 31.35,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "jordao",
+   "nome": "Vaus do Jordão",
+   "lon": 35.55,
+   "lat": 31.83,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "jerico",
+   "nome": "Jericó",
+   "lon": 35.44,
+   "lat": 31.87,
+   "lado": "dir"
+  },
+  {
+   "id": "moabe",
+   "nome": "Moabe",
+   "lon": 36.0,
+   "lat": 31.2,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "juda",
+   "nome": "Judá",
+   "lon": 35.0,
+   "lat": 31.6,
+   "cor": "#14a58a",
+   "rotulo": [
+    35.0,
+    31.55
+   ],
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "fome",
+   "lugar": "moabe-c",
+   "titulo": "A fome e a ida a Moabe",
+   "ref": "Rt 1:1–5",
+   "cap": 1,
+   "texto": "Nos dias dos juízes, uma fome leva Elimeleque de Belém de Judá, com a mulher Noemi e os filhos Malom e Quiliom, a peregrinar nos campos de Moabe. Elimeleque morre; os filhos casam-se com moabitas, Orfa e Rute, e depois também morrem. Noemi fica viúva e sem filhos.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.2,
+     31.7
+    ],
+    [
+     35.4,
+     31.8
+    ],
+    [
+     35.55,
+     31.83
+    ],
+    [
+     35.75,
+     31.6
+    ],
+    [
+     35.85,
+     31.35
+    ]
+   ]
+  },
+  {
+   "id": "volta",
+   "lugar": "belem",
+   "titulo": "Noemi volta com Rute",
+   "ref": "Rt 1:6–22",
+   "cap": 1,
+   "texto": "Noemi sabe que o Senhor visitou o seu povo, dando-lhe pão, e decide voltar. Orfa fica; Rute se apega a ela: “Aonde fores, irei eu; e onde pousares, pousarei… o teu povo será o meu povo, e o teu Deus o meu Deus” (1:16). Chegam a Belém no começo da colheita da cevada.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.85,
+     31.35
+    ],
+    [
+     35.75,
+     31.6
+    ],
+    [
+     35.55,
+     31.83
+    ],
+    [
+     35.44,
+     31.87
+    ],
+    [
+     35.3,
+     31.8
+    ],
+    [
+     35.2,
+     31.7
+    ]
+   ]
+  },
+  {
+   "id": "respigar",
+   "lugar": "belem",
+   "titulo": "Rute respiga no campo de Boaz",
+   "ref": "Rt 2",
+   "cap": 2,
+   "texto": "Rute vai respigar atrás dos ceifeiros e acaba no campo de Boaz, parente de Elimeleque. Boaz a acolhe e manda deixar espigas para ela: “Que o Senhor te recompense… debaixo de cujas asas vieste buscar abrigo” (2:12)."
+  },
+  {
+   "id": "eira",
+   "lugar": "belem",
+   "titulo": "A eira de Boaz",
+   "ref": "Rt 3",
+   "cap": 3,
+   "texto": "Por conselho de Noemi, Rute vai à eira, de noite, e se deita aos pés de Boaz. Ele a chama de “mulher virtuosa” e promete resolver a questão do parente que tem prioridade sobre o resgate da terra (3:11–13)."
+  },
+  {
+   "id": "porta",
+   "lugar": "belem",
+   "titulo": "A porta da cidade e o casamento",
+   "ref": "Rt 4",
+   "cap": 4,
+   "texto": "Na porta de Belém, diante de dez anciãos, Boaz resgata a terra de Elimeleque e toma Rute por esposa. Nasce Obede, pai de Jessé e avô de Davi (4:17); as mulheres dizem a Noemi: “Tua nora te é melhor do que sete filhos” (4:15). A genealogia chega a Davi."
+  }
+ ],
+ "territorios": 1100
+}

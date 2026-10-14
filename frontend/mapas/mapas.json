@@ -163,6 +163,239 @@
     }
    ],
    "ano": 1406
+  },
+  {
+   "id": "josue",
+   "titulo": "A conquista de Canaã",
+   "tipo": "Mapa",
+   "ref": "Js 1–24",
+   "resumo": "De Sitim e Jericó a Ai, Gibeão, às cidades do sul, a Hazor e a Siquém.",
+   "url": "/mapa/?m=josue",
+   "capitulos": [
+    {
+     "livro": "josue",
+     "de": 1,
+     "ate": 24
+    }
+   ],
+   "ano": 1406
+  },
+  {
+   "id": "davi",
+   "titulo": "A vida de Davi",
+   "tipo": "Mapa",
+   "ref": "1Sm 16 – 2Sm 24",
+   "resumo": "De Belém ao vale de Elá, ao deserto de Judá, a Hebrom e a Jerusalém, e a fuga diante de Absalão.",
+   "url": "/mapa/?m=davi",
+   "capitulos": [
+    {
+     "livro": "1samuel",
+     "de": 16,
+     "ate": 31
+    },
+    {
+     "livro": "2samuel",
+     "de": 1,
+     "ate": 24
+    }
+   ],
+   "ano": 1010
+  },
+  {
+   "id": "elias-eliseu",
+   "titulo": "Elias e Eliseu",
+   "tipo": "Mapa",
+   "ref": "1Rs 17 – 2Rs 6",
+   "resumo": "De Tisbe e Sarepta ao Carmelo e a Horebe; depois, Jericó, Sunem, Damasco e Dotã com Eliseu.",
+   "url": "/mapa/?m=elias-eliseu",
+   "capitulos": [
+    {
+     "livro": "1reis",
+     "de": 17,
+     "ate": 21
+    },
+    {
+     "livro": "2reis",
+     "de": 1,
+     "ate": 6
+    }
+   ],
+   "ano": 860
+  },
+  {
+   "id": "jesus-galileia",
+   "titulo": "O ministério de Jesus",
+   "tipo": "Mapa",
+   "ref": "Lc 1–9",
+   "resumo": "De Belém e Nazaré ao Jordão, a Cafarnaum e ao mar da Galileia, até Cesareia de Filipe e a transfiguração.",
+   "url": "/mapa/?m=jesus-galileia",
+   "capitulos": [
+    {
+     "livro": "lucas",
+     "de": 1,
+     "ate": 9
+    }
+   ],
+   "ano": -28
+  },
+  {
+   "id": "jesus-jerusalem",
+   "titulo": "A última semana de Jesus",
+   "tipo": "Mapa",
+   "ref": "Lc 9:51–24",
+   "resumo": "Da subida a Jerusalém por Samaria e Jericó, à entrada, à ceia, ao Getsêmani, ao Gólgota e a Emaús.",
+   "url": "/mapa/?m=jesus-jerusalem",
+   "capitulos": [
+    {
+     "livro": "lucas",
+     "de": 9,
+     "ate": 24
+    }
+   ],
+   "ano": -30
+  },
+  {
+   "id": "paulo-1",
+   "titulo": "A primeira viagem de Paulo",
+   "tipo": "Mapa",
+   "ref": "At 9–14",
+   "resumo": "De Damasco e Tarso a Antioquia, Chipre e à Galácia: Pafos, Perge, Icônio, Listra e Derbe.",
+   "url": "/mapa/?m=paulo-1",
+   "capitulos": [
+    {
+     "livro": "atos",
+     "de": 9,
+     "ate": 14
+    }
+   ],
+   "ano": -46
+  },
+  {
+   "id": "paulo-2",
+   "titulo": "A segunda viagem de Paulo",
+   "tipo": "Mapa",
+   "ref": "At 15:36–18:22",
+   "resumo": "Da Síria e da Galácia a Trôade, Filipos, Tessalônica, Bereia, Atenas e Corinto, e a volta por Éfeso.",
+   "url": "/mapa/?m=paulo-2",
+   "capitulos": [
+    {
+     "livro": "atos",
+     "de": 15,
+     "ate": 18
+    }
+   ],
+   "ano": -49
+  },
+  {
+   "id": "paulo-3",
+   "titulo": "A terceira viagem de Paulo",
+   "tipo": "Mapa",
+   "ref": "At 18:23–21:17",
+   "resumo": "Éfeso por três anos, a Macedônia e a Grécia, Trôade e Mileto, até Tiro, Cesareia e Jerusalém.",
+   "url": "/mapa/?m=paulo-3",
+   "capitulos": [
+    {
+     "livro": "atos",
+     "de": 18,
+     "ate": 21
+    }
+   ],
+   "ano": -53
+  },
+  {
+   "id": "paulo-roma",
+   "titulo": "A viagem de Paulo a Roma",
+   "tipo": "Mapa",
+   "ref": "At 21:27–28:31",
+   "resumo": "Da prisão em Jerusalém e Cesareia, pelo mar, a Mira, Creta, o naufrágio em Malta e a chegada a Roma.",
+   "url": "/mapa/?m=paulo-roma",
+   "capitulos": [
+    {
+     "livro": "atos",
+     "de": 21,
+     "ate": 28
+    }
+   ],
+   "ano": -59
+  },
+  {
+   "id": "juizes",
+   "titulo": "Os juízes de Israel",
+   "tipo": "Mapa",
+   "ref": "Jz 1–21",
+   "resumo": "De Débora e Baraque no Tabor a Gideão, Jefté, Sansão, a migração de Dã e o crime de Gibeá.",
+   "url": "/mapa/?m=juizes",
+   "capitulos": [
+    {
+     "livro": "juizes",
+     "de": 1,
+     "ate": 21
+    }
+   ],
+   "ano": 1200
+  },
+  {
+   "id": "rute",
+   "titulo": "A história de Rute",
+   "tipo": "Mapa",
+   "ref": "Rt 1–4",
+   "resumo": "De Belém aos campos de Moabe e a volta de Noemi e Rute, até o casamento com Boaz.",
+   "url": "/mapa/?m=rute",
+   "capitulos": [
+    {
+     "livro": "rute",
+     "de": 1,
+     "ate": 4
+    }
+   ],
+   "ano": 1100
+  },
+  {
+   "id": "salomao",
+   "titulo": "O reinado de Salomão",
+   "tipo": "Mapa",
+   "ref": "1Rs 1–11",
+   "resumo": "De Gibeão e Jerusalém a Tiro, às cidades fortificadas, a Eziom-Geber e à rainha de Sabá.",
+   "url": "/mapa/?m=salomao",
+   "capitulos": [
+    {
+     "livro": "1reis",
+     "de": 1,
+     "ate": 11
+    }
+   ],
+   "ano": 970
+  },
+  {
+   "id": "reino-dividido",
+   "titulo": "O reino dividido",
+   "tipo": "Mapa",
+   "ref": "1Rs 12 – 2Rs 17",
+   "resumo": "De Siquém e Betel a Tirza, Samaria, Ramote-Gileade, Jezreel e a queda de Samaria diante da Assíria.",
+   "url": "/mapa/?m=reino-dividido",
+   "capitulos": [
+    {
+     "livro": "1reis",
+     "de": 12,
+     "ate": 16
+    },
+    {
+     "livro": "1reis",
+     "de": 22,
+     "ate": 22
+    },
+    {
+     "livro": "2reis",
+     "de": 9,
+     "ate": 9
+    },
+    {
+     "livro": "2reis",
+     "de": 17,
+     "ate": 17
+    }
+   ],
+   "ano": 930
   }
  ]
 }

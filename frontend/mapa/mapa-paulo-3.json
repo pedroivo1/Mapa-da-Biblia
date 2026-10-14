@@ -1,0 +1,320 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A terceira viagem de",
+ "destaque": "Paulo.",
+ "subtitulo": "Mapa · Atos 18:23 – 21:17",
+ "livro": "atos",
+ "livroNome": "Atos",
+ "capSomenteLivro": "atos",
+ "aria": "Mapa-múndi com a terceira viagem missionária de Paulo, de Antioquia a Éfeso, à Grécia e a Jerusalém",
+ "vista": [
+  [
+   22.0,
+   31.5
+  ],
+  [
+   37.0,
+   41.8
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "antioquia",
+   "nome": "Antioquia da Síria",
+   "lon": 36.16,
+   "lat": 36.2,
+   "lado": "dir"
+  },
+  {
+   "id": "efeso",
+   "nome": "Éfeso",
+   "lon": 27.34,
+   "lat": 37.94,
+   "lado": "dir"
+  },
+  {
+   "id": "troade",
+   "nome": "Trôade",
+   "lon": 26.18,
+   "lat": 39.75,
+   "lado": "dir"
+  },
+  {
+   "id": "filipos",
+   "nome": "Filipos",
+   "lon": 24.28,
+   "lat": 41.01,
+   "lado": "dir"
+  },
+  {
+   "id": "corinto",
+   "nome": "Corinto",
+   "lon": 22.93,
+   "lat": 37.9,
+   "lado": "esq"
+  },
+  {
+   "id": "mileto",
+   "nome": "Mileto",
+   "lon": 27.28,
+   "lat": 37.5,
+   "lado": "dir"
+  },
+  {
+   "id": "patara",
+   "nome": "Pátara",
+   "lon": 29.3,
+   "lat": 36.26,
+   "lado": "esq"
+  },
+  {
+   "id": "tiro",
+   "nome": "Tiro",
+   "lon": 35.2,
+   "lat": 33.27,
+   "lado": "dir"
+  },
+  {
+   "id": "cesareia",
+   "nome": "Cesareia",
+   "lon": 34.89,
+   "lat": 32.5,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "galacia",
+   "nome": "Galácia",
+   "lon": 33.0,
+   "lat": 38.9,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "asia",
+   "nome": "Ásia",
+   "lon": 28.5,
+   "lat": 38.5,
+   "incerto": true,
+   "cor": "#2e9e5b",
+   "rotulo": [
+    28.4,
+    38.9
+   ],
+   "provincia": true
+  },
+  {
+   "id": "macedonia",
+   "nome": "Macedônia",
+   "lon": 22.8,
+   "lat": 40.9,
+   "incerto": true,
+   "cor": "#3b82c4",
+   "rotulo": [
+    22.7,
+    41.35
+   ],
+   "provincia": true
+  },
+  {
+   "id": "acaia",
+   "nome": "Acaia",
+   "lon": 22.0,
+   "lat": 38.3,
+   "incerto": true,
+   "cor": "#d23a4a",
+   "rotulo": [
+    21.8,
+    38.8
+   ],
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "galacia",
+   "lugar": "efeso",
+   "titulo": "Pela Galácia e Frígia",
+   "ref": "At 18:23",
+   "cap": 18,
+   "texto": "Depois de passar algum tempo em Antioquia, Paulo parte, percorrendo sucessivamente a região da Galácia e a Frígia, fortalecendo todos os discípulos, e chega a Éfeso.",
+   "incerto": true,
+   "caminho": [
+    [
+     36.16,
+     36.2
+    ],
+    [
+     34.9,
+     36.9
+    ],
+    [
+     32.45,
+     37.58
+    ],
+    [
+     31.19,
+     38.3
+    ],
+    [
+     27.34,
+     37.94
+    ]
+   ]
+  },
+  {
+   "id": "efeso",
+   "lugar": "efeso",
+   "titulo": "Éfeso: três anos",
+   "ref": "At 19",
+   "cap": 19,
+   "texto": "Em Éfeso, Paulo ensina três meses na sinagoga e depois dois anos na escola de Tirano, “de modo que todos os habitantes da Ásia ouviram a palavra do Senhor” (19:10). Os ourives, liderados por Demétrio, provocam um tumulto no teatro por causa de Ártemis (19:23–41)."
+  },
+  {
+   "id": "macedonia",
+   "lugar": "filipos",
+   "titulo": "Pela Macedônia e a Grécia",
+   "ref": "At 20:1–6",
+   "cap": 20,
+   "texto": "Depois do tumulto, Paulo parte para a Macedônia, exortando os discípulos, e chega à Grécia, onde passa três meses (em Corinto). Em seguida volta pela Macedônia, porque os judeus tramavam contra ele, e se reúne em Trôade com seus companheiros.",
+   "caminho": [
+    [
+     27.34,
+     37.94
+    ],
+    [
+     26.18,
+     39.75
+    ],
+    [
+     24.28,
+     41.01
+    ],
+    [
+     22.93,
+     37.9
+    ],
+    [
+     24.28,
+     41.01
+    ],
+    [
+     26.18,
+     39.75
+    ]
+   ]
+  },
+  {
+   "id": "troade",
+   "lugar": "troade",
+   "titulo": "Êutico em Trôade",
+   "ref": "At 20:7–12",
+   "cap": 20,
+   "texto": "No primeiro dia da semana, reunidos para partir o pão, Paulo prolonga o discurso até a meia-noite. Um jovem, Êutico, adormece na janela e cai do terceiro andar; Paulo o abraça e diz: “Não vos perturbeis, porque a vida dele está nele” (20:10)."
+  },
+  {
+   "id": "mileto",
+   "lugar": "mileto",
+   "titulo": "O adeus aos anciãos de Éfeso",
+   "ref": "At 20:13–38",
+   "cap": 20,
+   "texto": "Paulo navega por Assôs, Mitilene, Samos e chega a Mileto. Manda chamar os anciãos de Éfeso e se despede deles: “Atendei por vós e por todo o rebanho” (20:28). Todos choram, abraçam-no e o acompanham até o navio.",
+   "caminho": [
+    [
+     26.18,
+     39.75
+    ],
+    [
+     26.34,
+     39.49
+    ],
+    [
+     26.56,
+     39.1
+    ],
+    [
+     26.9,
+     37.75
+    ],
+    [
+     27.28,
+     37.5
+    ]
+   ]
+  },
+  {
+   "id": "viagem",
+   "lugar": "patara",
+   "titulo": "Cós, Rodes e Pátara",
+   "ref": "At 21:1–3",
+   "cap": 21,
+   "texto": "Partem de Mileto, vão diretamente a Cós, de lá a Rodes e a Pátara. Ali tomam um navio que vai para a Fenícia e, avistando Chipre pela esquerda, navegam para a Síria e chegam a Tiro.",
+   "caminho": [
+    [
+     27.28,
+     37.5
+    ],
+    [
+     27.3,
+     36.9
+    ],
+    [
+     28.2,
+     36.4
+    ],
+    [
+     29.3,
+     36.26
+    ],
+    [
+     35.2,
+     33.27
+    ]
+   ]
+  },
+  {
+   "id": "tiro",
+   "lugar": "tiro",
+   "titulo": "Tiro e Cesareia",
+   "ref": "At 21:4–14",
+   "cap": 21,
+   "texto": "Em Tiro, os discípulos, pelo Espírito, dizem a Paulo que não suba a Jerusalém. Em Cesareia, o profeta Ágabo prende os próprios pés e mãos com o cinto de Paulo e anuncia que os judeus o entregarão aos gentios. Paulo responde que está pronto a morrer pelo nome do Senhor Jesus (21:13).",
+   "caminho": [
+    [
+     35.2,
+     33.27
+    ],
+    [
+     34.89,
+     32.5
+    ]
+   ]
+  },
+  {
+   "id": "jerusalem",
+   "lugar": "jerusalem",
+   "titulo": "A subida a Jerusalém",
+   "ref": "At 21:15–17",
+   "cap": 21,
+   "texto": "Paulo e os companheiros sobem de Cesareia a Jerusalém com alguns discípulos, e são recebidos com alegria pelos irmãos. É o fim da terceira viagem.",
+   "caminho": [
+    [
+     34.89,
+     32.5
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  }
+ ],
+ "imperio": 53
+}

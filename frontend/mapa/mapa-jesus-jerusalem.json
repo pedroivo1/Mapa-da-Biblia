@@ -1,0 +1,393 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A última semana de",
+ "destaque": "Jesus.",
+ "subtitulo": "Mapa · Lucas 9:51 – 24 (com paralelos de Mateus, Marcos e João)",
+ "livro": "lucas",
+ "livroNome": "Lucas",
+ "capSomenteLivro": "lucas",
+ "aria": "Mapa-múndi com a subida de Jesus a Jerusalém, a última semana e o caminho de Emaús",
+ "vista": [
+  [
+   35.0,
+   31.6
+  ],
+  [
+   35.8,
+   32.9
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "cafarnaum",
+   "nome": "Cafarnaum",
+   "lon": 35.575,
+   "lat": 32.88,
+   "lado": "dir"
+  },
+  {
+   "id": "samaria",
+   "nome": "Samaria",
+   "lon": 35.28,
+   "lat": 32.3,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "betania",
+   "nome": "Betânia",
+   "lon": 35.26,
+   "lat": 31.77,
+   "lado": "dir"
+  },
+  {
+   "id": "jerico",
+   "nome": "Jericó",
+   "lon": 35.44,
+   "lat": 31.87,
+   "lado": "dir"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "getsemani",
+   "nome": "Getsêmani",
+   "lon": 35.241,
+   "lat": 31.779,
+   "lado": "dir"
+  },
+  {
+   "id": "calvario",
+   "nome": "Gólgota",
+   "lon": 35.23,
+   "lat": 31.7785,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "emaus",
+   "nome": "Emaús",
+   "lon": 35.12,
+   "lat": 31.84,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "samaria-reg",
+   "nome": "Samaria",
+   "lon": 35.2,
+   "lat": 32.25,
+   "cor": "#c0652d",
+   "area": [
+    [
+     35.29,
+     32.58
+    ],
+    [
+     35.45,
+     32.55
+    ],
+    [
+     35.48,
+     32.36
+    ],
+    [
+     35.5,
+     32.0
+    ],
+    [
+     35.31,
+     32.04
+    ],
+    [
+     35.13,
+     32.04
+    ],
+    [
+     34.95,
+     32.0
+    ],
+    [
+     34.95,
+     32.19
+    ],
+    [
+     34.93,
+     32.37
+    ],
+    [
+     34.95,
+     32.55
+    ],
+    [
+     35.12,
+     32.59
+    ]
+   ],
+   "rotulo": [
+    35.15,
+    32.35
+   ]
+  },
+  {
+   "id": "judeia",
+   "nome": "Judeia",
+   "lon": 35.0,
+   "lat": 31.6,
+   "cor": "#e08a1e",
+   "area": [
+    [
+     35.26,
+     32.07
+    ],
+    [
+     35.5,
+     32.0
+    ],
+    [
+     35.43,
+     31.78
+    ],
+    [
+     35.42,
+     31.35
+    ],
+    [
+     34.98,
+     31.27
+    ],
+    [
+     34.75,
+     31.3
+    ],
+    [
+     34.69,
+     31.55
+    ],
+    [
+     34.69,
+     31.78
+    ],
+    [
+     34.75,
+     32.0
+    ],
+    [
+     35.01,
+     32.06
+    ]
+   ],
+   "rotulo": [
+    34.95,
+    31.5
+   ]
+  }
+ ],
+ "etapas": [
+  {
+   "id": "subida",
+   "lugar": "samaria",
+   "titulo": "O rosto firme para Jerusalém",
+   "ref": "Lc 9:51–56",
+   "cap": 9,
+   "texto": "Cumprindo-se os dias de ser levado ao alto, Jesus “manifestou o firme propósito de ir a Jerusalém” (9:51). Manda mensageiros adiante a uma aldeia de samaritanos, que não o recebem. Tiago e João querem chamar fogo do céu, e Jesus os repreende.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.575,
+     32.88
+    ],
+    [
+     35.4,
+     32.6
+    ],
+    [
+     35.28,
+     32.3
+    ]
+   ]
+  },
+  {
+   "id": "samaritano",
+   "lugar": "betania",
+   "titulo": "Marta e Maria; o bom samaritano",
+   "ref": "Lc 10",
+   "cap": 10,
+   "texto": "Na estrada de Jerusalém a Jericó, Jesus conta a parábola do bom samaritano (10:30–37). Em seguida chega a uma aldeia (Betânia, segundo João 11:1), onde Marta o recebe e Maria se assenta a seus pés (10:38–42).",
+   "caminho": [
+    [
+     35.28,
+     32.3
+    ],
+    [
+     35.3,
+     32.0
+    ],
+    [
+     35.26,
+     31.77
+    ]
+   ]
+  },
+  {
+   "id": "leprosos",
+   "lugar": "samaria",
+   "titulo": "Os dez leprosos",
+   "ref": "Lc 17:11–19",
+   "cap": 17,
+   "texto": "A caminho de Jerusalém, Jesus passa entre a Samaria e a Galileia. Dez leprosos pedem misericórdia; ele os manda mostrarem-se aos sacerdotes, e todos ficam limpos. Só um, samaritano, volta para agradecer.",
+   "incerto": true
+  },
+  {
+   "id": "jerico",
+   "lugar": "jerico",
+   "titulo": "Bartimeu e Zaqueu em Jericó",
+   "ref": "Lc 18:35–19:10",
+   "cap": 18,
+   "texto": "Perto de Jericó, um cego mendigo grita: “Jesus, Filho de Davi, tem compaixão de mim!” e recebe a vista (18:38–43). Em Jericó, Jesus entra na casa do publicano Zaqueu: “Hoje houve salvação nesta casa” (19:9).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.26,
+     31.77
+    ],
+    [
+     35.5,
+     32.2
+    ],
+    [
+     35.55,
+     31.9
+    ],
+    [
+     35.44,
+     31.87
+    ]
+   ]
+  },
+  {
+   "id": "entrada",
+   "lugar": "jerusalem",
+   "titulo": "A entrada em Jerusalém",
+   "ref": "Lc 19:28–44",
+   "cap": 19,
+   "texto": "De Jericó, Jesus sobe os cerca de mil metros de desnível até Betfagé e Betânia, no monte das Oliveiras. Entra montado num jumentinho; os discípulos estendem os mantos, e a multidão clama: “Bendito o que vem, o Rei, em nome do Senhor!” (19:38). Ao ver a cidade, chora por ela.",
+   "caminho": [
+    [
+     35.44,
+     31.87
+    ],
+    [
+     35.33,
+     31.82
+    ],
+    [
+     35.26,
+     31.77
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "templo",
+   "lugar": "jerusalem",
+   "titulo": "O ensino no templo",
+   "ref": "Lc 19:45–21:38",
+   "cap": 19,
+   "texto": "Jesus expulsa os vendilhões do templo e ensina ali todos os dias. Responde às perguntas sobre sua autoridade, sobre o tributo a César e sobre a ressurreição (20:1–40). Anuncia a destruição do templo e a vinda do Filho do Homem (21:5–36)."
+  },
+  {
+   "id": "ceia",
+   "lugar": "jerusalem",
+   "titulo": "A última ceia",
+   "ref": "Lc 22:7–38",
+   "cap": 22,
+   "texto": "Na festa dos Pães Asmos, Jesus manda Pedro e João prepararem a Páscoa numa sala grande e mobiliada, no andar de cima. Ali parte o pão e distribui o cálice: “Isto é o meu corpo… este cálice é o novo pacto no meu sangue” (22:19–20)."
+  },
+  {
+   "id": "getsemani",
+   "lugar": "getsemani",
+   "titulo": "A oração no Getsêmani",
+   "ref": "Lc 22:39–54",
+   "cap": 22,
+   "texto": "Jesus sai, como de costume, para o monte das Oliveiras. Ora em agonia: “Pai, se queres, afasta de mim este cálice; todavia, não se faça a minha vontade, mas a tua” (22:42). Judas o trai com um beijo, e ele é preso.",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.238,
+     31.779
+    ],
+    [
+     35.241,
+     31.779
+    ]
+   ]
+  },
+  {
+   "id": "julgamento",
+   "lugar": "jerusalem",
+   "titulo": "O julgamento",
+   "ref": "Lc 22:54–23:25",
+   "cap": 22,
+   "texto": "Jesus é levado à casa do sumo sacerdote, onde Pedro o nega três vezes. De manhã, o Sinédrio o julga e o entrega a Pilatos. Pilatos o manda a Herodes, que o devolve, e acaba por entregá-lo para ser crucificado (23:24–25)."
+  },
+  {
+   "id": "crucificacao",
+   "lugar": "calvario",
+   "titulo": "A crucificação e a sepultura",
+   "ref": "Lc 23:26–56",
+   "cap": 23,
+   "texto": "Jesus é levado ao lugar chamado Caveira (Gólgota), onde é crucificado entre dois malfeitores. Diz: “Pai, perdoa-lhes, pois não sabem o que fazem” (23:34). Depois de sua morte, José de Arimateia o sepulta num túmulo escavado na rocha, onde ninguém ainda havia sido posto.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.241,
+     31.779
+    ],
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.23,
+     31.7785
+    ]
+   ]
+  },
+  {
+   "id": "emaus",
+   "lugar": "emaus",
+   "titulo": "O caminho de Emaús",
+   "ref": "Lc 24:13–35",
+   "cap": 24,
+   "texto": "No domingo da ressurreição, dois discípulos caminham de Jerusalém para Emaús, a cerca de onze quilômetros, e Jesus se junta a eles sem ser reconhecido. Ele lhes explica as Escrituras, e o reconhecem ao partir o pão (24:30–31). A localização de Emaús é debatida.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.15,
+     31.82
+    ],
+    [
+     35.12,
+     31.84
+    ]
+   ]
+  }
+ ],
+ "imperio": 30
+}

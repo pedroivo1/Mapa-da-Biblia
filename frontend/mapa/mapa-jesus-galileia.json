@@ -1,0 +1,498 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O ministério de",
+ "destaque": "Jesus.",
+ "subtitulo": "Mapa · Lucas 1 – 9 (com paralelos de Mateus, Marcos e João)",
+ "livro": "lucas",
+ "livroNome": "Lucas",
+ "capSomenteLivro": "lucas",
+ "aria": "Mapa-múndi com os lugares do início da vida e do ministério de Jesus: Belém, Nazaré, o Jordão, Cafarnaum e Cesareia de Filipe",
+ "vista": [
+  [
+   34.9,
+   31.5
+  ],
+  [
+   36.0,
+   33.5
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "nazare",
+   "nome": "Nazaré",
+   "lon": 35.3,
+   "lat": 32.7,
+   "lado": "esq"
+  },
+  {
+   "id": "belem",
+   "nome": "Belém",
+   "lon": 35.2,
+   "lat": 31.7,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "jordao",
+   "nome": "Jordão (batismo)",
+   "lon": 35.55,
+   "lat": 31.84,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "deserto",
+   "nome": "Deserto da Judeia",
+   "lon": 35.4,
+   "lat": 31.75,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "cana",
+   "nome": "Caná",
+   "lon": 35.34,
+   "lat": 32.75,
+   "lado": "esq"
+  },
+  {
+   "id": "cafarnaum",
+   "nome": "Cafarnaum",
+   "lon": 35.575,
+   "lat": 32.88,
+   "lado": "dir"
+  },
+  {
+   "id": "naim",
+   "nome": "Naim",
+   "lon": 35.35,
+   "lat": 32.63,
+   "lado": "dir"
+  },
+  {
+   "id": "geresa",
+   "nome": "Gerasa",
+   "lon": 35.65,
+   "lat": 32.83,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "betsaida",
+   "nome": "Betsaida",
+   "lon": 35.63,
+   "lat": 32.91,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "cesareia",
+   "nome": "Cesareia de Filipe",
+   "lon": 35.69,
+   "lat": 33.25,
+   "lado": "dir"
+  },
+  {
+   "id": "hermom",
+   "nome": "Monte Hermom",
+   "lon": 35.78,
+   "lat": 33.41,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "galileia",
+   "nome": "Galileia",
+   "lon": 35.45,
+   "lat": 32.85,
+   "cor": "#2e9e5b",
+   "area": [
+    [
+     35.65,
+     33.1
+    ],
+    [
+     35.62,
+     32.88
+    ],
+    [
+     35.57,
+     32.89
+    ],
+    [
+     35.53,
+     32.8
+    ],
+    [
+     35.58,
+     32.72
+    ],
+    [
+     35.62,
+     32.76
+    ],
+    [
+     35.65,
+     32.65
+    ],
+    [
+     35.49,
+     32.62
+    ],
+    [
+     35.35,
+     32.57
+    ],
+    [
+     35.2,
+     32.55
+    ],
+    [
+     35.19,
+     32.75
+    ],
+    [
+     35.11,
+     33.07
+    ],
+    [
+     35.12,
+     33.1
+    ],
+    [
+     35.29,
+     33.06
+    ]
+   ],
+   "rotulo": [
+    35.25,
+    32.97
+   ]
+  },
+  {
+   "id": "decapolis",
+   "nome": "Decápolis",
+   "lon": 35.85,
+   "lat": 32.6,
+   "incerto": true,
+   "cor": "#a05cd0",
+   "area": [
+    [
+     36.2,
+     32.95
+    ],
+    [
+     36.16,
+     32.65
+    ],
+    [
+     36.2,
+     32.1
+    ],
+    [
+     35.65,
+     32.2
+    ],
+    [
+     35.61,
+     32.47
+    ],
+    [
+     35.7,
+     32.95
+    ],
+    [
+     35.88,
+     32.91
+    ]
+   ]
+  }
+ ],
+ "etapas": [
+  {
+   "id": "anuncio",
+   "lugar": "nazare",
+   "titulo": "O anúncio a Maria e o regresso a Nazaré",
+   "ref": "Lc 1:26–38; 2:39",
+   "cap": 1,
+   "texto": "O anjo Gabriel é enviado a uma virgem de Nazaré, na Galileia, chamada Maria (1:26–27). Depois do nascimento, a família volta a Nazaré, onde Jesus cresce em sabedoria (2:39–40)."
+  },
+  {
+   "id": "nascimento",
+   "lugar": "belem",
+   "titulo": "O nascimento em Belém",
+   "ref": "Lc 2:1–20; Mt 2",
+   "cap": 2,
+   "texto": "Por causa do recenseamento de César Augusto, José sobe de Nazaré a Belém, a cidade de Davi, e ali nasce Jesus (2:4–7). Pastores recebem o anúncio dos anjos. Mateus acrescenta os magos do Oriente e a fuga para o Egito (Mt 2:13–15).",
+   "caminho": [
+    [
+     35.3,
+     32.7
+    ],
+    [
+     35.3,
+     32.3
+    ],
+    [
+     35.25,
+     31.9
+    ],
+    [
+     35.2,
+     31.7
+    ]
+   ]
+  },
+  {
+   "id": "templo",
+   "lugar": "jerusalem",
+   "titulo": "A apresentação no templo",
+   "ref": "Lc 2:22–52",
+   "cap": 2,
+   "texto": "Quarenta dias depois, Jesus é levado a Jerusalém para ser apresentado ao Senhor; Simeão e Ana o reconhecem. Aos doze anos, Jesus fica no templo, entre os mestres, e diz: “Não sabíeis que me convinha ocupar-me nas coisas de meu Pai?” (2:49).",
+   "caminho": [
+    [
+     35.2,
+     31.7
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "batismo",
+   "lugar": "jordao",
+   "titulo": "O batismo no Jordão",
+   "ref": "Lc 3:21–22; Mt 3; Jo 1:28",
+   "cap": 3,
+   "texto": "João batiza no Jordão. Jesus é batizado, o céu se abre, o Espírito desce como pomba, e uma voz diz: “Tu és o meu Filho amado” (3:22). João 1:28 situa o batismo em Betânia, do outro lado do Jordão; o local exato é debatido.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.3,
+     32.7
+    ],
+    [
+     35.45,
+     32.4
+    ],
+    [
+     35.55,
+     31.84
+    ]
+   ]
+  },
+  {
+   "id": "tentacao",
+   "lugar": "deserto",
+   "titulo": "A tentação no deserto",
+   "ref": "Lc 4:1–13",
+   "cap": 4,
+   "texto": "Cheio do Espírito, Jesus é levado ao deserto, onde jejua quarenta dias. O diabo o tenta com pão, com os reinos do mundo e com o pináculo do templo; a cada vez Jesus responde com a Escritura (4:4, 8, 12).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.55,
+     31.84
+    ],
+    [
+     35.45,
+     31.8
+    ],
+    [
+     35.4,
+     31.75
+    ]
+   ]
+  },
+  {
+   "id": "cana",
+   "lugar": "cana",
+   "titulo": "As bodas de Caná",
+   "ref": "Jo 2:1–11",
+   "cap": 4,
+   "texto": "Em Caná da Galileia, Jesus transforma a água em vinho, a pedido de sua mãe: “o princípio dos sinais” (Jo 2:11). Caná fica a poucos quilômetros de Nazaré. João não está em Lucas; o capítulo 4 de Lucas é só a referência do mapa.",
+   "caminho": [
+    [
+     35.4,
+     31.75
+    ],
+    [
+     35.4,
+     32.3
+    ],
+    [
+     35.34,
+     32.75
+    ]
+   ]
+  },
+  {
+   "id": "nazare",
+   "lugar": "nazare",
+   "titulo": "A rejeição em Nazaré",
+   "ref": "Lc 4:14–30",
+   "cap": 4,
+   "texto": "Jesus lê Isaías 61 na sinagoga de Nazaré e diz: “Hoje se cumpriu esta Escritura em vossos ouvidos” (4:21). Os da cidade se indignam e tentam lançá-lo de um precipício; ele passa pelo meio deles e se vai.",
+   "caminho": [
+    [
+     35.34,
+     32.75
+    ],
+    [
+     35.3,
+     32.7
+    ]
+   ]
+  },
+  {
+   "id": "cafarnaum",
+   "lugar": "cafarnaum",
+   "titulo": "Cafarnaum, a base na Galileia",
+   "ref": "Lc 4:31–5:32; Mt 4:13",
+   "cap": 5,
+   "texto": "Jesus deixa Nazaré e passa a morar em Cafarnaum, à beira do lago. Ali ensina na sinagoga, cura a sogra de Pedro, chama os primeiros discípulos depois da pesca milagrosa (5:1–11) e cura o paralítico baixado pelo telhado (5:17–26).",
+   "caminho": [
+    [
+     35.3,
+     32.7
+    ],
+    [
+     35.45,
+     32.8
+    ],
+    [
+     35.575,
+     32.88
+    ]
+   ]
+  },
+  {
+   "id": "sermao",
+   "lugar": "cafarnaum",
+   "titulo": "O sermão da planície",
+   "ref": "Lc 6",
+   "cap": 6,
+   "texto": "Depois de passar a noite em oração, Jesus escolhe os doze apóstolos e desce com eles a um lugar plano. Ali ensina as bem-aventuranças e as “ais”, o amor aos inimigos e a regra de ouro (6:20–38). Mateus 5–7 traz o sermão do monte."
+  },
+  {
+   "id": "naim",
+   "lugar": "naim",
+   "titulo": "A viúva de Naim",
+   "ref": "Lc 7:11–17",
+   "cap": 7,
+   "texto": "Jesus chega a Naim e vê o enterro do filho único de uma viúva. Tem compaixão, toca o caixão e diz: “Moço, eu te digo: levanta-te!” (7:14). O povo glorifica a Deus.",
+   "caminho": [
+    [
+     35.575,
+     32.88
+    ],
+    [
+     35.45,
+     32.75
+    ],
+    [
+     35.35,
+     32.63
+    ]
+   ]
+  },
+  {
+   "id": "geresa",
+   "lugar": "geresa",
+   "titulo": "O endemoninhado gadareno",
+   "ref": "Lc 8:26–39",
+   "cap": 8,
+   "texto": "Jesus atravessa o lago para a terra dos gerasenos, em frente à Galileia. Ali liberta um homem possuído por uma legião; os demônios entram numa vara de porcos, que se precipita no lago. O homem curado vai anunciar o que Jesus fez por ele em toda a cidade.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.575,
+     32.88
+    ],
+    [
+     35.62,
+     32.85
+    ],
+    [
+     35.65,
+     32.83
+    ]
+   ]
+  },
+  {
+   "id": "betsaida",
+   "lugar": "betsaida",
+   "titulo": "A multiplicação dos pães",
+   "ref": "Lc 9:10–17",
+   "cap": 9,
+   "texto": "Os apóstolos voltam, e Jesus os leva a uma cidade chamada Betsaida. A multidão os segue, e com cinco pães e dois peixes Jesus alimenta cerca de cinco mil homens; sobram doze cestos (9:17).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.575,
+     32.88
+    ],
+    [
+     35.63,
+     32.91
+    ]
+   ]
+  },
+  {
+   "id": "cesareia",
+   "lugar": "cesareia",
+   "titulo": "A confissão de Pedro",
+   "ref": "Lc 9:18–27; Mt 16:13–20",
+   "cap": 9,
+   "texto": "Perto de Cesareia de Filipe, Jesus pergunta: “Quem dizeis que eu sou?” Pedro responde: “O Cristo de Deus” (9:20). Jesus anuncia pela primeira vez que o Filho do Homem precisa sofrer, ser morto e ressuscitar ao terceiro dia.",
+   "caminho": [
+    [
+     35.63,
+     32.91
+    ],
+    [
+     35.66,
+     33.1
+    ],
+    [
+     35.69,
+     33.25
+    ]
+   ]
+  },
+  {
+   "id": "transfiguracao",
+   "lugar": "hermom",
+   "titulo": "A transfiguração",
+   "ref": "Lc 9:28–36",
+   "cap": 9,
+   "texto": "Cerca de oito dias depois, Jesus sobe a um monte com Pedro, Tiago e João. Seu rosto muda, as roupas ficam resplandecentes, e Moisés e Elias falam com ele sobre sua partida em Jerusalém (9:31). A tradição aponta o Tabor; muitos estudiosos preferem o Hermom, perto de Cesareia.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.69,
+     33.25
+    ],
+    [
+     35.75,
+     33.35
+    ],
+    [
+     35.78,
+     33.41
+    ]
+   ]
+  }
+ ],
+ "imperio": 30
+}

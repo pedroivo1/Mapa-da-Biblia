@@ -1,0 +1,292 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O reino",
+ "destaque": "dividido.",
+ "subtitulo": "Mapa · 1 Reis 12 – 2 Reis 17",
+ "livro": "1reis",
+ "livroNome": "1 Reis",
+ "aria": "Mapa-múndi com o reino dividido: Israel no norte, Judá no sul, Siquém, Samaria, Tirza, Betel, Dã e a queda de Samaria",
+ "vista": [
+  [
+   34.6,
+   31.2
+  ],
+  [
+   36.3,
+   33.5
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "siquem",
+   "nome": "Siquém",
+   "lon": 35.28,
+   "lat": 32.21,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "betel",
+   "nome": "Betel",
+   "lon": 35.24,
+   "lat": 31.93,
+   "lado": "esq"
+  },
+  {
+   "id": "dan",
+   "nome": "Dã",
+   "lon": 35.65,
+   "lat": 33.25,
+   "lado": "dir"
+  },
+  {
+   "id": "tirza",
+   "nome": "Tirza",
+   "lon": 35.32,
+   "lat": 32.29,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "samaria",
+   "nome": "Samaria",
+   "lon": 35.2,
+   "lat": 32.28,
+   "lado": "esq"
+  },
+  {
+   "id": "jezreel",
+   "nome": "Jezreel",
+   "lon": 35.33,
+   "lat": 32.56,
+   "lado": "dir"
+  },
+  {
+   "id": "ramote",
+   "nome": "Ramote-Gileade",
+   "lon": 36.0,
+   "lat": 32.55,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "ninive",
+   "nome": "Nínive",
+   "lon": 43.15,
+   "lat": 36.36,
+   "lado": "esq"
+  },
+  {
+   "id": "israel",
+   "nome": "Israel (norte)",
+   "lon": 35.4,
+   "lat": 32.8,
+   "cor": "#e08a1e",
+   "rotulo": [
+    35.3,
+    32.75
+   ],
+   "provincia": true
+  },
+  {
+   "id": "juda",
+   "nome": "Judá",
+   "lon": 35.0,
+   "lat": 31.6,
+   "cor": "#14a58a",
+   "rotulo": [
+    35.0,
+    31.55
+   ],
+   "provincia": true
+  },
+  {
+   "id": "aram",
+   "nome": "Aram (Síria)",
+   "lon": 36.7,
+   "lat": 33.7,
+   "cor": "#3b82c4",
+   "provincia": true
+  },
+  {
+   "id": "assiria",
+   "nome": "Assíria",
+   "lon": 43.0,
+   "lat": 36.2,
+   "cor": "#a05cd0",
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "siquem",
+   "lugar": "siquem",
+   "titulo": "A assembleia de Siquém",
+   "ref": "1Rs 12:1–20",
+   "cap": 12,
+   "texto": "Roboão sobe a Siquém para ser feito rei. O povo pede alívio dos trabalhos pesados; ele ouve os jovens e responde: “Meu pai vos castigou com açoites; eu vos castigarei com escorpiões” (12:14). As dez tribos do norte se separam e fazem rei a Jeroboão. Só Judá e Benjamim ficam com a casa de Davi.",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.25,
+     32.0
+    ],
+    [
+     35.28,
+     32.21
+    ]
+   ]
+  },
+  {
+   "id": "betel",
+   "lugar": "betel",
+   "titulo": "O bezerro de ouro em Betel",
+   "ref": "1Rs 12:26–33",
+   "cap": 12,
+   "texto": "Para impedir o povo de subir a Jerusalém, Jeroboão faz dois bezerros de ouro e os põe um em Betel e outro em Dã: “Eis aqui, ó Israel, os teus deuses” (12:28). Inventa uma festa e um sacerdócio próprios. Esse é o “pecado de Jeroboão”, repetido por todos os reis do norte."
+  },
+  {
+   "id": "dan",
+   "lugar": "dan",
+   "titulo": "Dã",
+   "ref": "1Rs 12:29–30",
+   "cap": 12,
+   "texto": "Dã, no extremo norte, recebe o segundo bezerro de ouro. Escavações em Tel Dã encontraram um grande santuário dessa época, e uma inscrição aramaica (“casa de Davi”) do século IX a.C."
+  },
+  {
+   "id": "tirza",
+   "lugar": "tirza",
+   "titulo": "Tirza, a capital do reino do norte",
+   "ref": "1Rs 14:17; 15:21",
+   "cap": 14,
+   "texto": "Jeroboão passa a viver em Tirza, e ali, depois, reina Baasa. A cidade serve de capital por mais ou menos meio século, até que Onri compra o monte de Samaria.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.28,
+     32.21
+    ],
+    [
+     35.32,
+     32.29
+    ]
+   ]
+  },
+  {
+   "id": "samaria",
+   "lugar": "samaria",
+   "titulo": "Onri funda Samaria",
+   "ref": "1Rs 16:23–28",
+   "cap": 16,
+   "texto": "Onri, comandante do exército, vence a guerra civil e, depois de seis anos em Tirza, compra por dois talentos de prata o monte de Semer, onde edifica Samaria (16:24). Seu filho Acabe casa com Jezabel, filha do rei de Sidom, e introduz o culto de Baal.",
+   "caminho": [
+    [
+     35.32,
+     32.29
+    ],
+    [
+     35.2,
+     32.28
+    ]
+   ]
+  },
+  {
+   "id": "ramote",
+   "lugar": "ramote",
+   "titulo": "A morte de Acabe em Ramote-Gileade",
+   "ref": "1Rs 22",
+   "cap": 22,
+   "texto": "Acabe e Josafá, rei de Judá, sobem juntos contra Ramote-Gileade, tomada pelos arameus. O profeta Micaías anuncia a derrota, e Acabe, disfarçado, é ferido por uma flecha disparada ao acaso e morre; o sangue escorre para o carro, e os cães o lambem em Samaria (22:34–38).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.2,
+     32.28
+    ],
+    [
+     35.6,
+     32.4
+    ],
+    [
+     36.0,
+     32.55
+    ]
+   ]
+  },
+  {
+   "id": "jezreel",
+   "lugar": "jezreel",
+   "titulo": "Jeú é ungido e mata Jorão",
+   "ref": "2Rs 9–10",
+   "cap": 9,
+   "texto": "Eliseu manda um jovem profeta a Ramote-Gileade para ungir Jeú, comandante, como rei. Jeú corre a Jezreel num carro, mata Jorão e depois Jezabel, e exterminou a casa de Acabe e os sacerdotes de Baal.",
+   "incerto": true,
+   "caminho": [
+    [
+     36.0,
+     32.55
+    ],
+    [
+     35.7,
+     32.45
+    ],
+    [
+     35.33,
+     32.56
+    ]
+   ]
+  },
+  {
+   "id": "queda",
+   "lugar": "samaria",
+   "titulo": "A queda de Samaria",
+   "ref": "2Rs 17",
+   "cap": 17,
+   "texto": "Salmanasar V, rei da Assíria, sobe contra Oseias, o último rei de Israel, e cerca Samaria por três anos. A cidade cai em 722 a.C., e Israel é levado cativo para a Assíria. O texto explica a queda pelos pecados do povo: ter andado nos costumes dos povos que o Senhor expulsara.",
+   "incerto": true,
+   "caminho": [
+    [
+     43.15,
+     36.36
+    ],
+    [
+     41.0,
+     36.8
+    ],
+    [
+     38.5,
+     36.6
+    ],
+    [
+     36.7,
+     35.0
+    ],
+    [
+     36.0,
+     32.9
+    ],
+    [
+     35.2,
+     32.28
+    ]
+   ]
+  }
+ ],
+ "territorios": 900
+}

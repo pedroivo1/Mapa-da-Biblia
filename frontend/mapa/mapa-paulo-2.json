@@ -1,0 +1,344 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A segunda viagem de",
+ "destaque": "Paulo.",
+ "subtitulo": "Mapa · Atos 15:36 – 18:22",
+ "livro": "atos",
+ "livroNome": "Atos",
+ "capSomenteLivro": "atos",
+ "aria": "Mapa-múndi com a segunda viagem missionária de Paulo, de Antioquia à Macedônia, Atenas e Corinto",
+ "vista": [
+  [
+   22.0,
+   36.5
+  ],
+  [
+   37.0,
+   41.8
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "antioquia",
+   "nome": "Antioquia da Síria",
+   "lon": 36.16,
+   "lat": 36.2,
+   "lado": "dir"
+  },
+  {
+   "id": "tarso",
+   "nome": "Tarso",
+   "lon": 34.9,
+   "lat": 36.9,
+   "lado": "esq"
+  },
+  {
+   "id": "derbe",
+   "nome": "Derbe",
+   "lon": 33.4,
+   "lat": 37.35,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "listra",
+   "nome": "Listra",
+   "lon": 32.45,
+   "lat": 37.58,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "troade",
+   "nome": "Trôade",
+   "lon": 26.18,
+   "lat": 39.75,
+   "lado": "dir"
+  },
+  {
+   "id": "neapolis",
+   "nome": "Neápolis",
+   "lon": 24.4,
+   "lat": 40.94,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "filipos",
+   "nome": "Filipos",
+   "lon": 24.28,
+   "lat": 41.01,
+   "lado": "dir"
+  },
+  {
+   "id": "tessalonica",
+   "nome": "Tessalônica",
+   "lon": 22.94,
+   "lat": 40.64,
+   "lado": "dir"
+  },
+  {
+   "id": "bereia",
+   "nome": "Bereia",
+   "lon": 22.2,
+   "lat": 40.52,
+   "lado": "esq"
+  },
+  {
+   "id": "atenas",
+   "nome": "Atenas",
+   "lon": 23.73,
+   "lat": 37.97,
+   "lado": "esq"
+  },
+  {
+   "id": "corinto",
+   "nome": "Corinto",
+   "lon": 22.93,
+   "lat": 37.9,
+   "lado": "esq"
+  },
+  {
+   "id": "efeso",
+   "nome": "Éfeso",
+   "lon": 27.34,
+   "lat": 37.94,
+   "lado": "dir"
+  },
+  {
+   "id": "cesareia",
+   "nome": "Cesareia",
+   "lon": 34.89,
+   "lat": 32.5,
+   "lado": "dir"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "cilicia",
+   "nome": "Cilícia",
+   "lon": 35.0,
+   "lat": 37.0,
+   "incerto": true,
+   "cor": "#e08a1e",
+   "provincia": true
+  },
+  {
+   "id": "galacia",
+   "nome": "Galácia",
+   "lon": 33.0,
+   "lat": 38.9,
+   "incerto": true,
+   "cor": "#8b5cf6",
+   "provincia": true
+  },
+  {
+   "id": "asia",
+   "nome": "Ásia",
+   "lon": 28.5,
+   "lat": 38.5,
+   "incerto": true,
+   "cor": "#2e9e5b",
+   "rotulo": [
+    28.4,
+    38.9
+   ],
+   "provincia": true
+  },
+  {
+   "id": "macedonia",
+   "nome": "Macedônia",
+   "lon": 22.8,
+   "lat": 40.9,
+   "incerto": true,
+   "cor": "#3b82c4",
+   "rotulo": [
+    22.7,
+    41.35
+   ],
+   "provincia": true
+  },
+  {
+   "id": "acaia",
+   "nome": "Acaia",
+   "lon": 22.0,
+   "lat": 38.3,
+   "incerto": true,
+   "cor": "#d23a4a",
+   "rotulo": [
+    21.8,
+    38.8
+   ],
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "partida",
+   "lugar": "antioquia",
+   "titulo": "Paulo e Silas partem",
+   "ref": "At 15:36–16:5",
+   "cap": 15,
+   "texto": "Depois de uma discussão sobre João Marcos, Barnabé segue a Chipre e Paulo escolhe Silas. Passam pela Síria e pela Cilícia, fortalecendo as igrejas, e chegam a Derbe e Listra, onde Paulo toma Timóteo como companheiro (16:1–3).",
+   "incerto": true,
+   "caminho": [
+    [
+     36.16,
+     36.2
+    ],
+    [
+     34.9,
+     36.9
+    ],
+    [
+     33.4,
+     37.35
+    ],
+    [
+     32.45,
+     37.58
+    ]
+   ]
+  },
+  {
+   "id": "visao",
+   "lugar": "troade",
+   "titulo": "A visão do macedônio",
+   "ref": "At 16:6–10",
+   "cap": 16,
+   "texto": "O Espírito os impede de pregar na Ásia e na Bitínia. Atravessam a Frígia e a Galácia até Trôade, onde Paulo vê de noite um homem da Macedônia: “Passa à Macedônia e ajuda-nos!” (16:9). A partir daqui o relato passa para o plural: “procuramos partir” (16:10).",
+   "incerto": true,
+   "caminho": [
+    [
+     32.45,
+     37.58
+    ],
+    [
+     31.2,
+     39.0
+    ],
+    [
+     26.18,
+     39.75
+    ]
+   ]
+  },
+  {
+   "id": "filipos",
+   "lugar": "filipos",
+   "titulo": "Filipos: Lídia e o carcereiro",
+   "ref": "At 16:11–40",
+   "cap": 16,
+   "texto": "De Trôade vão a Neápolis e a Filipos. Junto ao rio, Lídia, negociante de púrpura, abre o coração. Paulo e Silas são presos, e à meia-noite, ao cantarem, um terremoto abre as portas. O carcereiro crê com toda a sua casa (16:31–34).",
+   "caminho": [
+    [
+     26.18,
+     39.75
+    ],
+    [
+     24.4,
+     40.94
+    ],
+    [
+     24.28,
+     41.01
+    ]
+   ]
+  },
+  {
+   "id": "tessalonica",
+   "lugar": "tessalonica",
+   "titulo": "Tessalônica e Bereia",
+   "ref": "At 17:1–15",
+   "cap": 17,
+   "texto": "Por Anfípolis e Apolônia, chegam a Tessalônica; durante três sábados Paulo discute nas sinagogas, e uma multidão alvoroça a cidade. Em Bereia, os judeus “examinavam cada dia as Escrituras” (17:11). Paulo parte para o mar, deixando Silas e Timóteo.",
+   "caminho": [
+    [
+     24.28,
+     41.01
+    ],
+    [
+     22.94,
+     40.64
+    ],
+    [
+     22.2,
+     40.52
+    ]
+   ]
+  },
+  {
+   "id": "atenas",
+   "lugar": "atenas",
+   "titulo": "Paulo em Atenas",
+   "ref": "At 17:16–34",
+   "cap": 17,
+   "texto": "Em Atenas, Paulo discute na ágora e é levado ao Areópago. Ali cita o altar “ao deus desconhecido” e anuncia o Deus que fez o mundo e ressuscitou o Cristo (17:23–31). Alguns zombam, mas Dionísio, o areopagita, e uma mulher chamada Dâmaris creem.",
+   "caminho": [
+    [
+     22.2,
+     40.52
+    ],
+    [
+     23.73,
+     37.97
+    ]
+   ]
+  },
+  {
+   "id": "corinto",
+   "lugar": "corinto",
+   "titulo": "Corinto: um ano e meio",
+   "ref": "At 18:1–18",
+   "cap": 18,
+   "texto": "Em Corinto, Paulo trabalha com Áquila e Priscila, fabricantes de tendas, e prega nas sinagogas. Rejeitado pelos judeus, vai à casa de Tício Justo. O Senhor lhe diz numa visão: “Não temas, porque eu tenho muito povo nesta cidade” (18:10). Fica ali um ano e seis meses.",
+   "caminho": [
+    [
+     23.73,
+     37.97
+    ],
+    [
+     22.93,
+     37.9
+    ]
+   ]
+  },
+  {
+   "id": "volta",
+   "lugar": "efeso",
+   "titulo": "A volta por Éfeso e Cesareia",
+   "ref": "At 18:18–22",
+   "cap": 18,
+   "texto": "De Cencreia, porto de Corinto, Paulo navega a Éfeso com Priscila e Áquila, onde prega brevemente. Desembarca em Cesareia, sobe a saudar a igreja (Jerusalém) e desce a Antioquia, fim da viagem.",
+   "incerto": true,
+   "caminho": [
+    [
+     22.93,
+     37.9
+    ],
+    [
+     27.34,
+     37.94
+    ],
+    [
+     34.89,
+     32.5
+    ],
+    [
+     35.235,
+     31.778
+    ],
+    [
+     36.16,
+     36.2
+    ]
+   ]
+  }
+ ],
+ "imperio": 49
+}

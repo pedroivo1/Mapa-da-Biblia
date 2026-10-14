@@ -317,3 +317,88 @@ html.embutido .mapa-svg {
   line-height: 1;
   cursor: pointer;
 }
+
+/* Império Romano: províncias, reinos clientes e fronteira externa */
+.mapa-provincia {
+  fill: var(--c-roma);
+  fill-opacity: 0.14;
+  stroke: none;
+  pointer-events: none;
+}
+
+.mapa-provincia.cliente {
+  fill-opacity: 0.06;
+}
+
+.mapa-provincia.ativa {
+  fill-opacity: 0.4;
+}
+
+.mapa-provincia-linha {
+  stroke: var(--muted);
+  stroke-width: 0.75;
+  stroke-dasharray: 3 3;
+  stroke-opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.mapa-provincia-linha.cliente {
+  stroke-opacity: 0.35;
+}
+
+.mapa-fronteira {
+  stroke: var(--c-roma);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.mapa-provincia-nome {
+  fill: var(--ink-strong);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  paint-order: stroke;
+  stroke: var(--bg-sunken);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.mapa-provincia-nome.cliente {
+  opacity: 0.7;
+}
+
+.mapa-legenda {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 6;
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 0.78rem;
+}
+
+.mapa-legenda-linha {
+  display: inline-block;
+  width: 1.1rem;
+  height: 0;
+  margin-right: 0.35rem;
+  border-top: 2px solid var(--c-roma);
+  vertical-align: middle;
+}
+
+/* povos e reinos ao redor (territorios.json) */
+.mapa-provincia.territorio {
+  fill: var(--c-potencia);
+  fill-opacity: 0.16;
+}
+
+.mapa-provincia.territorio.ativa {
+  fill-opacity: 0.4;
+}
