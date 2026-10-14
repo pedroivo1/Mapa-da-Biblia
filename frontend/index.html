@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mapa da Bíblia</title>
+    <meta name="description" content="Leia a Bíblia, siga um plano de leitura, veja a linha do tempo e os mapas das viagens, com o progresso salvo na sua conta." />
+    <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/compartilhado/css/base.css" />
+    <link rel="stylesheet" href="/inicio/inicio.css" />
+    <script src="/compartilhado/js/tema.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+    <script src="/compartilhado/js/config.js"></script>
+    <script src="/compartilhado/js/util.js"></script>
+    <script src="/compartilhado/js/conta.js"></script>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="nav-inner">
+        <a class="wordmark" href="/">
+          <span class="mark" aria-hidden="true">B</span>
+          Mapa da Bíblia
+        </a>
+        <nav class="nav-links" aria-label="Principal">
+          <a class="nav-link hud" href="/biblia/"><span>Bíblia</span></a>
+          <a class="nav-link hud" href="/plano-de-leitura/"><span>Plano de leitura</span></a>
+          <a class="nav-link hud" href="/linha-do-tempo/"><span>Linha do tempo</span></a>
+          <a class="nav-link hud" href="/mapas/"><span>Mapas</span></a>
+        </nav>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="frame">
+      <section class="hero">
+        <h1>
+          Mapa da<br />
+          <em>Bíblia.</em>
+        </h1>
+        <p>Leia a Bíblia em ordem histórica, veja cada livro, rei e potência na linha do tempo e acompanhe as viagens nos mapas. Crie uma conta para marcar os livros, capítulos e versículos que já leu e acompanhar seu progresso.</p>
+        <p class="hero-acoes">
+          <a class="btn" href="/conta/" data-entrar>Entrar ou criar conta</a>
+          <a class="btn secundario" href="/linha-do-tempo/">Ver a linha do tempo</a>
+        </p>
+      </section>
+
+      <section id="colecoes">
+        <div class="eyebrow">
+          <p class="hud muted">
+            <span class="faint">01</span><span class="sep faint">/</span>Explorar
+          </p>
+        </div>
+        <ol class="note-list">
+          <li>
+            <a class="note-row" href="/biblia/">
+              <span class="hud faint" aria-hidden="true">01</span>
+              <span class="topic hud muted">Bíblia</span>
+              <span class="note-copy">
+                <span class="note-title">Ler a Bíblia</span>
+                <span class="note-summary">O texto completo em NVI, com capítulos, tamanho da letra e a última posição guardada.</span>
+              </span>
+              <span class="hud faint">Leitor</span>
+            </a>
+          </li>
+          <li>
+            <a class="note-row" href="/plano-de-leitura/">
+              <span class="hud faint" aria-hidden="true">02</span>
+              <span class="topic hud muted">Plano</span>
+              <span class="note-copy">
+                <span class="note-title">Plano de leitura</span>
+                <span class="note-summary">Todos os capítulos em ordem histórica, época por época, para ler como a história aconteceu.</span>
+              </span>
+              <span class="hud faint">Plano</span>
+            </a>
+          </li>
+          <li>
+            <a class="note-row" href="/linha-do-tempo/">
+              <span class="hud faint" aria-hidden="true">03</span>
+              <span class="topic hud muted">Tempo</span>
+              <span class="note-copy">
+                <span class="note-title">Linha do tempo bíblica</span>
+                <span class="note-summary">Da criação ao Novo Testamento: livros, reis e potências em ordem histórica.</span>
+              </span>
+              <span class="hud faint">Linha</span>
+            </a>
+          </li>
+          <li>
+            <a class="note-row" href="/mapas/">
+              <span class="hud faint" aria-hidden="true">04</span>
+              <span class="topic hud muted">Mapas</span>
+              <span class="note-copy">
+                <span class="note-title">Mapas das viagens</span>
+                <span class="note-summary">Lugares e rotas tracejadas para ligar os pontos enquanto lê, de Abraão a Jó.</span>
+              </span>
+              <span class="hud faint">Mapas</span>
+            </a>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-inner frame">
+        <p class="hud faint">Mapa da Bíblia · <a href="/privacidade/">Privacidade</a></p>
+      </div>
+    </footer>
+  </body>
+</html>

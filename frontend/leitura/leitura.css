@@ -1,0 +1,312 @@
+/* Leitura (leitura/index.html): livros, capítulos e versículos lidos. */
+
+.progresso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.progresso > div {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.progresso progress {
+  width: 5rem;
+  height: 4px;
+  accent-color: var(--ink-strong);
+}
+
+@media (max-width: 720px) {
+  .progresso, .colunas, .detalhe { padding-right: 1.25rem; padding-left: 1.25rem; }
+}
+
+/* página Leitura: livros, capítulos e versículos */
+.leitura-pagina {
+  border-bottom: 1px solid var(--line);
+}
+
+.leitura-topo {
+  display: flex;
+  height: 48px;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+}
+
+.trilha {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.35rem;
+  padding-left: 1rem;
+  color: var(--faint);
+}
+
+.trilha button {
+  padding: 0.2rem 0.45rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.trilha button:hover,
+.trilha button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitura-corpo {
+  min-height: 50vh;
+}
+
+.l-livros {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  margin-right: -1px;
+}
+
+.l-livro {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) auto 5.5rem;
+  align-items: stretch;
+  gap: 0 0.75rem;
+  padding-right: 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.l-livro > * {
+  align-self: center;
+}
+
+/* o quadrado ocupa a altura toda da linha e as bordas dele são as da própria linha */
+.l-livro .l-check {
+  display: grid;
+  width: 100%;
+  height: auto;
+  min-height: 48px;
+  align-self: stretch;
+  place-items: center;
+  border: 0;
+  border-right: 1px solid var(--line);
+}
+
+.l-livro .l-check:not([disabled]):hover {
+  background: var(--bg-sunken);
+}
+
+.l-livro .l-check.feito {
+  background: var(--c-livro);
+}
+
+.l-livro .l-check.parcial {
+  background: linear-gradient(to top, color-mix(in srgb, var(--c-livro) 55%, transparent) var(--pct, 0%), transparent var(--pct, 0%));
+}
+
+.l-livro .l-check.feito::after {
+  font-size: 16px;
+}
+
+.l-livro progress {
+  width: 100%;
+  height: 4px;
+  accent-color: var(--c-livro);
+}
+
+.l-nome {
+  padding: 0.2rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-strong);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.l-nome:hover {
+  text-decoration: underline;
+}
+
+.l-check {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--ink-strong);
+  background: transparent;
+  cursor: pointer;
+}
+
+.l-check.feito {
+  background: var(--c-livro);
+}
+
+.l-check.feito::after {
+  content: "✓";
+  color: #0b0b0c;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.l-check.parcial {
+  background: linear-gradient(to top, var(--c-livro) var(--pct, 50%), transparent var(--pct, 50%));
+}
+
+.l-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.l-acoes p {
+  margin: 0;
+}
+
+.l-acoes .chip[disabled] {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.l-acoes .chip {
+  cursor: pointer;
+}
+
+.l-acoes .chip:not([disabled]):hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.l-cap {
+  position: relative;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.l-cap-num,
+.l-verso {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.l-cap-num {
+  padding: 1.1rem 0;
+}
+
+.l-cap-num:hover,
+.l-verso:hover {
+  background: var(--bg-sunken);
+}
+
+.l-cap.feito .l-cap-num {
+  background: var(--c-livro);
+  color: #0b0b0c;
+}
+
+.l-cap.parcial .l-cap-num {
+  background: linear-gradient(to top, color-mix(in srgb, var(--c-livro) 45%, transparent) var(--pct, 0%), transparent var(--pct, 0%));
+}
+
+.l-cap .l-check {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 24px;
+  height: 24px;
+  border-color: var(--muted);
+}
+
+.l-cap.feito .l-check {
+  border-color: #0b0b0c;
+  background: #0b0b0c;
+}
+
+.l-cap.feito .l-check::after {
+  color: var(--c-livro);
+  font-size: 17px;
+}
+
+/* livros: quadradinho dentro da área clicável */
+.l-livro .l-check::before {
+  content: "";
+  grid-area: 1 / 1;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--ink-strong);
+}
+
+.l-livro .l-check.feito::before {
+  display: none;
+}
+
+.l-livro .l-check.feito::after {
+  grid-area: 1 / 1;
+  color: #0b0b0c;
+  font-size: 16px;
+}
+
+.l-verso {
+  padding: 0.8rem 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.l-verso.feito {
+  background: var(--c-livro);
+  color: #0b0b0c;
+}
+
+@media (max-width: 720px) {
+  .l-livro { grid-template-columns: 48px minmax(0, 1fr) auto; }
+
+  .l-livro progress { display: none; }
+}
+
+/* sem login: aviso em popup ao tentar marcar */
+.aviso-dlg {
+  width: min(420px, 92vw);
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.aviso-dlg::backdrop {
+  background: rgba(11, 11, 12, 0.55);
+}
+
+.aviso-dlg h2 {
+  margin: 0 0 0.6rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.aviso-dlg p {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.aviso-acoes {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.aviso-acoes .chip {
+  text-decoration: none;
+}

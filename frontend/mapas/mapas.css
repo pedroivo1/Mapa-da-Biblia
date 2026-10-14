@@ -1,0 +1,84 @@
+/* Lista de mapas (mapas/index.html, mapas.js). */
+
+/* lista de materiais de apoio, por livro */
+.mapas-lista {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.mapas-livro header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 0.6rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-sunken);
+}
+
+.mapas-livro h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.mapas-livro ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapas-item {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.mapas-item p {
+  margin: 0.2rem 0;
+}
+
+.mapas-item h3 {
+  margin: 0.1rem 0 0.2rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.mapas-item h3 a {
+  color: var(--ink-strong);
+  text-decoration: none;
+}
+
+.mapas-item h3 a:hover {
+  text-decoration: underline;
+}
+
+.mapas-acoes {
+  margin-top: 0.7rem !important;
+}
+
+.mapas-acoes .chip {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.mapas-acoes .chip:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+@media (max-width: 720px) {
+  .mapas-livro header,
+    .mapas-item { padding-right: 1.25rem; padding-left: 1.25rem; }
+}
+
+@media (pointer: coarse) {
+  .chip,
+    .leitor-mapas-abas button,
+    .leitor-barra button,
+    .leitor-fim button,
+    .mapas-acoes .chip,
+    .plano-acoes .chip {
+      min-height: 44px;
+    }
+}

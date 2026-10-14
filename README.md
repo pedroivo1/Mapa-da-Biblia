@@ -4,45 +4,62 @@ Site estático em HTML, CSS e JS puros, sem build. O login e o progresso de cada
 
 ## Ver localmente
 
-A linha do tempo carrega JSON, então abra por um servidor local:
+As páginas carregam JSON, então abra por um servidor local:
 
 ```
+cd frontend
 python -m http.server
 ```
 
-e acesse `http://localhost:8000/`. Sem `js/config.js` preenchido, o mapa abre só para consulta.
+e acesse `http://localhost:8000/`. Sem `compartilhado/js/config.js` preenchido, o mapa abre só para consulta.
 
-## Linha do tempo bíblica (`biblia/`)
+## Organização
 
-- `biblia/dados/reis.json`: reis, profetas e potências. Uma potência pode ter `periodos` (`id`, `nome`, `inicio`, `fim`, `nota`: dinastias, reis), mostrados dentro do bloco da potência: cada período leva o nome da potência e, abaixo, o seu próprio nome.
-- `biblia/dados/livros.json`: livros (com o período que cobrem ou a data de escrita) e líderes (patriarcas, juízes, apóstolos).
-- `biblia/dados/eras.json`: eras, com livros e ordem de leitura.
-- `biblia/dados/canon.json`: os 66 livros com o número de versículos de cada capítulo (Almeida Corrigida Fiel), usado na página Leitura.
-- `biblia/biblia.js`: mapa em colunas paralelas, com o tempo na vertical.
-- `data/nvi.json`: texto da Bíblia (NVI), na mesma ordem de `canon.json`.
-- `biblia/dados/mapas.json`: planos de leitura (o primeiro é o Plano histórico). Cada mapa é uma lista de épocas (`era` de `eras.json`) com trechos `{livro, de, ate, nota}`; todo capítulo da Bíblia aparece uma única vez.
-- `biblia/mapa.html` e `biblia/mapa.js`: página Plano de leitura: lista os planos, deixa escolher o plano padrão e abre a leitura no modo mapa.
-- `biblia/ler.html` e `biblia/ler.js`: leitor do texto, com livros, capítulos, tamanho da letra e última posição. Aberto pela aba Bíblia, o Próximo segue a ordem dos livros; aberto pelo botão do mapa (`ler.html?mapa=historico`), segue a ordem do mapa.
-- `biblia/apoio.html` e `biblia/apoio.js`: Mapas (material de apoio), um mapa-múndi em SVG próprio (projeção Mercator, de 58° S a 80° N) que ocupa a tela toda, com zoom e arrastar (roda do mouse, pinça, toque duplo). O mapa traz só o nome dos lugares e as rotas de viagem tracejadas, com uma seta no sentido do caminho: quem lê liga os pontos com o texto do leitor. Uma lista recolhível de caixas de seleção, Rotas ("Origem → Destino"), mostra ou esconde cada rota. Rotas que seguem o mesmo caminho correm lado a lado, em faixas paralelas de largura fixa na tela. Os nomes são filtrados pelo zoom: de longe ficam os lugares mais citados e, ao ampliar, os outros aparecem sem se sobrepor. Costas, lagos e rios são simplificados do Natural Earth (domínio público), com mais detalhe da Europa ao Oriente Médio.
-- `biblia/dados/mundo.json`: base comum dos mapas de apoio (mapa-múndi e nomes de regiões). Cada material (`apoio.json`, `apoio-jo.json`, `apoio-jaco.json`...) traz só `lugares` (`id`, `nome`, `lon`, `lat`, `lado`) e `etapas` (`lugar`, `titulo`, `caminho` com a rota em longitude/latitude); `apoio.html?m=jo` abre o de Jó. Os campos `texto` e `ref` das etapas não aparecem no mapa por enquanto.
-- `biblia/materiais.html` e `biblia/materiais.js`: aba Mapas, a lista dos materiais de `materiais.json`, por livro. Por enquanto só há mapas. Material novo entra ali sozinho.
-- `biblia/dados/materiais.json`: lista dos materiais de apoio e os capítulos a que se ligam (`capitulos`: `livro`, `de`, `ate`). Os materiais com `ano` aparecem como pontos na coluna Eras da linha do tempo; o ponto abre o mapa num popup, com o ano e o texto da Bíblia no cabeçalho. Quando o capítulo aberto no leitor tem materiais, aparece o botão Mapas, que abre um popup com abas para trocar de material (a `url` abre com `?embutido`).
-- `biblia/leitura.html` e `biblia/leitura.js`: Leitura, aberta como popup (botão Leitura) no leitor, onde se marca livros, capítulos e versículos lidos e se vê o progresso.
+O repositório tem `frontend/` (o site publicado), `supabase/` (migrações) e `scripts/` (ferramentas). Dentro de `frontend/`, cada funcionalidade é uma pasta com tudo o que é dela: página (`index.html`), scripts, CSS e dados.
+O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 
-Anos: a.C. positivo e d.C. negativo (30 d.C. = `-30`). `inicio` é sempre o ano mais antigo. Cada trecho do eixo tem sua escala (`SEGMENTOS` em `biblia.js`).
+| Pasta | O que é | Contém |
+|---|---|---|
+| `frontend/` (`index.html`, `inicio/`) | Página inicial | `inicio/inicio.css` |
+| `biblia/` | Bíblia: leitor do texto (NVI), com livros, capítulos, tamanho da letra, voz e última posição. `?plano=id` segue a ordem de um plano; sem ele, a dos livros. Mostra os botões Leitura e Mapas do capítulo. | `biblia.js`, `biblia.css`, `nvi.json` |
+| `plano-de-leitura/` | Planos de leitura (o primeiro é o Plano histórico): lista, ordem de cada um e plano padrão (exige conta). | `planos.json` |
+| `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
+| `mapas/` | Lista de mapas, por livro. Mapa novo entra sozinho. Os com `ano` aparecem como pontos na coluna Eras da linha do tempo. | `mapas.json` |
+| `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `mundo.json` |
+| `leitura/` | Leitura, aberta como popup no leitor: marcar livros, capítulos e versículos lidos e ver o progresso. | `leitura.js` |
+| `conta/` | Entrar, criar conta, esqueci a senha e nova senha. | |
+| `privacidade/` | O que é guardado. | |
+| `compartilhado/` | Base de todas: `css/base.css` (tokens, nav, rodapé), `css/componentes.css` (cabeçalho, chips, popups), `js/` (`tema.js`, `config.js`, `util.js`, `conta.js`) e `dados/` (`canon.json`: 66 livros com os versículos de cada capítulo; `eras.json`). | |
+
+Uma funcionalidade pode ler os arquivos de dados de outra (por exemplo, a linha do tempo lê `mapas/mapas.json`), mas não importa o JS dela.
+
+### Dados
+
+- `linha-do-tempo/reis.json`: reis, profetas e potências. Uma potência pode ter `periodos` (`id`, `nome`, `inicio`, `fim`, `nota`: dinastias, reis), mostrados dentro do bloco da potência.
+- `linha-do-tempo/livros.json`: livros (com o período que cobrem ou a data de escrita) e líderes (patriarcas, juízes, apóstolos).
+- `plano-de-leitura/planos.json`: cada plano é uma lista de épocas (`era` de `eras.json`) com trechos `{livro, de, ate, nota}`; todo capítulo da Bíblia aparece uma única vez.
+- `mapas/mapas.json`: lista dos mapas e os capítulos a que se ligam (`capitulos`: `livro`, `de`, `ate`); `url` abre o mapa (com `?embutido` no popup do leitor).
+- `mapa/mapa-<id>.json`: `lugares` (`id`, `nome`, `lon`, `lat`, `lado`, `incerto`) e `etapas` (`lugar`, `titulo`, `caminho` com a rota em longitude/latitude). `mapa/mundo.json` é a base comum (costas, lagos e rios do Natural Earth, domínio público, e nomes de regiões).
+
+Anos: a.C. positivo e d.C. negativo (30 d.C. = `-30`). `inicio` é sempre o ano mais antigo. Cada trecho do eixo tem sua escala (`SEGMENTOS` em `linha-do-tempo.js`).
 
 Adicionar um rei: copie um objeto em `reis` e ajuste `id`, `reino` (`juda`, `israel`, `unido`), `inicio` e `fim` (o `inicio` é o ano maior).
 Adicionar um profeta: copie um objeto em `profetas`. Os reis contemporâneos saem das datas e do reino; use `citados` para os reis nomeados no próprio livro.
 
 ## Contas e progresso
 
-- `js/config.js`: URL do projeto Supabase e chave publicável (pública; quem protege os dados é o RLS).
-- `js/conta.js`: login (Google e e-mail/senha), menu da conta no topo e leitura/gravação do progresso. Expõe `window.Conta`.
-- `entrar.html`: entrar, criar conta, esqueci a senha e nova senha. `privacidade.html`: o que é guardado.
+- `compartilhado/js/config.js`: URL do projeto Supabase e chave publicável (pública; quem protege os dados é o RLS).
+- `compartilhado/js/conta.js`: login (Google e e-mail/senha), menu da conta no topo e leitura/gravação do progresso. Expõe `window.Conta`.
+- `conta/`: entrar, criar conta, esqueci a senha e nova senha. `privacidade/`: o que é guardado.
 - `supabase/migrations/0001_progresso.sql`: tabela `progresso` (uma linha por usuário: `lido` e `versiculos` em JSONB) com RLS.
+- `supabase/migrations/0002_configuracoes.sql`: tabela `configuracoes` (uma linha por usuário, `dados` em JSONB, com RLS). Chaves: `linha_do_tempo` (`desktop` e `mobile`: filtros de colunas e livros), `plano` (`padrao` e `pos`), `leitor` (livro, capítulo e tamanho da letra) e `tema`. Aplique no SQL Editor do Supabase.
 
-Sem login, a Leitura só consulta: nada é marcado. Com login, cada marcação é salva na conta cerca de 1 s depois. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
+Sem login, a Leitura só consulta: nada é marcado, e não há plano de leitura padrão (escolher o plano exige conta). Com login, cada marcação é salva na conta cerca de 1 s depois, e as configurações também. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
 
-No navegador ficam só o tema (`notas-theme`) as colunas visíveis (`biblioteca-colunas`) a posição e o tamanho da letra do leitor (`biblia-leitor`) e o plano padrão e a posição em cada plano (`biblia-mapa`).
+Assim que a sessão é reconhecida, `js/conta.js` busca progresso e configurações em segundo plano e guarda uma cópia no navegador (`biblia-cache`, apagada ao sair). As páginas abrem com essa cópia na hora e o servidor só confirma ou atualiza; a Leitura mostra a cópia só para consulta e libera as marcações quando o servidor confirma (o envio substitui a linha inteira).
+
+No navegador ficam o tema (`notas-theme`), os filtros da linha do tempo (`biblia-linha-do-tempo`, um conjunto para computador e outro para celular), a posição e o tamanho da letra do leitor (`biblia-leitor`), a posição em cada plano (`biblia-mapa`) e a cópia da conta (`biblia-cache`).
+
+`scripts/verificar.mjs`: verificação de fumaça das páginas (`node scripts/verificar.mjs`).
 
 Configuração do Supabase, do Google e da Vercel: veja `plan.md`.

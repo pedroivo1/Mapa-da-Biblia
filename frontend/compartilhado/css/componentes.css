@@ -1,0 +1,222 @@
+/* Componentes comuns às páginas da Bíblia: cabeçalho, chips, popups e avisos. Carregado por todas. */
+
+/* Linha do tempo bíblica — usa as variáveis de global.css */
+
+.biblia-topo {
+  padding: 3.5rem 1.5rem 2rem;
+}
+
+.biblia-topo h1 {
+  margin: 0;
+  color: var(--ink-strong);
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.biblia-topo h1 em {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+
+.biblia-topo p {
+  max-width: 38rem;
+  margin: 1rem 0 0;
+}
+
+.vazio {
+  margin: 0;
+  padding: 2rem 1.5rem 3rem;
+  color: var(--muted);
+}
+
+/* detalhe (painel e linhas) */
+.item-nome {
+  margin: 0 0 0.2rem;
+  color: var(--ink-strong);
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.chip {
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+button.chip {
+  cursor: pointer;
+}
+
+button.chip:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.fechar {
+  position: absolute;
+  top: 0.6rem;
+  right: 1rem;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.fechar:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+@media (max-width: 720px) {
+  .biblia-topo { padding: 2.5rem 1.25rem 1.5rem; }
+}
+
+.l-secao {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-sunken);
+}
+
+.l-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+}
+
+.l-grade.versos {
+  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+}
+
+.leitor-dlg {
+  width: min(560px, 94vw);
+  max-height: 85vh;
+  padding: 0;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.leitor-dlg::backdrop {
+  background: rgba(11, 11, 12, 0.55);
+}
+
+.leitor-dlg-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.leitor-dlg-topo {
+  gap: 0.75rem;
+}
+
+.leitor-dlg-topo span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leitor-dlg-topo button {
+  flex: none;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-dlg .l-grade {
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+}
+
+.leitor-dlg .l-grade button {
+  padding: 0.9rem 0;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-dlg .l-grade button:hover,
+.leitor-dlg .l-grade button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* Leitura dentro do popup do leitor: sem topo, nav nem rodapé */
+html.embutido .nav,
+html.embutido footer,
+html.embutido .biblia-topo {
+  display: none;
+}
+
+.leitor-dlg-leitura {
+  display: flex;
+  width: min(900px, 96vw);
+  height: 88vh;
+  max-height: 88vh;
+  flex-direction: column;
+}
+
+.leitor-dlg-leitura:not([open]) {
+  display: none;
+}
+
+.leitor-dlg-leitura iframe {
+  width: 100%;
+  flex: 1;
+  border: 0;
+  background: var(--bg);
+}
+
+/* cabeçalho compacto: o mapa é o conteúdo */
+.mapa-pagina .biblia-topo {
+  padding: 1.5rem 1.5rem 1.1rem;
+}
+
+.mapa-pagina .biblia-topo h1 {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+}
+
+.mapa-pagina .biblia-topo p {
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 720px) {
+  .mapa-pagina .biblia-topo {
+      padding: 1.1rem 1rem 0.8rem;
+    }
+
+  .leitor-dlg,
+    .leitor-dlg-leitura {
+      width: 100vw;
+      max-width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-height: 100vh;
+      max-height: 100dvh;
+      margin: 0;
+      border: 0;
+    }
+}

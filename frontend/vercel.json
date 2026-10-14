@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    { "source": "/entrar.html", "destination": "/conta/" },
+    { "source": "/privacidade.html", "destination": "/privacidade/" },
+    { "source": "/biblia/index.html", "destination": "/linha-do-tempo/" },
+    { "source": "/biblia/biblia.html", "destination": "/biblia/" },
+    { "source": "/biblia/ler.html", "destination": "/biblia/" },
+    { "source": "/biblia/leitura.html", "destination": "/leitura/" },
+    { "source": "/biblia/plano-de-leitura.html", "destination": "/plano-de-leitura/" },
+    { "source": "/biblia/mapas.html", "destination": "/mapas/" },
+    { "source": "/biblia/materiais.html", "destination": "/mapas/" },
+    { "source": "/biblia/mapa.html", "destination": "/mapa/" },
+    { "source": "/biblia/apoio.html", "destination": "/mapa/" }
+  ]
+}

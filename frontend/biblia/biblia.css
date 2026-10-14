@@ -1,0 +1,198 @@
+/* Leitor da Bíblia (biblia/index.html, biblia.js): texto, barra de capítulos e popup de mapas. */
+
+/* leitor: texto da Bíblia, como nos apps */
+.leitor {
+  --leitor-fonte: 1.2rem;
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
+}
+
+.leitor-barra {
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.leitor-barra button,
+.leitor-fim button {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-barra button:hover:not([disabled]),
+.leitor-fim button:hover:not([disabled]) {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-barra button[disabled],
+.leitor-fim button[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.leitor-ref {
+  font-weight: 500;
+}
+
+.leitor-fonte {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.leitor-texto h1 {
+  margin: 2rem 0 1.25rem;
+  font-size: 1.6rem;
+  font-weight: 500;
+}
+
+.leitor-texto p {
+  margin: 0 0 0.9rem;
+  font-size: var(--leitor-fonte);
+  line-height: 1.7;
+}
+
+.leitor-texto sup {
+  margin-right: 0.25em;
+  color: var(--faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.6em;
+}
+
+.leitor-fim {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.leitor-dlg-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+.leitor-dlg-lista button {
+  padding: 0.8rem 1rem;
+  border: 0;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.leitor-dlg-lista button:hover,
+.leitor-dlg-lista button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+@media (max-width: 720px) {
+  .leitor { padding: 0 1rem 2.5rem; }
+}
+
+.leitor-aviso {
+  margin: 0.75rem 0 0;
+}
+
+/* leitor em modo mapa: onde estou na ordem */
+.leitor-plano {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.leitor-plano p {
+  margin: 0.15rem 0;
+}
+
+/* links do mapa: sem o roxo de "visitado" */
+.plano-voltar a,
+.leitor-plano a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.plano-voltar a:hover,
+.leitor-plano a:hover,
+.plano-trechos a:hover {
+  color: var(--ink-strong);
+  text-decoration: underline;
+}
+
+/* popup de material de apoio no leitor */
+.leitor-mapas-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem 0;
+}
+
+.leitor-mapas-abas button {
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.leitor-mapas-abas button:hover,
+.leitor-mapas-abas button[aria-current="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-mapas-resumo {
+  margin: 0;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Apoio e Curiosidades, na linha das abas */
+
+.leitor-mapas-passos {
+  display: flex;
+  gap: 0.4rem;
+  margin-left: auto;
+}
+
+.leitor-mapas-passos button[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.leitor-mapas-passos button[disabled]:hover {
+  background: transparent;
+  color: var(--ink);
+}
+
+@media (pointer: coarse) {
+  .chip,
+    .leitor-mapas-abas button,
+    .leitor-barra button,
+    .leitor-fim button,
+    .mapas-acoes .chip,
+    .plano-acoes .chip {
+      min-height: 44px;
+    }
+
+  .leitor-dlg-lista button,
+    .leitor-dlg .l-grade button {
+      min-height: 48px;
+    }
+}

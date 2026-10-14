@@ -1,0 +1,249 @@
+/* Mapa aberto (mapa/index.html, mapa.js): mapa-múndi em SVG, rotas e lista de rotas. */
+
+.mapa svg,
+.lt-scroll svg {
+  display: block;
+  font-family: Archivo, sans-serif;
+  font-size: 11px;
+}
+
+/* apoio: mapa da viagem de Abrão */
+.mapa {
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+/* lista de rotas acima do mapa */
+.mapa-barra {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+}
+
+.mapa-quadro {
+  position: relative;
+  min-width: 0;
+}
+
+#mapa-svg {
+  line-height: 0;
+}
+
+.mapa-svg {
+  display: block;
+  width: 100%;
+  height: clamp(440px, calc(100vh - 17rem), 1000px);
+  height: clamp(440px, calc(100dvh - 17rem), 1000px);
+  cursor: grab;
+  touch-action: none;
+  font-family: Archivo, sans-serif;
+  user-select: none;
+}
+
+.mapa-svg.arrastando {
+  cursor: grabbing;
+}
+
+.mapa-terra {
+  fill: var(--bg-sunken);
+}
+
+.mapa-agua {
+  fill: var(--bg);
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-rio {
+  stroke: var(--c-livro);
+  stroke-width: 1.5;
+  opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-rotulo {
+  fill: var(--faint);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.mapa-rotulo.mar,
+.mapa-rotulo.rio {
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* rota de viagem tracejada, com seta no sentido do caminho */
+.mapa-rota polyline {
+  stroke: var(--c-era);
+  stroke-width: 3;
+  stroke-dasharray: 9 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-seta {
+  fill: var(--c-era);
+  stroke: var(--bg);
+  stroke-width: 1;
+}
+
+.mapa-rota,
+.mapa-seta,
+.mapa-lugar {
+  pointer-events: none;
+}
+
+.mapa-lugar circle {
+  fill: var(--ink-strong);
+  stroke: var(--bg);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-nome {
+  fill: var(--ink-strong);
+  font-size: 13px;
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg-sunken);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+/* localização incerta: sublinhado tracejado */
+.mapa-nome.incerto {
+  text-decoration: underline dashed;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+@media (max-width: 720px) {
+  .mapa-svg {
+      height: calc(100vh - 12rem);
+      height: calc(100dvh - 12rem);
+      min-height: 420px;
+    }
+}
+
+/* no popup do leitor o quadro é a própria janela */
+html.embutido .mapa {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  flex-direction: column;
+  border: 0;
+}
+
+html.embutido .mapa-quadro {
+  flex: 1;
+  min-height: 0;
+}
+
+html.embutido #mapa-svg,
+html.embutido .mapa-svg {
+  height: 100%;
+  min-height: 0;
+}
+
+/* mapa grande: costa em linha fina */
+.mapa-terra {
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-agua.fundo {
+  stroke: none;
+}
+
+.mapa-barra[hidden] {
+  display: none;
+}
+
+/* rotas: grupo recolhível, com uma caixa por item */
+.mapa-grupo {
+  position: relative;
+}
+
+.mapa-grupo summary {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+
+.mapa-grupo summary::-webkit-details-marker {
+  display: none;
+}
+
+.mapa-grupo summary::after {
+  content: "▾";
+  color: var(--muted);
+}
+
+.mapa-grupo[open] summary {
+  border-color: var(--ink-strong);
+  background: var(--bg-sunken);
+}
+
+.mapa-grupo[open] summary::after {
+  content: "▴";
+}
+
+.mapa-grupo-nome {
+  font-weight: 500;
+}
+
+.mapa-itens {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  z-index: 10;
+  width: max-content;
+  min-width: 100%;
+  max-width: min(26rem, calc(100vw - 1.5rem));
+  max-height: min(60vh, 28rem);
+  padding: 0.25rem 0;
+  overflow: auto;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+}
+
+.mapa-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
+.mapa-item:hover {
+  background: var(--bg-sunken);
+}
+
+.mapa-grupo input[type="checkbox"] {
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: 0;
+  flex: none;
+  align-self: center;
+  cursor: pointer;
+}
+
+.mapa-grupo[data-grupo="mapa"] input[type="checkbox"] {
+  accent-color: var(--c-era);
+}

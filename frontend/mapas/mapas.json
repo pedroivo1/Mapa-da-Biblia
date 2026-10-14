@@ -1,0 +1,168 @@
+{
+ "mapas": [
+  {
+   "id": "viagem-abraao",
+   "titulo": "Viagem de Abrão",
+   "tipo": "Mapa",
+   "ref": "Gn 11:27 – 12:9",
+   "resumo": "De Ur dos caldeus a Harã e a Canaã.",
+   "url": "/mapa/",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 11,
+     "ate": 12
+    }
+   ],
+   "ano": 2166
+  },
+  {
+   "id": "abraao-canaa",
+   "titulo": "Abraão em Canaã",
+   "tipo": "Mapa",
+   "ref": "Gn 12–25",
+   "resumo": "Do Egito a Hebrom, da guerra dos reis a Moriá: onde Abraão viveu depois de chegar a Canaã.",
+   "url": "/mapa/?m=abraao-canaa",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 12,
+     "ate": 25
+    }
+   ],
+   "ano": 2150
+  },
+  {
+   "id": "isaque",
+   "titulo": "As viagens de Isaque",
+   "tipo": "Mapa",
+   "ref": "Gn 24–27; 35",
+   "resumo": "De Harã, de onde veio Rebeca, a Gerar, aos poços do vale, a Berseba e a Hebrom.",
+   "url": "/mapa/?m=isaque",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 24,
+     "ate": 27
+    },
+    {
+     "livro": "genesis",
+     "de": 35,
+     "ate": 35
+    }
+   ],
+   "ano": 2030
+  },
+  {
+   "id": "jaco",
+   "titulo": "A jornada de Jacó",
+   "tipo": "Mapa",
+   "ref": "Gn 28–36",
+   "resumo": "Da fuga de Berseba a Harã e de volta: Betel, Peniel, Siquém, Belém e Hebrom.",
+   "url": "/mapa/?m=jaco",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 27,
+     "ate": 36
+    }
+   ],
+   "ano": 1980
+  },
+  {
+   "id": "jo-lugares",
+   "titulo": "Os lugares de Jó",
+   "tipo": "Mapa",
+   "ref": "Jó 1–42",
+   "resumo": "Uz, Sabá, Caldeia, Temã, Suá, Naamate e Buz num mapa-múndi, com curiosidades da época.",
+   "url": "/mapa/?m=jo",
+   "capitulos": [
+    {
+     "livro": "jo",
+     "de": 1,
+     "ate": 42
+    }
+   ],
+   "ano": 1930
+  },
+  {
+   "id": "jose",
+   "titulo": "A história de José",
+   "tipo": "Mapa",
+   "ref": "Gn 37–50",
+   "resumo": "De Hebrom e Dotã ao Egito: a cisterna, a prisão, o governo, a descida de Jacó a Gósen e o sepultamento em Macpela.",
+   "url": "/mapa/?m=jose",
+   "capitulos": [
+    {
+     "livro": "genesis",
+     "de": 37,
+     "ate": 50
+    }
+   ],
+   "ano": 1898
+  },
+  {
+   "id": "moises-antes",
+   "titulo": "Moisés antes de libertar o povo",
+   "tipo": "Mapa",
+   "ref": "Êx 1–4",
+   "resumo": "Do nascimento no Egito à fuga para Midiã, à sarça ardente em Horebe e à volta para libertar Israel.",
+   "url": "/mapa/?m=moises-antes",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 1,
+     "ate": 4
+    }
+   ],
+   "ano": 1526
+  },
+  {
+   "id": "exodo",
+   "titulo": "O Êxodo",
+   "tipo": "Mapa",
+   "ref": "Êx 5–19",
+   "resumo": "As pragas, a Páscoa, a saída de Ramessés, a travessia do mar e o caminho até o Sinai.",
+   "url": "/mapa/?m=exodo",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 5,
+     "ate": 19
+    }
+   ],
+   "ano": 1446
+  },
+  {
+   "id": "moises-depois",
+   "titulo": "Moisés depois de libertar o povo",
+   "tipo": "Mapa",
+   "ref": "Êx 19 – Dt 34",
+   "resumo": "Do Sinai a Cades, ao redor de Edom e de Moabe, até as planícies de Moabe e o monte Nebo.",
+   "url": "/mapa/?m=moises-depois",
+   "capitulos": [
+    {
+     "livro": "exodo",
+     "de": 19,
+     "ate": 40
+    },
+    {
+     "livro": "levitico",
+     "de": 1,
+     "ate": 27
+    },
+    {
+     "livro": "numeros",
+     "de": 1,
+     "ate": 36
+    },
+    {
+     "livro": "deuteronomio",
+     "de": 1,
+     "ate": 34
+    }
+   ],
+   "ano": 1406
+  }
+ ]
+}
