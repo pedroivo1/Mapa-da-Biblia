@@ -83,8 +83,8 @@
 /* rota de viagem tracejada, com seta no sentido do caminho */
 .mapa-rota polyline {
   stroke: var(--c-era);
-  stroke-width: 3;
-  stroke-dasharray: 9 7;
+  stroke-width: 1.75;
+  stroke-dasharray: 6 5;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -117,6 +117,25 @@
   stroke: var(--bg-sunken);
   stroke-width: 3px;
   pointer-events: none;
+}
+
+/* região (terra ou povo): área translúcida, com o contorno na mesma cor */
+.mapa-regiao {
+  fill-opacity: 0.28;
+  stroke-width: 1;
+  stroke-opacity: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.mapa-regiao.incerto {
+  stroke-dasharray: 5 4;
+}
+
+.mapa-nome-regiao {
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 /* localização incerta: sublinhado tracejado */
@@ -246,4 +265,55 @@ html.embutido .mapa-svg {
 
 .mapa-grupo[data-grupo="mapa"] input[type="checkbox"] {
   accent-color: var(--c-era);
+}
+
+/* texto do lugar ou da região, ao tocar nele (mesmo traço do balão da linha do tempo) */
+.mapa-cartao {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 7;
+  max-width: 30rem;
+  max-height: 45%;
+  overflow-y: auto;
+  padding: 0.8rem 2.4rem 0.9rem 1rem;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  box-shadow: 3px 3px 0 var(--ink-strong);
+  color: var(--ink);
+}
+
+.mapa-cartao[hidden] {
+  display: none;
+}
+
+.mapa-cartao h2 {
+  margin: 0 0 0.35rem;
+  color: var(--ink-strong);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mapa-cartao h2 + p {
+  margin: 0 0 0.8rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.mapa-cartao h2 + p:last-child {
+  margin-bottom: 0;
+}
+
+.mapa-cartao-fechar {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
 }

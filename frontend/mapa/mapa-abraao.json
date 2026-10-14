@@ -1,24 +1,262 @@
 {
-  "mundo": "mundo.json",
-  "titulo": "Viagem de",
-  "destaque": "Abrão.",
-  "subtitulo": "Mapa · Gênesis 11:27 – 12:9",
-  "livro": "genesis",
-  "livroNome": "Gênesis",
-  "aria": "Mapa-múndi com a viagem de Abrão, de Ur dos caldeus a Harã e a Canaã",
-  "lugares": [
-    {"id":"ur","nome":"Ur dos caldeus","lon":46.1,"lat":30.96,"lado":"esq","incerto":true},
-    {"id":"hara","nome":"Harã","lon":39.03,"lat":36.87,"lado":"dir"},
-    {"id":"siquem","nome":"Siquém","lon":35.28,"lat":32.22,"lado":"esq"},
-    {"id":"betel","nome":"Betel","lon":35.22,"lat":31.94,"lado":"esq"},
-    {"id":"neguebe","nome":"Neguebe","lon":34.79,"lat":31.25,"lado":"esq"}
-  ],
-  "etapas": [
-    {"id":"ur","lugar":"ur","titulo":"A família de Terá em Ur","ref":"Gn 11:27–30","cap":11,"texto":"Terá vivia em Ur dos caldeus com seus filhos Abrão, Naor e Harã. Harã, pai de Ló, morreu ali, antes de Terá (11:28). Abrão casou com Sarai, que era estéril (11:30). A identificação tradicional de Ur é Tell el-Muqayyar, no sul do atual Iraque, perto do Eufrates; alguns estudiosos propõem a região de Urfa, perto de Harã.","caminho":[]},
-    {"id":"hara","lugar":"hara","titulo":"De Ur a Harã","ref":"Gn 11:31–32","cap":11,"texto":"Terá tomou Abrão, seu filho, Ló, seu neto, e Sarai, sua nora, e saiu com eles de Ur dos caldeus para ir à terra de Canaã. Chegaram a Harã e ali se estabeleceram. Terá morreu em Harã, com 205 anos (11:32).","incerto":true,"caminho":[[46.1,30.96],[45.3,31.3],[44.4,32.5],[43.8,33.35],[42.4,34.1],[40.9,34.45],[40.15,35.33],[39.0,35.95],[39.03,36.87]]},
-    {"id":"chamado","lugar":"hara","titulo":"O chamado em Harã","ref":"Gn 12:1–4","cap":12,"texto":"Depois da morte de Terá, o Senhor manda Abrão deixar a terra, os parentes e a casa do pai e ir para a terra que lhe mostrará. Promete fazer dele uma grande nação, abençoá-lo e abençoar por meio dele todos os povos da terra (12:1–3). Abrão parte com 75 anos, como o Senhor havia dito (12:4).","incerto":false,"caminho":[]},
-    {"id":"siquem","lugar":"siquem","titulo":"A chegada a Canaã","ref":"Gn 12:5–7","cap":12,"texto":"Abrão sai de Harã com Sarai, Ló e tudo o que haviam adquirido ali e as pessoas que tinham ganho (12:5). Atravessa a terra de Canaã até Siquém, ao carvalho de Moré, onde o Senhor lhe aparece: “À tua descendência darei esta terra”. Abrão edifica ali um altar (12:6–7).","incerto":true,"caminho":[[39.03,36.87],[37.9,36.4],[37.16,36.2],[36.75,35.13],[36.72,34.73],[36.3,33.5],[35.75,32.75],[35.5,32.4],[35.28,32.22]]},
-    {"id":"betel","lugar":"betel","titulo":"Betel","ref":"Gn 12:8","cap":12,"texto":"Dali Abrão passou a um monte a leste de Betel e armou a sua tenda, com Betel a oeste e Ai a leste. Ali edificou um altar ao Senhor e invocou o seu nome.","caminho":[[35.28,32.22],[35.22,31.94]]},
-    {"id":"neguebe","lugar":"neguebe","titulo":"Rumo ao Neguebe","ref":"Gn 12:9","cap":12,"texto":"Abrão seguiu viagem, sempre em direção ao Neguebe, a região árida ao sul de Canaã. Logo depois, por causa da fome, ele desceria ao Egito (12:10).","incerto":true,"caminho":[[35.22,31.94],[35.1,31.7],[35.1,31.53],[34.79,31.25]]}
-  ]
+ "mundo": "mundo.json",
+ "titulo": "Viagem de",
+ "destaque": "Abrão.",
+ "subtitulo": "Mapa · Gênesis 11:27 – 12:9",
+ "livro": "genesis",
+ "livroNome": "Gênesis",
+ "aria": "Mapa-múndi com a viagem de Abrão, de Ur dos caldeus a Harã e a Canaã",
+ "lugares": [
+  {
+   "id": "ur",
+   "nome": "Ur dos caldeus",
+   "lon": 46.1,
+   "lat": 30.96,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "hara",
+   "nome": "Harã",
+   "lon": 39.03,
+   "lat": 36.87,
+   "lado": "dir"
+  },
+  {
+   "id": "siquem",
+   "nome": "Siquém",
+   "lon": 35.28,
+   "lat": 32.22,
+   "lado": "esq"
+  },
+  {
+   "id": "betel",
+   "nome": "Betel",
+   "lon": 35.22,
+   "lat": 31.94,
+   "lado": "esq"
+  },
+  {
+   "id": "neguebe",
+   "nome": "Neguebe",
+   "lon": 34.79,
+   "lat": 31.25,
+   "lado": "esq",
+   "cor": "#e08a1e",
+   "area": [
+    [
+     35.06,
+     31.26
+    ],
+    [
+     35.03,
+     30.93
+    ],
+    [
+     35.1,
+     30.6
+    ],
+    [
+     34.87,
+     30.46
+    ],
+    [
+     34.64,
+     30.42
+    ],
+    [
+     34.4,
+     30.4
+    ],
+    [
+     34.37,
+     30.82
+    ],
+    [
+     34.3,
+     31.21
+    ],
+    [
+     34.3,
+     31.42
+    ],
+    [
+     34.48,
+     31.59
+    ],
+    [
+     34.62,
+     31.58
+    ],
+    [
+     34.91,
+     31.61
+    ],
+    [
+     35.2,
+     31.6
+    ]
+   ]
+  }
+ ],
+ "etapas": [
+  {
+   "id": "ur",
+   "lugar": "ur",
+   "titulo": "A família de Terá em Ur",
+   "ref": "Gn 11:27–30",
+   "cap": 11,
+   "texto": "Terá vivia em Ur dos caldeus com seus filhos Abrão, Naor e Harã. Harã, pai de Ló, morreu ali, antes de Terá (11:28). Abrão casou com Sarai, que era estéril (11:30). A identificação tradicional de Ur é Tell el-Muqayyar, no sul do atual Iraque, perto do Eufrates; alguns estudiosos propõem a região de Urfa, perto de Harã.",
+   "caminho": []
+  },
+  {
+   "id": "hara",
+   "lugar": "hara",
+   "titulo": "De Ur a Harã",
+   "ref": "Gn 11:31–32",
+   "cap": 11,
+   "texto": "Terá tomou Abrão, seu filho, Ló, seu neto, e Sarai, sua nora, e saiu com eles de Ur dos caldeus para ir à terra de Canaã. Chegaram a Harã e ali se estabeleceram. Terá morreu em Harã, com 205 anos (11:32).",
+   "incerto": true,
+   "caminho": [
+    [
+     46.1,
+     30.96
+    ],
+    [
+     45.3,
+     31.3
+    ],
+    [
+     44.4,
+     32.5
+    ],
+    [
+     43.8,
+     33.35
+    ],
+    [
+     42.4,
+     34.1
+    ],
+    [
+     40.9,
+     34.45
+    ],
+    [
+     40.15,
+     35.33
+    ],
+    [
+     39.0,
+     35.95
+    ],
+    [
+     39.03,
+     36.87
+    ]
+   ]
+  },
+  {
+   "id": "chamado",
+   "lugar": "hara",
+   "titulo": "O chamado em Harã",
+   "ref": "Gn 12:1–4",
+   "cap": 12,
+   "texto": "Depois da morte de Terá, o Senhor manda Abrão deixar a terra, os parentes e a casa do pai e ir para a terra que lhe mostrará. Promete fazer dele uma grande nação, abençoá-lo e abençoar por meio dele todos os povos da terra (12:1–3). Abrão parte com 75 anos, como o Senhor havia dito (12:4).",
+   "incerto": false,
+   "caminho": []
+  },
+  {
+   "id": "siquem",
+   "lugar": "siquem",
+   "titulo": "A chegada a Canaã",
+   "ref": "Gn 12:5–7",
+   "cap": 12,
+   "texto": "Abrão sai de Harã com Sarai, Ló e tudo o que haviam adquirido ali e as pessoas que tinham ganho (12:5). Atravessa a terra de Canaã até Siquém, ao carvalho de Moré, onde o Senhor lhe aparece: “À tua descendência darei esta terra”. Abrão edifica ali um altar (12:6–7).",
+   "incerto": true,
+   "caminho": [
+    [
+     39.03,
+     36.87
+    ],
+    [
+     37.9,
+     36.4
+    ],
+    [
+     37.16,
+     36.2
+    ],
+    [
+     36.75,
+     35.13
+    ],
+    [
+     36.72,
+     34.73
+    ],
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.75,
+     32.75
+    ],
+    [
+     35.5,
+     32.4
+    ],
+    [
+     35.28,
+     32.22
+    ]
+   ]
+  },
+  {
+   "id": "betel",
+   "lugar": "betel",
+   "titulo": "Betel",
+   "ref": "Gn 12:8",
+   "cap": 12,
+   "texto": "Dali Abrão passou a um monte a leste de Betel e armou a sua tenda, com Betel a oeste e Ai a leste. Ali edificou um altar ao Senhor e invocou o seu nome.",
+   "caminho": [
+    [
+     35.28,
+     32.22
+    ],
+    [
+     35.22,
+     31.94
+    ]
+   ]
+  },
+  {
+   "id": "neguebe",
+   "lugar": "neguebe",
+   "titulo": "Rumo ao Neguebe",
+   "ref": "Gn 12:9",
+   "cap": 12,
+   "texto": "Abrão seguiu viagem, sempre em direção ao Neguebe, a região árida ao sul de Canaã. Logo depois, por causa da fome, ele desceria ao Egito (12:10).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.22,
+     31.94
+    ],
+    [
+     35.1,
+     31.7
+    ],
+    [
+     35.1,
+     31.53
+    ],
+    [
+     34.79,
+     31.25
+    ]
+   ]
+  }
+ ]
 }

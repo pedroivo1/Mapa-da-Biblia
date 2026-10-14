@@ -11,7 +11,7 @@
 .leitor-barra {
   flex-wrap: wrap;
   position: sticky;
-  top: 0;
+  top: 47px; /* logo abaixo do .nav (48px, translúcido): a barra não aparece por trás dele */
   z-index: 5;
   display: flex;
   align-items: center;
@@ -96,6 +96,18 @@
   color: var(--faint);
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.6em;
+}
+
+.leitor-fim button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4rem;
+  padding: 0.55rem 1.1rem;
+}
+
+.leitor-seta {
+  flex: none;
 }
 
 .leitor-fim {
@@ -183,10 +195,29 @@
   color: var(--invert-fg);
 }
 
-.leitor-mapas-resumo {
-  margin: 0;
-  padding: 0.5rem 1rem;
+.leitor-mapas-abas {
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--line);
+}
+
+/* balão com o resumo do mapa (mesmo traço da dica da linha do tempo) */
+.leitor-mapas-balao {
+  position: absolute;
+  z-index: 10;
+  width: max-content;
+  max-width: min(22rem, calc(100% - 16px));
+  padding: 8px 12px;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  box-shadow: 3px 3px 0 var(--ink-strong);
+  color: var(--ink-strong);
+  font: 500 12px/1.5 "IBM Plex Mono", monospace;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+}
+
+.leitor-mapas-balao[hidden] {
+  display: none;
 }
 
 /* Apoio e Curiosidades, na linha das abas */
@@ -195,6 +226,17 @@
   display: flex;
   gap: 0.4rem;
   margin-left: auto;
+}
+
+.leitor-mapas-passos button,
+.leitor-dlg-topo button[data-voltar] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.leitor-mapas-passos button {
+  min-width: 3.4rem;
 }
 
 .leitor-mapas-passos button[disabled] {

@@ -211,6 +211,10 @@
   var ICONE_MAPA = ICONE_SVG + '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>';
   var ICONE_CALENDARIO = ICONE_SVG + '<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
 
+  var ICONE_SETA = '<svg class="leitor-seta" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+  var ICONE_SETA_ESQ = ICONE_SETA + '<path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
+  var ICONE_SETA_DIR = ICONE_SETA + '<path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
   function render() {
     var b = canon[pos.i];
     var doCapitulo = mapasDoCapitulo();
@@ -230,8 +234,8 @@
     h += '<article class="leitor-texto"><h1>' + esc(b.nome) + " " + pos.c + "</h1>";
     h += paragrafos(versos) + "</article>";
     h += '<div class="leitor-fim">' +
-      '<button type="button" data-nav="ant"' + (ant ? "" : " disabled") + ">← Anterior</button>" +
-      '<button type="button" data-nav="prox"' + (prox ? "" : " disabled") + ">Próximo →</button></div>";
+      '<button type="button" data-nav="ant"' + (ant ? "" : " disabled") + ' aria-label="Capítulo anterior">' + ICONE_SETA_ESQ + "</button>" +
+      '<button type="button" data-nav="prox"' + (prox ? "" : " disabled") + ' aria-label="Próximo capítulo">' + ICONE_SETA_DIR + "</button></div>";
     raiz.innerHTML = h;
     raiz.style.setProperty("--leitor-fonte", tam + "rem");
     document.title = b.nome + " " + pos.c + " — Bíblia NVI — Mapa da Bíblia";
@@ -266,7 +270,7 @@
         h += "</div>";
       });
     } else {
-      h += '<div class="leitor-dlg-topo"><button type="button" data-voltar>← Livros</button><span class="hud muted">' + esc(canon[livro].nome) + '</span><button type="button" data-fechar>Fechar</button></div>';
+      h += '<div class="leitor-dlg-topo"><button type="button" data-voltar aria-label="Voltar para os livros">' + ICONE_SETA_ESQ + '</button><span class="hud muted">' + esc(canon[livro].nome) + '</span><button type="button" data-fechar>Fechar</button></div>';
       h += '<div class="l-grade">';
       for (var c = 1; c <= texto[livro].chapters.length; c++) {
         h += '<button type="button" data-i="' + livro + '" data-cap="' + c + '"' + (livro === pos.i && c === pos.c ? ' aria-current="true"' : "") + ">" + c + "</button>";
@@ -311,9 +315,30 @@
       if (j === k) abas[j].setAttribute("aria-current", "true");
       else abas[j].removeAttribute("aria-current");
     }
-    dlgMapas.querySelector(".leitor-mapas-resumo").textContent = m.tipo + " · " + m.ref + " — " + m.resumo;
+    dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
     quadro.setAttribute("title", m.titulo);
     quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c);
+  }
+
+  // clicar no nome do mapa abre esse mapa e mostra, num balão, o que ele cobre; clicar de novo fecha
+  function clicarAba(lista, aba) {
+    var k = Number(aba.getAttribute("data-aba"));
+    var balao = dlgMapas.querySelector(".leitor-mapas-balao");
+    var igual = !balao.hidden && balao.getAttribute("data-k") === String(k);
+    if (Number(dlgMapas.getAttribute("data-k")) !== k) mostrarApoio(lista, k);
+    if (igual) {
+      balao.hidden = true;
+      return;
+    }
+    var m = lista[k];
+    balao.textContent = m.tipo + " · " + m.ref + " — " + m.resumo;
+    balao.setAttribute("data-k", String(k));
+    balao.hidden = false;
+    var d = dlgMapas.getBoundingClientRect();
+    var a = aba.getBoundingClientRect();
+    var esq = Math.max(8, Math.min(a.left - d.left, d.width - balao.offsetWidth - 8));
+    balao.style.left = esq + "px";
+    balao.style.top = a.bottom - d.top + 8 + "px";
   }
 
   function abrirMapas() {
@@ -330,14 +355,15 @@
       h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";
     });
     h += '<span class="leitor-mapas-passos">' +
-      '<button type="button" data-mapas-passo="-1">← Anterior</button>' +
-      '<button type="button" data-mapas-passo="1">Próximo →</button></span>';
-    h += '</div><p class="leitor-mapas-resumo hud muted"></p><iframe></iframe>';
+      '<button type="button" data-mapas-passo="-1" aria-label="Mapa anterior">' + ICONE_SETA_ESQ + '</button>' +
+      '<button type="button" data-mapas-passo="1" aria-label="Próximo mapa">' + ICONE_SETA_DIR + '</button></span>';
+    h += '</div><div class="leitor-mapas-balao" role="status" hidden></div><iframe></iframe>';
     dlgMapas.innerHTML = h;
     dlgMapas.onclick = function (ev) {
       if (ev.target === dlgMapas || ev.target.closest("[data-fechar]")) return dlgMapas.close();
       var aba = ev.target.closest("[data-aba]");
-      if (aba) return mostrarApoio(lista, Number(aba.getAttribute("data-aba")));
+      if (aba) return clicarAba(lista, aba);
+      dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
       var passo = ev.target.closest("[data-mapas-passo]");
       if (passo && !passo.disabled) {
         var k = Number(dlgMapas.getAttribute("data-k")) + Number(passo.getAttribute("data-mapas-passo"));

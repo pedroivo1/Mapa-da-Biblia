@@ -1,7 +1,7 @@
 // Service Worker: abre as páginas e os dados na hora, a partir do cache, e atualiza em segundo plano
 // (stale-while-revalidate). O nvi.json (3,8 MB) fica guardado e o leitor funciona sem rede.
 // Nunca toca em chamadas ao Supabase (login e progresso). Troque VERSAO para descartar o cache antigo.
-var VERSAO = "v1";
+var VERSAO = "v2";
 var CACHE = "biblia-" + VERSAO;
 var CDNS = ["cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"];
 

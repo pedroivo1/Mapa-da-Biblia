@@ -19,7 +19,9 @@
   var geo = []; // por etapa com rota: { pts, faixas, seta, poli, ent }
   var lugaresNoMapa = []; // [{el, etapas: [índices]}], um por lugar
   var ZOOM_MAX = 160; // quantas vezes se pode ampliar a partir do mapa inteiro
-  var etapasLigadas = []; // por etapa: a rota aparece no mapa? (começam todas ligadas)
+  var etapasLigadas = []; // por etapa: a rota aparece no mapa? (vem do capítulo ligado)
+  var capitulos = []; // capítulos das etapas, em ordem
+  var capLigado = {}; // capítulo -> aparece no mapa? (sem ?cap=, todos ligados)
 
   function svg(tag, attrs, pai) {
     var el = document.createElementNS(NS, tag);
@@ -28,15 +30,48 @@
     return el;
   }
 
-  // projeção Mercator (a do mapa-múndi comum): x em graus de longitude, y em "latitude esticada"
+  // projeções: "mercator" ou "equal-earth" (Equal Earth, de Šavrič, Patterson e Jenny: preserva as áreas)
+  var EE_A1 = 1.340264;
+  var EE_A2 = -0.081106;
+  var EE_A3 = 0.000893;
+  var EE_A4 = 0.003796;
+  var EE_M = Math.sqrt(3) / 2;
+
   function merc(lat) {
     return Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
   }
 
+  // Equal Earth: devolve [x, y] com x para leste e y para o norte (em radianos de esfera unitária)
+  function equalEarth(lon, lat) {
+    var l = (lon * Math.PI) / 180;
+    var t = Math.asin(EE_M * Math.sin((lat * Math.PI) / 180));
+    var t2 = t * t;
+    var t6 = t2 * t2 * t2;
+    var x = (2 * Math.sqrt(3) * l * Math.cos(t)) / (3 * (EE_A1 + 3 * EE_A2 * t2 + t6 * (7 * EE_A3 + 9 * EE_A4 * t2)));
+    var y = t * (EE_A1 + EE_A2 * t2 + t6 * (EE_A3 + EE_A4 * t2));
+    return [x, y];
+  }
+
+  var EE_XMAX = equalEarth(180, 0)[0];
+
+  // [x, y] no SVG, com x de lon[0] a lon[1] e y de lat[1] (topo) a lat[0] (base)
   function proj(p) {
     var m = dados.mapa;
-    var k = m.largura / (2 * Math.PI);
-    return [((p[0] - m.lon[0]) * Math.PI / 180) * k, (merc(m.lat[1]) - merc(p[1])) * k];
+    if (m.proj === "equal-earth") {
+      var k = m.largura / (2 * EE_XMAX);
+      var q = equalEarth(p[0], p[1]);
+      return [(q[0] + EE_XMAX) * k, (equalEarth(0, m.lat[1])[1] - q[1]) * k];
+    }
+    var km = m.largura / (2 * Math.PI);
+    return [((p[0] - m.lon[0]) * Math.PI / 180) * km, (merc(m.lat[1]) - merc(p[1])) * km];
+  }
+
+  // altura do mapa inteiro
+  function alturaDoMapa(m) {
+    if (m.proj === "equal-earth") {
+      return (equalEarth(0, m.lat[1])[1] - equalEarth(0, m.lat[0])[1]) * (m.largura / (2 * EE_XMAX));
+    }
+    return (merc(m.lat[1]) - merc(m.lat[0])) * m.largura / (2 * Math.PI);
   }
 
   function pontos(lista) {
@@ -76,6 +111,8 @@
 
   /* rotas lado a lado: trechos que seguem o mesmo caminho ganham faixas paralelas, em pixels de tela */
 
+  var MAX_SETAS = 24; // setas reservadas por rota
+  var ESPACO_SETAS = 130; // pixels entre setas
   var FAIXA = 10; // distância entre faixas, em pixels
 
   function distSeg(p, a, b) {
@@ -178,12 +215,19 @@
         return [p[0] + p[2] * k * m, p[1] + p[3] * k * m];
       });
       g.poli.setAttribute("points", R.map(function (p) { return p[0].toFixed(2) + "," + p[1].toFixed(2); }).join(" "));
-      // seta no meio do último trecho
-      var i = (n - 2) * N + N / 2;
-      var ang = (Math.atan2(R[i + 1][1] - R[i - 1][1], R[i + 1][0] - R[i - 1][0]) * 180) / Math.PI;
-      g.ent.x = R[i][0];
-      g.ent.y = R[i][1];
-      g.seta.setAttribute("transform", "rotate(" + ang.toFixed(1) + ")");
+      // uma seta a cada ~ESPACO_SETAS pixels do caminho: mais setas ao ampliar, menos ao afastar
+      var nSetas = limitar(Math.round(acum / k / ESPACO_SETAS), 1, MAX_SETAS);
+      g.setas.forEach(function (st, q) {
+        st.el.style.visibility = q < nSetas ? "" : "hidden";
+        if (q >= nSetas) return;
+        var alvo = (acum * (q + 1)) / (nSetas + 1);
+        var i = 1;
+        for (var w = 1; w < R.length - 1; w++) if (Math.abs(D[w] - alvo) < Math.abs(D[i] - alvo)) i = w;
+        var ang = (Math.atan2(R[i + 1][1] - R[i - 1][1], R[i + 1][0] - R[i - 1][0]) * 180) / Math.PI;
+        st.ent.x = R[i][0];
+        st.ent.y = R[i][1];
+        st.seta.setAttribute("transform", "rotate(" + ang.toFixed(1) + ")");
+      });
     });
   }
 
@@ -193,7 +237,8 @@
     var h = vb.w * razao();
     var ocupados = [];
     var ordem = lugaresNoMapa.slice().sort(function (a, b) {
-      return b.etapas.length - a.etapas.length || a.ordem - b.ordem;
+      // nomes de regiões têm preferência sobre os de cidades quando o espaço é curto
+      return (b.poli ? 1 : 0) - (a.poli ? 1 : 0) || b.etapas.length - a.etapas.length || a.ordem - b.ordem;
     });
     ordem.forEach(function (p) {
       var x = (p.x - vb.x) * k;
@@ -238,10 +283,12 @@
   // vista inicial: a região por onde passam todas as etapas, um pouco mais perto que o mapa inteiro
   function vistaInicial() {
     var pts = [];
-    if (dados.vista) pts = dados.vista; // o material pode escolher o enquadramento de abertura
+    var filtrado = capitulos.some(function (c) { return !capLigado[c]; });
+    // o material pode escolher o enquadramento de abertura (vale com todos os capítulos)
+    if (dados.vista && !filtrado) pts = dados.vista;
     else
-      dados.etapas.forEach(function (e) {
-        pts = pts.concat(pontosDaEtapa(e));
+      dados.etapas.forEach(function (e, i) {
+        if (!filtrado || etapasLigadas[i]) pts = pts.concat(pontosDaEtapa(e));
       });
     focarPontos(pts);
   }
@@ -273,7 +320,7 @@
   function desenhar() {
     var m = dados.mapa;
     L = m.largura;
-    A = (merc(m.lat[1]) - merc(m.lat[0])) * m.largura / (2 * Math.PI);
+    A = alturaDoMapa(m);
     vb.x = 0;
     vb.y = 0;
     vb.w = L;
@@ -307,7 +354,20 @@
     });
 
 
-    // rotas tracejadas, com uma seta no meio do último trecho para mostrar o sentido
+    // regiões (terra, povo ou reino, não uma cidade): área colorida sobre o mapa, sob as rotas
+    var areas = {};
+    dados.lugares.forEach(function (lg) {
+      if (!lg.area) return;
+      var cor = lg.cor || "#e0348c";
+      areas[lg.id] = svg("polygon", {
+        "class": "mapa-regiao" + (lg.incerto ? " incerto" : ""),
+        points: pontos(lg.area),
+        fill: cor,
+        stroke: cor
+      }, svgEl);
+    });
+
+    // rotas tracejadas, com setas de direção (a quantidade acompanha o zoom)
     dados.etapas.forEach(function (e) {
       if (!e.caminho || e.caminho.length < 2) {
         rotas.push(null);
@@ -315,12 +375,17 @@
       }
       var grupo = svg("g", { "class": "mapa-rota" }, svgEl);
       var poli = svg("polyline", { points: pontos(e.caminho), fill: "none" }, grupo);
-      var m = svg("g", {}, svgEl);
-      var seta = svg("path", { "class": "mapa-seta", d: "M-7,-6 L7,0 L-7,6 Z" }, m);
-      var ent = { el: m, x: 0, y: 0 };
-      escalaveis.push(ent);
-      geo[rotas.length] = { pts: e.caminho.map(proj), poli: poli, seta: seta, ent: ent };
-      grupo.seta = m;
+      // reserva de setas; a quantidade que aparece depende do tamanho do caminho na tela (redesenharRotas)
+      var setas = [];
+      for (var q = 0; q < MAX_SETAS; q++) {
+        var m = svg("g", {}, svgEl);
+        var seta = svg("path", { "class": "mapa-seta", d: "M-6,-5 L6,0 L-6,5 Z" }, m);
+        var ent = { el: m, x: 0, y: 0 };
+        escalaveis.push(ent);
+        setas.push({ seta: seta, ent: ent, el: m });
+      }
+      geo[rotas.length] = { pts: e.caminho.map(proj), poli: poli, setas: setas };
+      grupo.setas = setas;
       rotas.push(grupo);
     });
 
@@ -331,10 +396,27 @@
     dados.etapas.forEach(function (e, i) {
       (porLugar[e.lugar] = porLugar[e.lugar] || []).push(i);
     });
+    // região com "corte": além da área, um ponto com nome (onde ficava a corte do faraó, por exemplo)
+    Object.keys(porLugar).forEach(function (id) {
+      var r = lugares[id];
+      if (!r || !r.area || !r.corte) return;
+      lugares[id + "-corte"] = { id: id + "-corte", nome: r.corte.nome, lon: r.corte.lon, lat: r.corte.lat, incerto: r.corte.incerto, lado: r.corte.lado };
+      porLugar[id + "-corte"] = porLugar[id];
+    });
     Object.keys(porLugar).forEach(function (id) {
       var lg = lugares[id];
-      var q = proj([lg.lon, lg.lat]);
+      var regiao = !!lg.area;
+      // região: o nome fica dentro da área (centro, ou "rotulo" quando há outro lugar no meio)
+      var q = proj(regiao && lg.rotulo ? lg.rotulo : [lg.lon, lg.lat]);
       var g = svg("g", { "class": "mapa-lugar" }, svgEl);
+      if (regiao) {
+        var nomeR = svg("text", { "class": "mapa-nome mapa-nome-regiao" + (lg.incerto ? " incerto" : ""), x: 0, y: 4, "text-anchor": "middle" }, g);
+        nomeR.textContent = lg.nome;
+        nomeR.style.fill = lg.cor || "";
+        escalaveis.push({ el: g, x: q[0], y: q[1] });
+        lugaresNoMapa.push({ el: g, area: areas[id], poli: lg.area.map(proj), etapas: porLugar[id], x: q[0], y: q[1], nome: lg.nome, esq: false, ordem: lugaresNoMapa.length, ligado: true });
+        return;
+      }
       svg("circle", { r: 5, cx: 0, cy: 0 }, g);
       // o nome vai para a esquerda perto da borda direita, ou onde o lugar pedir (lado: "esq" ou "dir")
       var esquerda = lg.lado ? lg.lado === "esq" : q[0] > L * 0.7;
@@ -346,55 +428,90 @@
     });
   }
 
-  /* lista de rotas (caixas de seleção) */
+  /* texto do lugar ou da região, ao tocar nele */
 
-  // lugar mais próximo de um ponto (longitude, latitude)
-  function lugarPerto(p) {
-    var melhor = null;
-    var d0 = 1e9;
-    dados.lugares.forEach(function (l) {
-      var d = Math.pow(l.lon - p[0], 2) + Math.pow(l.lat - p[1], 2);
-      if (d < d0) {
-        d0 = d;
-        melhor = l;
-      }
+  function dentro(x, y, poli) {
+    var d = false;
+    for (var i = 0, j = poli.length - 1; i < poli.length; j = i++) {
+      var a = poli[i];
+      var b = poli[j];
+      if (a[1] > y !== b[1] > y && x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]) d = !d;
+    }
+    return d;
+  }
+
+  // (x, y) em unidades do mapa; k = unidades por pixel (o ponto e o nome têm tamanho fixo na tela)
+  function lugarSob(x, y, k) {
+    var achado = null;
+    var perto = 22 * k;
+    lugaresNoMapa.forEach(function (p) {
+      if (!p.ligado || p.poli) return;
+      var alvoX = p.esq ? p.x - 30 * k : p.x + 30 * k;
+      if (Math.abs(x - p.x) < perto && Math.abs(y - p.y) < perto) achado = achado || p;
+      else if (Math.abs(x - alvoX) < 40 * k && Math.abs(y - p.y) < 9 * k) achado = achado || p;
     });
-    return melhor;
+    if (achado) return achado;
+    lugaresNoMapa.forEach(function (p) {
+      if (p.ligado && p.poli && !achado && dentro(x, y, p.poli)) achado = p;
+    });
+    return achado;
   }
 
-  // "Origem → Destino", pelos extremos do caminho
-  function nomeDaRota(e) {
-    var a = lugarPerto(e.caminho[0]);
-    var b = lugarPerto(e.caminho[e.caminho.length - 1]);
-    return a && b && a !== b ? a.nome + " → " + b.nome : e.titulo;
+  var cartao = null;
+  function mostrarLugar(p) {
+    var quadro = document.querySelector(".mapa-quadro");
+    if (!quadro) return;
+    if (!cartao) {
+      cartao = document.createElement("div");
+      cartao.className = "mapa-cartao";
+      cartao.setAttribute("role", "status");
+      cartao.addEventListener("click", function (ev) {
+        if (ev.target.closest("[data-fechar]")) cartao.hidden = true;
+      });
+      quadro.appendChild(cartao);
+    }
+    if (!p) {
+      cartao.hidden = true;
+      return;
+    }
+    var h = '<button type="button" class="mapa-cartao-fechar" data-fechar aria-label="Fechar">×</button>';
+    var ligadas = p.etapas.filter(function (i) { return etapasLigadas[i]; });
+    (ligadas.length ? ligadas : p.etapas).forEach(function (i) {
+      var e = dados.etapas[i];
+      if (!e || !e.texto) return;
+      h += '<h2>' + esc(e.titulo) + (e.ref ? ' <span class="hud faint">' + esc(e.ref) + "</span>" : "") + "</h2><p>" + esc(e.texto) + "</p>";
+    });
+    cartao.innerHTML = h;
+    cartao.hidden = false;
+    cartao.scrollTop = 0;
   }
 
-  // só as etapas que têm rota entram na lista
+  /* lista de capítulos (caixas de seleção) */
+
+  // a lista é por capítulo: cada um liga ou desliga as rotas e os lugares dele
   function construirBarra() {
     var h = '<details class="mapa-grupo" data-grupo="mapa"><summary>' +
-      '<input type="checkbox" data-mestre="mapa" aria-label="Mostrar ou esconder todas as rotas">' +
-      '<span class="mapa-grupo-nome">Rotas</span><span class="hud faint" data-contagem="mapa"></span></summary><div class="mapa-itens">';
-    dados.etapas.forEach(function (e, i) {
-      if (rotas[i]) h += '<label class="mapa-item"><input type="checkbox" data-etapa="' + i + '"><span>' + esc(nomeDaRota(e)) + "</span></label>";
+      '<input type="checkbox" data-mestre="mapa" aria-label="Mostrar ou esconder todos os capítulos">' +
+      '<span class="mapa-grupo-nome">Capítulos</span><span class="hud faint" data-contagem="mapa"></span></summary><div class="mapa-itens">';
+    capitulos.forEach(function (c) {
+      h += '<label class="mapa-item"><input type="checkbox" data-cap="' + c + '"><span>Capítulo ' + c + "</span></label>";
     });
     h += "</div></details>";
     var barra = document.getElementById("mapa-barra");
     barra.innerHTML = h;
-    barra.hidden = !rotas.some(function (r) { return r; });
+    barra.hidden = capitulos.length < 2;
   }
 
   // põe cada caixa no estado certo (marcada, desmarcada ou "alguns") e atualiza a contagem
   function sincronizarBarra() {
     var barraEl = document.getElementById("mapa-barra");
     var n = 0;
-    var total = 0;
-    dados.etapas.forEach(function (e, i) {
-      if (!rotas[i]) return;
-      total++;
-      if (etapasLigadas[i]) n++;
-      var c = barraEl.querySelector('[data-etapa="' + i + '"]');
-      if (c) c.checked = !!etapasLigadas[i];
+    capitulos.forEach(function (c) {
+      if (capLigado[c]) n++;
+      var cx = barraEl.querySelector('[data-cap="' + c + '"]');
+      if (cx) cx.checked = !!capLigado[c];
     });
+    var total = capitulos.length;
     var mestre = barraEl.querySelector('[data-mestre="mapa"]');
     if (mestre) {
       mestre.checked = total > 0 && n === total;
@@ -404,18 +521,17 @@
     if (ca) ca.textContent = n + "/" + total;
   }
 
+  function aplicarCapitulos() {
+    dados.etapas.forEach(function (e, i) { etapasLigadas[i] = !!capLigado[e.cap]; });
+  }
+
   function marcar() {
     rotas.forEach(function (r, i) {
       if (!r) return;
       r.style.display = etapasLigadas[i] ? "" : "none";
-      r.seta.style.display = etapasLigadas[i] ? "" : "none";
+      r.setas.forEach(function (st) { st.el.style.display = etapasLigadas[i] ? "" : "none"; });
     });
-    // um lugar some só quando todas as suas rotas estão desligadas
-    lugaresNoMapa.forEach(function (p) {
-      var visivel = p.etapas.some(function (i) { return !rotas[i] || etapasLigadas[i]; });
-      p.el.style.display = visivel ? "" : "none";
-      p.ligado = visivel;
-    });
+    // cidades e regiões ficam sempre no mapa; o filtro de capítulos liga e desliga só as rotas
     filtrarLugares();
     sincronizarBarra();
   }
@@ -425,8 +541,9 @@
     barraEl.addEventListener("change", function (ev) {
       var cx = ev.target;
       if (!cx || cx.type !== "checkbox") return;
-      if (cx.hasAttribute("data-mestre")) dados.etapas.forEach(function (e, i) { etapasLigadas[i] = cx.checked; });
-      else etapasLigadas[parseInt(cx.getAttribute("data-etapa"), 10)] = cx.checked;
+      if (cx.hasAttribute("data-mestre")) capitulos.forEach(function (c) { capLigado[c] = cx.checked; });
+      else capLigado[cx.getAttribute("data-cap")] = cx.checked;
+      aplicarCapitulos();
       marcar();
     });
 
@@ -526,6 +643,9 @@
       // toque duplo no mapa (fora dos marcadores) amplia nesse ponto
       if (ev.type === "pointerup" && a && !a.mexeu && a.t && Date.now() - a.t < 300) {
         var agora = Date.now();
+        var rt = svgEl.getBoundingClientRect();
+        var kt = vb.w / rt.width;
+        mostrarLugar(lugarSob(vb.x + (ev.clientX - rt.left) * kt, vb.y + (ev.clientY - rt.top) * kt, kt));
         if (ultimoToque && agora - ultimoToque.t < 350 && Math.abs(ev.clientX - ultimoToque.x) + Math.abs(ev.clientY - ultimoToque.y) < 30) {
           var r = svgEl.getBoundingClientRect();
           var k = vb.w / r.width;
@@ -563,7 +683,15 @@
     raiz.innerHTML =
       '<div class="mapa-quadro"><div class="mapa-barra" id="mapa-barra"></div><div id="mapa-svg"></div></div>';
     document.getElementById("mapa-svg").appendChild(svgEl);
-    dados.etapas.forEach(function (e, i) { etapasLigadas[i] = true; });
+    // capítulos do material; ?cap=N (o capítulo que a pessoa está lendo) abre só com ele
+    dados.etapas.forEach(function (e, i) {
+      if (rotas[i] && capitulos.indexOf(e.cap) < 0) capitulos.push(e.cap); // só capítulos que têm rota
+    });
+    capitulos.sort(function (a, b) { return a - b; });
+    var pedido = /[?&]cap=(\d+)/.exec(location.search);
+    var so = pedido && capitulos.indexOf(Number(pedido[1])) >= 0 ? Number(pedido[1]) : null;
+    capitulos.forEach(function (c) { capLigado[c] = so === null || c === so; });
+    aplicarCapitulos();
     construirBarra();
     ligar();
     aplicar();
