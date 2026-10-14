@@ -1,15 +1,77 @@
 {
   "redirects": [
-    { "source": "/entrar.html", "destination": "/conta/" },
-    { "source": "/privacidade.html", "destination": "/privacidade/" },
-    { "source": "/biblia/index.html", "destination": "/linha-do-tempo/" },
-    { "source": "/biblia/biblia.html", "destination": "/biblia/" },
-    { "source": "/biblia/ler.html", "destination": "/biblia/" },
-    { "source": "/biblia/leitura.html", "destination": "/leitura/" },
-    { "source": "/biblia/plano-de-leitura.html", "destination": "/plano-de-leitura/" },
-    { "source": "/biblia/mapas.html", "destination": "/mapas/" },
-    { "source": "/biblia/materiais.html", "destination": "/mapas/" },
-    { "source": "/biblia/mapa.html", "destination": "/mapa/" },
-    { "source": "/biblia/apoio.html", "destination": "/mapa/" }
+    {
+      "source": "/entrar.html",
+      "destination": "/conta/"
+    },
+    {
+      "source": "/privacidade.html",
+      "destination": "/privacidade/"
+    },
+    {
+      "source": "/biblia/index.html",
+      "destination": "/linha-do-tempo/"
+    },
+    {
+      "source": "/biblia/biblia.html",
+      "destination": "/biblia/"
+    },
+    {
+      "source": "/biblia/ler.html",
+      "destination": "/biblia/"
+    },
+    {
+      "source": "/biblia/leitura.html",
+      "destination": "/leitura/"
+    },
+    {
+      "source": "/biblia/plano-de-leitura.html",
+      "destination": "/plano-de-leitura/"
+    },
+    {
+      "source": "/biblia/mapas.html",
+      "destination": "/mapas/"
+    },
+    {
+      "source": "/biblia/materiais.html",
+      "destination": "/mapas/"
+    },
+    {
+      "source": "/biblia/mapa.html",
+      "destination": "/mapa/"
+    },
+    {
+      "source": "/biblia/apoio.html",
+      "destination": "/mapa/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/((?!sw\\.js).*)\\.(json|css|js|svg)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/biblia/nvi.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
   ]
 }

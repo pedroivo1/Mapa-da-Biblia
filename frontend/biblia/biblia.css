@@ -44,6 +44,32 @@
   cursor: default;
 }
 
+.leitor-barra button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.leitor-icone {
+  flex: none;
+}
+
+@media (max-width: 640px) {
+  .leitor-barra {
+    flex-wrap: nowrap;
+    gap: 0.35rem;
+  }
+
+  .leitor-barra button {
+    padding: 0.45rem 0.55rem;
+  }
+
+  .leitor-bt-txt {
+    display: none;
+  }
+}
+
 .leitor-ref {
   font-weight: 500;
 }

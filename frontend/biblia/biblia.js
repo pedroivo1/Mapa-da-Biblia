@@ -207,6 +207,10 @@
     });
   }
 
+  var ICONE_SVG = '<svg class="leitor-icone" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
+  var ICONE_MAPA = ICONE_SVG + '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>';
+  var ICONE_CALENDARIO = ICONE_SVG + '<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
+
   function render() {
     var b = canon[pos.i];
     var doCapitulo = mapasDoCapitulo();
@@ -216,9 +220,8 @@
     var h = '<div class="leitor-barra">' +
       '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> ▾</button>" +
       '<span class="leitor-fonte">' +
-      (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog">Mapas (' + doCapitulo.length + ")</button>" : "") +
-      (voz ? '<button type="button" data-ouvir>' + (falando ? "Parar" : "Ouvir") + "</button>" : "") +
-      '<button type="button" data-leitura aria-haspopup="dialog">Marcar leitura</button>' +
+      (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog" aria-label="Mapas (' + doCapitulo.length + ')">' + ICONE_MAPA + '<span class="leitor-bt-txt">Mapas</span> (' + doCapitulo.length + ")</button>" : "") +
+      '<button type="button" data-leitura aria-haspopup="dialog" aria-label="Leitura">' + ICONE_CALENDARIO + '<span class="leitor-bt-txt">Leitura</span></button>' +
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
       '<button type="button" data-fonte="1" aria-label="Aumentar letra"' + (tam >= TAM_MAX ? " disabled" : "") + ">A+</button>" +
       "</span></div>";

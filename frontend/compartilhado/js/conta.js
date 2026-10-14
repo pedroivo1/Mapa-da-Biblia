@@ -35,6 +35,7 @@
   // cópia local do que está na conta (progresso e configurações): a página abre com ela e
   // o servidor só confirma ou atualiza em segundo plano
   var KEY_CACHE = "biblia-cache";
+  var TTL_CACHE = 5 * 60 * 1000; // cópia confirmada há menos que isso não reconsulta o banco
   var buscaProgresso = null;
   var buscaConfig = null;
   var buscaDe = null;
@@ -127,7 +128,7 @@
         var p = r.data
           ? { lido: r.data.lido || {}, versiculos: r.data.versiculos || {}, vazio: false }
           : { lido: {}, versiculos: {}, vazio: true };
-        if (!pendente && !enviando) cacheGravar({ progresso: { lido: p.lido, versiculos: p.versiculos } });
+        if (!pendente && !enviando) cacheGravar({ progresso: { lido: p.lido, versiculos: p.versiculos }, tp: Date.now() });
         return p;
       });
   }
@@ -149,7 +150,7 @@
           nova[k] = alteradas[k];
         });
         config = nova;
-        cacheGravar({ config: nova });
+        cacheGravar({ config: nova, tc: Date.now() });
         aplicarTema(nova);
         ouvintesConfig.forEach(function (cb) {
           cb(nova);
@@ -163,6 +164,15 @@
     if (!sb || !usuario || buscaDe === usuario.id) return;
     buscaDe = usuario.id;
     progressoLido = false;
+    // cópia recém-confirmada: usa direto, sem ir ao banco (uma página nova a cada clique não custa consulta)
+    var c = cacheLer();
+    var agora = Date.now();
+    if (c && c.progresso && c.config && !pendente && !enviando && agora - (c.tp || 0) < TTL_CACHE && agora - (c.tc || 0) < TTL_CACHE) {
+      config = c.config;
+      buscaProgresso = Promise.resolve({ lido: c.progresso.lido || {}, versiculos: c.progresso.versiculos || {}, vazio: false });
+      buscaConfig = Promise.resolve({ servidor: c.config, config: c.config });
+      return;
+    }
     buscaProgresso = lerProgresso();
     buscaConfig = lerConfig();
     buscaProgresso.catch(function () {});
@@ -432,6 +442,13 @@
     novaSenha: novaSenha,
     sair: sair
   };
+
+  // Service Worker (sw.js na raiz): páginas e dados abrem do cache, o leitor funciona sem rede
+  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("/sw.js").catch(function () {});
+    });
+  }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { pronto().then(montarNav); });
   else pronto().then(montarNav);
