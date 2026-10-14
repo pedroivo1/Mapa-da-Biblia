@@ -1,0 +1,152 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A reconstrução dos muros com",
+ "destaque": "Neemias.",
+ "subtitulo": "Mapa · Neemias 1 – 13",
+ "livro": "neemias",
+ "livroNome": "Neemias",
+ "capSomenteLivro": "neemias",
+ "aria": "Mapa-múndi com a viagem de Neemias de Susa a Jerusalém e a reconstrução dos muros",
+ "territorios": 445,
+ "vista": [
+  [
+   33.0,
+   29.5
+  ],
+  [
+   49.5,
+   37.0
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "susa",
+   "nome": "Susa",
+   "lon": 48.26,
+   "lat": 32.19,
+   "lado": "dir"
+  },
+  {
+   "id": "babilonia",
+   "nome": "Babilônia",
+   "lon": 44.42,
+   "lat": 32.54,
+   "lado": "dir"
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "persia",
+   "nome": "Pérsia",
+   "lon": 52.0,
+   "lat": 33.0,
+   "provincia": true
+  },
+  {
+   "id": "juda",
+   "nome": "Yehud (Judá)",
+   "lon": 35.1,
+   "lat": 31.6,
+   "provincia": true
+  },
+  {
+   "id": "samaria",
+   "nome": "Samaria",
+   "lon": 35.1,
+   "lat": 32.35,
+   "provincia": true
+  },
+  {
+   "id": "fenicia",
+   "nome": "Fenícia",
+   "lon": 35.5,
+   "lat": 33.6,
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "oracao",
+   "lugar": "susa",
+   "titulo": "A oração de Neemias em Susa",
+   "ref": "Ne 1–2:8",
+   "cap": 1,
+   "texto": "No mês de quisleu do vigésimo ano de Artaxerxes (445 a.C.), Neemias, copeiro do rei em Susa, recebe de Hanani a notícia de que o muro de Jerusalém está derrubado e as portas queimadas. Chora, jejua e ora vários dias (1:4). Quatro meses depois, o rei lhe pergunta por que está triste e lhe concede licença e cartas para os governadores."
+  },
+  {
+   "id": "viagem",
+   "lugar": "jerusalem",
+   "titulo": "A viagem de Susa a Jerusalém",
+   "ref": "Ne 2:9–11",
+   "cap": 2,
+   "texto": "Neemias parte com oficiais e cavaleiros do exército. Passa pelos governadores do outro lado do rio, entrega as cartas do rei e chega a Jerusalém, onde fica três dias. A viagem tem cerca de 1.500 km.",
+   "incerto": true,
+   "caminho": [
+    [
+     48.26,
+     32.19
+    ],
+    [
+     44.42,
+     32.54
+    ],
+    [
+     43.0,
+     33.8
+    ],
+    [
+     40.0,
+     34.5
+    ],
+    [
+     38.27,
+     34.55
+    ],
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "muros",
+   "lugar": "jerusalem",
+   "titulo": "A reconstrução dos muros",
+   "ref": "Ne 2:12 – 6:19",
+   "cap": 3,
+   "texto": "À noite, Neemias examina o muro e depois convoca o povo: “Levantemo-nos e edifiquemos” (2:18). Cada família trabalha em um trecho (cap. 3). Sambalate, Tobias e Gesém zombam e depois conspiram; a metade do povo constrói, e a outra metade fica armada (4:16). O muro é terminado em cinquenta e dois dias, no vinte e cinco de elul (6:15)."
+  },
+  {
+   "id": "leitura",
+   "lugar": "jerusalem",
+   "titulo": "A leitura da lei",
+   "ref": "Ne 8–10",
+   "cap": 8,
+   "texto": "No sétimo mês, todo o povo se reúne na praça diante da Porta das Águas, e Esdras lê a lei desde o amanhecer até o meio-dia. Os levitas explicam o sentido, e o povo chora; Neemias diz: “A alegria do Senhor é a vossa força” (8:10). Celebram a Festa dos Tabernáculos e fazem um compromisso por escrito."
+  },
+  {
+   "id": "reformas",
+   "lugar": "jerusalem",
+   "titulo": "Neemias volta e as reformas",
+   "ref": "Ne 13",
+   "cap": 13,
+   "texto": "Depois de doze anos como governador, Neemias volta ao rei, e depois retorna a Jerusalém. Descobre que Tobias ocupa uma sala do templo, que os levitas não foram sustentados e que o sábado é violado, e restabelece a ordem. Termina com a oração: “Lembra-te de mim, ó meu Deus, para o meu bem” (13:31)."
+  }
+ ]
+}

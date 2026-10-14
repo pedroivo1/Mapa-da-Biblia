@@ -14,7 +14,7 @@ Public static site ("Mapa da Bíblia") in plain HTML, CSS and JS. No build step,
 
 - `frontend/`: the published site (everything below). `vercel.json` lives there too.
 - `supabase/`: migrations (and Edge Functions, if any). Not published.
-- `scripts/`: dev tools (`verificar.mjs`). Not published.
+- `scripts/`: dev tools. Not published (Vercel serves only `frontend/`). `verificar.mjs`: smoke check. `mapa/`: Python generators (`territorios.py`, `roma.py`, `tremor.py`; need `shapely`) for `frontend/mapa/territorios-<ano>.json` and `roma.json`; hand-edited shapes go in `scripts/mapa/formas.json`. `editor-mapas.html`: local vertex editor for those shapes (`python3 -m http.server` at the repo root, open `/scripts/editor-mapas.html`); it must never be moved under `frontend/`.
 - `AGENTS.md`, `README.md`: docs.
 
 ## Architecture: vertical slices (inside `frontend/`)
@@ -57,3 +57,4 @@ The site is about the Bible. Each feature is a folder under `frontend/` (a slice
 - Colors are CSS variables in `compartilhado/css/base.css` with `[data-theme="light"]` / `[data-theme="dark"]` blocks. New colors need both. `compartilhado/js/tema.js` sets `data-theme` on `<html>`.
 - Every page repeats the same `<head>` (fonts, favicon, theme-color) and `<header class="nav">`. Every page loads supabase-js (pinned CDN), `/compartilhado/js/config.js`, `util.js` and `conta.js`, which injects the account menu into the nav. A nav or head change must be made in each slice's `index.html`: `index.html`, `biblia/`, `plano-de-leitura/`, `linha-do-tempo/`, `mapas/`, `mapa/`, `leitura/`, `conta/`, `privacidade/`. Paths are root-absolute.
 - Years: a.C. is positive and d.C. is negative. `inicio` is always the older (larger) year.
+- Borders and territories (provinces in `mapa/roma.json`, peoples in `mapa/territorios-<ano>.json`, hand-drawn regions): **straight lines only**, never curves, arcs or rounded buffers. For realism add a deterministic "tremor": every edge becomes a polyline of short straight segments (~0.35° each) displaced perpendicular by a small, repeatable amount (~0.045°). The same edge must produce the same points in either direction, so neighbours share the border exactly. Where a territory meets the coast it follows the coast of `mundo.json` exactly (no simplifying, no gaps). When generating or editing these shapes with buffers, use mitre joins (`join_style=2`). Territories never overlap: where two peoples/provinces meet, one cuts the other by a fixed priority and the shared edge is drawn once.

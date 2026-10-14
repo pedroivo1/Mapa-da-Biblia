@@ -396,6 +396,91 @@
     }
    ],
    "ano": 930
+  },
+  {
+   "id": "assiria",
+   "titulo": "A Assíria e o fim de Israel",
+   "tipo": "Mapa",
+   "ref": "2Rs 15–19",
+   "resumo": "De Nínive à Galileia, a Damasco e Samaria, e a invasão de Senaqueribe: Laquis e o cerco de Jerusalém.",
+   "url": "/mapa/?m=assiria",
+   "capitulos": [
+    {
+     "livro": "2reis",
+     "de": 15,
+     "ate": 19
+    },
+    {
+     "livro": "isaias",
+     "de": 36,
+     "ate": 37
+    }
+   ],
+   "ano": 735
+  },
+  {
+   "id": "jonas",
+   "titulo": "A fuga de Jonas",
+   "tipo": "Mapa",
+   "ref": "Jn 1–4",
+   "resumo": "De Gate-Hefer a Jope, ao navio para Társis e à tempestade, e depois a Nínive.",
+   "url": "/mapa/?m=jonas",
+   "capitulos": [
+    {
+     "livro": "jonas",
+     "de": 1,
+     "ate": 4
+    }
+   ],
+   "ano": 780
+  },
+  {
+   "id": "exilio-babilonia",
+   "titulo": "O exílio na Babilônia",
+   "tipo": "Mapa",
+   "ref": "2Rs 24–25",
+   "resumo": "De Jerusalém a Ribla e à Babilônia: Joaquim, Zedequias, Ezequiel no Quebar, Daniel, e a fuga para o Egito.",
+   "url": "/mapa/?m=exilio-babilonia",
+   "capitulos": [
+    {
+     "livro": "2reis",
+     "de": 24,
+     "ate": 25
+    }
+   ],
+   "ano": 586
+  },
+  {
+   "id": "esdras",
+   "titulo": "O retorno com Zorobabel e Esdras",
+   "tipo": "Mapa",
+   "ref": "Ed 1–10",
+   "resumo": "Do edito de Ciro em Susa ao retorno de Zorobabel, o decreto de Ecbátana e a subida de Esdras.",
+   "url": "/mapa/?m=esdras",
+   "capitulos": [
+    {
+     "livro": "esdras",
+     "de": 1,
+     "ate": 10
+    }
+   ],
+   "ano": 538
+  },
+  {
+   "id": "neemias",
+   "titulo": "Neemias e os muros de Jerusalém",
+   "tipo": "Mapa",
+   "ref": "Ne 1–13",
+   "resumo": "De Susa a Jerusalém, e a reconstrução dos muros, a leitura da lei e as reformas.",
+   "url": "/mapa/?m=neemias",
+   "capitulos": [
+    {
+     "livro": "neemias",
+     "de": 1,
+     "ate": 13
+    }
+   ],
+   "ano": 445
   }
  ]
 }

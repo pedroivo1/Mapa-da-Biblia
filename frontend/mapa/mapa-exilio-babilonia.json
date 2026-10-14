@@ -1,0 +1,254 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O exílio na",
+ "destaque": "Babilônia.",
+ "subtitulo": "Mapa · 2 Reis 24 – 25 (com Jeremias, Ezequiel e Daniel)",
+ "livro": "2reis",
+ "livroNome": "2 Reis",
+ "capSomenteLivro": "2reis",
+ "aria": "Mapa-múndi com o exílio de Judá: Jerusalém, Ribla, Babilônia, o rio Quebar e Susa",
+ "territorios": 586,
+ "vista": [
+  [
+   32.0,
+   29.5
+  ],
+  [
+   49.5,
+   37.0
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "jerico",
+   "nome": "Planícies de Jericó",
+   "lon": 35.44,
+   "lat": 31.87,
+   "lado": "dir"
+  },
+  {
+   "id": "mispa",
+   "nome": "Mispá",
+   "lon": 35.21,
+   "lat": 31.89,
+   "lado": "esq"
+  },
+  {
+   "id": "ribla",
+   "nome": "Ribla",
+   "lon": 36.7,
+   "lat": 34.4,
+   "lado": "dir"
+  },
+  {
+   "id": "carquemis",
+   "nome": "Carquemis",
+   "lon": 38.0,
+   "lat": 36.83,
+   "lado": "dir"
+  },
+  {
+   "id": "babilonia-c",
+   "nome": "Babilônia",
+   "lon": 44.42,
+   "lat": 32.54,
+   "lado": "dir"
+  },
+  {
+   "id": "quebar",
+   "nome": "Rio Quebar",
+   "lon": 45.2,
+   "lat": 32.1,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "susa",
+   "nome": "Susa",
+   "lon": 48.26,
+   "lat": 32.19,
+   "lado": "dir"
+  },
+  {
+   "id": "tafnes",
+   "nome": "Tafnes",
+   "lon": 32.2,
+   "lat": 30.9,
+   "lado": "esq",
+   "incerto": true
+  },
+  {
+   "id": "babilonia",
+   "nome": "Babilônia (império)",
+   "lon": 43.0,
+   "lat": 33.0,
+   "provincia": true
+  },
+  {
+   "id": "elao",
+   "nome": "Elão",
+   "lon": 48.5,
+   "lat": 31.5,
+   "provincia": true
+  },
+  {
+   "id": "egito",
+   "nome": "Egito",
+   "lon": 31.25,
+   "lat": 29.85,
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "carquemis",
+   "lugar": "carquemis",
+   "titulo": "Carquemis: Babilônia vence o Egito",
+   "ref": "2Rs 24:7; Jr 46:2",
+   "cap": 24,
+   "texto": "Em Carquemis, junto ao Eufrates, Nabucodonosor derrota o faraó Neco (605 a.C.). Em seguida, “o rei do Egito não tornou a sair da sua terra, porque o rei da Babilônia tomara tudo o que era do rei do Egito, desde o rio do Egito até o rio Eufrates” (24:7).",
+   "incerto": true,
+   "caminho": [
+    [
+     44.42,
+     32.54
+    ],
+    [
+     41.0,
+     34.5
+    ],
+    [
+     38.0,
+     36.83
+    ]
+   ]
+  },
+  {
+   "id": "primeira",
+   "lugar": "babilonia-c",
+   "titulo": "O primeiro cativeiro: Joaquim e Daniel",
+   "ref": "2Rs 24:10–17; Dn 1:1–7",
+   "cap": 24,
+   "texto": "Nabucodonosor sobe a Jerusalém e leva Joaquim, a mãe do rei, os nobres e dez mil homens, entre eles os artesãos e ferreiros (24:14). Também já em 605 a.C., Daniel e seus três companheiros são levados à Babilônia, e ali recebem nomes babilônicos (Dn 1:6–7).",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     36.0,
+     33.5
+    ],
+    [
+     36.7,
+     34.4
+    ],
+    [
+     38.3,
+     34.55
+    ],
+    [
+     41.0,
+     34.5
+    ],
+    [
+     44.42,
+     32.54
+    ]
+   ]
+  },
+  {
+   "id": "ezequiel",
+   "lugar": "quebar",
+   "titulo": "Ezequiel junto ao rio Quebar",
+   "ref": "Ez 1:1–3",
+   "cap": 25,
+   "texto": "No quinto ano do cativeiro do rei Joaquim, entre os exilados, junto ao rio Quebar, os céus se abrem e Ezequiel vê visões de Deus. O Quebar era um canal do Eufrates perto de Nipur, na Mesopotâmia (cerca de 90 km da Babilônia).",
+   "incerto": true
+  },
+  {
+   "id": "queda",
+   "lugar": "jerico",
+   "titulo": "A queda de Jerusalém e Zedequias em Ribla",
+   "ref": "2Rs 25:1–7",
+   "cap": 25,
+   "texto": "No décimo ano de Zedequias, Nabucodonosor cerca Jerusalém por dezoito meses; o muro é rompido em 586 a.C. Zedequias foge de noite, mas é alcançado nas planícies de Jericó e levado a Ribla, onde veem seus filhos mortos, e ele fica cego e preso com cadeias de bronze para a Babilônia.",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.44,
+     31.87
+    ],
+    [
+     35.6,
+     32.8
+    ],
+    [
+     36.2,
+     33.9
+    ],
+    [
+     36.7,
+     34.4
+    ],
+    [
+     38.3,
+     34.55
+    ],
+    [
+     41.0,
+     34.5
+    ],
+    [
+     44.42,
+     32.54
+    ]
+   ]
+  },
+  {
+   "id": "gedalias",
+   "lugar": "mispa",
+   "titulo": "Gedalias em Mispá",
+   "ref": "2Rs 25:22–26; Jr 40–41",
+   "cap": 25,
+   "texto": "Nabucodonosor nomeia Gedalias governador em Mispá. Ismael o assassina, e o povo, com medo, foge para o Egito, levando Jeremias contra a sua vontade (Jr 43:6–7). Chegam a Tafnes, no Egito, onde Jeremias continua a profetizar.",
+   "incerto": true,
+   "caminho": [
+    [
+     35.21,
+     31.89
+    ],
+    [
+     34.7,
+     31.4
+    ],
+    [
+     33.5,
+     31.0
+    ],
+    [
+     32.2,
+     30.9
+    ]
+   ]
+  },
+  {
+   "id": "daniel",
+   "lugar": "babilonia-c",
+   "titulo": "Daniel na corte da Babilônia",
+   "ref": "Dn 1–6",
+   "cap": 25,
+   "texto": "Daniel serve na corte de Nabucodonosor, interpreta o sonho da estátua (Dn 2), sobrevive à cova dos leões sob Dario (Dn 6) e vê visões de reinos. Em Dn 8:2 ele está em Susa, capital do Elão, junto ao rio Ulai."
+  }
+ ]
+}

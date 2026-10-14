@@ -318,6 +318,22 @@
   /* províncias e fronteira do Império Romano (roma.json), no ano de "imperio" */
 
   var PALETA_PROVINCIAS = ["#d9a21e", "#6fa05a", "#3b82c4", "#a05cd0", "#c0652d", "#14a58a"];
+  // cor fixa de cada território ou província (a mesma em qualquer mapa e em qualquer ano)
+  var CORES_REGIAO = {
+    egito: "#d9a21e", cuxe: "#b5753c", sumer: "#2563eb", babilonia: "#2563eb", assiria: "#7c3aed", elao: "#0ea5e9",
+    hititas: "#6b7280", aram: "#3b82c4", "aram-hara": "#38bdf8", canaa: "#84cc16", "israel-unido": "#f97316",
+    israel: "#f97316", juda: "#14a58a", filistia: "#c0652d", fenicia: "#a855f7", moabe: "#8b5cf6", amom: "#d23a4a",
+    edom: "#d946ef", seir: "#d946ef", midia: "#b45309", basa: "#2e9e5b",
+    media: "#65a30d", persia: "#7e22ce", samaria: "#c2410c",
+    macedonia: "#3b82c4", acaia: "#d23a4a", asia: "#2e9e5b", galacia: "#8b5cf6", cilicia: "#e08a1e", chipre: "#14a58a"
+  };
+
+  function corRegiao(id) {
+    if (CORES_REGIAO[id]) return CORES_REGIAO[id];
+    var h = 0;
+    for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 9973;
+    return PALETA_PROVINCIAS[h % PALETA_PROVINCIAS.length];
+  }
   var provincias = []; // [{nome, aneis (no SVG), polys, texto, cor}] das desenhadas
   var provSel = null;
 
@@ -346,7 +362,7 @@
       t.style.display = "none";
       escalaveis.push({ el: t, x: q[0], y: q[1] });
       provincias.push({
-        id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: PALETA_PROVINCIAS[k % PALETA_PROVINCIAS.length],
+        id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: corRegiao(pr.id),
         aneis: pr.aneis.map(function (a) { return a.map(proj); }), citada: citada(pr)
       });
     });
@@ -383,7 +399,7 @@
       t.style.display = "none";
       escalaveis.push({ el: t, x: q[0], y: q[1] });
       provincias.push({
-        id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: PALETA_PROVINCIAS[k % PALETA_PROVINCIAS.length],
+        id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: corRegiao(pr.id),
         aneis: pr.aneis.map(function (a) { return a.map(proj); }), citada: citada(pr)
       });
     });
@@ -476,18 +492,23 @@
         if (!pr || !pr.aneis.length) return;
         var com = pr.aneis.filter(function (a) { return dentro(lg.lon, lg.lat, a); })[0];
         lg.area = com || pr.aneis.slice().sort(function (x, y) { return y.length - x.length; })[0];
+        // as outras partes da província (ilhas) também ficam destacadas
+        lg.extras = lg.soAnel ? [] : pr.aneis.filter(function (a) { return a !== lg.area; });
       });
     }
     var areas = {};
     dados.lugares.forEach(function (lg) {
       if (!lg.area) return;
-      var cor = lg.cor || "#e0348c";
+      var cor = (lg.provincia && CORES_REGIAO[lg.provincia === true ? lg.id : lg.provincia]) || lg.cor || "#e0348c";
       areas[lg.id] = svg("polygon", {
         "class": "mapa-regiao" + (lg.incerto ? " incerto" : ""),
         points: pontos(lg.area),
         fill: cor,
         stroke: cor
       }, svgEl);
+      (lg.extras || []).forEach(function (a) {
+        svg("polygon", { "class": "mapa-regiao" + (lg.incerto ? " incerto" : ""), points: pontos(a), fill: cor, stroke: cor }, svgEl);
+      });
     });
 
     // rotas tracejadas, com setas de direção (a quantidade acompanha o zoom)

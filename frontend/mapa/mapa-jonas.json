@@ -1,0 +1,176 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A fuga de",
+ "destaque": "Jonas.",
+ "subtitulo": "Mapa · Jonas 1 – 4",
+ "livro": "jonas",
+ "livroNome": "Jonas",
+ "aria": "Mapa-múndi com o caminho de Jonas, de Jope a Társis e a Nínive",
+ "territorios": 780,
+ "vista": [
+  [
+   4.0,
+   30.0
+  ],
+  [
+   45.0,
+   41.0
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "gate",
+   "nome": "Gate-Hefer",
+   "lon": 35.32,
+   "lat": 32.77,
+   "lado": "dir"
+  },
+  {
+   "id": "jope",
+   "nome": "Jope",
+   "lon": 34.75,
+   "lat": 32.05,
+   "lado": "dir"
+  },
+  {
+   "id": "tarsis",
+   "nome": "Társis",
+   "lon": 6.2,
+   "lat": 36.9,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "tempestade",
+   "nome": "O mar e o grande peixe",
+   "lon": 29.0,
+   "lat": 34.3,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "ninive",
+   "nome": "Nínive",
+   "lon": 43.15,
+   "lat": 36.36,
+   "lado": "dir"
+  },
+  {
+   "id": "assiria",
+   "nome": "Assíria",
+   "lon": 43.0,
+   "lat": 36.0,
+   "provincia": true
+  },
+  {
+   "id": "aram",
+   "nome": "Aram (Síria)",
+   "lon": 37.0,
+   "lat": 34.5,
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "chamado",
+   "lugar": "gate",
+   "titulo": "A palavra do Senhor a Jonas",
+   "ref": "Jn 1:1–3",
+   "cap": 1,
+   "texto": "Jonas, filho de Amitai, de Gate-Hefer, na Galileia (2Rs 14:25), recebe a ordem de ir a Nínive, a grande cidade, e clamar contra ela. Ele foge, descendo a Jope, e, achando um navio que ia para Társis, paga a passagem e embarca “para fugir da presença do Senhor”.",
+   "caminho": [
+    [
+     35.32,
+     32.77
+    ],
+    [
+     35.0,
+     32.4
+    ],
+    [
+     34.75,
+     32.05
+    ]
+   ]
+  },
+  {
+   "id": "fuga",
+   "lugar": "tarsis",
+   "titulo": "A fuga para Társis",
+   "ref": "Jn 1:3",
+   "cap": 1,
+   "texto": "Társis é o ponto mais distante que um israelita podia imaginar, no extremo ocidente. Muitos a identificam com Tartesso, no sul da Espanha (Gn 10:4; 1Rs 10:22). Jonas foge na direção oposta à de Nínive, que ficava a leste.",
+   "incerto": true,
+   "caminho": [
+    [
+     34.75,
+     32.05
+    ],
+    [
+     30.0,
+     34.0
+    ],
+    [
+     22.0,
+     35.8
+    ],
+    [
+     14.0,
+     36.8
+    ],
+    [
+     6.2,
+     36.9
+    ]
+   ]
+  },
+  {
+   "id": "peixe",
+   "lugar": "tempestade",
+   "titulo": "A tempestade e o grande peixe",
+   "ref": "Jn 1:4 – 2:10",
+   "cap": 2,
+   "texto": "O Senhor lança um grande vento sobre o mar, e a tripulação sorteia quem é o culpado. Jonas diz: “Tomai-me e lançai-me ao mar” (1:12). Um grande peixe o engole, e ele fica três dias e três noites no ventre dele, orando; no terceiro dia, o peixe o vomita em terra seca (2:10).",
+   "incerto": true
+  },
+  {
+   "id": "ninive",
+   "lugar": "ninive",
+   "titulo": "O caminho de Nínive",
+   "ref": "Jn 3",
+   "cap": 3,
+   "texto": "Pela segunda vez a palavra do Senhor vem a Jonas, e ele vai a Nínive, “cidade grande em extremo, de três dias de jornada”. Anuncia: “Ainda quarenta dias, e Nínive será subvertida” (3:4). O rei e o povo se arrependem, com jejum e pano de saco, e Deus se arrepende do mal que dissera que faria.",
+   "incerto": true,
+   "caminho": [
+    [
+     34.75,
+     32.05
+    ],
+    [
+     35.5,
+     33.5
+    ],
+    [
+     37.5,
+     35.5
+    ],
+    [
+     40.0,
+     36.5
+    ],
+    [
+     43.15,
+     36.36
+    ]
+   ]
+  },
+  {
+   "id": "fora",
+   "lugar": "ninive",
+   "titulo": "Jonas fora da cidade",
+   "ref": "Jn 4",
+   "cap": 4,
+   "texto": "Jonas se irrita com a misericórdia de Deus, sai da cidade e faz uma cabana ao oriente, para ver o que acontece. Deus faz crescer uma planta que lhe dá sombra, e depois um verme a seca. O livro termina com a pergunta de Deus: “Não hei de eu ter compaixão de Nínive, a grande cidade?” (4:11)."
+  }
+ ]
+}

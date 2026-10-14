@@ -1,0 +1,270 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "A Assíria e o fim de",
+ "destaque": "Israel.",
+ "subtitulo": "Mapa · 2 Reis 15 – 19 (com Isaías 36–37)",
+ "livro": "2reis",
+ "livroNome": "2 Reis",
+ "capSomenteLivro": "2reis",
+ "aria": "Mapa-múndi com a Assíria e a queda de Israel: Nínive, Damasco, Samaria, Hazor, Laquis e Jerusalém",
+ "territorios": 735,
+ "vista": [
+  [
+   34.0,
+   31.0
+  ],
+  [
+   44.5,
+   37.5
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "ninive",
+   "nome": "Nínive",
+   "lon": 43.15,
+   "lat": 36.36,
+   "lado": "dir"
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "hazor",
+   "nome": "Hazor",
+   "lon": 35.57,
+   "lat": 33.02,
+   "lado": "dir"
+  },
+  {
+   "id": "samaria",
+   "nome": "Samaria",
+   "lon": 35.2,
+   "lat": 32.28,
+   "lado": "esq"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "dir"
+  },
+  {
+   "id": "laquis",
+   "nome": "Laquis",
+   "lon": 34.85,
+   "lat": 31.56,
+   "lado": "esq"
+  },
+  {
+   "id": "gozan",
+   "nome": "Gozã (Habor)",
+   "lon": 40.03,
+   "lat": 36.83,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "assiria",
+   "nome": "Assíria",
+   "lon": 43.0,
+   "lat": 36.0,
+   "provincia": true
+  },
+  {
+   "id": "aram",
+   "nome": "Aram (Síria)",
+   "lon": 37.0,
+   "lat": 34.5,
+   "provincia": true
+  },
+  {
+   "id": "israel",
+   "nome": "Israel (norte)",
+   "lon": 35.3,
+   "lat": 32.7,
+   "provincia": true
+  },
+  {
+   "id": "juda",
+   "nome": "Judá",
+   "lon": 35.0,
+   "lat": 31.55,
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "galileia",
+   "lugar": "hazor",
+   "titulo": "Tiglate-Pileser toma o norte de Israel",
+   "ref": "2Rs 15:29",
+   "cap": 15,
+   "texto": "No tempo de Peca, rei de Israel, Tiglate-Pileser III, rei da Assíria, toma Ijom, Abel-Bete-Maaca, Janoa, Quedes, Hazor, Galaade e a Galileia, toda a terra de Naftali, e leva o povo cativo para a Assíria. É a primeira deportação do reino do norte (734 a.C.).",
+   "incerto": true,
+   "caminho": [
+    [
+     43.15,
+     36.36
+    ],
+    [
+     40.0,
+     36.8
+    ],
+    [
+     37.0,
+     36.0
+    ],
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.57,
+     33.02
+    ]
+   ]
+  },
+  {
+   "id": "damasco",
+   "lugar": "damasco",
+   "titulo": "Acaz pede ajuda e Damasco cai",
+   "ref": "2Rs 16:5–10",
+   "cap": 16,
+   "texto": "Rezim, de Aram, e Peca, de Israel, atacam Judá. Acaz manda prata e ouro do templo a Tiglate-Pileser, que sobe contra Damasco, a toma e mata Rezim (732 a.C.). Acaz vai a Damasco encontrar o rei assírio e vê ali um altar, cujo modelo manda copiar para Jerusalém (16:10–11).",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     35.5,
+     32.5
+    ],
+    [
+     36.0,
+     33.2
+    ],
+    [
+     36.3,
+     33.5
+    ]
+   ]
+  },
+  {
+   "id": "samaria",
+   "lugar": "samaria",
+   "titulo": "A queda de Samaria",
+   "ref": "2Rs 17:1–6",
+   "cap": 17,
+   "texto": "Oseias, último rei de Israel, tenta uma aliança com o Egito. Salmaneser V cerca Samaria por três anos, e a cidade cai no nono ano de Oseias (722 a.C.). O rei da Assíria leva Israel para Hala, junto ao Habor, rio de Gozã, e para as cidades dos medos (17:6).",
+   "incerto": true,
+   "caminho": [
+    [
+     35.2,
+     32.28
+    ],
+    [
+     36.0,
+     33.4
+    ],
+    [
+     38.0,
+     36.0
+    ],
+    [
+     40.03,
+     36.83
+    ]
+   ]
+  },
+  {
+   "id": "laquis",
+   "lugar": "laquis",
+   "titulo": "Senaqueribe invade Judá",
+   "ref": "2Rs 18:13–17",
+   "cap": 18,
+   "texto": "No décimo quarto ano de Ezequias, Senaqueribe sobe contra todas as cidades fortificadas de Judá e as toma (701 a.C.). Ezequias envia a Laquis o tributo, trinta talentos de ouro e trezentos de prata, e despoja o templo (18:14–16). Os relevos de Nínive mostram o cerco de Laquis.",
+   "incerto": true,
+   "caminho": [
+    [
+     43.15,
+     36.36
+    ],
+    [
+     40.0,
+     36.8
+    ],
+    [
+     37.0,
+     35.5
+    ],
+    [
+     36.0,
+     33.0
+    ],
+    [
+     35.0,
+     31.9
+    ],
+    [
+     34.85,
+     31.56
+    ]
+   ]
+  },
+  {
+   "id": "cerco",
+   "lugar": "jerusalem",
+   "titulo": "O cerco de Jerusalém",
+   "ref": "2Rs 18:17–19:34; Is 36–37",
+   "cap": 19,
+   "texto": "O Rabsaqué se põe junto ao aqueduto, fala em hebraico ao povo sobre os muros e zomba do Senhor (18:19–35). Ezequias estende a carta diante do Senhor e ora; Isaías anuncia que Senaqueribe não entrará na cidade nem lançará flecha contra ela (19:32–33).",
+   "caminho": [
+    [
+     34.85,
+     31.56
+    ],
+    [
+     35.0,
+     31.65
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "volta",
+   "lugar": "ninive",
+   "titulo": "O anjo e a volta a Nínive",
+   "ref": "2Rs 19:35–37",
+   "cap": 19,
+   "texto": "Naquela noite, o anjo do Senhor fere 185 mil homens no acampamento assírio. Senaqueribe levanta acampamento, volta e fica em Nínive, onde, mais tarde, é morto por seus filhos no templo de Nisroque (19:35–37).",
+   "caminho": [
+    [
+     35.235,
+     31.778
+    ],
+    [
+     36.0,
+     33.5
+    ],
+    [
+     38.0,
+     36.0
+    ],
+    [
+     43.15,
+     36.36
+    ]
+   ]
+  }
+ ]
+}

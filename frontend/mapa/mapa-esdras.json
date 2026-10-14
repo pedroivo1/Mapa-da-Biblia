@@ -1,0 +1,200 @@
+{
+ "mundo": "mundo.json",
+ "titulo": "O retorno com",
+ "destaque": "Zorobabel e Esdras.",
+ "subtitulo": "Mapa · Esdras 1 – 10",
+ "livro": "esdras",
+ "livroNome": "Esdras",
+ "capSomenteLivro": "esdras",
+ "aria": "Mapa-múndi com o retorno dos exilados da Babilônia a Jerusalém, sob o domínio persa",
+ "territorios": 458,
+ "vista": [
+  [
+   33.0,
+   29.5
+  ],
+  [
+   49.5,
+   37.0
+  ]
+ ],
+ "lugares": [
+  {
+   "id": "babilonia",
+   "nome": "Babilônia",
+   "lon": 44.42,
+   "lat": 32.54,
+   "lado": "dir"
+  },
+  {
+   "id": "susa",
+   "nome": "Susa",
+   "lon": 48.26,
+   "lat": 32.19,
+   "lado": "dir"
+  },
+  {
+   "id": "ecbatana",
+   "nome": "Ecbátana",
+   "lon": 48.5,
+   "lat": 34.8,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "tadmor",
+   "nome": "Tadmor",
+   "lon": 38.27,
+   "lat": 34.55,
+   "lado": "dir",
+   "incerto": true
+  },
+  {
+   "id": "damasco",
+   "nome": "Damasco",
+   "lon": 36.3,
+   "lat": 33.5,
+   "lado": "dir"
+  },
+  {
+   "id": "jerusalem",
+   "nome": "Jerusalém",
+   "lon": 35.235,
+   "lat": 31.778,
+   "lado": "esq"
+  },
+  {
+   "id": "persia",
+   "nome": "Pérsia",
+   "lon": 52.0,
+   "lat": 33.0,
+   "provincia": true
+  },
+  {
+   "id": "juda",
+   "nome": "Yehud (Judá)",
+   "lon": 35.1,
+   "lat": 31.6,
+   "provincia": true
+  },
+  {
+   "id": "samaria",
+   "nome": "Samaria",
+   "lon": 35.1,
+   "lat": 32.35,
+   "provincia": true
+  },
+  {
+   "id": "fenicia",
+   "nome": "Fenícia",
+   "lon": 35.5,
+   "lat": 33.6,
+   "provincia": true
+  }
+ ],
+ "etapas": [
+  {
+   "id": "edito",
+   "lugar": "susa",
+   "titulo": "O edito de Ciro",
+   "ref": "Ed 1:1–4",
+   "cap": 1,
+   "texto": "No primeiro ano de Ciro, rei da Pérsia (538 a.C.), o Senhor move o espírito dele a proclamar em todo o reino: “O Senhor, Deus dos céus, deu-me todos os reinos da terra e me encarregou de edificar-lhe uma casa em Jerusalém” (1:2). Quem quiser pode subir, e os que ficam ajudam com prata, ouro e gado. Ciro devolve os utensílios que Nabucodonosor tirara do templo (1:7–8)."
+  },
+  {
+   "id": "zorobabel",
+   "lugar": "jerusalem",
+   "titulo": "A subida de Zorobabel e Jesua",
+   "ref": "Ed 1:5 – 2:70",
+   "cap": 2,
+   "texto": "Chefes de famílias de Judá, Benjamim, sacerdotes e levitas sobem sob a liderança de Zorobabel, descendente de Davi, e de Jesua, o sacerdote. O total é de 42.360, fora servos e servas (2:64–65). Chegando a Jerusalém, fazem ofertas voluntárias para a casa de Deus.",
+   "incerto": true,
+   "caminho": [
+    [
+     44.42,
+     32.54
+    ],
+    [
+     43.0,
+     33.8
+    ],
+    [
+     40.0,
+     34.5
+    ],
+    [
+     38.27,
+     34.55
+    ],
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "templo",
+   "lugar": "jerusalem",
+   "titulo": "O templo reconstruído",
+   "ref": "Ed 3–6",
+   "cap": 3,
+   "texto": "No sétimo mês, levantam o altar sobre os alicerces e restabelecem os holocaustos; no segundo ano, lançam o fundamento do templo, com louvores e choro de velhos que haviam visto o primeiro (3:11–13). Os inimigos de Judá e Benjamim fazem parar a obra, mas Ageu e Zacarias a reanimam; o templo é concluído no sexto ano de Dario, 516 a.C. (6:15)."
+  },
+  {
+   "id": "ecbatana",
+   "lugar": "ecbatana",
+   "titulo": "O decreto achado em Ecbátana",
+   "ref": "Ed 6:1–12",
+   "cap": 6,
+   "texto": "O rei Dario manda procurar nos arquivos da Babilônia e, em Ecbátana, na província dos medos, encontra um rolo com o edito de Ciro. Dario ordena que as despesas do templo sejam pagas do tesouro real e que qualquer um que altere o decreto seja pendurado numa viga de sua própria casa.",
+   "incerto": true
+  },
+  {
+   "id": "esdras",
+   "lugar": "jerusalem",
+   "titulo": "Esdras sobe a Jerusalém",
+   "ref": "Ed 7–8",
+   "cap": 7,
+   "texto": "No sétimo ano de Artaxerxes (458 a.C.), Esdras, sacerdote e escriba, sobe da Babilônia com uma carta do rei e muitas famílias. Reúnem-se junto ao rio Aava, jejuam e oram para ter caminho seguro, sem escolta (8:21–23). Chegam a Jerusalém no quinto mês, “segundo a boa mão de seu Deus sobre ele” (7:9).",
+   "incerto": true,
+   "caminho": [
+    [
+     44.42,
+     32.54
+    ],
+    [
+     43.0,
+     33.8
+    ],
+    [
+     40.0,
+     34.5
+    ],
+    [
+     38.27,
+     34.55
+    ],
+    [
+     36.3,
+     33.5
+    ],
+    [
+     35.235,
+     31.778
+    ]
+   ]
+  },
+  {
+   "id": "casamentos",
+   "lugar": "jerusalem",
+   "titulo": "Os casamentos com povos da terra",
+   "ref": "Ed 9–10",
+   "cap": 9,
+   "texto": "Esdras rasga as vestes e se prostra com a notícia dos casamentos mistos, e o povo reconhece o pecado e decide despedir as mulheres estrangeiras e os filhos nascidos delas (10:3). A lista de nomes fecha o livro (10:18–44)."
+  }
+ ]
+}
