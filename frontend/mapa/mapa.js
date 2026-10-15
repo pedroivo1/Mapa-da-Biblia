@@ -30,47 +30,33 @@
     return el;
   }
 
-  // projeções: "mercator" ou "equal-earth" (Equal Earth, de Šavrič, Patterson e Jenny: preserva as áreas)
-  var EE_A1 = 1.340264;
-  var EE_A2 = -0.081106;
-  var EE_A3 = 0.000893;
-  var EE_A4 = 0.003796;
-  var EE_M = Math.sqrt(3) / 2;
-
+  // projeções: "mercator" ou "equal-earth" (Equal Earth está em compartilhado/js/projecao.js)
   function merc(lat) {
     return Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
   }
 
-  // Equal Earth: devolve [x, y] com x para leste e y para o norte (em radianos de esfera unitária)
-  function equalEarth(lon, lat) {
-    var l = (lon * Math.PI) / 180;
-    var t = Math.asin(EE_M * Math.sin((lat * Math.PI) / 180));
-    var t2 = t * t;
-    var t6 = t2 * t2 * t2;
-    var x = (2 * Math.sqrt(3) * l * Math.cos(t)) / (3 * (EE_A1 + 3 * EE_A2 * t2 + t6 * (7 * EE_A3 + 9 * EE_A4 * t2)));
-    var y = t * (EE_A1 + EE_A2 * t2 + t6 * (EE_A3 + EE_A4 * t2));
-    return [x, y];
-  }
+  var projEE = null; // Projecao.criar do mapa aberto (mesma largura e latitudes), guardada entre chamadas
 
-  var EE_XMAX = equalEarth(180, 0)[0];
+  function equalEarthDe(m) {
+    if (!projEE || projEE.largura !== m.largura || projEE.lat1 !== m.lat[1] || projEE.lat0 !== m.lat[0]) {
+      projEE = Projecao.criar(m.largura, m.lat[1], m.lat[0]);
+      projEE.lat1 = m.lat[1];
+      projEE.lat0 = m.lat[0];
+    }
+    return projEE;
+  }
 
   // [x, y] no SVG, com x de lon[0] a lon[1] e y de lat[1] (topo) a lat[0] (base)
   function proj(p) {
     var m = dados.mapa;
-    if (m.proj === "equal-earth") {
-      var k = m.largura / (2 * EE_XMAX);
-      var q = equalEarth(p[0], p[1]);
-      return [(q[0] + EE_XMAX) * k, (equalEarth(0, m.lat[1])[1] - q[1]) * k];
-    }
+    if (m.proj === "equal-earth") return equalEarthDe(m).proj(p[0], p[1]);
     var km = m.largura / (2 * Math.PI);
     return [((p[0] - m.lon[0]) * Math.PI / 180) * km, (merc(m.lat[1]) - merc(p[1])) * km];
   }
 
   // altura do mapa inteiro
   function alturaDoMapa(m) {
-    if (m.proj === "equal-earth") {
-      return (equalEarth(0, m.lat[1])[1] - equalEarth(0, m.lat[0])[1]) * (m.largura / (2 * EE_XMAX));
-    }
+    if (m.proj === "equal-earth") return equalEarthDe(m).altura;
     return (merc(m.lat[1]) - merc(m.lat[0])) * m.largura / (2 * Math.PI);
   }
 

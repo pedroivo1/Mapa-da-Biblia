@@ -14,8 +14,8 @@ Public static site ("Mapa da Bíblia") in plain HTML, CSS and JS. No build step,
 
 - `frontend/`: the published site (everything below). `vercel.json` lives there too.
 - `supabase/`: migrations (and Edge Functions, if any). Not published.
-- `scripts/`: dev tools. Not published (Vercel serves only `frontend/`). `verificar.mjs`: smoke check. `mapa/`: Python generators (`territorios.py`, `roma.py`, `tremor.py`; need `shapely`) for `frontend/mapa/territorios-<ano>.json` and `roma.json`; hand-edited shapes go in `scripts/mapa/formas.json`. `editor-mapas.html`: local vertex editor for those shapes (`python3 -m http.server` at the repo root, open `/scripts/editor-mapas.html`); it must never be moved under `frontend/`.
-- `AGENTS.md`, `README.md`: docs.
+- `scripts/`: dev tools. Not published (Vercel serves only `frontend/`). `verificar.mjs`: smoke check. `mapa/`: Python generators (`territorios.py`, `roma.py`, `tremor.py`; need `shapely`) for `frontend/mapa/territorios-<ano>.json` and `roma.json`; hand-edited shapes go in `scripts/mapa/formas.json`. `mapa-geral/`: pipeline that reads the reference videos (frames, OCR of the year, calibration, segmentation) and builds `frontend/mapa-geral/dados/` (`construir.py`, name rules in `nomes.json`); needs numpy, opencv, shapely; see `docs/mapa-geral.md`. The videos live in `vídeos/` (git-ignored, never commit them). `editor-mapas.html`: local vertex editor for those shapes (`python3 -m http.server` at the repo root, open `/scripts/editor-mapas.html`); it must never be moved under `frontend/`.
+- `docs/`: design notes (`mapa-geral.md`, `mapa-geral-plano.md`). Not published.
 
 ## Architecture: vertical slices (inside `frontend/`)
 
@@ -29,10 +29,11 @@ The site is about the Bible. Each feature is a folder under `frontend/` (a slice
 | Linha do tempo | `linha-do-tempo/` | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `.css` | `reis.json`, `livros.json` |
 | Mapas | `mapas/` | `mapas.js`, `mapas.css` | `mapas.json` (catalog) |
 | (mapa aberto) | `mapa/` (`?m=id`) | `mapa.js`, `mapa.css` | `mapa-<id>.json`, `mundo.json` |
+| (mapa geral) | `mapa-geral/` (`?ano=-30`) | `mapa-geral.js`, `mapa-geral.css` | `dados/<a\|d><ano>.json`, `dados/indice.json` |
 | (popup do leitor) | `leitura/` | `leitura.js`, `leitura.css` | |
 | (login) | `conta/` | inline script | |
 | (privacidade) | `privacidade/` | | |
-| shared kernel | `compartilhado/` | `css/base.css`, `css/componentes.css`, `js/{tema,config,util,conta}.js` | `dados/canon.json`, `dados/eras.json` |
+| shared kernel | `compartilhado/` | `css/base.css`, `css/componentes.css`, `js/{tema,config,util,conta,projecao}.js` | `dados/canon.json`, `dados/eras.json` |
 
 - Add a feature: create a new folder with `index.html` (copy the `<head>` and `<header class="nav">` from another slice), the script and the CSS. Put in `compartilhado/` only what a second slice needs, and add the page to `scripts/verificar.mjs`.
 - CSS: `base.css` (tokens, nav, footer) loads everywhere, `componentes.css` on pages of the Bible features, then the slice's own file. Class prefixes match the slice: `.lt-*`/`.regua-*`/`.filtro-*` (timeline), `.leitor-*`, `.plano-*`, `.mapa-*` (open map), `.mapas-*` (list). A rule used by two slices goes in `componentes.css`; do not copy it.
@@ -55,6 +56,6 @@ The site is about the Bible. Each feature is a folder under `frontend/` (a slice
 - The `progresso` table shape (`lido`, `versiculos` JSONB) mirrors the `lido` / `leitura` objects in `leitura/leitura.js`. Schema changes go in a new file in `supabase/migrations/`, and any new table needs RLS.
 - `compartilhado/js/config.js` holds only the publishable key. Never put the secret / service_role key in the site.
 - Colors are CSS variables in `compartilhado/css/base.css` with `[data-theme="light"]` / `[data-theme="dark"]` blocks. New colors need both. `compartilhado/js/tema.js` sets `data-theme` on `<html>`.
-- Every page repeats the same `<head>` (fonts, favicon, theme-color) and `<header class="nav">`. Every page loads supabase-js (pinned CDN), `/compartilhado/js/config.js`, `util.js` and `conta.js`, which injects the account menu into the nav. A nav or head change must be made in each slice's `index.html`: `index.html`, `biblia/`, `plano-de-leitura/`, `linha-do-tempo/`, `mapas/`, `mapa/`, `leitura/`, `conta/`, `privacidade/`. Paths are root-absolute.
+- Every page repeats the same `<head>` (fonts, favicon, theme-color) and `<header class="nav">`. Every page loads supabase-js (pinned CDN), `/compartilhado/js/config.js`, `util.js` and `conta.js`, which injects the account menu into the nav. A nav or head change must be made in each slice's `index.html`: `index.html`, `biblia/`, `plano-de-leitura/`, `linha-do-tempo/`, `mapas/`, `mapa/`, `mapa-geral/`, `leitura/`, `conta/`, `privacidade/`. Paths are root-absolute.
 - Years: a.C. is positive and d.C. is negative. `inicio` is always the older (larger) year.
 - Borders and territories (provinces in `mapa/roma.json`, peoples in `mapa/territorios-<ano>.json`, hand-drawn regions): **straight lines only**, never curves, arcs or rounded buffers. For realism add a deterministic "tremor": every edge becomes a polyline of short straight segments (~0.35° each) displaced perpendicular by a small, repeatable amount (~0.045°). The same edge must produce the same points in either direction, so neighbours share the border exactly. Where a territory meets the coast it follows the coast of `mundo.json` exactly (no simplifying, no gaps). When generating or editing these shapes with buffers, use mitre joins (`join_style=2`). Territories never overlap: where two peoples/provinces meet, one cuts the other by a fixed priority and the shared edge is drawn once.

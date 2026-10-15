@@ -26,7 +26,8 @@ const PAGINAS = [
   ["plano-de-leitura/", 'document.querySelectorAll(".plano-card").length'],
   ["mapas/", 'document.querySelectorAll(".mapas-livro li").length'],
   ["mapa/?m=jo", 'document.querySelectorAll(".mapa-lugar").length'],
-  ["mapa/", 'document.querySelectorAll(".mapa-lugar").length']
+  ["mapa/", 'document.querySelectorAll(".mapa-lugar").length'],
+  ["mapa-geral/", 'document.querySelectorAll(".geral-estado").length']
 ];
 const TELAS = [
   { nome: "1280", w: 1280, h: 800 },
@@ -50,7 +51,7 @@ const perfil = mkdtempSync(join(tmpdir(), "mapa-verificar-"));
 const servidor = spawn("python3", ["-m", "http.server", String(PORTA_SITE), "--bind", "127.0.0.1"], { cwd: RAIZ, stdio: "ignore" });
 const chrome = spawn(
   acharChrome(),
-  ["--headless=new", "--disable-gpu", "--no-sandbox", `--remote-debugging-port=${PORTA_CDP}`, `--user-data-dir=${perfil}`, "about:blank"],
+  ["--headless=new", "--disable-gpu", "--no-sandbox", `--remote-debugging-port=${PORTA_CDP}`, `--user-data-dir=${perfil}`, `--disk-cache-dir=${join(perfil, "cache-http")}`, "about:blank"],
   { stdio: "ignore" }
 );
 const limpar = () => {

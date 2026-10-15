@@ -1,0 +1,159 @@
+/* Mapa geral (mapa-geral/index.html, mapa-geral.js): povos e impérios por ano, com linha do tempo. */
+
+.geral-pagina {
+  padding-bottom: 2rem;
+}
+
+.geral {
+  border-top: 1px solid var(--line);
+}
+
+.geral-quadro {
+  position: relative;
+}
+
+.geral-svg {
+  line-height: 0;
+}
+
+.geral-svg svg {
+  display: block;
+  width: 100%;
+  height: clamp(380px, calc(100vh - 20rem), 900px);
+  height: clamp(380px, calc(100dvh - 20rem), 900px);
+  background: var(--bg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  font-family: Archivo, sans-serif;
+}
+
+.geral-svg svg.arrastando {
+  cursor: grabbing;
+}
+
+.geral-terra {
+  fill: var(--bg-sunken);
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  fill-rule: evenodd;
+}
+
+.geral-agua {
+  fill: var(--bg);
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.geral-estado {
+  fill-opacity: 0.5;
+  stroke-width: 1;
+  stroke-opacity: 0.95;
+  vector-effect: non-scaling-stroke;
+  cursor: pointer;
+}
+
+.geral-estado.ativo {
+  fill-opacity: 0.8;
+  stroke-width: 2;
+}
+
+.geral-nome {
+  fill: var(--ink-strong);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.geral-cartao {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.6rem;
+  z-index: 6;
+  max-width: 26rem;
+  padding: 0.7rem 2rem 0.8rem 0.9rem;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+  box-shadow: 3px 3px 0 var(--ink-strong);
+  color: var(--ink);
+}
+
+.geral-cartao[hidden] {
+  display: none;
+}
+
+.geral-cartao h2 {
+  margin: 0 0 0.25rem;
+  color: var(--ink-strong);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.geral-cartao p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.geral-cartao-fechar {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.35rem;
+  padding: 0.1rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.geral-controle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+}
+
+.geral-controle button {
+  padding: 0.4rem 0.7rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.geral-controle button:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.geral-controle input[type="range"] {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--ink-strong);
+}
+
+.geral-controle output {
+  min-width: 6.5rem;
+  text-align: right;
+  color: var(--ink-strong);
+}
+
+.geral-nota {
+  margin: 0;
+}
+
+@media (pointer: coarse) {
+  .geral-controle button {
+    min-height: 44px;
+  }
+}

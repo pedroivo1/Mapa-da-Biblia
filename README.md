@@ -26,10 +26,11 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
 | `mapas/` | Lista de mapas, por livro. Mapa novo entra sozinho. Os com `ano` aparecem como pontos na coluna Eras da linha do tempo. | `mapas.json` |
 | `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `mundo.json` |
+| `mapa-geral/` | O mundo todo, ano a ano (2500 a.C. em diante), com linha do tempo: povos e impérios lidos de vídeos de história mundial. Primeira etapa: Antiguidade com nomes; medieval em diante só as formas. `?ano=-30` abre em 30 d.C. Como foi feito: `docs/mapa-geral.md`. | `mapa-geral.js`, `dados/` |
 | `leitura/` | Leitura, aberta como popup no leitor: marcar livros, capítulos e versículos lidos e ver o progresso. | `leitura.js` |
 | `conta/` | Entrar, criar conta, esqueci a senha e nova senha. | |
 | `privacidade/` | O que é guardado. | |
-| `compartilhado/` | Base de todas: `css/base.css` (tokens, nav, rodapé), `css/componentes.css` (cabeçalho, chips, popups), `js/` (`tema.js`, `config.js`, `util.js`, `conta.js`) e `dados/` (`canon.json`: 66 livros com os versículos de cada capítulo; `eras.json`). | |
+| `compartilhado/` | Base de todas: `css/base.css` (tokens, nav, rodapé), `css/componentes.css` (cabeçalho, chips, popups), `js/` (`tema.js`, `config.js`, `util.js`, `conta.js`, `projecao.js`: Equal Earth) e `dados/` (`canon.json`: 66 livros com os versículos de cada capítulo; `eras.json`). | |
 
 Uma funcionalidade pode ler os arquivos de dados de outra (por exemplo, a linha do tempo lê `mapas/mapas.json`), mas não importa o JS dela.
 
