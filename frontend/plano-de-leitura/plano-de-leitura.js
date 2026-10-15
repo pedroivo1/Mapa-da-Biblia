@@ -77,7 +77,7 @@
     }
     h += '<div class="plano-ordem"><p class="l-secao hud">Ordem do ' + esc(ativo.nome.toLowerCase()) + "</p>";
     ativo.etapas.forEach(function (et) {
-      var era = eras[et.era] || { nome: et.era };
+      var era = eras[et.era] || { nome: et.nome || et.era, periodo: et.periodo, resumo: et.resumo };
       h += '<section class="plano-era"><header><h3>' + esc(era.nome) + '</h3><span class="hud faint">' + esc(era.periodo || "") + "</span></header>";
       if (era.resumo) h += '<p class="muted plano-resumo">' + esc(era.resumo) + "</p>";
       if (!et.trechos.length) h += '<p class="hud faint plano-vazio">Sem livros do cânon protestante neste período.</p>';

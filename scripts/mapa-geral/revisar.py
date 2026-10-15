@@ -452,5 +452,78 @@ def e5(args):
         print("e5:", ano, "mapa", k, "recortes", len(linhas))
 
 
+def e6(args):
+    """Filmes de 12 anos seguidos (3 trechos) com o id escrito no centro de cada estado, e folha das entidades
+    curtas (< 3 anos)."""
+    from calibrar import merc
+    ent = json.load(open(os.path.join(V2, "entidades.json")))
+    anos = json.load(open(os.path.join(V2, "anos.json")))
+    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    ordem = [int(a) for a in anos]
+    pos = {a: i for i, a in enumerate(ordem)}
+    corr_pos = {}
+    for i, c in enumerate(ent["por_ano"]):
+        for p in range(pos[c[0]], pos[c[1]] + 1):
+            corr_pos[p] = i
+
+    def quadro_ids(ano, caixa=None):
+        c = ent["por_ano"][corr_pos[pos[ano]]]
+        k = c[2]
+        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+        borda = np.zeros(reg.shape, bool)
+        borda[:, 1:] |= reg[:, 1:] != reg[:, :-1]
+        borda[1:, :] |= reg[1:, :] != reg[:-1, :]
+        out = im.copy()
+        out[borda] = (0, 0, 0)
+        for r, e in c[3].items():
+            m = reg == int(r)
+            if m.sum() < 150:
+                continue
+            dt = cv2.distanceTransform(m.astype(np.uint8), cv2.DIST_L2, 3)
+            y, x = np.unravel_index(int(dt.argmax()), dt.shape)
+            cv2.putText(out, e[1:].lstrip("0"), (int(x) - 10, int(y) + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 0, 0), 2)
+            cv2.putText(out, e[1:].lstrip("0"), (int(x) - 10, int(y) + 4), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 255, 255), 1)
+        if caixa:
+            p = cal[k]
+            x0 = int((caixa[0] + 180) * p["S"] - p["X0"]); x1 = int((caixa[1] + 180) * p["S"] - p["X0"])
+            y0 = int((merc(80.0) - merc(caixa[3])) * p["S"] - p["Y0"]); y1 = int((merc(80.0) - merc(caixa[2])) * p["S"] - p["Y0"])
+            out = out[max(0, y0):y1, max(0, x0):x1]
+        cv2.putText(out, f"{ano} {'a.C.' if ano > 0 else 'd.C.'}", (6, 18), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 200), 2)
+        return out
+    filmes = [(1200, (20, 60, 22, 42), "1200-1189a"), (-30, (20, 60, 22, 45), "30-41d"), (-1914, (-15, 45, 30, 62), "1914-1925d")]
+    for a0, caixa, nome in filmes:
+        quadros = [quadro_ids(ordem[pos[a0] + i], caixa) for i in range(12)]
+        h = max(q.shape[0] for q in quadros); w = max(q.shape[1] for q in quadros)
+        quadros = [cv2.copyMakeBorder(q, 0, h - q.shape[0], 0, w - q.shape[1], cv2.BORDER_CONSTANT, value=(255, 255, 255)) for q in quadros]
+        lin = [np.hstack(quadros[i:i + 4]) for i in range(0, 12, 4)]
+        cv2.imwrite(os.path.join(SAIDA, f"e6-filme-{nome}.png"), np.vstack(lin))
+        print("e6: filme", nome)
+    # entidades curtas: 10 sorteadas
+    curtas = [(e, d) for e, d in ent["entidades"].items() if pos[d["anos"][1]] - pos[d["anos"][0]] + 1 < 3]
+    random.seed(3)
+    cel = []
+    for e, d in random.sample(curtas, min(10, len(curtas))):
+        a_, a1, k, rs = d["trechos"][0]
+        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+        m = np.isin(reg, rs)
+        ys, xs = np.where(m)
+        cx, cy = int(np.median(xs)), int(np.median(ys))
+        hh = max(30, (xs.max() - xs.min()) // 2 + 15, (ys.max() - ys.min()) // 2 + 15)
+        sl = (slice(max(0, cy - hh), cy + hh), slice(max(0, cx - hh), cx + hh))
+        c = im[sl].copy()
+        mm = m[sl].astype(np.uint8)
+        c[mm.astype(bool) & ~cv2.erode(mm, np.ones((3, 3), np.uint8)).astype(bool)] = (0, 220, 0)
+        c = cv2.resize(c, (220, 220), interpolation=cv2.INTER_NEAREST)
+        cv2.putText(c, f"{e} {d['anos'][0]}..{d['anos'][1]}", (3, 14), cv2.FONT_HERSHEY_SIMPLEX, 0.42, (0, 0, 200), 1)
+        cel.append(c)
+    if cel:
+        while len(cel) % 5:
+            cel.append(np.full_like(cel[0], 255))
+        cv2.imwrite(os.path.join(SAIDA, "e6-curtas.png"), np.vstack([np.hstack(cel[i:i + 5]) for i in range(0, len(cel), 5)]))
+    print("e6: curtas", len(curtas))
+
+
 if __name__ == "__main__":
-    {"e1": e1, "e2": e2, "e3": e3, "e4": e4, "e4-recortes": e4_recortes, "e4-unioes": e4_unioes, "e4-pares": e4_pares, "e5": e5}[sys.argv[1]](sys.argv[2:])
+    {"e1": e1, "e2": e2, "e3": e3, "e4": e4, "e4-recortes": e4_recortes, "e4-unioes": e4_unioes, "e4-pares": e4_pares, "e5": e5, "e6": e6}[sys.argv[1]](sys.argv[2:])

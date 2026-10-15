@@ -158,7 +158,8 @@
     // Judá e Israel dividem uma só coluna, a Terra prometida, em duas faixas lado a lado
     var cTerra = colunas.reis ? col("terra", "Terra prometida", 2 * (BAR + GUT)) : null;
     var cJuda = cTerra ? { x: cTerra.x } : null;
-    var cIsrael = cTerra ? { x: cTerra.x + BAR + GUT } : null;
+    // Israel encosta na coluna das potências: o vão inteiro (2 * GUT) fica no meio, entre as duas faixas
+    var cIsrael = cTerra ? { x: cTerra.x + BAR + 2 * GUT } : null;
     var cPot = colunas.potencias ? col("potencias", "Potências", n.potencias * SUB.potencias) : null;
     var W = x + MARGEM;
 
@@ -207,6 +208,8 @@
         tabindex: 0
       });
       g.setAttribute("aria-label", item.nome + " · " + (item.tipo === "era" ? item.periodo : rotuloPeriodo(item)));
+      // reinado de menos de um ano: bloco mínimo que, no hover, só ganha uma linha
+      if (item.inicio - item.fim < 1) g.setAttribute("data-menos-ano", "1");
       return g;
     }
     function rect(g, rx, ry, rw, rh) {
@@ -220,8 +223,9 @@
     }
     // nomes dos blocos: camada HTML por cima do mapa, com position: sticky nativo
     var rotulos = [];
-    function rotulo(g, bx, w, y1, y2, nome, quebra, sub) {
-      rotulos.push({ x: bx, w: w, y1: y1, h: y2 - y1, nome: nome, sub: sub, quebra: !!quebra, key: g.getAttribute("data-abrir") });
+    // centro: nome no meio da altura do bloco (reis), em vez de preso ao topo
+    function rotulo(g, bx, w, y1, y2, nome, quebra, sub, centro) {
+      rotulos.push({ x: bx, w: w, y1: y1, h: y2 - y1, nome: nome, sub: sub, quebra: !!quebra, centro: !!centro, key: g.getAttribute("data-abrir") });
     }
 
     // eras
@@ -298,6 +302,8 @@
       dados.reis.forEach(function (r) {
         if (r.reino === "israel" && r.fim < fimIsrael) fimIsrael = r.fim;
       });
+      // Israel encosta nas potências, mas com a mesma folga de 3px que a faixa tem à esquerda
+      var larguraUnido = cIsrael.x + BAR - 3 - cJuda.x - 3;
       dados.reis.forEach(function (r) {
         var y1 = Y(r.inicio);
         var y2 = Math.max(Y(r.fim), y1 + 5);
@@ -305,27 +311,31 @@
         if (r.reino === "unido") {
           var gu = grupo(r, "rei unido");
           var duasU = h >= 30;
-          rect(gu, cJuda.x + 3, y1, cIsrael.x + BAR - cJuda.x - 3, h);
+          rect(gu, cJuda.x + 3, y1, larguraUnido, h);
           // o reino unido também se chama Israel: "Israel" em cima e o rei embaixo
-          rotulo(gu, cJuda.x + 3, cIsrael.x + BAR - cJuda.x - 3, y1, y2, duasU ? "Israel" : r.nome, duasU, duasU ? r.nome : null);
+          rotulo(gu, cJuda.x + 3, larguraUnido, y1, y2, duasU ? "Israel" : r.nome, duasU, duasU ? r.nome : null, true);
           s.appendChild(gu);
           return;
         }
         var c = r.reino === "juda" ? cJuda : cIsrael;
         var g = grupo(r, "rei " + r.reino + (r.cor ? " " + r.cor : ""));
-        rect(g, c.x + 3, y1, BAR - 3, h);
+        var larguraBarra = r.reino === "israel" ? BAR - 6 : BAR - 3;
+        rect(g, c.x + 3, y1, larguraBarra, h);
         if (h >= 16) {
           // o reino em cima e o rei embaixo, como nas potências (Judá / Roboão)
           var duas = h >= 30;
-          rotulo(g, c.x + 3, BAR - 3, y1, y2, duas ? r.regime || REINO[r.reino] : r.nome, duas, duas ? r.nome : null);
+          rotulo(g, c.x + 3, larguraBarra, y1, y2, duas ? r.regime || REINO[r.reino] : r.nome, duas, duas ? r.nome : null, true);
         }
         else {
           pendentes[r.reino].push({ g: g, r: r, c: c, y1: y1, h: h });
           // faixa de clique mais alta que a barra, que tem só poucos pixels
-          g.appendChild(svg("rect", { x: c.x + 3, y: y1 + h / 2 - 7, width: BAR - 3, height: 14, style: "fill:transparent;stroke:none" }));
+          g.appendChild(svg("rect", { x: c.x + 3, y: y1 + h / 2 - 7, width: larguraBarra, height: 14, style: "fill:transparent;stroke:none" }));
         }
         s.appendChild(g);
       });
+      // nomes de reinados curtos, ao lado da barra: Judá escreve para a direita e Israel para a esquerda,
+      // os dois no vão do meio. Primeiro as alturas de todos; depois o texto, que usa o vão inteiro
+      // quando nenhum nome do outro reino está na mesma altura, e a metade dele quando está.
       Object.keys(pendentes).forEach(function (k) {
         var ult = -1e9;
         pendentes[k].sort(function (p, q) {
@@ -333,13 +343,32 @@
         }).forEach(function (p) {
           var cy = p.y1 + p.h / 2;
           var ly = Math.max(cy + 4, ult + 12);
+          // o texto ocupa de ly - 9 a ly + 3: se um marco (linha tracejada) o atravessa, o nome vai para logo acima dela
+          MARCOS.forEach(function (m) {
+            var my = Y(m.ano);
+            if (my > ly - 9 && my < ly + 3) ly = my - 4 >= ult + 12 ? my - 4 : my + 12;
+          });
           ult = ly;
-          var bx = p.c.x + BAR;
-          p.g.appendChild(svg("polyline", { points: bx + "," + cy + " " + (bx + 4) + "," + cy + " " + (bx + 8) + "," + (ly - 4), class: "guia" }));
-          var livre = p.r.reino === "juda" && p.r.inicio <= fimIsrael;
-          var maxs = Math.max(2, Math.floor((livre ? BAR + 2 * GUT - 14 : GUT - 6) / 6.2));
-          var nomeCurto = livre ? p.r.nome : p.r.curto || p.r.nome;
-          texto(p.g, bx + 10, ly, nomeCurto.length > maxs ? nomeCurto.slice(0, maxs - 1) + "…" : nomeCurto, "fora");
+          p.cy = cy;
+          p.ly = ly;
+        });
+      });
+      Object.keys(pendentes).forEach(function (k) {
+        var outro = pendentes[k === "juda" ? "israel" : "juda"] || [];
+        pendentes[k].forEach(function (p) {
+          var esquerda = p.r.reino === "israel";
+          var livre = !esquerda && p.r.inicio <= fimIsrael;
+          var disputado = outro.some(function (q) {
+            return Math.abs(q.ly - p.ly) < 12;
+          });
+          var largura = livre ? BAR + 2 * GUT - 14 : disputado ? GUT - 6 : 2 * GUT - 16;
+          var maxs = Math.max(2, Math.floor(largura / 6.2));
+          var nome = p.r.nome.length <= maxs ? p.r.nome : p.r.curto || p.r.nome;
+          if (nome.length > maxs) nome = nome.slice(0, maxs - 1) + "…";
+          var bx = esquerda ? p.c.x + 3 : p.c.x + BAR;
+          var d = esquerda ? -1 : 1;
+          p.g.appendChild(svg("polyline", { points: bx + "," + p.cy + " " + (bx + 4 * d) + "," + p.cy + " " + (bx + 8 * d) + "," + (p.ly - 4), class: "guia" }));
+          texto(p.g, bx + 10 * d, p.ly, nome, "fora", esquerda ? { "text-anchor": "end" } : null);
         });
       });
     }
@@ -364,12 +393,12 @@
     // contorno do hover: um retângulo fino desenhado por último, para ficar acima de tudo
     var contorno = svg("rect", { class: "contorno", visibility: "hidden" });
     s.appendChild(contorno);
-    // blocos mínimos (5px: reinados de meses, como Zinri e Salum): só uma linha de 1px
+    // blocos mínimos de menos de um ano (Zinri, Salum): só uma linha de 1px
     var linhaHover = svg("line", { class: "contorno-linha", visibility: "hidden" });
     s.appendChild(linhaHover);
     function esconderHover() {
-      contorno.setAttribute("visibility", "hidden");
       linhaHover.setAttribute("visibility", "hidden");
+      contorno.setAttribute("visibility", "hidden");
     }
 
     // cabeçalho das colunas (fixo ao rolar, acompanha a rolagem horizontal)
@@ -397,7 +426,7 @@
     corpoMapa.appendChild(s);
     rotulos.forEach(function (r) {
       var bloco = document.createElement("div");
-      bloco.className = "rot-bloco";
+      bloco.className = "rot-bloco" + (r.centro ? " centro" : "");
       bloco.style.cssText = "left:" + r.x + "px;top:" + r.y1 + "px;width:" + r.w + "px;height:" + r.h + "px";
       var t = document.createElement("div");
       t.className = "rot-txt" + (r.quebra ? " quebra" : "");
@@ -442,7 +471,7 @@
       if (!r) return;
       var rx = Number(r.getAttribute("x")), ry = Number(r.getAttribute("y"));
       var rw = Number(r.getAttribute("width")), rh = Number(r.getAttribute("height"));
-      if (rh < 6) {
+      if (rh < 6 && g.hasAttribute("data-menos-ano")) {
         var ly = ry; // no vão que separa este período do anterior
         linhaHover.setAttribute("x1", rx);
         linhaHover.setAttribute("x2", rx + rw);
@@ -452,9 +481,17 @@
         return;
       }
       contorno.setAttribute("x", rx + 0.5);
-      contorno.setAttribute("y", ry + 0.5);
       contorno.setAttribute("width", Math.max(0, rw - 1));
-      contorno.setAttribute("height", Math.max(0, rh - 1));
+      if (rh < 6) {
+        // bloco mínimo de um ano ou mais (5px, como Aristóbulo I): quadro de 4px por fora, centrado no bloco,
+        // para cobrir o miolo azul (5px menos o traço de 1,5px da borda = 3,5px)
+        contorno.setAttribute("y", ry + rh / 2 - 1.5);
+        contorno.setAttribute("height", 3);
+      }
+      else {
+        contorno.setAttribute("y", ry + 0.5);
+        contorno.setAttribute("height", Math.max(0, rh - 1));
+      }
       contorno.setAttribute("visibility", "visible");
     });
     corpoMapa.addEventListener("mouseleave", esconderHover);

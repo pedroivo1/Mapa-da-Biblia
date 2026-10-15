@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # Arrumação do cache do mapa geral v2 (docs/mapa-geral-incremental.md): lista os artefatos das etapas com manifesto
 # (.cache/v2/e4/<sub>/, .cache/v2/e5/) que não estão em nenhum manifesto (versões antigas, sobras .tmp) e as pastas
-# de cache obsoletas da própria v2 (rotulos-pre/: cache da fase 1 antes da divisão em E4a–E4e), com o espaço que
+# de cache obsoletas da própria v2 (rotulos-pre/: cache da fase 1 antes da divisão em E4a–E4e; antes-miolo/: cópia
+# dos rótulos antes da regra dos miolos de letra, referência do T4.9 já aprovado), com o espaço que
 # liberam. Só apaga com --apagar. O cache da v1 (.cache/quadros, .cache/estados...) não é tocado aqui.
 # Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/limpar_cache.py [--apagar]
 import json, os, shutil, sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 V2 = os.path.join(os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache"), "v2")
-OBSOLETAS = ["rotulos-pre"]
+OBSOLETAS = ["rotulos-pre", "antes-miolo", "referencia-e4"]
 
 
 def tamanho(c):

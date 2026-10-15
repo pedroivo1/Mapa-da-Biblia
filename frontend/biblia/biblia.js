@@ -188,7 +188,7 @@
     var p = n == null ? null : ordem[n];
     if (!p) return "";
     var etapa = plano.etapas[p.e];
-    var era = eras[etapa.era] || {};
+    var era = eras[etapa.era] || { nome: etapa.nome, periodo: etapa.periodo };
     var tr = etapa.trechos[p.t];
     var sai = "/biblia/" + location.hash;
     return '<div class="leitor-plano"><p class="hud muted"><strong>' + esc(plano.nome) + "</strong> · " + esc(era.nome || "") +

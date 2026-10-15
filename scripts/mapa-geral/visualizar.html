@@ -2,7 +2,8 @@
 <!--
   Visualizador local do pipeline do mapa geral v2 (ferramenta de desenvolvimento; nunca mover para frontend/).
   Lê direto do cache (.cache/v2/): quadro do vídeo (mapas/<id>.png), vetores da E5 (vetores/<id>.json),
-  rótulos da E4 (rotulos/<id>.json), calibração (calibracao.json), anos (anos.json, mapas.json), logs e
+  rótulos da E4 (rotulos/<id>.json, com enclaves e miolos de letra da E4e), ids das entidades da E6
+  (entidades.json: id ao passar o mouse e modo "cor por id"), calibração (calibracao.json), anos (anos.json, mapas.json), logs e
   manifestos das rodadas, imagens de revisão (revisao/), e os testes fixos casos.json e pares.json.
   Anotações (juntar / separar / problema, com clique no mapa) vão para scripts/mapa-geral/anotacoes.json, que o
   pipeline usa como correção e como teste; só o visualizar.py grava esse arquivo (sem ele, ficam no navegador e há
@@ -124,6 +125,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
           <select id="modo">
             <option value="contorno">Vídeo + contornos do vetor</option>
             <option value="cores">Vídeo + vetor colorido</option>
+            <option value="ids">Vídeo + cor por id (E6)</option>
             <option value="lado">Lado a lado</option>
             <option value="video">Só o vídeo</option>
           </select>
@@ -131,6 +133,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
         <label>Opacidade <input type="range" id="opacidade" min="0" max="1" step="0.05" value="0.6"></label>
         <label><input type="checkbox" id="sem-dono" checked> sem dono</label>
         <label><input type="checkbox" id="ver-casos" checked> casos e pares</label>
+        <label title="Enclaves (regiões cercadas por um vizinho, sem evidência de texto, que ficaram) em ciano tracejado; miolos de letra absorvidos como pontos (amarelo = texto, verde-água = mesma cor)"><input type="checkbox" id="ver-e4e" checked> enclaves e miolos</label>
         <label>Navegar por
           <select id="navegar">
             <option value="anos">ano a ano</option>
@@ -200,7 +203,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     anos: [], posPorAno: {}, idPorPos: [], pos: 0, posMapas: [],
     mapas: null, cal: null, anosInfo: null, amostras: {}, casos: [], pares: [],
     id: null, vez: 0, vetor: null, rotulo: null, formas: [], regRotulo: {},
-    modo: "contorno", opac: 0.6, semDono: true, verCasos: true, navegar: "anos",
+    modo: "contorno", opac: 0.6, semDono: true, verCasos: true, verE4e: true, navegar: "anos",
     tocando: null, vel: 10, z: 1, tx: 0, ty: 0, sel: null, piscando: false,
     anotar: "", notas: [], pendente: null, salvaNoServidor: false
   };
@@ -270,8 +273,11 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       buscar("amostras.json", "json").catch(nulo),
       buscar("casos.json", "json").catch(nulo),
       buscar("pares.json", "json").catch(nulo),
-      buscar(ARQ_NOTAS, "json", true).catch(nulo)
+      buscar(ARQ_NOTAS, "json", true).catch(nulo),
+      buscar(V2 + "entidades.json", "json", true).catch(nulo)
     ]).then(function (r) {
+      // E6: ids das entidades por ano (corridas de anos com o mesmo mapa)
+      est.ent = r[7] ? r[7].dados : null;
       var local = null;
       try { local = JSON.parse(localStorage.getItem(CHAVE_NOTAS) || "null"); } catch (e) { local = null; }
       est.notas = (r[6] && r[6].dados.anotacoes) || [];
@@ -288,6 +294,13 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       est.casos = r[4] ? r[4].dados.casos : [];
       est.pares = r[5] ? r[5].dados.pares : [];
       montarAnos();
+      est.corridaPorPos = [];
+      if (est.ent) {
+        est.ent.por_ano.forEach(function (c, i) {
+          var p0 = est.posPorAno[c[0]], p1 = est.posPorAno[c[1]], p;
+          for (p = p0; p <= p1; p++) { est.corridaPorPos[p] = i; }
+        });
+      }
       // o visualizar.py responde HEAD com X-Grava-Anotacoes; o http.server puro não
       fetch(ARQ_NOTAS, { method: "HEAD", cache: "no-cache" }).then(function (r) {
         est.salvaNoServidor = r.headers.get("X-Grava-Anotacoes") === "1";
@@ -465,11 +478,23 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     return null;
   }
 
-  function caminhos(preencher, opac) {
+  // E6: id da entidade de uma região no ano atual, e cor estável por id (para ver a continuidade entre os anos)
+  function idDe(r) {
+    if (!est.ent) { return null; }
+    var c = est.ent.por_ano[est.corridaPorPos[est.pos]];
+    return c && c[2] === String(est.id) ? (c[3][String(r)] || null) : null;
+  }
+  function corDoId(e) {
+    var n = parseInt(e.slice(1), 10), h = (n * 137.508) % 360;
+    return "hsl(" + h.toFixed(0) + "," + (55 + (n * 7) % 30) + "%," + (45 + (n * 11) % 20) + "%)";
+  }
+  function caminhos(preencher, opac, porId) {
     var h = [];
     est.formas.forEach(function (f) {
       if (f.tipo === "sem-dono" && !est.semDono) { return; }
-      var fill = preencher ? rgb(f.cor) : "transparent";
+      var e = porId ? idDe(f.r) : null;
+      var fill = porId ? (e ? corDoId(e) : "transparent") : (preencher ? rgb(f.cor) : "transparent");
+      if (porId) { preencher = true; }
       var traco = preencher ? "rgba(0,0,0,.65)" : (f.tipo === "estado" ? "var(--contorno)" : "rgba(80,80,80,.8)");
       h.push("<path data-r='" + f.r + "' d='" + f.d + "' fill='" + fill + "' fill-opacity='" + opac +
         "' fill-rule='evenodd' stroke='" + traco + "' stroke-width='1'" + (f.tipo === "estado" ? "" : " stroke-dasharray='3 2'") + "/>");
@@ -485,6 +510,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     var m = est.modo, s1 = "", s2 = "";
     if (m === "contorno" || m === "lado") { s1 = caminhos(false, 0); }
     if (m === "cores") { s1 = caminhos(true, est.opac); }
+    if (m === "ids") { s1 = caminhos(true, Math.max(est.opac, 0.75), true); }
     if (m === "lado") { s2 = caminhos(true, 1); }
     s1 += marcas();
     $("s1").innerHTML = s1;
@@ -526,6 +552,30 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     });
     if (rc[1]) { est.resCasos = rc; }
     if (rp[1]) { est.resPares = rp; }
+    // E4e: enclaves que ficaram (contorno ciano tracejado) e miolos de letra absorvidos (ponto no lugar do miolo)
+    if (est.verE4e && est.rotulo) {
+      var ro = est.rotulo.dados;
+      (ro.enclaves || []).forEach(function (e) {
+        var f = est.formas.filter(function (x) { return String(x.r) === String(e.r); })[0];
+        var t = "<title>" + esc("enclave r" + e.r + " (vizinho r" + e.dono + ") · " + e.area_px + " px · letra " + e.fracao_letra +
+          " · linha no anel " + e.fracao_linha + " · linha na fronteira " + e.fracao_linha_fronteira + " · dif. cor " + e.dif_cor +
+          (e.raio !== undefined ? " · raio " + e.raio : "")) + "</title>";
+        if (f) {
+          h.push("<path class='marca' d='" + f.d + "' fill='rgba(0,229,255,.18)' stroke='#00e5ff' stroke-width='" + (2 / est.z) +
+            "' stroke-dasharray='4 2' fill-rule='evenodd'>" + t + "</path>");
+        } else if (e.ponto) {
+          h.push("<circle class='marca' cx='" + e.ponto[0] + "' cy='" + e.ponto[1] + "' r='" + r + "' fill='none' stroke='#00e5ff' stroke-width='2'>" + t + "</circle>");
+        }
+      });
+      (ro.unioes || []).forEach(function (u) {
+        if (u.tipo !== "miolo" || !u.ponto) { return; }
+        var cor = u.motivo === "texto" ? "#ffd400" : "#26a69a";
+        h.push("<circle class='marca' cx='" + u.ponto[0] + "' cy='" + u.ponto[1] + "' r='" + (r * 0.55) + "' fill='" + cor +
+          "' stroke='#000' stroke-width='" + (1 / est.z) + "'><title>" + esc("miolo absorvido (" + u.motivo + ") por r" + u.r + " · letra " +
+          u.fracao_letra + " · linha " + u.fracao_linha + " · dif. cor " + u.dif_cor + (u.traco ? " · traço" : "") +
+          (u.caixa_texto ? " · caixa de texto" : "")) + "</title></circle>");
+      });
+    }
     // anotações do usuário (sempre visíveis): azul = juntar, roxo tracejado = separar, laranja = problema
     est.notas.forEach(function (n) {
       if (n.mapa !== est.id) { return; }
@@ -635,6 +685,12 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       var ro = est.rotulo.dados;
       h.push("<dt>Rótulo</dt><dd>" + hora(est.rotulo.quando) + " · " + (ro.unioes || []).length + " uniões · " +
         (ro.candidatos || []).length + " candidatos</dd>");
+      var nm = (ro.unioes || []).filter(function (u) { return u.tipo === "miolo"; }).length;
+      h.push("<dt>E4e</dt><dd>" + nm + " miolos absorvidos · " + (ro.enclaves || []).length + " enclaves</dd>");
+      if (ro.anotacoes) {
+        h.push("<dt>Anotações</dt><dd>" + ro.anotacoes.aplicadas.length + " aplicadas · " + ro.anotacoes.vetos.length + " vetos · " +
+          ro.anotacoes.problemas.length + " problemas</dd>");
+      }
     }
     if (est.resCasos) { h.push("<dt>Casos</dt><dd class='" + (est.resCasos[0] === est.resCasos[1] ? "ok" : "erro") + "'>" + est.resCasos[0] + " de " + est.resCasos[1] + " certos</dd>"); }
     if (est.resPares) { h.push("<dt>Pares</dt><dd class='" + (est.resPares[0] === est.resPares[1] ? "ok" : "erro") + "'>" + est.resPares[0] + " de " + est.resPares[1] + " como esperado</dd>"); }
@@ -650,6 +706,11 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       var f = est.formas.filter(function (x) { return x.r === est.sel; })[0], g = est.regRotulo[est.sel];
       h.push("<h3>Região " + esc(est.sel) + "</h3><dl>");
       if (f) {
+        var eid = idDe(f.r), ed = eid ? est.ent.entidades[eid] : null;
+        if (eid) {
+          h.push("<dt>Id (E6)</dt><dd><span style='display:inline-block;width:12px;height:12px;vertical-align:-2px;background:" + corDoId(eid) +
+            "'></span> " + eid + (ed ? " · " + nomeAno(ed.anos[0]) + " – " + nomeAno(ed.anos[1]) + " · cor " + ed.cor : "") + "</dd>");
+        }
         h.push("<dt>Tipo</dt><dd>" + f.tipo + "</dd><dt>Cor</dt><dd><span style='display:inline-block;width:12px;height:12px;vertical-align:-2px;border:1px solid #888;background:" +
           rgb(f.cor) + "'></span> " + f.cor.join(", ") + "</dd><dt>Anéis</dt><dd>" + f.aneis.length + "</dd>");
       }
@@ -732,7 +793,9 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     if (!alvo) { d.classList.add("oculto"); return; }
     var r = alvo.getAttribute("data-r"), f = est.formas.filter(function (x) { return x.r === r; })[0], g = est.regRotulo[r];
     if (!f) { d.classList.add("oculto"); return; }
-    d.innerHTML = "região " + esc(r) + " · " + f.tipo + " · rgb(" + f.cor.join(", ") + ")" + (g ? " · " + g.area_px + " px" : "");
+    var eid = idDe(r), ed = eid && est.ent ? est.ent.entidades[eid] : null;
+    d.innerHTML = "região " + esc(r) + " · " + f.tipo + " · rgb(" + f.cor.join(", ") + ")" + (g ? " · " + g.area_px + " px" : "") +
+      (eid ? "<br><b>id " + eid + "</b>" + (ed ? " · " + nomeAno(ed.anos[0]) + " – " + nomeAno(ed.anos[1]) : "") : "");
     d.style.left = (e.clientX + 14) + "px"; d.style.top = (e.clientY + 14) + "px";
     d.classList.remove("oculto");
   }
@@ -766,6 +829,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     $("opacidade").oninput = function () { est.opac = +this.value; if (est.modo !== "cores") { est.modo = "cores"; $("modo").value = "cores"; aplicarModo(); } else { desenhar(); } };
     $("sem-dono").onchange = function () { est.semDono = this.checked; desenhar(); };
     $("ver-casos").onchange = function () { est.verCasos = this.checked; desenhar(); };
+    $("ver-e4e").onchange = function () { est.verE4e = this.checked; desenhar(); };
     $("navegar").onchange = function () { est.navegar = this.value; parar(); };
     $("recarregar").onclick = function () { carregarMapa(est.id, true); };
     $("anotar").onchange = function () {

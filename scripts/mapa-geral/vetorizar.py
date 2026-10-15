@@ -21,8 +21,11 @@
 #  2. Pixel -> lon/lat com a calibração da E3 (cilíndrica de Miller): lon = (u + X0)/S - 180;
 #     lat = (atan(exp(rad(y/1,25))) - 45°)/0,4, y = miller(80) - (v + Y0)/S. A transformação é monotônica e a
 #     cobertura continua válida.
-#  3. shapely.coverage_simplify com tolerância TOL_PX pixels (convertida para graus pela escala do mapa): tira a
-#     escada dos pixels mantendo a borda comum idêntica nos dois vizinhos.
+#  3. Simplificação aresta por aresta (simplificar_local): as bordas da cobertura em pixels viram cadeias entre nós
+#     (onde três ou mais faces se encontram) e cada cadeia é simplificada sozinha (Douglas–Peucker, TOL_PX, extremos
+#     fixos, forma canônica). A borda comum é a mesma cadeia nos dois vizinhos; uma região com os mesmos pixels e a
+#     mesma vizinhança sai com a mesma geometria em mapas diferentes (T6.4; o coverage_simplify do GEOS olhava
+#     arestas a até ~20 px). Cadeias que passam a se cruzar voltam ao traçado original. Depois, pixel -> lon/lat.
 #  4. tremer() de scripts/mapa/tremor.py em cada anel, com passo de 0,25° (amplitude padrão 0,045°): o tremor
 #     depende só do lado (não do sentido), então a borda comum continua com os mesmos pontos nos dois vizinhos.
 #  5. Corte pela terra de mundo.json (anéis de terra em par-ímpar menos todos os lagos, como no site): a costa é a
@@ -259,13 +262,84 @@ def arredondar(g):
     return valido(shapely.transform(g, lambda c: np.round(c, CASAS)))
 
 
+def _canonica(c):
+    """Cadeia em forma canônica (independe da ordem em que o GEOS a montou): aberta = do extremo menor para o maior;
+    fechada = começa no menor vértice e gira no sentido anti-horário."""
+    c = np.asarray(c, np.float64)
+    if len(c) > 2 and np.array_equal(c[0], c[-1]):
+        a = c[:-1]
+        i = min(range(len(a)), key=lambda j: (a[j][0], a[j][1]))
+        a = np.roll(a, -i, axis=0)
+        x, y = a[:, 0], a[:, 1]
+        if (x * np.roll(y, -1) - np.roll(x, -1) * y).sum() < 0:
+            a = np.vstack([a[:1], a[1:][::-1]])
+        return np.vstack([a, a[:1]])
+    if (c[-1][0], c[-1][1]) < (c[0][0], c[0][1]):
+        c = c[::-1]
+    return c
+
+
+def simplificar_local(pol, tol):
+    """Simplificação da cobertura aresta por aresta (Douglas–Peucker em cada cadeia entre nós, extremos fixos), em
+    pixels. Cada aresta depende só dos próprios pontos: uma região cujos pixels e vizinhança não mudam entre dois
+    mapas sai com a mesma geometria (T6.4), o que o coverage_simplify do GEOS não garante (ele olha arestas vizinhas
+    num raio maior). Arestas simplificadas que se cruzam voltam ao traçado original. Devolve {rótulo: geometria}."""
+    ids = sorted(pol)
+    bordas = shapely.union_all([pol[r].boundary for r in ids])
+    cadeias = [_canonica(shapely.get_coordinates(g)) for g in shapely.get_parts(shapely.line_merge(bordas))]
+    originais = [shapely.linestrings(c) for c in cadeias]
+    simples = []
+    for c, ln in zip(cadeias, originais):
+        q = shapely.simplify(ln, tol, preserve_topology=False)
+        fechada = np.array_equal(c[0], c[-1])
+        if q.is_empty or (fechada and len(shapely.get_coordinates(q)) < 4):
+            q = ln
+        simples.append(q)
+    # cruzamentos entre arestas simplificadas (fora dos extremos comuns): as duas voltam ao original, até não sobrar
+    for _rodada in range(10):
+        arv = shapely.STRtree(simples)
+        ruins = set()
+        for i, j in zip(*arv.query(simples, predicate="intersects")):
+            if i >= j:
+                continue
+            x = simples[i].intersection(simples[j])
+            if x.is_empty:
+                continue
+            ext = shapely.multipoints(np.vstack([shapely.get_coordinates(shapely.boundary(simples[i])),
+                                                 shapely.get_coordinates(shapely.boundary(simples[j]))]))
+            if not x.difference(ext).is_empty if not ext.is_empty else True:
+                ruins |= {i, j}
+            if not simples[i].is_simple:
+                ruins.add(i)
+        for i in range(len(simples)):
+            if not simples[i].is_simple and simples[i] is not originais[i]:
+                ruins.add(i)
+        ruins = {i for i in ruins if simples[i] is not originais[i]}
+        if not ruins:
+            break
+        for i in ruins:
+            simples[i] = originais[i]
+    faces = list(shapely.get_parts(shapely.polygonize(simples)))
+    # rótulo de cada face nova: o da face original com maior sobreposição
+    orig = [pol[r] for r in ids]
+    arv = shapely.STRtree(orig)
+    por = {}
+    for f in faces:
+        melhor, area = None, 0.0
+        for j in arv.query(f, predicate="intersects"):
+            a = f.intersection(orig[j]).area
+            if a > area:
+                melhor, area = ids[j], a
+        if melhor is not None:
+            por.setdefault(melhor, []).append(f)
+    return {r: (fs[0] if len(fs) == 1 else unary_union(fs)) for r, fs in por.items()}
+
+
 def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     """Devolve (regioes {r: geom lon/lat final}, preenchidas {r: área}, tipos, métricas)."""
-    pol = poligonos_pixel(reg)
+    pol = simplificar_local(poligonos_pixel(reg), TOL_PX)
     ids = sorted(pol)
-    geoms = [para_lonlat(pol[r], cal) for r in ids]
-    tol = TOL_PX / cal["S"]
-    simp = shapely.coverage_simplify(np.array(geoms, dtype=object), tol)
+    simp = [para_lonlat(pol[r], cal) for r in ids]
     # tremor (inclui o mar, para a fronteira terra/mar do vídeo ficar igual dos dois lados antes do corte)
     tremidos, n_retos = tremer_cobertura(list(simp))
     metricas = {"cobertura_simplificada": bool(shapely.coverage_is_valid(np.array(list(simp), dtype=object))),
@@ -317,15 +391,17 @@ def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     return final, preenchidas, tipos, metricas
 
 
-VERSAO = 4      # incremente quando a lógica da E5 mudar (2: 5 casas, TOL_PX 1,0; 3: lados sem tremor nos cruzamentos;
+VERSAO = 5      # incremente quando a lógica da E5 mudar (5: simplificação aresta por aresta, local; ver simplificar_local)
                 # 4: lado sem tremor quebrado em pedaços retos colineares de <= PASSO_TREMOR)
 
 
-def chave_mapa(k, cal_k, mundo_h):
-    """Chave da E5 para um mapa: conteúdo dos rótulos (png e json), calibração, mundo.json, parâmetros e VERSAO."""
+def chave_mapa(k, cal_k, mundo_h, man_e4=None):
+    """Chave da E5 para um mapa: só o que a E5 lê — o PNG dos rótulos e o tipo e a cor de cada região (não o JSON
+    inteiro: uniões, candidatos e enclaves não mudam o vetor) —, a calibração, mundo.json, parâmetros e VERSAO."""
+    png = os.path.join(V2, "rotulos", f"{k}.png")
+    regioes = [[r["r"], r["tipo"], r["cor"]] for r in json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))["regioes"]]
     return cache.chave(VERSAO, {"TOL_PX": TOL_PX, "PASSO_TREMOR": PASSO_TREMOR, "CASAS": CASAS, "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR},
-                       [cache.hash_arquivo(os.path.join(V2, "rotulos", f"{k}.png")),
-                        cache.hash_arquivo(os.path.join(V2, "rotulos", f"{k}.json")), cache.hash_obj(cal_k), mundo_h])
+                       [cache.hash_arquivo(png), cache.hash_obj(regioes), cache.hash_obj(cal_k), mundo_h])
 
 
 def tarefa(args):
@@ -360,7 +436,7 @@ def tarefa(args):
         json.dump(out, open(tmp, "w"), separators=(",", ":"))
         os.replace(tmp, arq)
         tempos[k] = time.time() - t0
-        novas[k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": round(tempos[k], 3)}
+        novas[k] = cache.entrada(ch, cache.hash_arquivo(arq), round(tempos[k], 3), arq)
     return tempos, novas
 
 
@@ -386,7 +462,7 @@ def main():
         for k in ids:
             arq = os.path.join(V2, "vetores", f"{k}.json")
             if os.path.exists(arq):
-                man[k] = {"chave": chave_mapa(k, cal[k], mundo_h), "hash_saida": cache.hash_arquivo(arq), "segundos": None}
+                man[k] = cache.entrada(chave_mapa(k, cal[k], mundo_h), cache.hash_arquivo(arq), None, arq)
         cache.gravar_manifesto("e5", man)
         print("adotados:", len(ids))
         return

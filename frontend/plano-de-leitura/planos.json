@@ -19,12 +19,6 @@
      "era": "patriarcas",
      "trechos": [
       {
-       "livro": "jo",
-       "de": 1,
-       "ate": 42,
-       "nota": "Época patriarcal; data incerta."
-      },
-      {
        "livro": "genesis",
        "de": 12,
        "ate": 36
@@ -675,6 +669,20 @@
        "livro": "apocalipse",
        "de": 1,
        "ate": 22
+      }
+     ]
+    },
+    {
+     "era": "sem-data",
+     "nome": "Jó, à parte",
+     "periodo": "Sem data",
+     "resumo": "Fica para o fim para não interromper a história de Abraão ao Apocalipse.",
+     "trechos": [
+      {
+       "livro": "jo",
+       "de": 1,
+       "ate": 42,
+       "nota": "Data incerta; na linha do tempo, ambientado na era patriarcal."
       }
      ]
     }

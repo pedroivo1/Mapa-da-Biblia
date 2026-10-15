@@ -800,7 +800,7 @@ Testes `testar.py e10` (roda tudo):
 - **T5.3:** comprimento medido a mais de 0,1° da costa e a mais de 0,5° da borda do quadro (junto delas o tremor
   joga parte da divisa para o mar ou para fora do quadro).
 - **T5.4:** margem de 0,15° na borda do quadro (o tremor desloca a borda do próprio quadro).
-- **T5.7 (critério ajustado, a aprovar pelo usuário):** o IoU passa a ignorar 1 px de cada lado da borda do vídeo.
+- **T5.7 (critério ajustado; aprovado pelo usuário em 2026-10-15, a sobreposição estrita continua impressa):** o IoU passa a ignorar 1 px de cada lado da borda do vídeo.
   Numa região compacta de ~250 px, a simplificação de 1 px e o tremor movem metade dos pixels de borda e o IoU
   estrito cai para ~0,79 sem erro de forma; com a tolerância, IoU mín 0,993 (médios) e 0,999 (grandes). O IoU
   estrito continua no relatório do teste (mín 0,787, mediana 0,950).
@@ -841,4 +841,70 @@ Testes `testar.py e10` (roda tudo):
   era 44 de 60), depois 0; 568 enclaves listados em `.cache/v2/enclaves-media.json`.
 - A medição da "linha" mudou várias vezes nesta rodada (VERSAO e de 2 a 13), sempre na amostra rápida e média; a
   rodada completa só no portão.
+- **Aprovação visual do usuário (2026-10-15):** miolos sumiram em 511 a.C., 31 e 999 d.C.; estados pequenos
+  continuam com contorno próprio (Bengala 1452, Sacro Império 1703, 1712 e 1799); folhas de absorvidos e enclaves
+  corretas. Correção dos miolos de letra aprovada.
+
+**2026-10-15 (antes da E6: transições, enclaves, visualizador, velocidade, anotações)**
+
+- **Quadros de transição de zoom (`transicoes.py`, teste T3.8):** só dois mapas tinham escala fora dos trechos
+  (S ≈ 24,7): 125 (1000 a.C.) e 2020 (1779 d.C.). Não eram anos sem quadro bom: o PNG gravado na E2 era o primeiro
+  quadro do fade (a busca do ffmpeg por tempo pode cair um quadro antes ou depois) e a calibração dele caiu num
+  mínimo falso. Os dois anos agora usam o último quadro estável do próprio ano (4416 e 27651), com a calibração do
+  trecho refinada; `anos.json` registra `transicao`. Nenhum ano precisou do mapa do ano anterior. 1779 d.C. passou
+  de 40 para 3 enclaves.
+- **Enclaves suspeitos (< 300 px, linha na fronteira < 30 %):** eram 122 em 105 mapas (o usuário contou 141 antes
+  da correção das transições). Padrão de erro achado: traços finos de letra brancos sobre estado colorido ("n" de
+  Tang, "J" de Jin, "Y" de Yuan) com pouca "letra" em volta. Regra nova na E4e: cor de letra e raio inscrito
+  ≤ 3,5 px também é traço (VERSAO e = 14). Sobram 70 em 61 mapas, todos conferidos na folha
+  `revisao/enclaves-suspeitos-*.png` e reais (enclave vermelho em azul 679–688 d.C., creme em verde 1013–1028,
+  faixa branca "A." 1121–1132, vermelho em azul 1259–1289, Southern M. 1658, enclaves do Sacro Império 1703–1713).
+- **Visualizador:** caixa "enclaves e miolos": enclaves em ciano tracejado, miolos absorvidos como pontos (amarelo =
+  texto, verde-água = mesma cor), com as frações no título; painel com contagens e anotações aplicadas/vetos.
+- **Velocidade:** a E4e caiu de ~0,84 para ~0,33 s por mapa num processo (canais de cor calculados uma vez em
+  uint8, sort em uint16 sem o segundo sort do `np.unique`, máximo do watershed fora do laço das ilhas; resultado
+  idêntico, conferido em 31 mapas). O manifesto guarda a assinatura (mtime, tamanho) dos artefatos e não relê
+  conteúdo que não mudou: rodada sem mudança nos 1.965 mapas em 3 s (antes 13–24 s). A chave da E5 usa só o PNG
+  dos rótulos e tipo/cor das regiões. **Rodada só de regra (E4e) nos 1.965 mapas: 4,9 min (antes ~8); o alvo de
+  2 min não foi atingido** (16 processos não ajudam: limite de memória). Mover para a E4d as medições das regiões
+  depois das uniões (miolos, fragmentos, minúsculas) exige reformulá-las sobre a partição antes das uniões; ver
+  relatório ao usuário. As decisões de união da E7 podem ser aplicadas nos rótulos/vetores finais sem refazer a E4e.
+- **Anotações (`anotacoes.json`) na E4e:** `estados_diferentes` veta qualquer junção que una os dois pontos
+  (uniões da tabela, fragmentos, miolos, minúsculas); `mesmo_estado` junta as duas regiões no fim (união
+  `tipo: "anotacao"`); `problema` é listado. Só mapas com anotação têm as anotações na chave da E4e. Teste T4.9c.
+  Testado com um arquivo provisório (uma anotação de cada tipo no mapa 2053: veto de um miolo, junção de um
+  candidato, problema listado) e apagado depois.
+- **T5.7 aprovado** (tolerância de 1 px; IoU estrito continua impresso). `rotulos-pre/`, `antes-miolo/` e
+  `referencia-e4/` apagados (`limpar_cache.py`, 372 MB). O T-C6 (prova única da refatoração) fica como concluído.
+- **Decisões do usuário (2026-10-15, depois do relatório):** aprovado tudo (transições, enclaves, visualizador,
+  velocidade, anotações). Os 4,9 min da rodada só de regra da E4e servem; a reestruturação da E4e fica para depois.
+  Para a E7: (1) as uniões por nome são aplicadas nos vetores finais (junta a cobertura das duas regiões e remove a
+  borda comum, sem refazer a E4e; a borda com os outros vizinhos não muda, nem o tremor); (2) a chave de cache do
+  vetor final inclui a lista de uniões aplicadas no mapa; (3) a E7 respeita `anotacoes.json` ("estados diferentes"
+  veta união por nome entre aqueles pontos) e o teste das anotações roda também depois da E7; (4) se a E7 precisar
+  mudar a rotulagem com frequência, avisar e reavaliar a aceleração da E4e. Na E6: id de cada estado no
+  visualizador (ao passar o mouse e colorir por id). Na E7, parar e mandar as traduções antes da E8.
+
+**2026-10-15 (E6)**
+
+- **`rastrear.py`:** grade comum de 0,1° (equiretangular), casamento por área comum (pares em ordem decrescente,
+  cada região casada uma vez: divisão = o maior pedaço herda; fusão = herda a maior sobreposição), cor L1 ≤ 60 ou
+  IoU ≥ 0,8 (recoloração, registrada), só herda quem existia no mapa anterior. Antimeridiano: duas regiões da mesma
+  cor tocando as duas bordas do quadro do mundo inteiro, na mesma faixa de latitude, são uma entidade (o T6.1
+  aceita esse par). Saída `entidades.json` (`entidades`, `por_ano` em corridas de anos com o mesmo mapa, `eventos`).
+  Resultado: 4.392 entidades, 552 recolorações.
+- **T6.2 (piscar)** medido por corrida de mapa: um id que some num mapa e volta no seguinte (o rastreamento nunca
+  reusa id, então isto pega id pulado).
+- **T6.3:** 448 entidades com vida < 3 anos. Causas (experimentos/curtas_causa.py): 198 com cor diferente do estado
+  sobreposto antes (estado novo ou recoloração breve do vídeo), 181 sem sobreposição antes (estado novo), 69 que
+  herdariam pela sobreposição mas perderam o id para uma região maior (divisão/fusão de peças ainda não unidas: os
+  candidatos da E7 resolvem a maior parte, e a E6 é refeita depois da E7).
+- **T6.4 (critério ajustado):** "mesma máscara de pixels" não basta: se um vizinho muda, a borda comum muda nos
+  dois. O teste exige também a mesma vizinhança (anel de 3 px com os mesmos ids). Com isso sobraram 136 de 240.038
+  regiões com geometria diferente: o `coverage_simplify` do GEOS decide cada aresta olhando arestas vizinhas num
+  raio de 6–20 px. **Correção na E5 (VERSAO 5):** simplificação própria aresta por aresta (`simplificar_local`,
+  Douglas–Peucker em cada cadeia entre nós, forma canônica, cadeias que se cruzam voltam ao original). Os 5 casos
+  conferidos passaram a sair idênticos; E5 refeita nos 1.965 mapas e E6 refeita.
+- **Visualizador:** id da entidade ao passar o mouse e no painel da região (com a vida dela); modo "cor por id"
+  (cor estável derivada do id) para ver a continuidade entre os anos.
 

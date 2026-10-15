@@ -82,12 +82,43 @@ def gravar_manifesto(etapa, m):
     os.replace(tmp, arq)
 
 
-def precisa(man, ident, ch, caminho):
+def assinatura(*caminhos):
+    """(mtime em ns, tamanho) de cada arquivo: se não mudou desde a gravação, o hash do manifesto vale sem reler."""
+    out = []
+    for c in caminhos:
+        st = os.stat(c)
+        out.append([st.st_mtime_ns, st.st_size])
+    return out
+
+
+def entrada(ch, hash_saida, segundos, *caminhos):
+    return {"chave": ch, "hash_saida": hash_saida, "segundos": segundos, "stat": assinatura(*caminhos)}
+
+
+def hash_conhecido(e, *caminhos):
+    """O hash de saída do manifesto, se os arquivos estão como foram gravados (mesmo mtime e tamanho); senão None.
+    (O T-C1 confere, recalculando do zero, que o conteúdo bate.)"""
+    if not e or "stat" not in e:
+        return None
+    try:
+        return e["hash_saida"] if assinatura(*caminhos) == e["stat"] else None
+    except FileNotFoundError:
+        return None
+
+
+def precisa(man, ident, ch, caminho, hash_fn=None):
     """True se o item precisa ser recalculado: chave diferente, artefato ausente ou conteúdo diferente do manifesto."""
     e = man.get(ident)
     if not e or e.get("chave") != ch or not os.path.exists(caminho):
         return True
-    return hash_arquivo(caminho) != e.get("hash_saida")
+    if hash_conhecido(e, caminho) is not None:
+        return False
+    return (hash_fn or hash_arquivo)(caminho) != e.get("hash_saida")
+
+
+def hash_de(man, ident, caminho):
+    """Hash do conteúdo de um artefato do manifesto, sem reler se a assinatura bate."""
+    return hash_conhecido(man.get(ident), caminho) or hash_arquivo(caminho)
 
 
 def atomico(caminho):

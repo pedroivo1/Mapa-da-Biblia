@@ -3,7 +3,7 @@
 /* leitor: texto da Bíblia, como nos apps */
 .leitor {
   --leitor-fonte: 1.2rem;
-  max-width: 44rem;
+  max-width: 60rem;
   margin: 0 auto;
   padding: 0 1.25rem 3rem;
 }

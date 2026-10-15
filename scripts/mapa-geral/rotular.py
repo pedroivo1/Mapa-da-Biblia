@@ -2,7 +2,7 @@
 # E4 do mapa geral (v2): um rótulo por pixel para cada mapa distinto do vídeo (partição da terra em regiões).
 # Uso (na raiz do repositório):
 #   PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/rotular.py [id ...] [--amostra rapida|media|todos]
-#                                                                                 [--forcar] [--so-chaves]
+#                                                                                 [--forcar] [--forcar-e] [--so-chaves]
 # Sub-etapas com cache (docs/mapa-geral-incremental.md): cada uma só é recalculada se a chave dela mudou (versão,
 # parâmetros, hash do conteúdo das entradas). Artefatos em .cache/v2/e4/<sub>/ e manifesto.json por sub-etapa:
 #   E4a  zonas planas, classificação, vãos de letra, fragmentos -> marcadores       e4/a/<id>.npz
@@ -92,10 +92,15 @@ def evidencia_letra(px, cor):
 
 
 def indices_por_rotulo(arr):
-    """{rótulo: índices planos dos pixels} para todos os rótulos de arr, numa passada (argsort)."""
+    """{rótulo: índices planos dos pixels} para todos os rótulos de arr, numa passada (argsort estável; em uint16 o
+    numpy usa radix sort, ~10x mais rápido)."""
     plano = arr.ravel()
+    if plano.min() >= 0 and plano.max() < 65536:
+        plano = plano.astype(np.uint16)
     ordem = np.argsort(plano, kind="stable")
-    vals, ini = np.unique(plano[ordem], return_index=True)
+    ordenado = plano[ordem]
+    ini = np.concatenate([[0], np.flatnonzero(ordenado[1:] != ordenado[:-1]) + 1])   # sem um segundo sort (np.unique)
+    vals = ordenado[ini]
     fim = np.append(ini[1:], len(plano))
     return {int(v): ordem[a:b] for v, a, b in zip(vals.tolist(), ini.tolist(), fim.tolist())}
 
@@ -382,11 +387,16 @@ def decidir_unioes(pares, cor_marc, area):
     return unioes, candidatos
 
 
-def e4e(im, ws0, a, d, terra_mundo=None):
+def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
     """E4e: regras (uniões da tabela da E4d, ilhas, costa, fragmentos, minúsculas), numeração final e informações."""
     k = np.ones((3, 3), np.uint8)
     rgb = im[:, :, ::-1]
     pxr = rgb.astype(np.int32)
+    # canais por pixel calculados uma vez (em uint8/int16: max/min sobre o eixo de cor em int32 é lento)
+    mx = np.maximum(np.maximum(im[:, :, 0], im[:, :, 1]), im[:, :, 2])
+    mn = np.minimum(np.minimum(im[:, :, 0], im[:, :, 1]), im[:, :, 2])
+    dmar = (np.abs(im[:, :, 2].astype(np.int16) - int(MAR_RGB[0])) + np.abs(im[:, :, 1].astype(np.int16) - int(MAR_RGB[1]))
+            + np.abs(im[:, :, 0].astype(np.int16) - int(MAR_RGB[2])))
     ws = ws0.copy()
     orn = a["orn"]
     lr = a["lr"]
@@ -400,8 +410,36 @@ def e4e(im, ws0, a, d, terra_mundo=None):
         while pai.get(x, x) != x:
             x = pai[x]
         return x
+    # anotações do visualizador (scripts/mapa-geral/anotacoes.json) deste mapa, em pixels: estados_diferentes veta
+    # qualquer junção que ponha os dois pontos na mesma região (uniões, fragmentos, miolos, minúsculas);
+    # mesmo_estado junta as duas regiões no fim; problema só é registrado
+    notas = notas or []
+    diferentes = [(n["px_a"], n["px_b"]) for n in notas if n["tipo"] == "estados_diferentes"]
+
+    def vetado(rot, x_, y_):
+        """True se juntar os rótulos x_ e y_ (rot(ponto) dá o rótulo atual de um ponto) une dois pontos marcados
+        como estados diferentes."""
+        for pa, pb in diferentes:
+            la, lb = rot(pa), rot(pb)
+            if {la, lb} == {x_, y_} and la != lb:
+                return True
+        return False
+    rot_ws = lambda pt: raiz(int(ws0[pt[1], pt[0]]))
+    rot_reg = lambda pt: int(reg[pt[1], pt[0]])
+    vetos = []
     area = d["area"]
     unioes, candidatos = decidir_unioes(d["pares"], cor_marc, area)
+    if diferentes:
+        ok_u = []
+        for u in unioes:
+            if vetado(rot_ws, raiz(u["a"]), raiz(u["b"])):
+                vetos.append({"etapa": "uniao", "a": u["a"], "b": u["b"]})
+                candidatos.append({x_: y_ for x_, y_ in u.items() if x_ != "tipo"})
+            else:
+                pai[raiz(u["b"])] = raiz(u["a"])
+                ok_u.append(u)
+        unioes = ok_u
+        pai.clear()
     # Uniões na E4: só as quase certas. Medido num conjunto rotulado à mão (88 pares de 999 e 1799,
     # scripts/mapa-geral/pares.json), as estatísticas da fronteira não separam "estado partido pelo próprio nome" de
     # "dois estados da mesma cor com o nome encostado na linha". Os demais pares de mesma cor viram "candidatos"
@@ -428,12 +466,13 @@ def e4e(im, ws0, a, d, terra_mundo=None):
     # (saturação >= 25) ou brancos (mín. canal >= 246) formam componentes; >= 4 px viram terra: da região vizinha de
     # maior contato se tocar terra (antialias da costa), senão região nova (ilha). Texto preto sobre o mar (cinza,
     # saturação < 25) fica mar.
-    sat = pxr.max(axis=2) - pxr.min(axis=2)
-    nao_mar = np.abs(pxr - MAR_RGB).sum(axis=2) > LIM_MAR
+    sat = mx.astype(np.int16) - mn
+    nao_mar = dmar > LIM_MAR
     # (o halo branco dos rótulos sobre o mar não é ilha: os pixels a <= 2 px do núcleo preto das letras saem)
-    perto_letra = cv2.dilate((pxr.max(axis=2) <= 80).astype(np.uint8), k, iterations=2).astype(bool)
-    cand_ilha = (ws == 1) & nao_mar & ((sat >= 25) | (pxr.min(axis=2) >= 246)) & ~orn & ~perto_letra
+    perto_letra = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=2).astype(bool)
+    cand_ilha = (ws == 1) & nao_mar & ((sat >= 25) | (mn >= 246)) & ~orn & ~perto_letra
     ni, li, sti, _ = cv2.connectedComponentsWithStats(cand_ilha.astype(np.uint8), connectivity=8)
+    maior_ws = int(ws.max())
     for c_ in range(1, ni):
         if sti[c_, cv2.CC_STAT_AREA] < 4:
             continue
@@ -450,7 +489,8 @@ def e4e(im, ws0, a, d, terra_mundo=None):
             u_, c_c = np.unique(viz, return_counts=True)
             alvo = int(u_[c_c.argmax()])
         if alvo is None:
-            alvo = max(int(ws.max()), len(cor_lab) - 1) + 1
+            alvo = max(maior_ws, len(cor_lab) - 1) + 1
+            maior_ws = alvo
             cor_lab = np.vstack([cor_lab, np.zeros((alvo + 1 - len(cor_lab), 3), np.int32)])
             cor_lab[alvo] = cor_i.astype(np.int32)
         ws[y0:y1, x0:x1][m] = alvo
@@ -494,7 +534,8 @@ def e4e(im, ws0, a, d, terra_mundo=None):
         u, cc = np.unique(viz, return_counts=True)
         j = cc.argmax()
         alvo = int(u[j])
-        if cc[j] / tot >= 0.4 and np.abs(cor_reg[alvo] - cor_reg[v]).sum() <= COR_UNIAO and cor_reg[v].min() < 200:
+        if cc[j] / tot >= 0.4 and np.abs(cor_reg[alvo] - cor_reg[v]).sum() <= COR_UNIAO and cor_reg[v].min() < 200 \
+                and not (diferentes and vetado(rot_reg, alvo, v)):
             ys, xs = np.where(m > 0)
             unioes.append({"a": alvo, "b": int(v), "tipo": "fragmento", "fracao_letra": 0.0, "fracao_sem_linha": 0.0,
                            "fracao_perimetro": round(float(cc[j] / tot), 3), "fronteira_px": int(cc[j]),
@@ -527,9 +568,9 @@ def e4e(im, ws0, a, d, terra_mundo=None):
     miolos = []
     caixas_txt = a["caixas"]
     # linha de contorno (cinza sem saturação, longe de núcleo de letra), como na E4d
-    nucleo_m = cv2.dilate((pxr.max(axis=2) <= 80).astype(np.uint8), k, iterations=1).astype(bool)
-    linha_m = ((pxr.max(axis=2) - pxr.min(axis=2)) < 20) & (pxr.max(axis=2) >= 100) & (pxr.max(axis=2) <= 215) & ~nucleo_m
-    mar_video = np.abs(pxr - MAR_RGB).sum(axis=2) <= LIM_MAR
+    nucleo_m = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=1).astype(bool)
+    linha_m = (sat < 20) & (mx >= 100) & (mx <= 215) & ~nucleo_m
+    mar_video = dmar <= LIM_MAR
     # várias passadas: o miolo de um "B" fica cercado pelo traço da letra (que também virou região); quando o traço
     # é absorvido, o miolo passa a ser cercado pela cor do estado e cai na regra "mesma cor, sem linha"
     for _passada in range(4):
@@ -575,13 +616,18 @@ def e4e(im, ws0, a, d, terra_mundo=None):
             dc = float(np.abs(cor_v - cor_d).sum())
             # o traço da letra virou região: cor quase branca sobre vizinho colorido (ou quase preta sobre claro), e
             # alguma letra em volta (>= 5 %: uma faixa branca de terra sem dono num estado colorido não tem)
-            traco = bool(((cor_v.min() >= 225 and cor_d.min() < 200) or (cor_v.max() <= 80 and cor_d.max() > 150))
-                         and fora >= 0.05)
+            cor_letra = (cor_v.min() >= 225 and cor_d.min() < 200) or (cor_v.max() <= 80 and cor_d.max() > 150)
+            # traço fino (raio inscrito <= 3,5 px: traço de letra de até 7 px) também é letra, mesmo sem letra em
+            # volta (o "n" de Tang, o "J" de Jin, o "Y" de Yuan viravam enclave); um enclave creme/branco real
+            # (o "A." em 1121 d.C.) é mais grosso
+            raio = float(cv2.distanceTransform(np.pad(m, 1), cv2.DIST_L2, 3).max())
+            traco = bool(cor_letra and (fora >= 0.05 or raio <= 3.5))
             cx, cy = (bx[0] + bx[2]) // 2, (bx[1] + bx[3]) // 2
             na_caixa = any(x <= cx <= x + w and y <= cy <= y + h for x, y, w, h in caixas_txt)
             dt = cv2.distanceTransform(np.pad(m, 1), cv2.DIST_L2, 3)[1:-1, 1:-1]
             py_, px_ = np.unravel_index(int(dt.argmax()), dt.shape)
             reg_m = {"r": int(v), "dono": dono, "area_px": int(len(ix)), "caixa": bx, "ponto": [int(px_ + x0), int(py_ + y0)],
+                     "raio": round(raio, 1),
                      "fracao_letra": round(fora, 3),
                      "fracao_linha": round(lin, 3), "dif_cor": int(dc), "traco": traco, "caixa_texto": na_caixa}
             colorido = cor_d.min() < 200
@@ -617,6 +663,9 @@ def e4e(im, ws0, a, d, terra_mundo=None):
                 texto = fora >= 0.15 and lin_front < 0.1
             texto = texto or na_caixa
             mesma_cor = dc <= COR_UNIAO and lin < 0.15 and lin_front < 0.1
+            if (texto or mesma_cor) and diferentes and vetado(rot_reg, dono, v):
+                vetos.append({"etapa": "miolo", "r": int(v), "dono": dono})
+                texto = mesma_cor = False
             if texto or mesma_cor:
                 sub[m > 0] = dono
                 reg_m["motivo"] = "texto" if texto else "mesma-cor"
@@ -644,10 +693,21 @@ def e4e(im, ws0, a, d, terra_mundo=None):
             vizinhos = vizinhos[(vizinhos > 0) & (vizinhos != v)]
             if len(vizinhos):
                 u, c = np.unique(vizinhos, return_counts=True)
+                if diferentes and vetado(rot_reg, int(u[c.argmax()]), v):
+                    continue
                 sub[m > 0] = u[c.argmax()]
                 mudou = True
         if not mudou:
             break
+    # anotações "mesmo_estado": junta as regiões dos dois pontos (se forem terra e diferentes)
+    for n in notas:
+        if n["tipo"] != "mesmo_estado":
+            continue
+        la, lb = rot_reg(n["px_a"]), rot_reg(n["px_b"])
+        if la and lb and la != lb:
+            reg[reg == lb] = la
+            unioes.append({"a": la, "b": lb, "tipo": "anotacao", "anotacao": n["id"], "ponto": n["px_b"],
+                           "caixa_menor": [n["px_b"][0], n["px_b"][1], n["px_b"][0], n["px_b"][1]], "_reg": la})
     # compacta ids
     vals = np.unique(reg[reg > 0])
     mapa_id = np.zeros(int(reg.max()) + 1, np.int32)
@@ -703,18 +763,22 @@ def e4e(im, ws0, a, d, terra_mundo=None):
         dd = int(mapa_id[e_["dono"]]) if e_["dono"] < len(mapa_id) else 0
         if rr and dd and rr != dd:
             enc_final.append(dict(e_, r=rr, dono=dd))
-    return reg, info, lr, unioes, candidatos, enc_final
+    anot = {"aplicadas": [n["id"] for n in notas if n["tipo"] in ("mesmo_estado", "estados_diferentes")],
+            "vetos": vetos, "problemas": [{"id": n["id"], "ponto": n.get("px"), "comentario": n.get("comentario", "")}
+                                          for n in notas if n["tipo"] == "problema"]}
+    return reg, info, lr, unioes, candidatos, enc_final, anot
 
 
 # ------------------------------------------------------------------ cache por sub-etapa (docs/mapa-geral-incremental.md)
 # Incremente a VERSAO de uma sub-etapa sempre que a lógica dela mudar (não a cada comentário).
-VERSAO = {"a": 1, "b": 1, "d": 1, "e": 13}     # e2: miolos de letra; e3: passadas + mesma cor sem linha; e4: anel por cor;
+VERSAO = {"a": 1, "b": 1, "d": 1, "e": 14}     # e2: miolos de letra; e3: passadas + mesma cor sem linha; e4: anel por cor;
                                                # e5: limiar de letra conforme o vizinho (colorido / claro); e6: ponto do miolo;
                                                # e7: mar do vídeo no anel; linha na fronteira comum (claros);
                                                # e8: traço só com cor quase branca/preta e >= 5 % de letra;
                                                # e9: mar do vídeo só conta com >= 5 % do anel;
                                                # e10: linha na fronteira veta também com vizinho colorido;
-                                               # e11/12: linha não conta a antialias (mistura vizinho × branco/preto) se o vizinho é colorido
+                                               # e11/12: linha não conta a antialias (mistura vizinho × branco/preto) se o vizinho é colorido;
+                                               # e14: traço fino (raio <= 3,5) é letra; anotações
 
 
 def params(sub):
@@ -785,12 +849,45 @@ def hash_e(arq):
     return cache.sha1((cache.hash_arquivo(arq["e"]) + cache.hash_arquivo(arq["e_json"])).encode())
 
 
+ANOTACOES = os.path.join(AQUI, "anotacoes.json")
+
+
+def notas_por_mapa(cal):
+    """{mapa: [anotação com pontos em pixels]} a partir de scripts/mapa-geral/anotacoes.json (visualizar.html)."""
+    import math
+    if not os.path.exists(ANOTACOES):
+        return {}
+    m80 = 1.25 * math.degrees(math.log(math.tan(math.pi / 4 + 0.4 * math.radians(80.0))))
+
+    def px(p, lonlat):
+        lon, lat = lonlat
+        y = 1.25 * math.degrees(math.log(math.tan(math.pi / 4 + 0.4 * math.radians(lat))))
+        return [min(W - 1, max(0, int(round((lon + 180) * p["S"] - p["X0"])))),
+                min(H - 1, max(0, int(round((m80 - y) * p["S"] - p["Y0"]))))]
+    out = {}
+    for n in json.load(open(ANOTACOES)).get("anotacoes", []):
+        k = str(n["mapa"])
+        if k not in cal:
+            continue
+        r = {"id": n["id"], "tipo": n["tipo"], "comentario": n.get("comentario", "")}
+        if n["tipo"] == "problema":
+            r["px"] = px(cal[k], n["ponto"])
+        else:
+            r["px_a"], r["px_b"] = px(cal[k], n["ponto_a"]), px(cal[k], n["ponto_b"])
+        out.setdefault(k, []).append(r)
+    return out
+
+
 def processar(args):
     """Um lote de mapas: para cada um, cada sub-etapa só é recalculada se a chave mudou. Devolve as entradas novas
     dos manifestos, o que foi recalculado e o tempo de cada sub-etapa."""
     ids, mans, forcar = args
+    cv2.setNumThreads(1)      # 8 processos em paralelo: threads do OpenCV dentro de cada um só disputam CPU
+    forcar_e = forcar == "e"  # --forcar-e: refaz só a E4e (medir o tempo de uma mudança de regra)
+    forcar = forcar is True
     from calibrar import carregar_mundo, renderizar, LAGOS_NO_VIDEO
     cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    notas = notas_por_mapa(cal)
     mundo_h = cache.hash_arquivo(os.path.join(AQUI, "..", "..", "frontend", "mapa", "mundo.json"))
     terra = lagos = None
     novas = {s_: {} for s_ in "abde"}
@@ -818,9 +915,11 @@ def processar(args):
                 dados["a"] = e4a(imagem())
                 gravar_a(arq["a"], dados["a"])
                 t_mapa["a"] = time.time() - t0
-                novas["a"][k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq["a"]), "segundos": round(t_mapa["a"], 3)}
+                novas["a"][k] = cache.entrada(ch, cache.hash_arquivo(arq["a"]), round(t_mapa["a"], 3), arq["a"])
                 feitos["a"] += 1
-            h_a = cache.hash_arquivo(arq["a"])
+            h_a = cache.hash_de(novas["a"] if k in novas["a"] else mans["a"], k, arq["a"])
+            if k not in novas["a"] and "stat" not in mans["a"].get(k, {"stat": 1}):
+                novas["a"][k] = dict(mans["a"][k], stat=cache.assinatura(arq["a"]))     # manifesto antigo
 
             def a_():
                 if "a" not in dados:
@@ -833,9 +932,11 @@ def processar(args):
                 dados["b"] = e4b(imagem(), a_())
                 gravar_png16(arq["b"], dados["b"])
                 t_mapa["b"] = time.time() - t0
-                novas["b"][k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq["b"]), "segundos": round(t_mapa["b"], 3)}
+                novas["b"][k] = cache.entrada(ch, cache.hash_arquivo(arq["b"]), round(t_mapa["b"], 3), arq["b"])
                 feitos["b"] += 1
-            h_b = cache.hash_arquivo(arq["b"])
+            h_b = cache.hash_de(novas["b"] if k in novas["b"] else mans["b"], k, arq["b"])
+            if k not in novas["b"] and "stat" not in mans["b"].get(k, {"stat": 1}):
+                novas["b"][k] = dict(mans["b"][k], stat=cache.assinatura(arq["b"]))     # manifesto antigo
 
             def b_():
                 if "b" not in dados:
@@ -848,15 +949,22 @@ def processar(args):
                 dados["d"] = e4d(imagem(), b_(), a_())
                 gravar_json(arq["d"], dados["d"])
                 t_mapa["d"] = time.time() - t0
-                novas["d"][k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq["d"]), "segundos": round(t_mapa["d"], 3)}
+                novas["d"][k] = cache.entrada(ch, cache.hash_arquivo(arq["d"]), round(t_mapa["d"], 3), arq["d"])
                 feitos["d"] += 1
-            h_d = cache.hash_arquivo(arq["d"])
+            h_d = cache.hash_de(novas["d"] if k in novas["d"] else mans["d"], k, arq["d"])
+            if k not in novas["d"] and "stat" not in mans["d"].get(k, {"stat": 1}):
+                novas["d"][k] = dict(mans["d"][k], stat=cache.assinatura(arq["d"]))     # manifesto antigo
             # E4e
-            ch = cache.chave(VERSAO["e"], params("e"), [h_png, h_a, h_b, h_d, cache.hash_obj(cal[k]), mundo_h,
-                                                         sorted(LAGOS_NO_VIDEO)])
+            entradas_e = [h_png, h_a, h_b, h_d, cache.hash_obj(cal[k]), mundo_h, sorted(LAGOS_NO_VIDEO)]
+            if notas.get(k):
+                entradas_e.append(cache.hash_obj(notas[k]))       # só entra na chave dos mapas com anotação
+            ch = cache.chave(VERSAO["e"], params("e"), entradas_e)
             e_ok = os.path.exists(arq["e"]) and os.path.exists(arq["e_json"])
             ent = mans["e"].get(k)
-            if forcar or not e_ok or not ent or ent.get("chave") != ch or hash_e(arq) != ent.get("hash_saida"):
+            h_ok = e_ok and ent and (cache.hash_conhecido(ent, arq["e"], arq["e_json"]) or hash_e(arq)) == ent.get("hash_saida")
+            if not forcar and h_ok and ent.get("chave") == ch and "stat" not in ent:
+                novas["e"][k] = dict(ent, stat=cache.assinatura(arq["e"], arq["e_json"]))     # manifesto antigo
+            if forcar or forcar_e or not e_ok or not ent or ent.get("chave") != ch or not h_ok:
                 t0 = time.time()
                 if "d" not in dados:
                     dados["d"] = json.load(open(arq["d"]))
@@ -864,16 +972,18 @@ def processar(args):
                     terra, lagos = carregar_mundo()
                 p = cal[k]
                 tm = renderizar(terra, lagos, p["S"], p["X0"], p["Y0"]) > 0
-                reg, info, orn, unioes, candidatos, enclaves = e4e(imagem(), b_(), a_(), dados["d"], tm)
+                reg, info, orn, unioes, candidatos, enclaves, anot = e4e(imagem(), b_(), a_(), dados["d"], tm, notas.get(k))
                 gravar_png16(arq["e"], reg)
                 # mesmo formato de antes da divisão (json.dump padrão, ordem de inserção): bytes idênticos, para a
                 # chave da E5 (hash do arquivo) não mudar à toa
                 tmp = cache.atomico(arq["e_json"])
-                json.dump({"regioes": info, "ornamento": orn, "unioes": unioes, "candidatos": candidatos,
-                           "enclaves": enclaves}, open(tmp, "w"))
+                saida_j = {"regioes": info, "ornamento": orn, "unioes": unioes, "candidatos": candidatos, "enclaves": enclaves}
+                if notas.get(k):
+                    saida_j["anotacoes"] = anot
+                json.dump(saida_j, open(tmp, "w"))
                 os.replace(tmp, arq["e_json"])
                 t_mapa["e"] = time.time() - t0
-                novas["e"][k] = {"chave": ch, "hash_saida": hash_e(arq), "segundos": round(t_mapa["e"], 3)}
+                novas["e"][k] = cache.entrada(ch, hash_e(arq), round(t_mapa["e"], 3), arq["e"], arq["e_json"])
                 feitos["e"] += 1
             tempos[k] = t_mapa
         except Exception as ex_:          # registra e segue; a lista de falhas sai no fim
@@ -935,7 +1045,7 @@ def main():
             cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png"))]), arquivos(k)["a"]))
         print(f"E4a recalcularia {n} de {len(ids)}; E4b/E4d/E4e dependem do conteúdo das anteriores")
         return
-    resumo = rodar(ids, forcar="--forcar" in sys.argv)
+    resumo = rodar(ids, forcar="e" if "--forcar-e" in sys.argv else ("--forcar" in sys.argv))
     json.dump(resumo, open(os.path.join(V2, "rotulos-tempo.json"), "w"), indent=1)
     print(json.dumps({k: v for k, v in resumo.items() if k != "falhas"}, ensure_ascii=False))
     if resumo["falhas"]:

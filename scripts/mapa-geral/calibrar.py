@@ -233,7 +233,11 @@ def main():
         for r in ex.map(tarefa, tarefas):
             por_mapa.update(r)
             print("mapas calibrados:", len(por_mapa), flush=True)
-    # trechos: mapas consecutivos (no tempo) com S, X0, Y0 iguais (S 0,2 %; X0 e Y0 até 0,2 % de 1920/960 = 4/2 px)
+    json.dump({"trechos": montar_trechos(ids, por_mapa), "por_mapa": por_mapa}, open(os.path.join(V2, "calibracao.json"), "w"))
+
+
+def montar_trechos(ids, por_mapa):
+    """Trechos: mapas consecutivos (no tempo) com S, X0, Y0 iguais (S 0,2 %; X0 e Y0 até 4 px)."""
     trechos, atual = [], None
     for k in ids:
         c = por_mapa.get(k)
@@ -244,9 +248,8 @@ def main():
         else:
             atual = {"S": c["S"], "X0": c["X0"], "Y0": c["Y0"], "ids": [k]}
             trechos.append(atual)
-    json.dump({"trechos": [{"S": t["S"], "X0": t["X0"], "Y0": t["Y0"], "n": len(t["ids"]), "ids": [t["ids"][0], t["ids"][-1]]} for t in trechos],
-               "por_mapa": por_mapa}, open(os.path.join(V2, "calibracao.json"), "w"))
     print("trechos:", len(trechos), [(t["S"], t["X0"], t["Y0"], len(t["ids"])) for t in trechos if len(t["ids"]) > 20])
+    return [{"S": t["S"], "X0": t["X0"], "Y0": t["Y0"], "n": len(t["ids"]), "ids": [t["ids"][0], t["ids"][-1]]} for t in trechos]
 
 
 if __name__ == "__main__":
