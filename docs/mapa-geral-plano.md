@@ -1,5 +1,8 @@
 # Mapa geral a partir de vídeos — plano, estado atual e instruções para um agente novo
 
+> **Substituído por `docs/mapa-geral-plano-2.md`** (ano a ano, só o vídeo, bordas em cobertura, nomes de todas as
+> épocas). Este arquivo fica só como histórico da versão 1.
+
 > Documento de passagem de bastão. Escrito para quem não viu a conversa anterior. Leia também `AGENTS.md`
 > (regras do projeto) antes de mexer em qualquer coisa. Idioma do projeto: **português do Brasil** (código,
 > comentários, nomes de arquivo, textos).

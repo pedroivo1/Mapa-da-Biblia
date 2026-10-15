@@ -5,10 +5,18 @@ def _h(chave):
     d = hashlib.md5(repr(chave).encode()).digest()
     return (int.from_bytes(d[:4], "big") / 2147483647.5) - 1.0
 
-def tremer(pts, passo=0.35, amp=0.045):
+def chave_lado(a, b):
+    """Chave canônica de um lado (a mesma nos dois sentidos), com a mesma precisão que tremer() usa."""
+    a = (round(a[0], 4), round(a[1], 4))
+    b = (round(b[0], 4), round(b[1], 4))
+    return (b, a) if a > b else (a, b)
+
+
+def tremer(pts, passo=0.35, amp=0.045, sem_tremor=None):
     """Borda só com linhas retas e um 'tremor': cada lado vira uma poligonal de segmentos retos curtos,
     deslocados de forma determinística. O mesmo lado (em qualquer sentido) gera os mesmos pontos,
-    então vizinhos que dividem a borda ficam coladinhos."""
+    então vizinhos que dividem a borda ficam coladinhos. sem_tremor: conjunto de chave_lado() que ficam retos
+    (onde o tremor faria as duas margens de um canal fino se cruzarem)."""
     n = len(pts)
     saida = []
     for i in range(n):
@@ -22,11 +30,12 @@ def tremer(pts, passo=0.35, amp=0.045):
         if L < 1e-9: continue
         k = max(1, int(L / passo))
         if k < 2: continue
+        reto = bool(sem_tremor) and (p, q) in sem_tremor
         nx, ny = -dy / L, dx / L
         meio = []
         for j in range(1, k):
             t = j / k
-            off = _h((p, q, j)) * amp
+            off = 0.0 if reto else _h((p, q, j)) * amp      # lado reto: mesmos pontos, sem deslocamento
             meio.append((p[0] + dx * t + nx * off, p[1] + dy * t + ny * off))
         saida.extend(reversed(meio) if inv else meio)
     return saida

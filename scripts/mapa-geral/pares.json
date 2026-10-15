@@ -1,0 +1,1237 @@
+{
+ "_ajuda": "Pares de regiões vizinhas de mesma cor rotulados à mão (E4, 2026-10-15) em 999 e 1799 d.C.: mesmo_estado = o mesmo estado partido pelo próprio nome (ou por compressão/costa); false = dois estados de mesma cor. ponto_a/ponto_b são pontos interiores (lon, lat) de cada parte. Teste permanente: na E7, 0 uniões erradas e no máx. 3 pedaços soltos.",
+ "pares": [
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -36.769,
+    76.814
+   ],
+   "ponto_b": [
+    -42.496,
+    82.97
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 0
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -36.769,
+    76.814
+   ],
+   "ponto_b": [
+    -23.1,
+    72.634
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 7
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -19.036,
+    65.49
+   ],
+   "ponto_b": [
+    -21.068,
+    64.581
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 26
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -16.08,
+    65.603
+   ],
+   "ponto_b": [
+    -21.068,
+    64.581
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 29
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    118.029,
+    64.351
+   ],
+   "ponto_b": [
+    102.143,
+    63.423
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 30
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    118.029,
+    64.351
+   ],
+   "ponto_b": [
+    91.429,
+    63.189
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 32
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    118.029,
+    64.351
+   ],
+   "ponto_b": [
+    96.232,
+    62.836
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 34
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    18.278,
+    65.264
+   ],
+   "ponto_b": [
+    14.214,
+    58.179
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 37
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    8.119,
+    51.529
+   ],
+   "ponto_b": [
+    10.335,
+    51.668
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 42
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    8.119,
+    51.529
+   ],
+   "ponto_b": [
+    10.705,
+    48.99
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 47
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    22.527,
+    51.111
+   ],
+   "ponto_b": [
+    19.941,
+    47.401
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 48
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -99.206,
+    53.991
+   ],
+   "ponto_b": [
+    -66.325,
+    46.522
+   ],
+   "mesmo_estado": false,
+   "nota": "Lower Canada × New Brunswick",
+   "id_folha": 51
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -65.771,
+    48.559
+   ],
+   "ponto_b": [
+    -66.325,
+    46.522
+   ],
+   "mesmo_estado": false,
+   "nota": "Lower Canada × N.B.",
+   "id_folha": 52
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -99.206,
+    53.991
+   ],
+   "ponto_b": [
+    -82.026,
+    46.669
+   ],
+   "mesmo_estado": false,
+   "nota": "Upper Canada × vizinho britânico",
+   "id_folha": 53
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    71.663,
+    42.774
+   ],
+   "ponto_b": [
+    68.154,
+    40.145
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 58
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    64.829,
+    39.832
+   ],
+   "ponto_b": [
+    69.447,
+    38.411
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 63
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    70.001,
+    33.556
+   ],
+   "ponto_b": [
+    63.166,
+    30.054
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 67
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    70.001,
+    33.556
+   ],
+   "ponto_b": [
+    71.109,
+    29.885
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 70
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    63.166,
+    30.054
+   ],
+   "ponto_b": [
+    71.109,
+    29.885
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 71
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    66.676,
+    28.188
+   ],
+   "ponto_b": [
+    64.459,
+    26.989
+   ],
+   "mesmo_estado": false,
+   "nota": "Kh. × Kal.",
+   "id_folha": 76
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    88.658,
+    25.956
+   ],
+   "ponto_b": [
+    89.212,
+    23.348
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 78
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    88.658,
+    25.956
+   ],
+   "ponto_b": [
+    85.887,
+    23.872
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 79
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    89.212,
+    23.348
+   ],
+   "ponto_b": [
+    85.887,
+    23.872
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 81
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    75.912,
+    26.817
+   ],
+   "ponto_b": [
+    82.193,
+    19.82
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 82
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    94.754,
+    24.221
+   ],
+   "ponto_b": [
+    95.677,
+    19.464
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 84
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    101.589,
+    18.93
+   ],
+   "ponto_b": [
+    104.729,
+    13.531
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 88
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -11.093,
+    16.242
+   ],
+   "ponto_b": [
+    -12.201,
+    13.713
+   ],
+   "mesmo_estado": false,
+   "nota": "Toro × Kaarta",
+   "id_folha": 90
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -7.583,
+    13.168
+   ],
+   "ponto_b": [
+    -0.933,
+    15.161
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 92
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    13.845,
+    15.702
+   ],
+   "ponto_b": [
+    12.921,
+    13.531
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 93
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    37.305,
+    15.522
+   ],
+   "ponto_b": [
+    36.566,
+    12.259
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 98
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -101.792,
+    36.974
+   ],
+   "ponto_b": [
+    -70.943,
+    4.742
+   ],
+   "mesmo_estado": false,
+   "nota": "Nova Espanha × Nova Granada (Panamá)",
+   "id_folha": 113
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -0.933,
+    7.503
+   ],
+   "ponto_b": [
+    -3.519,
+    9.337
+   ],
+   "mesmo_estado": false,
+   "nota": "Kong × Ash.",
+   "id_folha": 114
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -70.943,
+    4.742
+   ],
+   "ponto_b": [
+    -59.49,
+    2.713
+   ],
+   "mesmo_estado": false,
+   "nota": "Nova Granada × Venezuela",
+   "id_folha": 117
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    46.541,
+    4.374
+   ],
+   "ponto_b": [
+    43.401,
+    2.16
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 118
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    116.921,
+    1.051
+   ],
+   "ponto_b": [
+    113.965,
+    -1.904
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 121
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -48.591,
+    -18.505
+   ],
+   "ponto_b": [
+    -54.687,
+    -9.999
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 127
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    -48.591,
+    -18.505
+   ],
+   "ponto_b": [
+    -46.744,
+    -10.548
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 128
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    23.82,
+    -15.091
+   ],
+   "ponto_b": [
+    24.19,
+    -17.072
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 137
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    29.547,
+    -18.147
+   ],
+   "ponto_b": [
+    26.406,
+    -19.752
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 139
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    29.547,
+    -18.147
+   ],
+   "ponto_b": [
+    30.101,
+    -20.462
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 140
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    26.406,
+    -19.752
+   ],
+   "ponto_b": [
+    30.101,
+    -20.462
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 141
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    26.96,
+    -22.755
+   ],
+   "ponto_b": [
+    25.298,
+    -21.346
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 142
+  },
+  {
+   "ano": -1799,
+   "ponto_a": [
+    19.387,
+    -31.834
+   ],
+   "ponto_b": [
+    24.744,
+    -32.666
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 146
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    -18.808,
+    64.673
+   ],
+   "ponto_b": [
+    -22.001,
+    65.824
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 149
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    -4.91,
+    57.388
+   ],
+   "ponto_b": [
+    -2.468,
+    57.258
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 150
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    -4.91,
+    57.388
+   ],
+   "ponto_b": [
+    -3.219,
+    56.468
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 151
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    -2.468,
+    57.258
+   ],
+   "ponto_b": [
+    -3.219,
+    56.468
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 152
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    16.126,
+    45.774
+   ],
+   "ponto_b": [
+    15.844,
+    44.56
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 163
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    17.629,
+    44.713
+   ],
+   "ponto_b": [
+    18.568,
+    44.101
+   ],
+   "mesmo_estado": false,
+   "nota": "Cr. × B.",
+   "id_folha": 166
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    15.844,
+    44.56
+   ],
+   "ponto_b": [
+    18.568,
+    44.101
+   ],
+   "mesmo_estado": false,
+   "nota": "Cr. × B.",
+   "id_folha": 168
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    112.666,
+    43.486
+   ],
+   "ponto_b": [
+    117.831,
+    43.332
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 169
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    -7.539,
+    43.177
+   ],
+   "ponto_b": [
+    -8.572,
+    42.945
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 171
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    21.01,
+    44.331
+   ],
+   "ponto_b": [
+    21.197,
+    41.304
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 172
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    142.717,
+    43.409
+   ],
+   "ponto_b": [
+    140.087,
+    42.323
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 174
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    26.456,
+    41.854
+   ],
+   "ponto_b": [
+    33.687,
+    39.239
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 182
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    42.139,
+    41.068
+   ],
+   "ponto_b": [
+    41.106,
+    40.355
+   ],
+   "mesmo_estado": false,
+   "nota": "I. × vizinho",
+   "id_folha": 184
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    46.365,
+    40.514
+   ],
+   "ponto_b": [
+    45.802,
+    39.559
+   ],
+   "mesmo_estado": false,
+   "nota": "Sy. × H.",
+   "id_folha": 190
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    41.106,
+    40.355
+   ],
+   "ponto_b": [
+    41.858,
+    39.559
+   ],
+   "mesmo_estado": false,
+   "nota": "I. × vizinho",
+   "id_folha": 192
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    43.924,
+    40.593
+   ],
+   "ponto_b": [
+    43.36,
+    39.479
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 194
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    43.36,
+    39.479
+   ],
+   "ponto_b": [
+    42.891,
+    40.276
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 195
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    41.858,
+    39.559
+   ],
+   "ponto_b": [
+    42.233,
+    38.111
+   ],
+   "mesmo_estado": false,
+   "nota": "I. × Ma.",
+   "id_folha": 202
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    44.769,
+    39.319
+   ],
+   "ponto_b": [
+    43.924,
+    38.111
+   ],
+   "mesmo_estado": false,
+   "nota": "V. × Sy.",
+   "id_folha": 203
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    42.233,
+    38.111
+   ],
+   "ponto_b": [
+    39.792,
+    37.787
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 205
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    22.324,
+    38.917
+   ],
+   "ponto_b": [
+    22.324,
+    37.624
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 207
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    43.454,
+    36.891
+   ],
+   "ponto_b": [
+    43.924,
+    38.111
+   ],
+   "mesmo_estado": false,
+   "nota": "Ma. × N.",
+   "id_folha": 210
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    61.203,
+    33.077
+   ],
+   "ponto_b": [
+    56.132,
+    34.416
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 218
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    61.203,
+    33.077
+   ],
+   "ponto_b": [
+    66.18,
+    33.999
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 220
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    74.632,
+    34.499
+   ],
+   "ponto_b": [
+    75.289,
+    33.329
+   ],
+   "mesmo_estado": false,
+   "nota": "K. × Shahis",
+   "id_folha": 222
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    95.856,
+    34.249
+   ],
+   "ponto_b": [
+    89.658,
+    32.909
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 225
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    95.856,
+    34.249
+   ],
+   "ponto_b": [
+    81.581,
+    32.656
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 227
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    68.246,
+    27.948
+   ],
+   "ponto_b": [
+    65.429,
+    26.027
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 237
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    65.429,
+    26.027
+   ],
+   "ponto_b": [
+    68.058,
+    25.323
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 239
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    85.432,
+    26.027
+   ],
+   "ponto_b": [
+    85.807,
+    24.086
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 241
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    84.117,
+    25.059
+   ],
+   "ponto_b": [
+    85.807,
+    24.086
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 242
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    79.328,
+    22.663
+   ],
+   "ponto_b": [
+    80.924,
+    22.127
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 252
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    56.414,
+    23.464
+   ],
+   "ponto_b": [
+    57.728,
+    21.41
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 253
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    84.399,
+    23.108
+   ],
+   "ponto_b": [
+    85.338,
+    21.589
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 256
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    82.239,
+    20.42
+   ],
+   "ponto_b": [
+    85.338,
+    21.589
+   ],
+   "mesmo_estado": false,
+   "nota": "Soma. × K.",
+   "id_folha": 257
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    85.901,
+    20.42
+   ],
+   "ponto_b": [
+    84.587,
+    19.608
+   ],
+   "mesmo_estado": false,
+   "nota": "K. × Soma.",
+   "id_folha": 263
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    37.632,
+    16.425
+   ],
+   "ponto_b": [
+    36.599,
+    13.393
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 266
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    44.299,
+    16.516
+   ],
+   "ponto_b": [
+    44.769,
+    13.762
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 267
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    13.497,
+    15.601
+   ],
+   "ponto_b": [
+    17.347,
+    14.683
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 268
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    13.497,
+    15.601
+   ],
+   "ponto_b": [
+    14.248,
+    13.393
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 270
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    17.347,
+    14.683
+   ],
+   "ponto_b": [
+    14.248,
+    13.393
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 271
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    77.449,
+    12.931
+   ],
+   "ponto_b": [
+    79.515,
+    12.469
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 273
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    6.078,
+    12.099
+   ],
+   "ponto_b": [
+    9.177,
+    12.006
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 274
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    77.449,
+    12.931
+   ],
+   "ponto_b": [
+    78.201,
+    10.708
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 275
+  },
+  {
+   "ano": -999,
+   "ponto_a": [
+    79.515,
+    12.469
+   ],
+   "ponto_b": [
+    78.201,
+    10.708
+   ],
+   "mesmo_estado": true,
+   "nota": "",
+   "id_folha": 276
+  }
+ ]
+}

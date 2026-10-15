@@ -133,6 +133,11 @@
       });
   }
 
+  // a página altera config.plano no lugar; a base da mescla precisa ser uma cópia independente
+  function copia(v) {
+    return JSON.parse(JSON.stringify(v || {}));
+  }
+
   function lerConfig() {
     return sb
       .from("configuracoes")
@@ -155,7 +160,7 @@
         ouvintesConfig.forEach(function (cb) {
           cb(nova);
         });
-        return { servidor: servidor, config: nova };
+        return { servidor: copia(servidor), config: nova };
       });
   }
 
@@ -170,7 +175,7 @@
     if (c && c.progresso && c.config && !pendente && !enviando && agora - (c.tp || 0) < TTL_CACHE && agora - (c.tc || 0) < TTL_CACHE) {
       config = c.config;
       buscaProgresso = Promise.resolve({ lido: c.progresso.lido || {}, versiculos: c.progresso.versiculos || {}, vazio: false });
-      buscaConfig = Promise.resolve({ servidor: c.config, config: c.config });
+      buscaConfig = Promise.resolve({ servidor: copia(c.config), config: c.config });
       return;
     }
     buscaProgresso = lerProgresso();
@@ -215,26 +220,65 @@
     });
   }
 
+  // "plano" é um objeto { padrao, pos: { id do plano: "livro/cap" } } gravado inteiro: mescla com o que
+  // está no servidor, para uma cópia velha de outro aparelho não apagar a posição de outro plano.
+  // base = cópia que esta página leu ao abrir; só o que mudou em relação a ela vale sobre o servidor.
+  function mesclarPlano(base, servidor, meu) {
+    base = base || {};
+    servidor = servidor || {};
+    var r = {};
+    Object.keys(servidor).forEach(function (k) { r[k] = servidor[k]; });
+    Object.keys(meu).forEach(function (k) {
+      if (k !== "pos" && meu[k] !== base[k]) r[k] = meu[k];
+      else if (!(k in r) && k !== "pos") r[k] = meu[k];
+    });
+    var pos = {};
+    var ps = servidor.pos || {}, pb = base.pos || {}, pm = meu.pos || {};
+    Object.keys(ps).forEach(function (k) { pos[k] = ps[k]; });
+    Object.keys(pm).forEach(function (k) {
+      if (pm[k] !== pb[k] || !(k in pos)) pos[k] = pm[k];
+    });
+    r.pos = pos;
+    return r;
+  }
+
   function enviarConfig() {
     clearTimeout(temporizadorConfig);
     if (!sb || !usuario || !Object.keys(alteradas).length) return Promise.resolve();
     var envio = alteradas;
     alteradas = {};
-    // sem a cópia do servidor não dá para mesclar sem apagar o resto: espera a busca
+    var base = null;
+    // relê a linha agora: a cópia da página pode ser velha (outro aparelho gravou depois) e o upsert troca tudo
     return buscaConfig
       .then(function (r) {
-        var dados = {};
-        Object.keys(r.servidor).forEach(function (k) {
-          dados[k] = r.servidor[k];
-        });
-        Object.keys(envio).forEach(function (k) {
-          dados[k] = envio[k];
-        });
-        return sb.from("configuracoes").upsert({ user_id: usuario.id, dados: dados, atualizado_em: new Date().toISOString() });
+        base = r.servidor || {};
+        return sb.from("configuracoes").select("dados").maybeSingle();
       })
       .then(function (r) {
         if (r.error) throw r.error;
-        buscaConfig = Promise.resolve({ servidor: config || {}, config: config || {} });
+        var fresco = (r.data && r.data.dados) || {};
+        var dados = {};
+        Object.keys(fresco).forEach(function (k) {
+          dados[k] = fresco[k];
+        });
+        Object.keys(envio).forEach(function (k) {
+          dados[k] = k === "plano" && envio[k] && typeof envio[k] === "object" ? mesclarPlano(base.plano, fresco.plano, envio[k]) : envio[k];
+        });
+        return sb.from("configuracoes").upsert({ user_id: usuario.id, dados: dados, atualizado_em: new Date().toISOString() }).then(function (g) {
+          if (g.error) throw g.error;
+          return dados;
+        });
+      })
+      .then(function (dados) {
+        // o que a pessoa mexeu enquanto enviava continua valendo; o resto passa a ser o que ficou no servidor
+        var nova = {};
+        Object.keys(dados).forEach(function (k) { nova[k] = dados[k]; });
+        Object.keys(alteradas).forEach(function (k) { nova[k] = alteradas[k]; });
+        var mudouPlano = JSON.stringify(nova.plano) !== JSON.stringify((config || {}).plano);
+        config = nova;
+        cacheGravar({ config: nova, tc: Date.now() });
+        buscaConfig = Promise.resolve({ servidor: copia(dados), config: nova });
+        if (mudouPlano) ouvintesConfig.forEach(function (cb) { cb(nova); });
       })
       .catch(function (e) {
         Object.keys(envio).forEach(function (k) {

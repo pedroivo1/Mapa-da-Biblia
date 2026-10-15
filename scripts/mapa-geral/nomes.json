@@ -1,45 +1,1062 @@
 {
-  "_ajuda": "Regras do mapa geral: um estado do vídeo recebe o id/nome da primeira regra cuja cor (distância L1 <= tol), caixa (centro do estado, lon/lat) e anos [de, ate] (a.C. positivo, d.C. negativo; 'de' é o mais antigo) combinam. Cores em RGB lidas do vídeo. Estados sem regra ficam sem nome (id x-<cor>-<célula 10°>).",
-  "regras": [
-    {"id": "egito", "nome": "Egito", "cores": [[246,222,90],[246,234,150],[222,210,126]], "tol": 36, "caixa": [22,14,40,34], "anos": [2500,31], "cor": "#d9a21e", "nota": "No vídeo o Egito inclui a Núbia e a faixa até Canaã nas épocas de expansão."},
-    {"id": "assiria", "nome": "Assíria", "cores": [[78,138,162],[78,138,150],[66,138,162],[66,138,198]], "tol": 36, "caixa": [34,30,50,40], "anos": [2100,600], "cor": "#7c3aed"},
-    {"id": "hititas", "nome": "Hati (hititas)", "cores": [[126,210,138]], "tol": 36, "caixa": [26,34,42,42], "anos": [1700,1150], "cor": "#6b7280"},
-    {"id": "mitani", "nome": "Mitani", "cores": [[150,114,126]], "tol": 30, "caixa": [38,34,46,40], "anos": [1500,1300], "cor": "#9d4edd"},
-    {"id": "urartu", "nome": "Urartu", "cores": [[150,114,126]], "tol": 30, "caixa": [40,36,48,42], "anos": [850,600], "cor": "#b07d62"},
-    {"id": "yamhad", "nome": "Yamhad", "cores": [[246,210,174]], "tol": 30, "caixa": [36,34,40,38], "anos": [2400,1600], "cor": "#e9b872"},
-    {"id": "mari", "nome": "Mari", "cores": [[222,162,162]], "tol": 30, "caixa": [40,30,48,37], "anos": [2400,1750], "cor": "#d98f8f"},
-    {"id": "ur", "nome": "Ur (Terceira Dinastia)", "cores": [[30,66,138],[30,66,126]], "tol": 36, "caixa": [40,29,50,36], "anos": [2150,2000], "cor": "#1e4a8a"},
-    {"id": "uruk", "nome": "Uruk", "cores": [[30,114,138]], "tol": 30, "caixa": [40,29,50,36], "anos": [2400,2200], "cor": "#1e7a8a"},
-    {"id": "axum", "nome": "D'mt e Axum", "cores": [[234,138,138],[222,138,138],[222,162,162]], "tol": 36, "caixa": [32,8,46,20], "anos": [970,-300], "cor": "#e08a8a"},
-    {"id": "siro-hititas", "nome": "Estados siro-hititas", "cores": [[222,162,162],[210,162,162]], "tol": 30, "caixa": [32,33,40,39], "anos": [1950,700], "cor": "#d98f8f"},
-    {"id": "babilonia", "nome": "Babilônia", "cores": [[222,90,90],[234,90,90]], "tol": 36, "caixa": [38,28,50,36], "anos": [1800,538], "cor": "#2563eb"},
-    {"id": "persia", "nome": "Pérsia (Império Aquemênida)", "cores": [[78,198,102],[90,198,114],[90,198,102]], "tol": 30, "caixa": [20,20,76,48], "anos": [550,331], "cor": "#7e22ce"},
-    {"id": "elao", "nome": "Elão", "cores": [[90,198,102],[90,198,114]], "tol": 30, "caixa": [44,27,58,36], "anos": [2400,540], "cor": "#0ea5e9"},
-    {"id": "media", "nome": "Média", "cores": [[54,174,90],[66,150,78]], "tol": 36, "caixa": [44,30,66,40], "anos": [700,550], "cor": "#65a30d"},
-    {"id": "seleucida", "nome": "Império Selêucida", "cores": [[90,138,126],[138,198,150]], "tol": 30, "caixa": [30,20,72,45], "anos": [330,63], "cor": "#4f9d7a"},
-    {"id": "partia", "nome": "Império Parta", "cores": [[78,198,102],[102,186,126],[114,198,126]], "tol": 30, "caixa": [44,24,72,42], "anos": [250,-226], "cor": "#3fae5a"},
-    {"id": "sassanida", "nome": "Império Sassânida", "cores": [[114,198,126],[78,198,102]], "tol": 30, "caixa": [40,20,72,42], "anos": [-226,-651], "cor": "#2f9e44"},
-    {"id": "lidia", "nome": "Lídia", "cores": [[246,186,114]], "tol": 30, "caixa": [24,35,34,41], "anos": [1100,546], "cor": "#f59f4a"},
-    {"id": "frigia", "nome": "Frígia", "cores": [[222,210,126]], "tol": 20, "caixa": [24,36,34,41], "anos": [800,650], "cor": "#d6c46a"},
-    {"id": "macedonia", "nome": "Macedônia", "cores": [[90,66,114]], "tol": 30, "caixa": [18,38,30,43], "anos": [350,150], "cor": "#5a4272"},
-    {"id": "grecia", "nome": "Grécia", "cores": [[66,126,174],[66,138,162],[78,138,162],[42,102,162],[30,66,126]], "tol": 30, "caixa": [14,34,30,43], "anos": [2000,330], "cor": "#3b82c4"},
-    {"id": "fenicia", "nome": "Fenícia", "cores": [[144,96,168],[162,102,174]], "tol": 30, "caixa": [34,31,37,36], "anos": [1500,330], "cor": "#a855f7"},
-    {"id": "fenicios-ocidente", "nome": "Colônias fenícias", "cores": [[162,102,174],[144,96,168]], "tol": 30, "caixa": [-8,30,14,41], "anos": [970,650], "cor": "#a07cc0"},
-    {"id": "israel", "nome": "Israel e Judá", "cores": [[162,198,222],[114,174,210]], "tol": 30, "caixa": [33,29,37,34], "anos": [1100,100], "cor": "#f97316"},
-    {"id": "armenia", "nome": "Armênia", "cores": [[78,126,162],[78,150,198]], "tol": 30, "caixa": [42,38,48,42], "anos": [1000,-400], "cor": "#3b6a9a"},
-    {"id": "cartago", "nome": "Cartago", "cores": [[186,138,42],[186,138,54]], "tol": 30, "caixa": [-8,30,14,41], "anos": [814,146], "cor": "#b98a2a"},
-    {"id": "etruria", "nome": "Etrúria", "cores": [[234,162,198]], "tol": 30, "caixa": [8,40,14,46], "anos": [780,300], "cor": "#e089b8"},
-    {"id": "roma", "nome": "Roma", "cores": [[126,30,30],[114,54,54],[114,24,24],[120,24,24]], "tol": 30, "caixa": [-12,25,48,56], "anos": [750,-476], "cor": "#7e1e1e", "nota": "República e Império Romano; as colônias e províncias aparecem juntas."},
-    {"id": "roma", "nome": "Roma", "cores": [[162,42,42]], "tol": 30, "caixa": [-10,34,48,56], "anos": [300,-476], "cor": "#7e1e1e"},
-    {"id": "vale-do-indo", "nome": "Civilização do Vale do Indo", "cores": [[66,138,198]], "tol": 30, "caixa": [60,18,80,36], "anos": [2400,1700], "cor": "#4287c6"},
-    {"id": "mahajanapadas", "nome": "Mahajanapadas", "cores": [[114,174,222],[114,174,210]], "tol": 30, "caixa": [76,14,92,32], "anos": [650,350], "cor": "#6fb0e0"},
-    {"id": "maurya", "nome": "Império Máuria", "cores": [[234,198,30],[222,186,66]], "tol": 30, "caixa": [60,15,92,38], "anos": [330,180], "cor": "#e0b81e"},
-    {"id": "satavahana", "nome": "Satavahana", "cores": [[210,102,114],[198,90,102]], "tol": 30, "caixa": [70,14,90,28], "anos": [250,-250], "cor": "#d2667a"},
-    {"id": "cuchana", "nome": "Cuchanas", "cores": [[246,198,102],[246,222,90]], "tol": 30, "caixa": [60,22,85,42], "anos": [250,-400], "cor": "#f2b84a"},
-    {"id": "indo-citas", "nome": "Indo-citas", "cores": [[234,198,138]], "tol": 30, "caixa": [60,18,82,36], "anos": [100,-200], "cor": "#e0c08a"},
-    {"id": "indo-partia", "nome": "Indo-Pártia", "cores": [[138,174,186]], "tol": 30, "caixa": [60,25,76,38], "anos": [20,-100], "cor": "#8aaeba"},
-    {"id": "zhou", "nome": "Zhou", "cores": [[162,42,42]], "tol": 30, "caixa": [100,28,125,42], "anos": [1046,256], "cor": "#a22a2a"},
-    {"id": "chu", "nome": "Chu", "cores": [[102,102,162]], "tol": 30, "caixa": [105,24,125,36], "anos": [800,223], "cor": "#6666a2"},
-    {"id": "han", "nome": "Han", "cores": [[126,30,30],[162,42,42]], "tol": 30, "caixa": [100,20,130,45], "anos": [206,-220], "cor": "#8e2a2a"}
-  ]
+ "_ajuda": "Regras do mapa geral: um estado do vídeo recebe o id/nome da primeira regra cuja cor (distância L1 <= tol), caixa (centro do estado, lon/lat) e anos [de, ate] (a.C. positivo, d.C. negativo; 'de' é o mais antigo) combinam. Cores em RGB lidas do vídeo. Estados sem regra ficam sem nome (id x-<cor>-<célula 10°>).",
+ "regras": [
+  {
+   "id": "egito",
+   "nome": "Egito",
+   "cores": [
+    [
+     246,
+     222,
+     90
+    ],
+    [
+     246,
+     234,
+     150
+    ],
+    [
+     222,
+     210,
+     126
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    22,
+    14,
+    40,
+    34
+   ],
+   "anos": [
+    2500,
+    31
+   ],
+   "nota": "No vídeo o Egito inclui a Núbia e a faixa até Canaã nas épocas de expansão."
+  },
+  {
+   "id": "assiria",
+   "nome": "Assíria",
+   "cores": [
+    [
+     78,
+     138,
+     162
+    ],
+    [
+     78,
+     138,
+     150
+    ],
+    [
+     66,
+     138,
+     162
+    ],
+    [
+     66,
+     138,
+     198
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    34,
+    30,
+    50,
+    40
+   ],
+   "anos": [
+    2100,
+    600
+   ]
+  },
+  {
+   "id": "hititas",
+   "nome": "Hati (hititas)",
+   "cores": [
+    [
+     126,
+     210,
+     138
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    26,
+    34,
+    42,
+    42
+   ],
+   "anos": [
+    1700,
+    1150
+   ]
+  },
+  {
+   "id": "mitani",
+   "nome": "Mitani",
+   "cores": [
+    [
+     150,
+     114,
+     126
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    38,
+    34,
+    46,
+    40
+   ],
+   "anos": [
+    1500,
+    1300
+   ]
+  },
+  {
+   "id": "urartu",
+   "nome": "Urartu",
+   "cores": [
+    [
+     150,
+     114,
+     126
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    40,
+    36,
+    48,
+    42
+   ],
+   "anos": [
+    850,
+    600
+   ]
+  },
+  {
+   "id": "yamhad",
+   "nome": "Yamhad",
+   "cores": [
+    [
+     246,
+     210,
+     174
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    36,
+    34,
+    40,
+    38
+   ],
+   "anos": [
+    2400,
+    1600
+   ]
+  },
+  {
+   "id": "mari",
+   "nome": "Mari",
+   "cores": [
+    [
+     222,
+     162,
+     162
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    40,
+    30,
+    48,
+    37
+   ],
+   "anos": [
+    2400,
+    1750
+   ]
+  },
+  {
+   "id": "ur",
+   "nome": "Ur (Terceira Dinastia)",
+   "cores": [
+    [
+     30,
+     66,
+     138
+    ],
+    [
+     30,
+     66,
+     126
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    40,
+    29,
+    50,
+    36
+   ],
+   "anos": [
+    2150,
+    2000
+   ]
+  },
+  {
+   "id": "uruk",
+   "nome": "Uruk",
+   "cores": [
+    [
+     30,
+     114,
+     138
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    40,
+    29,
+    50,
+    36
+   ],
+   "anos": [
+    2400,
+    2200
+   ]
+  },
+  {
+   "id": "axum",
+   "nome": "D'mt e Axum",
+   "cores": [
+    [
+     234,
+     138,
+     138
+    ],
+    [
+     222,
+     138,
+     138
+    ],
+    [
+     222,
+     162,
+     162
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    32,
+    8,
+    46,
+    20
+   ],
+   "anos": [
+    970,
+    -300
+   ]
+  },
+  {
+   "id": "siro-hititas",
+   "nome": "Estados siro-hititas",
+   "cores": [
+    [
+     222,
+     162,
+     162
+    ],
+    [
+     210,
+     162,
+     162
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    32,
+    33,
+    40,
+    39
+   ],
+   "anos": [
+    1950,
+    700
+   ]
+  },
+  {
+   "id": "babilonia",
+   "nome": "Babilônia",
+   "cores": [
+    [
+     222,
+     90,
+     90
+    ],
+    [
+     234,
+     90,
+     90
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    38,
+    28,
+    50,
+    36
+   ],
+   "anos": [
+    1800,
+    538
+   ]
+  },
+  {
+   "id": "persia",
+   "nome": "Pérsia (Império Aquemênida)",
+   "cores": [
+    [
+     78,
+     198,
+     102
+    ],
+    [
+     90,
+     198,
+     114
+    ],
+    [
+     90,
+     198,
+     102
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    20,
+    20,
+    76,
+    48
+   ],
+   "anos": [
+    550,
+    331
+   ]
+  },
+  {
+   "id": "elao",
+   "nome": "Elão",
+   "cores": [
+    [
+     90,
+     198,
+     102
+    ],
+    [
+     90,
+     198,
+     114
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    44,
+    27,
+    58,
+    36
+   ],
+   "anos": [
+    2400,
+    540
+   ]
+  },
+  {
+   "id": "media",
+   "nome": "Média",
+   "cores": [
+    [
+     54,
+     174,
+     90
+    ],
+    [
+     66,
+     150,
+     78
+    ]
+   ],
+   "tol": 36,
+   "caixa": [
+    44,
+    30,
+    66,
+    40
+   ],
+   "anos": [
+    700,
+    550
+   ]
+  },
+  {
+   "id": "seleucida",
+   "nome": "Império Selêucida",
+   "cores": [
+    [
+     90,
+     138,
+     126
+    ],
+    [
+     138,
+     198,
+     150
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    30,
+    20,
+    72,
+    45
+   ],
+   "anos": [
+    330,
+    63
+   ]
+  },
+  {
+   "id": "partia",
+   "nome": "Império Parta",
+   "cores": [
+    [
+     78,
+     198,
+     102
+    ],
+    [
+     102,
+     186,
+     126
+    ],
+    [
+     114,
+     198,
+     126
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    44,
+    24,
+    72,
+    42
+   ],
+   "anos": [
+    250,
+    -226
+   ]
+  },
+  {
+   "id": "sassanida",
+   "nome": "Império Sassânida",
+   "cores": [
+    [
+     114,
+     198,
+     126
+    ],
+    [
+     78,
+     198,
+     102
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    40,
+    20,
+    72,
+    42
+   ],
+   "anos": [
+    -226,
+    -651
+   ]
+  },
+  {
+   "id": "lidia",
+   "nome": "Lídia",
+   "cores": [
+    [
+     246,
+     186,
+     114
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    24,
+    35,
+    34,
+    41
+   ],
+   "anos": [
+    1100,
+    546
+   ]
+  },
+  {
+   "id": "frigia",
+   "nome": "Frígia",
+   "cores": [
+    [
+     222,
+     210,
+     126
+    ]
+   ],
+   "tol": 20,
+   "caixa": [
+    24,
+    36,
+    34,
+    41
+   ],
+   "anos": [
+    800,
+    650
+   ]
+  },
+  {
+   "id": "macedonia",
+   "nome": "Macedônia",
+   "cores": [
+    [
+     90,
+     66,
+     114
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    18,
+    38,
+    30,
+    43
+   ],
+   "anos": [
+    350,
+    150
+   ]
+  },
+  {
+   "id": "grecia",
+   "nome": "Grécia",
+   "cores": [
+    [
+     66,
+     126,
+     174
+    ],
+    [
+     66,
+     138,
+     162
+    ],
+    [
+     78,
+     138,
+     162
+    ],
+    [
+     42,
+     102,
+     162
+    ],
+    [
+     30,
+     66,
+     126
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    14,
+    34,
+    30,
+    43
+   ],
+   "anos": [
+    2000,
+    330
+   ]
+  },
+  {
+   "id": "fenicia",
+   "nome": "Fenícia",
+   "cores": [
+    [
+     144,
+     96,
+     168
+    ],
+    [
+     162,
+     102,
+     174
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    34,
+    31,
+    37,
+    36
+   ],
+   "anos": [
+    1500,
+    330
+   ]
+  },
+  {
+   "id": "fenicios-ocidente",
+   "nome": "Colônias fenícias",
+   "cores": [
+    [
+     162,
+     102,
+     174
+    ],
+    [
+     144,
+     96,
+     168
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    -8,
+    30,
+    14,
+    41
+   ],
+   "anos": [
+    970,
+    650
+   ]
+  },
+  {
+   "id": "israel",
+   "nome": "Israel e Judá",
+   "cores": [
+    [
+     162,
+     198,
+     222
+    ],
+    [
+     114,
+     174,
+     210
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    33,
+    29,
+    37,
+    34
+   ],
+   "anos": [
+    1100,
+    100
+   ]
+  },
+  {
+   "id": "armenia",
+   "nome": "Armênia",
+   "cores": [
+    [
+     78,
+     126,
+     162
+    ],
+    [
+     78,
+     150,
+     198
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    42,
+    38,
+    48,
+    42
+   ],
+   "anos": [
+    1000,
+    -400
+   ]
+  },
+  {
+   "id": "cartago",
+   "nome": "Cartago",
+   "cores": [
+    [
+     186,
+     138,
+     42
+    ],
+    [
+     186,
+     138,
+     54
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    -8,
+    30,
+    14,
+    41
+   ],
+   "anos": [
+    814,
+    146
+   ]
+  },
+  {
+   "id": "etruria",
+   "nome": "Etrúria",
+   "cores": [
+    [
+     234,
+     162,
+     198
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    8,
+    40,
+    14,
+    46
+   ],
+   "anos": [
+    780,
+    300
+   ]
+  },
+  {
+   "id": "roma",
+   "nome": "Roma",
+   "cores": [
+    [
+     126,
+     30,
+     30
+    ],
+    [
+     114,
+     54,
+     54
+    ],
+    [
+     114,
+     24,
+     24
+    ],
+    [
+     120,
+     24,
+     24
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    -12,
+    25,
+    48,
+    56
+   ],
+   "anos": [
+    750,
+    -476
+   ],
+   "nota": "República e Império Romano; as colônias e províncias aparecem juntas."
+  },
+  {
+   "id": "roma",
+   "nome": "Roma",
+   "cores": [
+    [
+     162,
+     42,
+     42
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    -10,
+    34,
+    48,
+    56
+   ],
+   "anos": [
+    300,
+    -476
+   ]
+  },
+  {
+   "id": "vale-do-indo",
+   "nome": "Civilização do Vale do Indo",
+   "cores": [
+    [
+     66,
+     138,
+     198
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    60,
+    18,
+    80,
+    36
+   ],
+   "anos": [
+    2400,
+    1700
+   ]
+  },
+  {
+   "id": "mahajanapadas",
+   "nome": "Mahajanapadas",
+   "cores": [
+    [
+     114,
+     174,
+     222
+    ],
+    [
+     114,
+     174,
+     210
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    76,
+    14,
+    92,
+    32
+   ],
+   "anos": [
+    650,
+    350
+   ]
+  },
+  {
+   "id": "maurya",
+   "nome": "Império Máuria",
+   "cores": [
+    [
+     234,
+     198,
+     30
+    ],
+    [
+     222,
+     186,
+     66
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    60,
+    15,
+    92,
+    38
+   ],
+   "anos": [
+    330,
+    180
+   ]
+  },
+  {
+   "id": "satavahana",
+   "nome": "Satavahana",
+   "cores": [
+    [
+     210,
+     102,
+     114
+    ],
+    [
+     198,
+     90,
+     102
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    70,
+    14,
+    90,
+    28
+   ],
+   "anos": [
+    250,
+    -250
+   ]
+  },
+  {
+   "id": "cuchana",
+   "nome": "Cuchanas",
+   "cores": [
+    [
+     246,
+     198,
+     102
+    ],
+    [
+     246,
+     222,
+     90
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    60,
+    22,
+    85,
+    42
+   ],
+   "anos": [
+    250,
+    -400
+   ]
+  },
+  {
+   "id": "indo-citas",
+   "nome": "Indo-citas",
+   "cores": [
+    [
+     234,
+     198,
+     138
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    60,
+    18,
+    82,
+    36
+   ],
+   "anos": [
+    100,
+    -200
+   ]
+  },
+  {
+   "id": "indo-partia",
+   "nome": "Indo-Pártia",
+   "cores": [
+    [
+     138,
+     174,
+     186
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    60,
+    25,
+    76,
+    38
+   ],
+   "anos": [
+    20,
+    -100
+   ]
+  },
+  {
+   "id": "zhou",
+   "nome": "Zhou",
+   "cores": [
+    [
+     162,
+     42,
+     42
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    100,
+    28,
+    125,
+    42
+   ],
+   "anos": [
+    1046,
+    256
+   ]
+  },
+  {
+   "id": "chu",
+   "nome": "Chu",
+   "cores": [
+    [
+     102,
+     102,
+     162
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    105,
+    24,
+    125,
+    36
+   ],
+   "anos": [
+    800,
+    223
+   ]
+  },
+  {
+   "id": "han",
+   "nome": "Han",
+   "cores": [
+    [
+     126,
+     30,
+     30
+    ],
+    [
+     162,
+     42,
+     42
+    ]
+   ],
+   "tol": 30,
+   "caixa": [
+    100,
+    20,
+    130,
+    45
+   ],
+   "anos": [
+    206,
+    -220
+   ]
+  }
+ ]
 }

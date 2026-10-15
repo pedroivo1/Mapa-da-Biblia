@@ -1,0 +1,924 @@
+<!doctype html>
+<!--
+  Visualizador local do pipeline do mapa geral v2 (ferramenta de desenvolvimento; nunca mover para frontend/).
+  Lê direto do cache (.cache/v2/): quadro do vídeo (mapas/<id>.png), vetores da E5 (vetores/<id>.json),
+  rótulos da E4 (rotulos/<id>.json), calibração (calibracao.json), anos (anos.json, mapas.json), logs e
+  manifestos das rodadas, imagens de revisão (revisao/), e os testes fixos casos.json e pares.json.
+  Anotações (juntar / separar / problema, com clique no mapa) vão para scripts/mapa-geral/anotacoes.json, que o
+  pipeline usa como correção e como teste; só o visualizar.py grava esse arquivo (sem ele, ficam no navegador e há
+  o botão "baixar anotações").
+  Uso (na raiz do repositório):  python3 scripts/mapa-geral/visualizar.py   (ou python3 -m http.server 8001, sem gravar)
+  e abra http://localhost:8001/scripts/mapa-geral/visualizar.html  (#ano=-1799&modo=lado abre direto num ano; #aba=andamento ou #aba=revisao abre a aba).
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visualizar mapa geral</title>
+<style>
+:root {
+  --fundo: #f4f2ee; --painel: #ffffff; --texto: #1d1d1f; --suave: #6b6b70; --linha: #d9d6cf;
+  --destaque: #8a5a00; --ok: #1f8a3b; --erro: #c62828; --mar: rgb(216, 225, 237); --contorno: #ff00d4;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --fundo: #17181a; --painel: #212226; --texto: #ececec; --suave: #9a9aa2; --linha: #36373c;
+    --destaque: #f0b44a; --ok: #4cc26a; --erro: #ff6b6b; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fundo); color: var(--texto); font: 14px/1.45 system-ui, sans-serif; }
+button, select, input { font: inherit; color: inherit; }
+button, select, input[type=text] { background: var(--painel); border: 1px solid var(--linha); border-radius: 6px; padding: 4px 9px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--suave); }
+button.ativa { border-color: var(--destaque); color: var(--destaque); font-weight: 600; }
+.barra { display: flex; align-items: center; gap: 16px; padding: 8px 16px; border-bottom: 1px solid var(--linha); background: var(--painel); flex-wrap: wrap; }
+.barra h1 { font-size: 16px; margin: 0; }
+.abas { display: flex; gap: 6px; }
+main { padding: 12px 16px 40px; }
+.controles { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.linha { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.ano { font-size: 22px; font-weight: 700; min-width: 140px; font-variant-numeric: tabular-nums; }
+#entrada-ano { width: 130px; }
+#regua { width: 100%; }
+.selo { font-size: 12px; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--linha); color: var(--suave); }
+.selo.aviso { border-color: var(--destaque); color: var(--destaque); }
+label { display: inline-flex; align-items: center; gap: 4px; color: var(--suave); }
+.corpo { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: start; }
+@media (max-width: 900px) { .corpo { grid-template-columns: minmax(0, 1fr); } }
+.paineis { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr); }
+.paineis.lado { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 700px) { .paineis.lado { grid-template-columns: minmax(0, 1fr); } }
+.painel { position: relative; aspect-ratio: 2 / 1; overflow: hidden; background: var(--mar); border: 1px solid var(--linha); border-radius: 6px; cursor: grab; touch-action: none; }
+.painel.arrastando { cursor: grabbing; }
+.camada { position: absolute; inset: 0; transform-origin: 0 0; }
+.camada img, .camada svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; user-select: none; -webkit-user-drag: none; }
+.camada.pixel img { image-rendering: pixelated; }
+.camada svg path { vector-effect: non-scaling-stroke; }
+.camada svg .marca { vector-effect: non-scaling-stroke; }
+.oculto { display: none !important; }
+.dica { position: fixed; pointer-events: none; background: var(--painel); border: 1px solid var(--linha); border-radius: 6px; padding: 4px 8px; font-size: 12px; z-index: 5; max-width: 320px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.info { background: var(--painel); border: 1px solid var(--linha); border-radius: 6px; padding: 10px 12px; font-size: 13px; }
+.info h2 { font-size: 14px; margin: 0 0 6px; }
+.info h3 { font-size: 13px; margin: 12px 0 4px; color: var(--suave); font-weight: 600; }
+.info dl { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; margin: 0; }
+.info dt { color: var(--suave); }
+.info dd { margin: 0; overflow-wrap: anywhere; }
+.info a { color: var(--destaque); }
+.ok { color: var(--ok); } .erro { color: var(--erro); }
+.legenda { font-size: 12px; color: var(--suave); margin-top: 6px; }
+.tabela { width: 100%; border-collapse: collapse; background: var(--painel); border: 1px solid var(--linha); border-radius: 6px; font-size: 13px; }
+.tabela th, .tabela td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+.tabela td.fim { font-family: ui-monospace, monospace; font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.barra-prog { height: 8px; background: var(--linha); border-radius: 4px; overflow: hidden; min-width: 120px; }
+.barra-prog i { display: block; height: 100%; background: var(--destaque); }
+.ponto { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--linha); margin-right: 6px; }
+.ponto.vivo { background: var(--ok); }
+.galeria { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.galeria figure { margin: 0; background: var(--painel); border: 1px solid var(--linha); border-radius: 6px; overflow: hidden; cursor: zoom-in; }
+.galeria img { width: 100%; height: 160px; object-fit: contain; background: #fff; display: block; }
+.galeria figcaption { padding: 6px 8px; font-size: 12px; overflow-wrap: anywhere; }
+dialog { padding: 0; border: none; max-width: 96vw; max-height: 96vh; background: transparent; }
+dialog img { max-width: 96vw; max-height: 92vh; display: block; background: #fff; cursor: zoom-out; }
+dialog p { margin: 4px 0 0; color: #fff; font-size: 12px; text-align: center; }
+dialog::backdrop { background: rgba(0,0,0,.8); }
+h2.secao { font-size: 15px; margin: 18px 0 8px; }
+.comentario { flex: 1; min-width: 180px; }
+.painel.anotando { cursor: crosshair; }
+.notas { list-style: none; margin: 0; padding: 0; }
+.notas li { display: flex; gap: 6px; align-items: baseline; padding: 3px 0; border-bottom: 1px solid var(--linha); }
+.notas li span { flex: 1; }
+.notas button { padding: 0 6px; font-size: 12px; }
+</style>
+</head>
+<body>
+<header class="barra">
+  <h1>Mapa geral · visualizar</h1>
+  <nav class="abas">
+    <button data-aba="mapa" class="ativa">Mapa</button>
+    <button data-aba="andamento">Andamento</button>
+    <button data-aba="revisao">Revisão</button>
+  </nav>
+  <span id="estado-carga" class="selo">carregando…</span>
+</header>
+<main>
+  <section id="aba-mapa">
+    <div class="controles">
+      <div class="linha">
+        <span class="ano" id="ano">–</span>
+        <input type="text" id="entrada-ano" placeholder="586 a.C., 30 d.C." title="Ano: 586 a.C., 30 d.C.; número puro segue o projeto (positivo = a.C.)">
+        <button id="ir">Ir</button>
+        <button id="ant-mapa" title="Mapa (ou item) anterior · Shift+←">«</button>
+        <button id="ant" title="Ano anterior · ←">‹</button>
+        <button id="tocar" title="Tocar · Espaço">▶</button>
+        <button id="prox" title="Próximo ano · →">›</button>
+        <button id="prox-mapa" title="Próximo mapa (ou item) · Shift+→">»</button>
+        <select id="vel" title="Velocidade (anos por segundo)">
+          <option value="2">2 anos/s</option><option value="5">5 anos/s</option>
+          <option value="10" selected>10 anos/s</option><option value="25">25 anos/s</option><option value="60">60 anos/s</option>
+        </select>
+        <span id="selos"></span>
+      </div>
+      <input type="range" id="regua" min="0" max="0" value="0">
+      <div class="linha">
+        <label>Modo
+          <select id="modo">
+            <option value="contorno">Vídeo + contornos do vetor</option>
+            <option value="cores">Vídeo + vetor colorido</option>
+            <option value="lado">Lado a lado</option>
+            <option value="video">Só o vídeo</option>
+          </select>
+        </label>
+        <label>Opacidade <input type="range" id="opacidade" min="0" max="1" step="0.05" value="0.6"></label>
+        <label><input type="checkbox" id="sem-dono" checked> sem dono</label>
+        <label><input type="checkbox" id="ver-casos" checked> casos e pares</label>
+        <label>Navegar por
+          <select id="navegar">
+            <option value="anos">ano a ano</option>
+            <option value="mapas">mapas distintos</option>
+            <option value="rapida">amostra rápida</option>
+            <option value="media">amostra média</option>
+            <option value="casos">anos com casos/pares</option>
+          </select>
+        </label>
+        <button id="piscar" title="Esconde o vetor enquanto aperta · V">piscar (V)</button>
+        <button id="recarregar" title="Relê o vetor e o rótulo deste mapa · R">recarregar (R)</button>
+      </div>
+      <div class="linha">
+        <label>Anotar
+          <select id="anotar">
+            <option value="">desligado</option>
+            <option value="mesmo_estado">mesmo estado: juntar (2 cliques)</option>
+            <option value="estados_diferentes">estados diferentes: separar (2 cliques)</option>
+            <option value="problema">outro problema num ponto (1 clique)</option>
+          </select>
+        </label>
+        <input type="text" id="comentario" placeholder="comentário (opcional): ex. borda devia seguir o rio" class="comentario">
+        <span id="anotar-estado" class="selo"></span>
+        <button id="baixar-anotacoes" title="Baixa anotacoes.json (use se o salvamento automático não estiver ativo)">baixar anotações</button>
+      </div>
+    </div>
+    <div class="corpo">
+      <div>
+        <div class="paineis" id="paineis">
+          <div class="painel" id="p1"><div class="camada"><img id="quadro" alt=""><svg id="s1" viewBox="0 0 1920 960"></svg></div></div>
+          <div class="painel oculto" id="p2"><div class="camada"><svg id="s2" viewBox="0 0 1920 960"></svg></div></div>
+        </div>
+        <p class="legenda">Roda do mouse: zoom (a partir de 3× os pixels do vídeo aparecem). Arrastar: mover. Duplo clique: zoom inicial.
+          Clique numa região para detalhes. Casos: círculo verde = o vetor dá o esperado, vermelho = não.
+          Pares: linha verde = juntos/separados como esperado; vermelha = não (pares de “mesmo estado” separados são esperados até a E7 juntar).</p>
+      </div>
+      <aside class="info" id="info"></aside>
+    </div>
+  </section>
+
+  <section id="aba-andamento" class="oculto">
+    <div class="linha"><button id="atualizar-andamento">Atualizar</button><label><input type="checkbox" id="auto-andamento" checked> atualizar a cada 15 s</label><span id="andamento-hora" class="selo"></span></div>
+    <h2 class="secao">Manifestos (itens prontos por etapa)</h2>
+    <table class="tabela" id="manifestos"></table>
+    <h2 class="secao">Logs (mais recente primeiro; ponto verde = mudou nos últimos 2 min)</h2>
+    <table class="tabela" id="logs"></table>
+  </section>
+
+  <section id="aba-revisao" class="oculto">
+    <div class="linha"><button id="atualizar-revisao">Atualizar</button><input type="text" id="filtro-revisao" placeholder="filtrar por nome"></div>
+    <p class="legenda">Imagens de .cache/v2/revisao/, mais recentes primeiro. Clique para ampliar.</p>
+    <div class="galeria" id="galeria"></div>
+  </section>
+</main>
+<div class="dica oculto" id="dica"></div>
+<dialog id="ampliar"><img alt=""><p></p></dialog>
+
+<script>
+(function () {
+  "use strict";
+
+  var V2 = ".cache/v2/";
+  var LAT_TOPO = 80;
+  var NS = "http://www.w3.org/2000/svg";
+
+  var est = {
+    anos: [], posPorAno: {}, idPorPos: [], pos: 0, posMapas: [],
+    mapas: null, cal: null, anosInfo: null, amostras: {}, casos: [], pares: [],
+    id: null, vez: 0, vetor: null, rotulo: null, formas: [], regRotulo: {},
+    modo: "contorno", opac: 0.6, semDono: true, verCasos: true, navegar: "anos",
+    tocando: null, vel: 10, z: 1, tx: 0, ty: 0, sel: null, piscando: false,
+    anotar: "", notas: [], pendente: null, salvaNoServidor: false
+  };
+  var ARQ_NOTAS = "anotacoes.json";
+  var CHAVE_NOTAS = "mapa-geral-anotacoes";
+
+  function $(id) { return document.getElementById(id); }
+  function rad(g) { return g * Math.PI / 180; }
+  function grau(r) { return r * 180 / Math.PI; }
+  function miller(lat) { return 1.25 * grau(Math.log(Math.tan(Math.PI / 4 + 0.4 * rad(lat)))); }
+  var M80 = miller(LAT_TOPO);
+
+  // inverso de para_lonlat (vetorizar.py): lon/lat -> pixel do quadro de 1920 px
+  function projetar(lon, lat, cal) {
+    return [(lon + 180) * cal.S - cal.X0, (M80 - miller(lat)) * cal.S - cal.Y0];
+  }
+  // para_lonlat (vetorizar.py): pixel do quadro -> lon/lat
+  function paraLonLat(x, y, cal) {
+    var ym = M80 - (y + cal.Y0) / cal.S;
+    var lat = (grau(Math.atan(Math.exp(rad(ym / 1.25)))) - 45) / 0.4;
+    return [+((x + cal.X0) / cal.S - 180).toFixed(4), +lat.toFixed(4)];
+  }
+  function nomeAno(a) { return a > 0 ? a + " a.C." : (-a) + " d.C."; }
+  function lerAno(t) {
+    t = String(t).toLowerCase().replace(/\s+/g, "").replace(/\./g, "");
+    var m = /^(-?\d+)(ac|dc)?$/.exec(t);
+    if (!m) { return null; }
+    var n = parseInt(m[1], 10);
+    if (m[2] === "ac") { return Math.abs(n); }
+    if (m[2] === "dc") { return -Math.abs(n); }
+    return n;
+  }
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]; });
+  }
+  function rgb(c) { return "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"; }
+  function ha(d) {
+    if (!d) { return "?"; }
+    var s = (Date.now() - d.getTime()) / 1000;
+    if (s < 60) { return "agora"; }
+    if (s < 3600) { return "há " + Math.round(s / 60) + " min"; }
+    if (s < 86400) { return "há " + Math.round(s / 3600) + " h"; }
+    return d.toLocaleString("pt-BR");
+  }
+  function hora(d) { return d ? d.toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "?"; }
+
+  function buscar(url, tipo, semCache) {
+    return fetch(url, semCache ? { cache: "no-cache" } : {}).then(function (r) {
+      if (!r.ok) { throw new Error(r.status + " " + url); }
+      var lm = r.headers.get("Last-Modified");
+      return r[tipo]().then(function (d) { return { dados: d, quando: lm ? new Date(lm) : null }; });
+    });
+  }
+  function nulo() { return null; }
+  function links(html) {
+    var re = /href="([^"?#]+)"/g, m, r = [];
+    while ((m = re.exec(html))) { r.push(decodeURIComponent(m[1])); }
+    return r;
+  }
+
+  // ---------- dados de base ----------
+  function iniciar() {
+    Promise.all([
+      buscar(V2 + "mapas.json", "json"),
+      buscar(V2 + "calibracao.json", "json"),
+      buscar(V2 + "anos.json", "json").catch(nulo),
+      buscar("amostras.json", "json").catch(nulo),
+      buscar("casos.json", "json").catch(nulo),
+      buscar("pares.json", "json").catch(nulo),
+      buscar(ARQ_NOTAS, "json", true).catch(nulo)
+    ]).then(function (r) {
+      var local = null;
+      try { local = JSON.parse(localStorage.getItem(CHAVE_NOTAS) || "null"); } catch (e) { local = null; }
+      est.notas = (r[6] && r[6].dados.anotacoes) || [];
+      // anotações que só ficaram no navegador (servidor sem gravação) entram de volta
+      if (local && local.length) {
+        var vistas = {};
+        est.notas.forEach(function (n) { vistas[n.id] = true; });
+        local.forEach(function (n) { if (!vistas[n.id]) { est.notas.push(n); } });
+      }
+      est.mapas = r[0].dados;
+      est.cal = r[1].dados.por_mapa;
+      est.anosInfo = r[2] ? r[2].dados : {};
+      if (r[3]) { est.amostras = r[3].dados; }
+      est.casos = r[4] ? r[4].dados.casos : [];
+      est.pares = r[5] ? r[5].dados.pares : [];
+      montarAnos();
+      // o visualizar.py responde HEAD com X-Grava-Anotacoes; o http.server puro não
+      fetch(ARQ_NOTAS, { method: "HEAD", cache: "no-cache" }).then(function (r) {
+        est.salvaNoServidor = r.headers.get("X-Grava-Anotacoes") === "1";
+        if (est.salvaNoServidor && local && local.length) { salvarNotas(); }
+        estadoNotas();
+      }).catch(estadoNotas);
+      $("estado-carga").textContent = Object.keys(est.mapas).length + " mapas · " + est.anos.length + " anos";
+      var h = lerHash();
+      if (h.modo) { est.modo = h.modo; $("modo").value = h.modo; }
+      irAno(h.ano !== undefined && est.posPorAno[h.ano] !== undefined ? h.ano : 2500);
+      aplicarModo();
+    }).catch(function (e) {
+      $("estado-carga").textContent = "erro: " + e.message + " (sirva a raiz do repositório)";
+      $("estado-carga").className = "selo aviso";
+    });
+  }
+
+  function montarAnos() {
+    var porAno = {}, id;
+    Object.keys(est.mapas).forEach(function (k) {
+      est.mapas[k].anos.forEach(function (a) { porAno[a] = k; });
+    });
+    var a, ultimo = null;
+    for (a = 2500; a >= -2025; a--) {
+      if (a === 0) { continue; }
+      var info = est.anosInfo[a];
+      id = info && info.mapa !== undefined ? String(info.mapa) : porAno[a];
+      if (id === undefined) { id = ultimo; }
+      est.posPorAno[a] = est.anos.length;
+      est.anos.push(a);
+      est.idPorPos.push(id);
+      if (id !== ultimo) { est.posMapas.push(est.anos.length - 1); }
+      ultimo = id;
+    }
+    $("regua").max = est.anos.length - 1;
+  }
+
+  function conjunto() {
+    var n = est.navegar;
+    if (n === "anos") { return null; }
+    if (n === "mapas") { return est.posMapas; }
+    if (n === "rapida" || n === "media") {
+      var ids = {};
+      ((est.amostras[n] || {}).ids || []).forEach(function (i) { ids[String(i)] = true; });
+      return est.posMapas.filter(function (p) { return ids[est.idPorPos[p]]; });
+    }
+    var vistos = {}, r = [];
+    est.casos.concat(est.pares).forEach(function (c) {
+      var p = est.posPorAno[c.ano];
+      if (p !== undefined && !vistos[p]) { vistos[p] = true; r.push(p); }
+    });
+    return r.sort(function (x, y) { return x - y; });
+  }
+
+  // passo de um ano (forte = false) ou de um item do conjunto de navegação / mapa distinto (forte = true)
+  function passo(d, forte) {
+    var c = forte ? (conjunto() || est.posMapas) : conjunto();
+    var p = est.pos, i;
+    if (!c) {
+      p += d;
+    } else if (d > 0) {
+      p = null;
+      for (i = 0; i < c.length; i++) { if (c[i] > est.pos) { p = c[i]; break; } }
+    } else {
+      p = null;
+      for (i = c.length - 1; i >= 0; i--) { if (c[i] < est.pos) { p = c[i]; break; } }
+    }
+    if (p === null || p < 0 || p >= est.anos.length) { return false; }
+    irPos(p);
+    return true;
+  }
+
+  function irAno(a) {
+    var p = est.posPorAno[a];
+    if (p === undefined) { return false; }
+    irPos(p);
+    return true;
+  }
+
+  function irPos(p) {
+    est.pos = p;
+    var a = est.anos[p];
+    $("ano").textContent = nomeAno(a);
+    $("regua").value = p;
+    var info = est.anosInfo[a] || {};
+    var selos = [];
+    if (info.inferido) { selos.push("<span class='selo aviso'>ano inferido</span>"); }
+    if (info.corrigido) { selos.push("<span class='selo aviso'>ano corrigido</span>"); }
+    if (info.zoom) { selos.push("<span class='selo'>zoom no vídeo</span>"); }
+    $("selos").innerHTML = selos.join(" ");
+    try { history.replaceState(null, "", "#ano=" + a + "&modo=" + est.modo); } catch (e) { /* file:// */ }
+    carregarMapa(est.idPorPos[p], false);
+    preCarregar(p);
+  }
+
+  function preCarregar(p) {
+    var i;
+    for (i = p + 1; i < est.anos.length; i++) {
+      if (est.idPorPos[i] !== est.idPorPos[p]) { new Image().src = V2 + "mapas/" + est.idPorPos[i] + ".png"; break; }
+    }
+  }
+
+  function lerHash() {
+    var r = {};
+    location.hash.replace(/^#/, "").split("&").forEach(function (kv) {
+      var x = kv.split("=");
+      if (x[0] === "ano") { r.ano = lerAno(decodeURIComponent(x[1] || "")); }
+      if (x[0] === "modo") { r.modo = x[1]; }
+      if (x[0] === "aba") { r.aba = x[1]; }
+    });
+    return r;
+  }
+
+  // ---------- um mapa ----------
+  function carregarMapa(id, forcar) {
+    if (id === est.id && !forcar) { atualizarInfo(); return; }
+    est.id = id;
+    var vez = ++est.vez;
+    if (!forcar) {
+      $("quadro").src = V2 + "mapas/" + id + ".png";
+      est.vetor = null; est.rotulo = null; est.formas = []; est.sel = null;
+      desenhar();
+    }
+    Promise.all([
+      buscar(V2 + "vetores/" + id + ".json", "json", true).catch(nulo),
+      buscar(V2 + "rotulos/" + id + ".json", "json", true).catch(nulo)
+    ]).then(function (r) {
+      if (vez !== est.vez) { return; }
+      est.vetor = r[0]; est.rotulo = r[1];
+      prepararFormas();
+      desenhar();
+    });
+  }
+
+  function prepararFormas() {
+    est.formas = []; est.regRotulo = {};
+    var cal = est.cal[est.id];
+    if (est.rotulo) { est.rotulo.dados.regioes.forEach(function (g) { est.regRotulo[String(g.r)] = g; }); }
+    if (!est.vetor || !cal) { return; }
+    var regs = est.vetor.dados.regioes;
+    Object.keys(regs).forEach(function (r) {
+      var g = regs[r];
+      var cx = [Infinity, Infinity, -Infinity, -Infinity];
+      var aneis = g.aneis.map(function (anel) {
+        return anel.map(function (p) {
+          var q = projetar(p[0], p[1], cal);
+          if (q[0] < cx[0]) { cx[0] = q[0]; } if (q[1] < cx[1]) { cx[1] = q[1]; }
+          if (q[0] > cx[2]) { cx[2] = q[0]; } if (q[1] > cx[3]) { cx[3] = q[1]; }
+          return q;
+        });
+      });
+      var d = aneis.map(function (a) {
+        return "M" + a.map(function (q) { return q[0].toFixed(1) + " " + q[1].toFixed(1); }).join("L") + "Z";
+      }).join("");
+      est.formas.push({ r: r, tipo: g.tipo, cor: g.cor, aneis: aneis, caixa: cx, d: d });
+    });
+  }
+
+  // par-ímpar sobre todos os anéis da região
+  function contem(f, x, y) {
+    var c = f.caixa;
+    if (x < c[0] || x > c[2] || y < c[1] || y > c[3]) { return false; }
+    var dentro = false;
+    f.aneis.forEach(function (a) {
+      var i, j;
+      for (i = 0, j = a.length - 1; i < a.length; j = i++) {
+        if ((a[i][1] > y) !== (a[j][1] > y) && x < (a[j][0] - a[i][0]) * (y - a[i][1]) / (a[j][1] - a[i][1]) + a[i][0]) { dentro = !dentro; }
+      }
+    });
+    return dentro;
+  }
+  function regiaoEm(x, y) {
+    var i;
+    for (i = 0; i < est.formas.length; i++) { if (contem(est.formas[i], x, y)) { return est.formas[i]; } }
+    return null;
+  }
+
+  function caminhos(preencher, opac) {
+    var h = [];
+    est.formas.forEach(function (f) {
+      if (f.tipo === "sem-dono" && !est.semDono) { return; }
+      var fill = preencher ? rgb(f.cor) : "transparent";
+      var traco = preencher ? "rgba(0,0,0,.65)" : (f.tipo === "estado" ? "var(--contorno)" : "rgba(80,80,80,.8)");
+      h.push("<path data-r='" + f.r + "' d='" + f.d + "' fill='" + fill + "' fill-opacity='" + opac +
+        "' fill-rule='evenodd' stroke='" + traco + "' stroke-width='1'" + (f.tipo === "estado" ? "" : " stroke-dasharray='3 2'") + "/>");
+    });
+    if (est.sel) {
+      var s = est.formas.filter(function (f) { return f.r === est.sel; })[0];
+      if (s) { h.push("<path d='" + s.d + "' fill='none' stroke='#ffd400' stroke-width='3' fill-rule='evenodd' pointer-events='none'/>"); }
+    }
+    return h.join("");
+  }
+
+  function desenhar() {
+    var m = est.modo, s1 = "", s2 = "";
+    if (m === "contorno" || m === "lado") { s1 = caminhos(false, 0); }
+    if (m === "cores") { s1 = caminhos(true, est.opac); }
+    if (m === "lado") { s2 = caminhos(true, 1); }
+    s1 += marcas();
+    $("s1").innerHTML = s1;
+    $("s2").innerHTML = s2;
+    $("s1").style.visibility = est.piscando ? "hidden" : "";
+    atualizarInfo();
+  }
+
+  // casos.json e pares.json do mapa atual, conferidos contra o vetor
+  function marcas() {
+    est.resCasos = null; est.resPares = null;
+    var cal = est.cal[est.id];
+    if (!cal || !est.formas.length) { return ""; }
+    var h = [], rc = [0, 0], rp = [0, 0], r = 7 / est.z;
+    est.casos.forEach(function (c) {
+      if (est.idPorPos[est.posPorAno[c.ano]] !== est.id) { return; }
+      var q = projetar(c.lon, c.lat, cal), f = regiaoEm(q[0], q[1]);
+      var obtido = f ? f.tipo : "mar", ok = obtido === c.espera;
+      rc[1]++; if (ok) { rc[0]++; }
+      if (!est.verCasos) { return; }
+      h.push("<circle class='marca' cx='" + q[0] + "' cy='" + q[1] + "' r='" + r + "' fill='" + (ok ? "#1f8a3b" : "#d32f2f") +
+        "' stroke='#fff' stroke-width='1.5'><title>" + esc((c.nome || "") + " (" + (c.nome_video || "") + ") · " + nomeAno(c.ano) +
+        " · espera " + c.espera + (c.creme ? " (creme)" : "") + " · vetor: " + obtido + (f ? " r" + f.r : "")) + "</title></circle>");
+    });
+    est.pares.forEach(function (p) {
+      if (est.idPorPos[est.posPorAno[p.ano]] !== est.id) { return; }
+      var a = projetar(p.ponto_a[0], p.ponto_a[1], cal), b = projetar(p.ponto_b[0], p.ponto_b[1], cal);
+      var fa = regiaoEm(a[0], a[1]), fb = regiaoEm(b[0], b[1]);
+      var juntos = !!(fa && fb && fa.r === fb.r), ok = juntos === !!p.mesmo_estado;
+      rp[1]++; if (ok) { rp[0]++; }
+      if (!est.verCasos) { return; }
+      var cor = ok ? "#1f8a3b" : "#d32f2f";
+      var t = esc((p.mesmo_estado ? "mesmo estado" : "estados diferentes") + " · vetor: " + (juntos ? "mesma região" : "regiões " +
+        (fa ? fa.r : "–") + " e " + (fb ? fb.r : "–")) + (p.nota ? " · " + p.nota : ""));
+      h.push("<g><title>" + t + "</title><line class='marca' x1='" + a[0] + "' y1='" + a[1] + "' x2='" + b[0] + "' y2='" + b[1] +
+        "' stroke='" + cor + "' stroke-width='2'" + (p.mesmo_estado ? "" : " stroke-dasharray='5 3'") + "/>" +
+        "<circle class='marca' cx='" + a[0] + "' cy='" + a[1] + "' r='" + (r * 0.6) + "' fill='" + cor + "' stroke='#fff'/>" +
+        "<circle class='marca' cx='" + b[0] + "' cy='" + b[1] + "' r='" + (r * 0.6) + "' fill='" + cor + "' stroke='#fff'/></g>");
+    });
+    if (rc[1]) { est.resCasos = rc; }
+    if (rp[1]) { est.resPares = rp; }
+    // anotações do usuário (sempre visíveis): azul = juntar, roxo tracejado = separar, laranja = problema
+    est.notas.forEach(function (n) {
+      if (n.mapa !== est.id) { return; }
+      var t = "<title>" + esc(rotuloNota(n)) + "</title>";
+      if (n.tipo === "problema") {
+        var q = projetar(n.ponto[0], n.ponto[1], cal);
+        h.push("<g>" + t + "<rect class='marca' x='" + (q[0] - r) + "' y='" + (q[1] - r) + "' width='" + (2 * r) + "' height='" + (2 * r) +
+          "' transform='rotate(45 " + q[0] + " " + q[1] + ")' fill='#ff8f00' stroke='#000' stroke-width='1'/></g>");
+      } else {
+        var a = projetar(n.ponto_a[0], n.ponto_a[1], cal), b = projetar(n.ponto_b[0], n.ponto_b[1], cal);
+        var cor = n.tipo === "mesmo_estado" ? "#1565c0" : "#8e24aa";
+        h.push("<g>" + t + "<line class='marca' x1='" + a[0] + "' y1='" + a[1] + "' x2='" + b[0] + "' y2='" + b[1] + "' stroke='" + cor +
+          "' stroke-width='3'" + (n.tipo === "mesmo_estado" ? "" : " stroke-dasharray='6 3'") + "/>" +
+          "<rect class='marca' x='" + (a[0] - r * 0.7) + "' y='" + (a[1] - r * 0.7) + "' width='" + (1.4 * r) + "' height='" + (1.4 * r) + "' fill='" + cor + "' stroke='#fff'/>" +
+          "<rect class='marca' x='" + (b[0] - r * 0.7) + "' y='" + (b[1] - r * 0.7) + "' width='" + (1.4 * r) + "' height='" + (1.4 * r) + "' fill='" + cor + "' stroke='#fff'/></g>");
+      }
+    });
+    if (est.pendente && est.pendente.mapa === est.id) {
+      var p0 = projetar(est.pendente.ponto[0], est.pendente.ponto[1], cal);
+      h.push("<circle class='marca' cx='" + p0[0] + "' cy='" + p0[1] + "' r='" + r + "' fill='none' stroke='#1565c0' stroke-width='3'/>");
+    }
+    return h.join("");
+  }
+
+  // ---------- anotações ----------
+  var NOMES_NOTA = { mesmo_estado: "juntar (mesmo estado)", estados_diferentes: "separar (estados diferentes)", problema: "problema" };
+  function rotuloNota(n) {
+    var reg = n.tipo === "problema" ? "região " + (n.regiao || "–") : "regiões " + (n.regiao_a || "–") + " e " + (n.regiao_b || "–");
+    return NOMES_NOTA[n.tipo] + " · " + nomeAno(n.ano) + " · " + reg + (n.comentario ? " · " + n.comentario : "");
+  }
+  function pontoDoClique(painel, e) {
+    var r = painel.getBoundingClientRect(), cal = est.cal[est.id];
+    if (!cal) { return null; }
+    var x = ((e.clientX - r.left) - est.tx) / est.z * 1920 / r.width;
+    var y = ((e.clientY - r.top) - est.ty) / est.z * 960 / r.height;
+    var f = regiaoEm(x, y);
+    return { ponto: paraLonLat(x, y, cal), regiao: f ? f.r : null };
+  }
+  function anotarClique(painel, e) {
+    var p = pontoDoClique(painel, e);
+    if (!p) { return; }
+    var base = { id: Date.now().toString(36), ano: est.anos[est.pos], mapa: est.id, tipo: est.anotar,
+      comentario: $("comentario").value.trim(), criado: new Date().toISOString() };
+    if (est.anotar === "problema") {
+      base.ponto = p.ponto; base.regiao = p.regiao;
+      est.notas.push(base); salvarNotas();
+    } else if (!est.pendente || est.pendente.mapa !== est.id) {
+      est.pendente = { mapa: est.id, ponto: p.ponto, regiao: p.regiao };
+      $("anotar-estado").textContent = "clique no segundo ponto";
+    } else {
+      base.ponto_a = est.pendente.ponto; base.regiao_a = est.pendente.regiao;
+      base.ponto_b = p.ponto; base.regiao_b = p.regiao;
+      est.pendente = null;
+      est.notas.push(base); salvarNotas();
+    }
+    desenhar();
+  }
+  function salvarNotas() {
+    var corpo = JSON.stringify({ _ajuda: "Anotações feitas no visualizar.html: mesmo_estado = as duas partes são o mesmo estado (juntar); " +
+      "estados_diferentes = são estados diferentes (não juntar); problema = ponto com erro, ver comentário. Pontos em lon/lat; " +
+      "regiao* = região do vetor no momento da anotação; mapa = id do mapa distinto (.cache/v2/mapas.json).", anotacoes: est.notas }, null, 1);
+    try { localStorage.setItem(CHAVE_NOTAS, JSON.stringify(est.notas)); } catch (e) { /* sem armazenamento */ }
+    fetch(ARQ_NOTAS, { method: "POST", headers: { "Content-Type": "application/json" }, body: corpo }).then(function (r) {
+      est.salvaNoServidor = r.ok;
+      if (r.ok) { try { localStorage.removeItem(CHAVE_NOTAS); } catch (e) { /* idem */ } }
+      estadoNotas();
+    }).catch(function () { est.salvaNoServidor = false; estadoNotas(); });
+    estadoNotas();
+  }
+  function estadoNotas() {
+    var s = $("anotar-estado");
+    s.className = "selo" + (est.salvaNoServidor || !est.notas.length ? "" : " aviso");
+    s.textContent = est.notas.length + " anotações · " + (est.salvaNoServidor ? "salvas em anotacoes.json" :
+      (est.notas.length ? "só no navegador: rode visualizar.py ou baixe" : "use visualizar.py para salvar"));
+  }
+  function baixarNotas() {
+    var blob = new Blob([JSON.stringify({ anotacoes: est.notas }, null, 1)], { type: "application/json" });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "anotacoes.json"; a.click();
+  }
+
+  function atualizarInfo() {
+    var id = est.id, m = est.mapas[id] || {}, cal = est.cal[id], a = est.anos[est.pos];
+    var h = [];
+    h.push("<h2>Mapa " + esc(id) + (m.quadro !== undefined ? " · quadro " + m.quadro : "") + "</h2><dl>");
+    if (m.anos && m.anos.length) {
+      h.push("<dt>Anos</dt><dd>" + nomeAno(m.anos[0]) + " – " + nomeAno(m.anos[m.anos.length - 1]) + " (" + m.anos.length + ")</dd>");
+    }
+    var info = est.anosInfo[a];
+    if (info && info.quadro_mapa !== undefined) { h.push("<dt>Quadro do ano</dt><dd>" + info.quadro_mapa + "</dd>"); }
+    if (cal) {
+      h.push("<dt>Calibração</dt><dd>S " + cal.S + " · p90 " + (+cal.p90_px).toFixed(2) + " px · fora " + (+cal.fora).toFixed(3) + "</dd>");
+    } else {
+      h.push("<dt>Calibração</dt><dd class='erro'>ausente</dd>");
+    }
+    if (est.vetor) {
+      var n = { estado: 0, "sem-dono": 0 };
+      est.formas.forEach(function (f) { n[f.tipo] = (n[f.tipo] || 0) + 1; });
+      var met = est.vetor.dados.metricas || {};
+      h.push("<dt>Vetor</dt><dd>" + hora(est.vetor.quando) + " (" + ha(est.vetor.quando) + ")</dd>");
+      h.push("<dt>Regiões</dt><dd>" + n.estado + " estados · " + n["sem-dono"] + " sem dono</dd>");
+      if (met.lados_sem_tremor !== undefined) { h.push("<dt>Sem tremor</dt><dd>" + met.lados_sem_tremor + " lados</dd>"); }
+    } else {
+      h.push("<dt>Vetor</dt><dd class='erro'>" + (est.formas.length || !id ? "–" : "ainda não gerado (ou carregando)") + "</dd>");
+    }
+    if (est.rotulo) {
+      var ro = est.rotulo.dados;
+      h.push("<dt>Rótulo</dt><dd>" + hora(est.rotulo.quando) + " · " + (ro.unioes || []).length + " uniões · " +
+        (ro.candidatos || []).length + " candidatos</dd>");
+    }
+    if (est.resCasos) { h.push("<dt>Casos</dt><dd class='" + (est.resCasos[0] === est.resCasos[1] ? "ok" : "erro") + "'>" + est.resCasos[0] + " de " + est.resCasos[1] + " certos</dd>"); }
+    if (est.resPares) { h.push("<dt>Pares</dt><dd class='" + (est.resPares[0] === est.resPares[1] ? "ok" : "erro") + "'>" + est.resPares[0] + " de " + est.resPares[1] + " como esperado</dd>"); }
+    var am = [];
+    ["rapida", "media"].forEach(function (k) {
+      if (((est.amostras[k] || {}).ids || []).map(String).indexOf(String(id)) >= 0) { am.push(k === "rapida" ? "rápida" : "média"); }
+    });
+    if (am.length) { h.push("<dt>Amostras</dt><dd>" + am.join(", ") + "</dd>"); }
+    h.push("<dt>Arquivos</dt><dd><a target='_blank' href='" + V2 + "mapas/" + id + ".png'>quadro</a> · <a target='_blank' href='" +
+      V2 + "vetores/" + id + ".json'>vetor</a> · <a target='_blank' href='" + V2 + "rotulos/" + id + ".json'>rótulo</a> · <a target='_blank' href='" +
+      V2 + "rotulos/" + id + ".png'>rótulo png</a></dd></dl>");
+    if (est.sel) {
+      var f = est.formas.filter(function (x) { return x.r === est.sel; })[0], g = est.regRotulo[est.sel];
+      h.push("<h3>Região " + esc(est.sel) + "</h3><dl>");
+      if (f) {
+        h.push("<dt>Tipo</dt><dd>" + f.tipo + "</dd><dt>Cor</dt><dd><span style='display:inline-block;width:12px;height:12px;vertical-align:-2px;border:1px solid #888;background:" +
+          rgb(f.cor) + "'></span> " + f.cor.join(", ") + "</dd><dt>Anéis</dt><dd>" + f.aneis.length + "</dd>");
+      }
+      if (g) {
+        h.push("<dt>Área</dt><dd>" + g.area_px + " px</dd><dt>Caixa</dt><dd>" + g.caixa.join(", ") + "</dd><dt>Texto</dt><dd>" +
+          (g.texto && g.texto.length ? esc(JSON.stringify(g.texto)) : "–") + "</dd>");
+      }
+      var pre = est.vetor && est.vetor.dados.preenchidas && est.vetor.dados.preenchidas[est.sel];
+      if (pre !== undefined) { h.push("<dt>Preenchida</dt><dd>" + pre + "</dd>"); }
+      h.push("</dl>");
+    }
+    var minhas = est.notas.filter(function (n) { return n.mapa === id; });
+    if (minhas.length) {
+      h.push("<h3>Anotações neste mapa</h3><ul class='notas'>" + minhas.map(function (n) {
+        return "<li><span>" + esc(rotuloNota(n)) + "</span><button data-apagar='" + esc(n.id) + "' title='Apagar'>×</button></li>";
+      }).join("") + "</ul>");
+    }
+    $("info").innerHTML = h.join("");
+  }
+
+  // ---------- modo, zoom e eventos do mapa ----------
+  function aplicarModo() {
+    $("p2").classList.toggle("oculto", est.modo !== "lado");
+    $("paineis").classList.toggle("lado", est.modo === "lado");
+    $("s1").classList.toggle("oculto", est.modo === "video");
+    est.z = 1; est.tx = 0; est.ty = 0; aplicarZoom();
+    try { history.replaceState(null, "", "#ano=" + est.anos[est.pos] + "&modo=" + est.modo); } catch (e) { /* file:// */ }
+    desenhar();
+  }
+
+  function aplicarZoom() {
+    var t = "translate(" + est.tx + "px," + est.ty + "px) scale(" + est.z + ")";
+    Array.prototype.forEach.call(document.querySelectorAll(".camada"), function (c) {
+      c.style.transform = t;
+      c.classList.toggle("pixel", est.z >= 3);
+    });
+  }
+  function limitar(painel) {
+    var w = painel.clientWidth, h = painel.clientHeight;
+    est.tx = Math.min(0, Math.max(w - w * est.z, est.tx));
+    est.ty = Math.min(0, Math.max(h - h * est.z, est.ty));
+  }
+
+  var redesenhoMarcas = null;
+  function ligarPainel(painel) {
+    var arr = null;
+    painel.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      var r = painel.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      var z2 = Math.min(60, Math.max(1, est.z * (e.deltaY < 0 ? 1.25 : 0.8))), f = z2 / est.z;
+      est.tx = mx - (mx - est.tx) * f; est.ty = my - (my - est.ty) * f; est.z = z2;
+      limitar(painel); aplicarZoom();
+      clearTimeout(redesenhoMarcas);
+      redesenhoMarcas = setTimeout(desenhar, 120);
+    }, { passive: false });
+    painel.addEventListener("pointerdown", function (e) {
+      var alvo = e.target.closest ? e.target.closest("[data-r]") : null;
+      arr = { x: e.clientX, y: e.clientY, tx: est.tx, ty: est.ty, moveu: false, r: alvo ? alvo.getAttribute("data-r") : null };
+      painel.setPointerCapture(e.pointerId);
+    });
+    painel.addEventListener("pointermove", function (e) {
+      if (!arr) { dica(e); return; }
+      var dx = e.clientX - arr.x, dy = e.clientY - arr.y;
+      if (Math.abs(dx) + Math.abs(dy) > 4) { arr.moveu = true; painel.classList.add("arrastando"); }
+      if (arr.moveu) { est.tx = arr.tx + dx; est.ty = arr.ty + dy; limitar(painel); aplicarZoom(); }
+    });
+    painel.addEventListener("pointerup", function (e) {
+      if (arr && !arr.moveu) {
+        if (est.anotar) { anotarClique(painel, e); }
+        else { est.sel = arr.r === est.sel ? null : arr.r; desenhar(); }
+      }
+      arr = null; painel.classList.remove("arrastando");
+    });
+    painel.addEventListener("pointerleave", function () { $("dica").classList.add("oculto"); });
+    painel.addEventListener("dblclick", function () { est.z = 1; est.tx = 0; est.ty = 0; aplicarZoom(); desenhar(); });
+  }
+
+  function dica(e) {
+    var d = $("dica"), alvo = e.target.closest ? e.target.closest("[data-r]") : null;
+    if (!alvo) { d.classList.add("oculto"); return; }
+    var r = alvo.getAttribute("data-r"), f = est.formas.filter(function (x) { return x.r === r; })[0], g = est.regRotulo[r];
+    if (!f) { d.classList.add("oculto"); return; }
+    d.innerHTML = "região " + esc(r) + " · " + f.tipo + " · rgb(" + f.cor.join(", ") + ")" + (g ? " · " + g.area_px + " px" : "");
+    d.style.left = (e.clientX + 14) + "px"; d.style.top = (e.clientY + 14) + "px";
+    d.classList.remove("oculto");
+  }
+
+  function parar() {
+    if (est.tocando) { clearInterval(est.tocando); est.tocando = null; }
+    $("tocar").textContent = "▶";
+  }
+  function tocar() {
+    if (est.tocando) { parar(); return; }
+    $("tocar").textContent = "⏸";
+    est.tocando = setInterval(function () { if (!passo(1, false)) { parar(); } }, 1000 / est.vel);
+  }
+
+  function ligarMapa() {
+    ligarPainel($("p1")); ligarPainel($("p2"));
+    $("ant").onclick = function () { parar(); passo(-1, false); };
+    $("prox").onclick = function () { parar(); passo(1, false); };
+    $("ant-mapa").onclick = function () { parar(); passo(-1, true); };
+    $("prox-mapa").onclick = function () { parar(); passo(1, true); };
+    $("tocar").onclick = tocar;
+    $("vel").onchange = function () { est.vel = +this.value; if (est.tocando) { parar(); tocar(); } };
+    $("regua").oninput = function () { parar(); irPos(+this.value); };
+    $("ir").onclick = function () {
+      var a = lerAno($("entrada-ano").value);
+      if (a === null || !irAno(a)) { $("entrada-ano").style.borderColor = "var(--erro)"; return; }
+      $("entrada-ano").style.borderColor = "";
+    };
+    $("entrada-ano").onkeydown = function (e) { if (e.key === "Enter") { $("ir").onclick(); } };
+    $("modo").onchange = function () { est.modo = this.value; aplicarModo(); };
+    $("opacidade").oninput = function () { est.opac = +this.value; if (est.modo !== "cores") { est.modo = "cores"; $("modo").value = "cores"; aplicarModo(); } else { desenhar(); } };
+    $("sem-dono").onchange = function () { est.semDono = this.checked; desenhar(); };
+    $("ver-casos").onchange = function () { est.verCasos = this.checked; desenhar(); };
+    $("navegar").onchange = function () { est.navegar = this.value; parar(); };
+    $("recarregar").onclick = function () { carregarMapa(est.id, true); };
+    $("anotar").onchange = function () {
+      est.anotar = this.value; est.pendente = null;
+      $("p1").classList.toggle("anotando", !!est.anotar); $("p2").classList.toggle("anotando", !!est.anotar);
+      estadoNotas(); desenhar();
+    };
+    $("baixar-anotacoes").onclick = baixarNotas;
+    $("info").onclick = function (e) {
+      var b = e.target.closest ? e.target.closest("[data-apagar]") : null;
+      if (!b) { return; }
+      var id = b.getAttribute("data-apagar");
+      est.notas = est.notas.filter(function (n) { return n.id !== id; });
+      salvarNotas(); desenhar();
+    };
+    function piscar(sim) { est.piscando = sim; $("s1").style.visibility = sim ? "hidden" : ""; }
+    $("piscar").onpointerdown = function () { piscar(true); };
+    $("piscar").onpointerup = $("piscar").onpointerleave = function () { piscar(false); };
+    document.addEventListener("keydown", function (e) {
+      if ($("aba-mapa").classList.contains("oculto")) { return; }
+      var t = e.target.tagName;
+      if (t === "INPUT" && e.target.type === "text" || t === "SELECT") { return; }
+      if (e.key === "ArrowRight") { e.preventDefault(); parar(); passo(1, e.shiftKey); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); parar(); passo(-1, e.shiftKey); }
+      else if (e.key === " ") { e.preventDefault(); tocar(); }
+      else if (e.key === "v" || e.key === "V") { piscar(true); }
+      else if (e.key === "r" || e.key === "R") { carregarMapa(est.id, true); }
+      else if (e.key === "Escape" && est.pendente) { est.pendente = null; estadoNotas(); desenhar(); }
+    });
+    document.addEventListener("keyup", function (e) { if (e.key === "v" || e.key === "V") { piscar(false); } });
+    window.addEventListener("hashchange", function () {
+      var h = lerHash();
+      if (h.ano !== undefined && h.ano !== est.anos[est.pos]) { irAno(h.ano); }
+    });
+  }
+
+  // ---------- andamento ----------
+  var cronAndamento = null;
+  function ultimas(t, n) {
+    var l = t.split(/\r?\n|\r/).filter(function (x) { return x.trim(); });
+    return l.slice(-n).map(function (x) { return x.length > 400 ? x.slice(0, 400) + "…" : x; }).join("\n");
+  }
+  function andamento() {
+    var total = est.mapas ? Object.keys(est.mapas).length : 0;
+    $("andamento-hora").textContent = "lido às " + new Date().toLocaleTimeString("pt-BR");
+    fetch(V2, { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (html) {
+      var nomes = links(html).filter(function (n) { return /\.log$/.test(n); });
+      return Promise.all(nomes.map(function (n) {
+        return buscar(V2 + n, "text", true).then(function (r) { return { nome: n, quando: r.quando, fim: ultimas(r.dados, 3) }; }).catch(nulo);
+      }));
+    }).then(function (lista) {
+      lista = lista.filter(Boolean).sort(function (a, b) { return (b.quando || 0) - (a.quando || 0); });
+      $("logs").innerHTML = "<tr><th>Log</th><th>Mudou</th><th>Últimas linhas</th></tr>" + lista.map(function (l) {
+        var vivo = l.quando && Date.now() - l.quando.getTime() < 120000;
+        return "<tr><td><span class='ponto" + (vivo ? " vivo" : "") + "'></span><a target='_blank' href='" + V2 + esc(l.nome) + "'>" + esc(l.nome) +
+          "</a></td><td>" + hora(l.quando) + "<br><span class='legenda'>" + ha(l.quando) + "</span></td><td class='fim'>" + esc(l.fim) + "</td></tr>";
+      }).join("");
+    });
+    // manifestos: e4/<sub>/manifesto.json e e5/manifesto.json (e outras eN que aparecerem)
+    fetch(V2, { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (html) {
+      var etapas = links(html).filter(function (n) { return /^e\d+\/$/.test(n); });
+      return Promise.all(etapas.map(function (e) {
+        return fetch(V2 + e, { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (h2) {
+          var subs = links(h2).filter(function (n) { return /\/$/.test(n); }).map(function (s) { return e + s; });
+          if (links(h2).indexOf("manifesto.json") >= 0) { subs.unshift(e); }
+          return subs;
+        });
+      }));
+    }).then(function (grupos) {
+      var pastas = [].concat.apply([], grupos);
+      return Promise.all(pastas.map(function (p) {
+        return buscar(V2 + p + "manifesto.json", "json", true).then(function (r) {
+          var itens = Object.keys(r.dados), seg = 0;
+          itens.forEach(function (k) { seg += +(r.dados[k].segundos || 0); });
+          return { pasta: p, n: itens.length, seg: seg, quando: r.quando };
+        }).catch(nulo);
+      }));
+    }).then(function (lista) {
+      lista = lista.filter(Boolean);
+      $("manifestos").innerHTML = "<tr><th>Etapa</th><th>Itens</th><th></th><th>Tempo somado</th><th>Atualizado</th></tr>" + lista.map(function (m) {
+        var f = total ? Math.min(1, m.n / total) : 0, vivo = m.quando && Date.now() - m.quando.getTime() < 120000;
+        return "<tr><td><span class='ponto" + (vivo ? " vivo" : "") + "'></span>" + esc(m.pasta) + "</td><td>" + m.n + (total ? " / " + total : "") +
+          "</td><td><div class='barra-prog'><i style='width:" + (f * 100).toFixed(1) + "%'></i></div></td><td>" + Math.round(m.seg / 60) +
+          " min</td><td>" + hora(m.quando) + " · " + ha(m.quando) + "</td></tr>";
+      }).join("") + (lista.length ? "" : "<tr><td>nenhum manifesto encontrado</td></tr>");
+    });
+  }
+
+  // ---------- revisão ----------
+  var imagensRevisao = [];
+  function revisao() {
+    fetch(V2 + "revisao/", { cache: "no-cache" }).then(function (r) { return r.text(); }).then(function (html) {
+      var nomes = links(html).filter(function (n) { return /\.(png|jpe?g|webp|gif|svg)$/i.test(n); });
+      return Promise.all(nomes.map(function (n) {
+        return fetch(V2 + "revisao/" + encodeURIComponent(n), { method: "HEAD", cache: "no-cache" }).then(function (r) {
+          var lm = r.headers.get("Last-Modified");
+          return { nome: n, quando: lm ? new Date(lm) : null };
+        }).catch(function () { return { nome: n, quando: null }; });
+      }));
+    }).then(function (lista) {
+      imagensRevisao = lista.sort(function (a, b) { return (b.quando || 0) - (a.quando || 0); });
+      galeria();
+    });
+  }
+  function galeria() {
+    var f = $("filtro-revisao").value.toLowerCase();
+    $("galeria").innerHTML = imagensRevisao.filter(function (i) { return i.nome.toLowerCase().indexOf(f) >= 0; }).map(function (i) {
+      var url = V2 + "revisao/" + encodeURIComponent(i.nome) + "?t=" + (i.quando ? i.quando.getTime() : 0);
+      return "<figure data-url='" + esc(url) + "' data-nome='" + esc(i.nome) + "'><img loading='lazy' src='" + esc(url) + "' alt=''><figcaption>" +
+        esc(i.nome) + "<br><span class='legenda'>" + hora(i.quando) + " · " + ha(i.quando) + "</span></figcaption></figure>";
+    }).join("") || "<p class='legenda'>nenhuma imagem</p>";
+  }
+
+  // ---------- abas ----------
+  function ligarAbas() {
+    Array.prototype.forEach.call(document.querySelectorAll(".abas button"), function (b) {
+      b.onclick = function () {
+        var aba = b.getAttribute("data-aba");
+        Array.prototype.forEach.call(document.querySelectorAll(".abas button"), function (x) { x.classList.toggle("ativa", x === b); });
+        ["mapa", "andamento", "revisao"].forEach(function (n) { $("aba-" + n).classList.toggle("oculto", n !== aba); });
+        parar();
+        clearInterval(cronAndamento); cronAndamento = null;
+        if (aba === "andamento") {
+          andamento();
+          if ($("auto-andamento").checked) { cronAndamento = setInterval(andamento, 15000); }
+        }
+        if (aba === "revisao") { revisao(); }
+      };
+    });
+    $("atualizar-andamento").onclick = andamento;
+    $("auto-andamento").onchange = function () {
+      clearInterval(cronAndamento); cronAndamento = null;
+      if (this.checked) { cronAndamento = setInterval(andamento, 15000); }
+    };
+    $("atualizar-revisao").onclick = revisao;
+    $("filtro-revisao").oninput = galeria;
+    $("galeria").onclick = function (e) {
+      var fig = e.target.closest("figure");
+      if (!fig) { return; }
+      var d = $("ampliar");
+      d.querySelector("img").src = fig.getAttribute("data-url");
+      d.querySelector("p").textContent = fig.getAttribute("data-nome");
+      d.showModal();
+    };
+    $("ampliar").onclick = function () { this.close(); };
+  }
+
+  ligarAbas();
+  ligarMapa();
+  iniciar();
+  var abaInicial = document.querySelector(".abas button[data-aba='" + lerHash().aba + "']");
+  if (abaInicial) { abaInicial.onclick(); }
+})();
+</script>
+</body>
+</html>
