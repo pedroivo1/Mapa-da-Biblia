@@ -24,6 +24,13 @@
 #  2. Pixel -> lon/lat com a calibração da E3 (cilíndrica de Miller): lon = (u + X0)/S - 180;
 #     lat = (atan(exp(rad(y/1,25))) - 45°)/0,4, y = miller(80) - (v + Y0)/S. A transformação é monotônica e a
 #     cobertura continua válida.
+#  2a. Escadas (ESCADA_PX, em pixels, antes da projeção): Douglas–Peucker por DISTÂNCIA em cada cadeia entre nós
+#     (simplificar_local com tolerância 1 px) tira os degraus de 1 px das diagonais rasterizadas (os vértices de uma
+#     escada de 1 px ficam numa faixa de 1 px em volta da reta) e deixa os degraus de 2 px ou mais com corrida maior
+#     que a altura, que são do próprio vídeo. O coverage_simplify do passo 3 é por ÁREA (Visvalingam): um degrau de
+#     1 × 4 px tem 2 px² > TOL_PX² e sobrevivia, o que deixava escadas visíveis nas fronteiras rasas (2026-10-16;
+#     na amostra rápida, 98 escadas de 4+ degraus viraram 15 e os vértices caíram 7 %; 0,51 e 0,75 px tiravam só um
+#     terço). Cadeias que se cruzariam voltam ao original; cobertura válida conferida (T5.2a).
 #  3. shapely.coverage_simplify com tolerância TOL_PX pixels (convertida para graus pela escala do mapa): tira a
 #     escada dos pixels mantendo a borda comum idêntica nos dois vizinhos. (simplificar_local, aresta por aresta,
 #     ficou como opção experimental: SIMPLIFICACAO = "local"; ver §11 do plano.)
@@ -56,6 +63,7 @@ CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
 MUNDO = os.path.join(RAIZ, "frontend", "mapa", "mundo.json")
 TOL_PX = 1.0            # tolerância do coverage_simplify, em pixels do quadro (0,6 deixava a escada dos pixels nas diagonais)
+ESCADA_PX = 1.0         # passo 2a: Douglas–Peucker por distância, em pixels, que tira os degraus de 1 px (0 desliga)
 CASAS = 5               # casas decimais do vetor da E5 (~1 m); o arredondamento do site (2 casas) é feito na E8
 RAIO_SEM_TREMOR = 0.15  # graus: em volta de um cruzamento causado pelo tremor, os lados ficam retos
 # "cobertura" = shapely.coverage_simplify (padrão: cobertura sempre válida); "local" = simplificar_local (experimental:
@@ -318,9 +326,12 @@ def simplificar_local(pol, tol):
             x = simples[i].intersection(simples[j])
             if x.is_empty:
                 continue
-            ext = shapely.multipoints(np.vstack([shapely.get_coordinates(shapely.boundary(simples[i])),
-                                                 shapely.get_coordinates(shapely.boundary(simples[j]))]))
-            if not x.difference(ext).is_empty if not ext.is_empty else True:
+            # só podem se tocar nos extremos COMUNS (nós): passar por cima do extremo da outra também é cruzar
+            ei = shapely.get_coordinates(shapely.boundary(simples[i]))
+            ej = shapely.get_coordinates(shapely.boundary(simples[j]))
+            comuns = [p for p in ei.tolist() if p in ej.tolist()]
+            ext = shapely.multipoints(np.array(comuns)) if comuns else None
+            if ext is None or not x.difference(ext).is_empty:
                 ruins |= {i, j}
             if not simples[i].is_simple:
                 ruins.add(i)
@@ -351,6 +362,8 @@ def simplificar_local(pol, tol):
 def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     """Devolve (regioes {r: geom lon/lat final}, preenchidas {r: área}, tipos, métricas)."""
     pol = poligonos_pixel(reg)
+    if ESCADA_PX > 0:
+        pol = simplificar_local(pol, ESCADA_PX)      # passo 2a: só os degraus de 1 px (em pixels)
     ids = sorted(pol)
     if SIMPLIFICACAO == "local":
         pl = simplificar_local(pol, TOL_PX)
@@ -419,7 +432,7 @@ _sobrepor_params()
 
 def params():
     return {"versao": VERSAO, "TOL_PX": TOL_PX, "PASSO_TREMOR": PASSO_TREMOR, "CASAS": CASAS,
-            "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR, "SIMPLIFICACAO": SIMPLIFICACAO}
+            "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR, "SIMPLIFICACAO": SIMPLIFICACAO, "ESCADA_PX": ESCADA_PX}
 
 
 E4E = None
@@ -496,9 +509,7 @@ def main():
     else:
         ids = json.load(open(os.path.join(AQUI, "amostras.json")))[amostra]["ids"]
     et = cache.Etapa("e5")
-    variante = variante_ or cache.exp_atual() or et.m["aprovada"]
-    if variante is None:
-        raise SystemExit("e5: nenhuma variante aprovada ainda; use --variante <nome>")
+    variante = variante_ or cache.exp_atual() or et.m["aprovada"] or "base"   # cache nova: "base" vira a aprovada
     et.garantir(variante, params())       # para quando a variante já existe com outros parâmetros
     t0 = time.time()
     lotes = [ids[i:i + 6] for i in range(0, len(ids), 6)]
@@ -519,7 +530,7 @@ def main():
                 dec = time.time() - t0
                 print(f"lotes {n}/{len(lotes)}  vetorizados={len(tempos)}  {dec:.0f} s, faltam ~{dec / n * (len(lotes) - n):.0f} s", flush=True)
     trocados = 0
-    if variante == et.m["aprovada"]:
+    if variante == et.m["aprovada"] or et.m["aprovada"] is None:
         trocados = et.aprovar(variante)   # a aprovada ganhou itens novos (entradas novas): apontadores em dia
     falhas = {k: v["falha"] for k, v in tempos.items() if isinstance(v, dict)}
     resumo = {"variante": variante, "mapas": len(ids), "recalculados": len(tempos) - len(falhas),

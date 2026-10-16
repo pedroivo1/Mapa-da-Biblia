@@ -1048,7 +1048,7 @@ def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True, variante=None):
     mans["e"] = {}
     et = cache.Etapa("e4e")
     if variante is None:
-        variante = cache.exp_atual() or et.m["aprovada"]
+        variante = cache.exp_atual() or et.m["aprovada"] or "base"      # cache nova: "base" vira a aprovada
     et.garantir(variante, {"versao": VERSAO["e"], **params("e")})
     lotes = [ids[i:i + lote] for i in range(0, len(ids), lote)]
     feitos = {s_: 0 for s_ in "abde"}
@@ -1076,7 +1076,7 @@ def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True, variante=None):
                 eta = dec / n * (len(lotes) - n)
                 print(f"lotes {n}/{len(lotes)}  recalculados a={feitos['a']} b={feitos['b']} d={feitos['d']} "
                       f"e={feitos['e']}  {dec:.0f} s, faltam ~{eta:.0f} s", flush=True)
-    trocados = et.aprovar(variante) if variante == et.m["aprovada"] else 0
+    trocados = et.aprovar(variante) if variante == et.m["aprovada"] or et.m["aprovada"] is None else 0
     soma = {s_: round(sum(t.get(s_, 0) for t in tempos.values()), 1) for s_ in "abde"}
     resumo = {"variante": variante, "apontadores_trocados": trocados,
               "mapas": len(ids), "recalculados": feitos, "segundos_total": round(time.time() - t_ini, 1),

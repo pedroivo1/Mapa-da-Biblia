@@ -33,6 +33,7 @@
   var svgEl = null;
   var gEstados = null;
   var gNomes = null;
+var gRios = null;
   var vb = { x: 0, y: 0, w: L, h: A };
   var meta = {}; // id -> {nome, nome_video, cor, desde, ate, nota, nomes}
   var BLOCO = 25;
@@ -183,7 +184,19 @@
     vb.x = limitar(vb.x, -vb.w * 0.3, L - vb.w * 0.7);
     vb.y = limitar(vb.y, -vb.h * 0.3, A - vb.h * 0.7);
     svgEl.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+    ajustarRios();
     ajustarNomes();
+  }
+
+  // rios: somem quando o mapa está muito longe (vb.w perto de L) e engrossam de 1 px até 2 px ao chegar bem perto
+  function ajustarRios() {
+    if (!gRios) return;
+    var w = vb.w;
+    var sumir = limitar((L * 0.65 - w) / (L * 0.2), 0, 1); // 1 até 45% da largura, 0 a partir de 65%
+    var t = limitar((Math.log(900) - Math.log(w)) / (Math.log(900) - Math.log(150)), 0, 1); // 0 na vista inicial, 1 bem perto
+    gRios.style.display = sumir > 0 ? "" : "none";
+    gRios.style.opacity = String(sumir);
+    gRios.style.setProperty("--rio-largura", (1 + t).toFixed(2) + "px");
   }
 
   function vistaInicial() {
@@ -504,7 +517,7 @@
     });
     gEstados = el("g", {}, svgEl);
     // rios (mundo.json, tipo "rio"): por cima dos estados, sem pegar o clique
-    var gRios = el("g", { "class": "geral-rios" }, svgEl);
+    gRios = el("g", { "class": "geral-rios" }, svgEl);
     mundo.fundo.forEach(function (f) {
       if (f.tipo !== "rio") return;
       var pts = f.pontos.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ");
