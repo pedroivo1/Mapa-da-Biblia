@@ -27,7 +27,11 @@ const PAGINAS = [
   ["mapas/", 'document.querySelectorAll(".mapas-livro li").length'],
   ["mapa/?m=jo", 'document.querySelectorAll(".mapa-lugar").length'],
   ["mapa/", 'document.querySelectorAll(".mapa-lugar").length'],
-  ["mapa-geral/", 'document.querySelectorAll(".geral-estado").length']
+  ["mapa-geral/", 'document.querySelectorAll(".geral-estado").length'],
+  ["mapa-geral/?ano=2500", 'document.querySelectorAll(".geral-estado").length'],
+  ["mapa-geral/?ano=586", 'document.querySelectorAll(".geral-estado").length'],
+  ["mapa-geral/?ano=-1000", 'document.querySelectorAll(".geral-estado").length'],
+  ["mapa-geral/?ano=-2025", 'document.querySelectorAll(".geral-estado").length']
 ];
 const TELAS = [
   { nome: "1280", w: 1280, h: 800 },

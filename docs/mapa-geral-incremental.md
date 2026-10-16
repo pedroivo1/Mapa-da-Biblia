@@ -120,3 +120,41 @@ diferentes são lidas uma vez só. A votação por entidade é barata e roda sem
 5. Seguir para a E5, já com chave por hash de rótulo. Na E7, cache de OCR por recorte.
 6. Registrar no §11 de `docs/mapa-geral-plano-2.md` e acrescentar uma linha no §5 do plano apontando para este
    arquivo.
+
+## 7. Loja por chave e variantes (decisão do usuário, 2026-10-15)
+
+Motivo: um experimento na E5 (simplificação aresta por aresta) foi gravado por cima da versão aprovada e, ao falhar,
+custou uma revetorização completa (~35 min) só para voltar ao que já existia.
+
+1. **Um arquivo por chave, não por mapa.** As etapas versionadas (E4e, E5, E6 e, depois, E7) gravam cada resultado em
+   `.cache/v2/obj/<etapa>/<chave>.<ext>` (imutável). `rotulos/<id>.png|json`, `vetores/<id>.json` e
+   `entidades.json` são **apontadores** (links simbólicos relativos) para a variante aprovada. Trocar de versão é
+   trocar os apontadores (`python3 scripts/mapa-geral/cache.py aprovar <etapa> <variante>`), sem recalcular.
+2. **Experimento nunca sobrescreve o aprovado.** `--variante <nome>` (ou `MAPA_GERAL_EXP=<nome>`) grava só na loja e no
+   manifesto; parâmetros de um experimento vão em `MAPA_GERAL_PARAMS='{"NOME": valor}'`. Uma variante só vira a
+   aprovada depois de passar no portão inteiro. Rodar sem `--variante` com parâmetros diferentes dos da aprovada é
+   recusado (pede um nome).
+3. **Chave = lógica + parâmetros reais + conteúdo das entradas.** `VERSAO` muda só quando o código muda de um jeito
+   que os parâmetros não descrevem (a simplificação aresta por aresta é a mesma lógica 4 da E5 com
+   `SIMPLIFICACAO = "local"`). Voltar a uma lógica antiga dá a mesma chave: o objeto existente é reaproveitado
+   (`Etapa.procurar` procura em todas as variantes).
+4. **Manifesto com histórico** (`.cache/v2/<etapa>/manifesto.json`, formato 2): `aprovada`, `anterior` e
+   `variantes` (cada uma com `params`, `criada`, `testes` e `itens` = {id: chave, hash, segundos}). O visualizador
+   tem um seletor de variante que lê os objetos da loja.
+5. **`limpar_cache.py`** lista o espaço de cada variante e apaga só o lixo (objetos sem variante, `.tmp`, pastas
+   obsoletas). Uma variante só é apagada com `--variante <etapa> <nome> --apagar`, nunca a aprovada nem a anterior.
+6. **Testes:** T-C5 confere loja, manifesto e apontadores; T-C3 roda o experimento numa variante e verifica que o
+   aprovado não muda e que a rodada normal depois recalcula 0; **T-C7** troca o aprovado para a variante e volta:
+   a volta recalcula 0 mapas e os arquivos são idênticos.
+7. As sub-etapas E4a/E4b/E4d continuam com o manifesto por mapa (formato 1): são estáveis e caras de guardar em
+   várias versões.
+8. **E3 na loja (2026-10-16).** `calibrar.py` grava a calibração inteira como item da etapa `e3`
+   (`.cache/v2/obj/e3/<chave>.json`; chave = `VERSAO` + parâmetros + `mapas.json` + `mundo.json` + conteúdo dos PNGs) e
+   `calibracao.json` é o apontador para a variante aprovada; as etapas seguintes leem `cache.calibracao()` (honra
+   `MAPA_GERAL_EXP`). Sem `--variante`, só roda sobre a aprovada se os parâmetros forem os mesmos; o arquivo de antes da
+   loja foi adotado como variante `v1` (não recalculável: um cálculo novo sem nome vai para `base`). `transicoes.py`
+   grava a calibração corrigida como variante `<aprovada>-transicoes` e a aprova; a anterior fica na loja.
+9. **Painel** (`painel.py` + `painel.html`, no lugar de `visualizar.py` e `editor.py`): aba Versões (aprovar, voltar,
+   apagar variantes), aba Mapas (estado de cada mapa por etapa, com as mesmas funções de chave dos scripts:
+   `rotular.chave_sub`, `vetorizar.chave_mapa`, `nomear.chave_mapa`), aba Rodar (fila de rodadas, log, interromper) e
+   comparação A/B de duas variantes na aba Mapa.

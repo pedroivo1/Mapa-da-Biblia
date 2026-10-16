@@ -4,10 +4,13 @@
 # scripts/mapa/tremor.py, costa exata de frontend/mapa/mundo.json).
 # Uso (na raiz do repositório):
 #   PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/vetorizar.py [id ...] [--amostra rapida|media|todos]
-#                                                                                   [--forcar] [--adotar]
-# Com cache (docs/mapa-geral-incremental.md): um mapa só é vetorizado de novo se mudou o conteúdo dos rótulos dele,
-# a calibração, mundo.json, TOL_PX, PASSO_TREMOR ou a VERSAO. Manifesto em .cache/v2/e5/manifesto.json.
-# Lê .cache/v2/rotulos/<id>.png e .json (E4), .cache/v2/calibracao.json (E3) e frontend/mapa/mundo.json.
+#                                                                       [--variante <nome>] [--forcar]
+# Loja por chave (cache.py, docs/mapa-geral-incremental.md): cada vetor fica em .cache/v2/obj/e5/<chave>.json; a
+# chave sai do conteúdo dos rótulos, da calibração, de mundo.json e dos parâmetros (params()). vetores/<id>.json é
+# um apontador para a variante aprovada. Sem --variante roda a aprovada (e atualiza os apontadores dela); com
+# --variante <nome> (ou MAPA_GERAL_EXP) é um experimento: grava só na loja e no manifesto, sem tocar no aprovado.
+# Aprovar: python3 scripts/mapa-geral/cache.py aprovar e5 <nome>.
+# Lê .cache/v2/rotulos/<id>.png e .json (E4), a calibração da E3 (cache.calibracao()) e frontend/mapa/mundo.json.
 # Grava .cache/v2/vetores/<id>.json:
 #   {"regioes": {"<r>": {"tipo": "estado"|"sem-dono", "cor": [R,G,B], "aneis": [[[lon, lat], ...], ...]}},
 #    "preenchidas": {"<r>": área em grau² recebida de terra de mundo.json que o vídeo deixa como mar}}
@@ -21,11 +24,9 @@
 #  2. Pixel -> lon/lat com a calibração da E3 (cilíndrica de Miller): lon = (u + X0)/S - 180;
 #     lat = (atan(exp(rad(y/1,25))) - 45°)/0,4, y = miller(80) - (v + Y0)/S. A transformação é monotônica e a
 #     cobertura continua válida.
-#  3. Simplificação aresta por aresta (simplificar_local): as bordas da cobertura em pixels viram cadeias entre nós
-#     (onde três ou mais faces se encontram) e cada cadeia é simplificada sozinha (Douglas–Peucker, TOL_PX, extremos
-#     fixos, forma canônica). A borda comum é a mesma cadeia nos dois vizinhos; uma região com os mesmos pixels e a
-#     mesma vizinhança sai com a mesma geometria em mapas diferentes (T6.4; o coverage_simplify do GEOS olhava
-#     arestas a até ~20 px). Cadeias que passam a se cruzar voltam ao traçado original. Depois, pixel -> lon/lat.
+#  3. shapely.coverage_simplify com tolerância TOL_PX pixels (convertida para graus pela escala do mapa): tira a
+#     escada dos pixels mantendo a borda comum idêntica nos dois vizinhos. (simplificar_local, aresta por aresta,
+#     ficou como opção experimental: SIMPLIFICACAO = "local"; ver §11 do plano.)
 #  4. tremer() de scripts/mapa/tremor.py em cada anel, com passo de 0,25° (amplitude padrão 0,045°): o tremor
 #     depende só do lado (não do sentido), então a borda comum continua com os mesmos pontos nos dois vizinhos.
 #  5. Corte pela terra de mundo.json (anéis de terra em par-ímpar menos todos os lagos, como no site): a costa é a
@@ -57,6 +58,18 @@ MUNDO = os.path.join(RAIZ, "frontend", "mapa", "mundo.json")
 TOL_PX = 1.0            # tolerância do coverage_simplify, em pixels do quadro (0,6 deixava a escada dos pixels nas diagonais)
 CASAS = 5               # casas decimais do vetor da E5 (~1 m); o arredondamento do site (2 casas) é feito na E8
 RAIO_SEM_TREMOR = 0.15  # graus: em volta de um cruzamento causado pelo tremor, os lados ficam retos
+# "cobertura" = shapely.coverage_simplify (padrão: cobertura sempre válida); "local" = simplificar_local (experimental:
+# geometria estável entre mapas, mas deixou cobertura inválida em 51 mapas e bordas comuns curtas; ver §11)
+SIMPLIFICACAO = "cobertura"
+
+
+def _sobrepor_params():
+    """MAPA_GERAL_PARAMS='{"SIMPLIFICACAO": "local"}' muda parâmetros sem editar o código (experimentos)."""
+    extra = os.environ.get("MAPA_GERAL_PARAMS")
+    if extra:
+        for nome, v in json.loads(extra).items():
+            if nome in globals():
+                globals()[nome] = v
 PASSO_TREMOR = 0.25     # graus: com o passo padrão (0,35) um lado de até 0,7° ficava sem quebrar; 0,25 garante <= 0,5°
 LAT_TOPO = 80.0
 
@@ -337,9 +350,14 @@ def simplificar_local(pol, tol):
 
 def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     """Devolve (regioes {r: geom lon/lat final}, preenchidas {r: área}, tipos, métricas)."""
-    pol = simplificar_local(poligonos_pixel(reg), TOL_PX)
+    pol = poligonos_pixel(reg)
     ids = sorted(pol)
-    simp = [para_lonlat(pol[r], cal) for r in ids]
+    if SIMPLIFICACAO == "local":
+        pl = simplificar_local(pol, TOL_PX)
+        simp = [para_lonlat(pl[r], cal) for r in ids]
+    else:
+        geoms = [para_lonlat(pol[r], cal) for r in ids]
+        simp = list(shapely.coverage_simplify(np.array(geoms, dtype=object), TOL_PX / cal["S"]))
     # tremor (inclui o mar, para a fronteira terra/mar do vídeo ficar igual dos dois lados antes do corte)
     tremidos, n_retos = tremer_cobertura(list(simp))
     metricas = {"cobertura_simplificada": bool(shapely.coverage_is_valid(np.array(list(simp), dtype=object))),
@@ -391,38 +409,60 @@ def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     return final, preenchidas, tipos, metricas
 
 
-VERSAO = 5      # incremente quando a lógica da E5 mudar (5: simplificação aresta por aresta, local; ver simplificar_local)
-                # 4: lado sem tremor quebrado em pedaços retos colineares de <= PASSO_TREMOR)
+# Lógica da E5 (VERSAO): muda só quando o código muda de um jeito que os parâmetros não descrevem. Voltar a uma
+# lógica antiga (mesma VERSAO e mesmos parâmetros) dá a mesma chave e reaproveita os objetos da loja.
+#   4: coverage_simplify, 5 casas, lado sem tremor quebrado em pedaços retos colineares (SIMPLIFICACAO "cobertura");
+#      a simplificação aresta por aresta é a mesma lógica com SIMPLIFICACAO = "local"
+VERSAO = 4
+_sobrepor_params()
 
 
-def chave_mapa(k, cal_k, mundo_h, man_e4=None):
+def params():
+    return {"versao": VERSAO, "TOL_PX": TOL_PX, "PASSO_TREMOR": PASSO_TREMOR, "CASAS": CASAS,
+            "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR, "SIMPLIFICACAO": SIMPLIFICACAO}
+
+
+E4E = None
+
+
+def rotulo(k, ext):
+    """Rótulo (E4e) a ler: o da variante MAPA_GERAL_EXP, se a E4e a tem; senão o aprovado."""
+    global E4E
+    if E4E is None:
+        E4E = cache.Etapa("e4e")
+    return E4E.caminho(k, ext)
+
+
+def chave_mapa(k, cal_k, mundo_h):
     """Chave da E5 para um mapa: só o que a E5 lê — o PNG dos rótulos e o tipo e a cor de cada região (não o JSON
-    inteiro: uniões, candidatos e enclaves não mudam o vetor) —, a calibração, mundo.json, parâmetros e VERSAO."""
-    png = os.path.join(V2, "rotulos", f"{k}.png")
-    regioes = [[r["r"], r["tipo"], r["cor"]] for r in json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))["regioes"]]
-    return cache.chave(VERSAO, {"TOL_PX": TOL_PX, "PASSO_TREMOR": PASSO_TREMOR, "CASAS": CASAS, "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR},
-                       [cache.hash_arquivo(png), cache.hash_obj(regioes), cache.hash_obj(cal_k), mundo_h])
+    inteiro: uniões, candidatos e enclaves não mudam o vetor) —, a calibração, mundo.json e os parâmetros."""
+    regioes = [[r["r"], r["tipo"], r["cor"]] for r in json.load(open(rotulo(k, ".json")))["regioes"]]
+    return cache.chave(VERSAO, params(), [cache.hash_arquivo(rotulo(k, ".png")), cache.hash_obj(regioes),
+                                          cache.hash_obj(cal_k), mundo_h])
 
 
 def tarefa(args):
-    ids, man, forcar = args
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    ids, et_m, variante, forcar = args
+    et = cache.Etapa.__new__(cache.Etapa)
+    et.nome, et.m = "e5", et_m
+    cal = json.load(open(cache.calibracao()))["por_mapa"]
     mundo_h = cache.hash_arquivo(MUNDO)
     terra = None
-    saida = os.path.join(V2, "vetores")
-    os.makedirs(saida, exist_ok=True)
     tempos, novas = {}, {}
     for k in ids:
         ch = chave_mapa(k, cal[k], mundo_h)
-        arq = os.path.join(saida, f"{k}.json")
-        if not forcar and not cache.precisa(man, k, ch, arq):
-            continue
+        if not forcar:
+            e = et.procurar(k, ch)          # já calculado (nesta ou noutra variante): reaproveita o objeto
+            if e:
+                if et.itens(variante).get(k) != e:
+                    novas[k] = e
+                continue
         if terra is None:
             terra, _ = carregar_terra()
             shapely.prepare(terra)
         t0 = time.time()
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
-        info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+        reg = cv2.imread(rotulo(k, ".png"), cv2.IMREAD_UNCHANGED)
+        info = json.load(open(rotulo(k, ".json")))
         try:
             final, preenchidas, tipos, metricas = vetorizar_mapa(reg, info, cal[k], terra, None)
         except Exception as e:      # registra e segue; a lista de falhas sai no fim
@@ -432,59 +472,58 @@ def tarefa(args):
         out = {"regioes": {str(r): {"tipo": tipos.get(r, "sem-dono"), "cor": cores.get(r, [255, 255, 255]),
                                     "aneis": aneis_de(g)} for r, g in sorted(final.items())},
                "preenchidas": {str(r): round(a, 4) for r, a in preenchidas.items()}, "metricas": metricas}
-        tmp = os.path.join(saida, f"{k}.json.tmp")
+        arq = et.obj(ch, ".json")
+        tmp = arq + ".tmp"
         json.dump(out, open(tmp, "w"), separators=(",", ":"))
         os.replace(tmp, arq)
         tempos[k] = time.time() - t0
-        novas[k] = cache.entrada(ch, cache.hash_arquivo(arq), round(tempos[k], 3), arq)
+        novas[k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": round(tempos[k], 3)}
     return tempos, novas
 
 
 def main():
     mapas = json.load(open(os.path.join(V2, "mapas.json")))
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    amostra = "todos"
-    if "--amostra" in sys.argv:
-        amostra = sys.argv[sys.argv.index("--amostra") + 1]
-        args = [x for x in args if x != amostra]
+    def opcao(nome):
+        return sys.argv[sys.argv.index(nome) + 1] if nome in sys.argv else None
+    amostra = opcao("--amostra") or "todos"
+    variante_ = opcao("--variante")
+    args = [x for x in args if x not in (amostra, variante_)]
     if args:
         ids = args
     elif amostra == "todos":
         ids = sorted(mapas, key=lambda k: mapas[k]["quadro"])
     else:
         ids = json.load(open(os.path.join(AQUI, "amostras.json")))[amostra]["ids"]
-    man = cache.manifesto("e5")
-    if "--adotar" in sys.argv:
-        # registra no manifesto vetores JÁ gravados por esta VERSAO do código (sem recalcular). Usar só quando se
-        # sabe que o arquivo saiu exatamente deste código e destes rótulos; o T-C1 confere uma amostra.
-        cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
-        mundo_h = cache.hash_arquivo(MUNDO)
-        for k in ids:
-            arq = os.path.join(V2, "vetores", f"{k}.json")
-            if os.path.exists(arq):
-                man[k] = cache.entrada(chave_mapa(k, cal[k], mundo_h), cache.hash_arquivo(arq), None, arq)
-        cache.gravar_manifesto("e5", man)
-        print("adotados:", len(ids))
-        return
+    et = cache.Etapa("e5")
+    variante = variante_ or cache.exp_atual() or et.m["aprovada"]
+    if variante is None:
+        raise SystemExit("e5: nenhuma variante aprovada ainda; use --variante <nome>")
+    et.garantir(variante, params())       # para quando a variante já existe com outros parâmetros
     t0 = time.time()
     lotes = [ids[i:i + 6] for i in range(0, len(ids), 6)]
-    tempos = {}
+    tempos, registrados = {}, 0
     from concurrent.futures import as_completed
     n = 0
     with ProcessPoolExecutor(8) as ex:
-        futs = [ex.submit(tarefa, (l, man, "--forcar" in sys.argv)) for l in lotes]
+        futs = [ex.submit(tarefa, (l, et.m, variante, "--forcar" in sys.argv)) for l in lotes]
         for f in as_completed(futs):
             te, novas = f.result()
             tempos.update(te)
             if novas:
-                man.update(novas)
-                cache.gravar_manifesto("e5", man)
+                et.m["variantes"][variante]["itens"].update(novas)
+                registrados += len(novas)
+                et.gravar()
             n += 1
             if n % 20 == 0 or n == len(lotes):
                 dec = time.time() - t0
                 print(f"lotes {n}/{len(lotes)}  vetorizados={len(tempos)}  {dec:.0f} s, faltam ~{dec / n * (len(lotes) - n):.0f} s", flush=True)
+    trocados = 0
+    if variante == et.m["aprovada"]:
+        trocados = et.aprovar(variante)   # a aprovada ganhou itens novos (entradas novas): apontadores em dia
     falhas = {k: v["falha"] for k, v in tempos.items() if isinstance(v, dict)}
-    resumo = {"mapas": len(ids), "recalculados": len(tempos) - len(falhas), "segundos_total": round(time.time() - t0, 1),
+    resumo = {"variante": variante, "mapas": len(ids), "recalculados": len(tempos) - len(falhas),
+              "registrados": registrados, "apontadores_trocados": trocados, "segundos_total": round(time.time() - t0, 1),
               "falhas": falhas}
     json.dump(resumo, open(os.path.join(V2, "vetores-tempo.json"), "w"), indent=1)
     print(json.dumps({k: v for k, v in resumo.items() if k != "falhas"}))

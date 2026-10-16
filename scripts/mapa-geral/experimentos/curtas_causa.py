@@ -2,9 +2,13 @@
 # no mapa anterior (e no seguinte ao último), com cor, IoU e o id que essa região recebeu.
 import sys,json,collections,numpy as np
 sys.path.insert(0,'scripts/mapa-geral')
-import rastrear as rs
+import rastrear as rs, cache as ca
 V2=rs.V2
-ent=json.load(open(V2+'/entidades.json')); anos=json.load(open(V2+'/anos.json'))
+# uso: curtas_causa.py [variante da E6]  (os vetores vêm da fonte dessa variante: E5 ou E7u)
+et6=ca.Etapa('e6'); VAR6=sys.argv[1] if len(sys.argv)>1 else et6.m['aprovada']
+FONTE=et6.m['variantes'][VAR6]['params'].get('FONTE','e5'); etv=ca.Etapa(FONTE)
+VARV=VAR6 if VAR6 in etv.m['variantes'] else etv.m['aprovada']
+ent=json.load(open(et6.caminho('entidades','.json',VAR6))); anos=json.load(open(V2+'/anos.json'))
 ordem=[int(a) for a in anos]; pos={a:i for i,a in enumerate(ordem)}
 por=ent['por_ano']; idx={}
 for i,c in enumerate(por): idx[(c[0],c[2])]=i
@@ -12,7 +16,7 @@ cache={}
 def grade(k):
     if k not in cache:
         if len(cache)>40: cache.clear()
-        v=json.load(open(V2+f'/vetores/{k}.json')); cache[k]=(rs.rasterizar(v),v)
+        v=json.load(open(etv.caminho(k,'.json',VARV))); cache[k]=(rs.rasterizar(v),v)
     return cache[k]
 cat=collections.Counter(); ex=[]
 curtas=[(e,d) for e,d in ent['entidades'].items() if pos[d['anos'][1]]-pos[d['anos'][0]]+1<3]

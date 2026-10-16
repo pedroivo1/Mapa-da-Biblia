@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Editor do mapa geral</title>
+<!-- Editor local dos dados do mapa geral (ferramenta de desenvolvimento; nunca mover para frontend/).
+     Servido por scripts/mapa-geral/painel.py (porta 8001; embutido na aba Editor do painel.html ou aberto direto em
+     /scripts/mapa-geral/editor.html), que grava as edições em edicoes.json e as aplica aos dados do site. Lê /frontend/mapa/mundo.json, /frontend/mapa-geral/dados/indice.json e os blocos.
+     Atalhos no padrão Adobe: V seleção, A seleção direta (vértices), P caneta (adiciona ponto), H mão, Z zoom,
+     espaço arrasta, Ctrl+J une os dois selecionados, Ctrl+S salva, Ctrl+Z desfaz, Delete apaga o vértice. -->
+<style>
+  :root { --bg: #f4f2ec; --ink: #222; --faint: #8a877f; --line: #d8d4c8; --sel: #0a84ff; --sel2: #ff9f0a; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font: 14px/1.4 system-ui, sans-serif; color: var(--ink); background: var(--bg); }
+  body { display: grid; grid-template-columns: 1fr 320px; height: 100vh; }
+  #quadro { position: relative; overflow: hidden; background: #fff; }
+  #quadro svg { display: block; width: 100%; height: 100%; touch-action: none; user-select: none; }
+  #quadro svg.mao { cursor: grab; } #quadro svg.arrastando { cursor: grabbing; } #quadro svg.caneta { cursor: crosshair; }
+  #quadro svg.zoom { cursor: zoom-in; }
+  .terra { fill: #ecebe6; stroke: #c9c6bb; stroke-width: 1; vector-effect: non-scaling-stroke; fill-rule: evenodd; }
+  .agua { fill: #fff; stroke: #c9c6bb; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .estado { fill-opacity: 0.55; stroke-width: 1; vector-effect: non-scaling-stroke; cursor: pointer; }
+  .estado.sel { stroke: var(--sel); stroke-width: 2.5; fill-opacity: 0.75; }
+  .estado.sel2 { stroke: var(--sel2); stroke-width: 2.5; fill-opacity: 0.75; }
+  .vertice { fill: #fff; stroke: var(--sel); stroke-width: 1.5; vector-effect: non-scaling-stroke; cursor: move; }
+  .vertice.ativo { fill: var(--sel); }
+  .nome { font-size: 11px; font-weight: 600; text-anchor: middle; paint-order: stroke; stroke: #fff; stroke-width: 3px; pointer-events: none; }
+  #hud { position: absolute; left: 8px; top: 8px; padding: 4px 8px; background: rgba(255,255,255,.9); border: 1px solid var(--line); font-size: 12px; }
+  #painel { padding: 12px; border-left: 1px solid var(--line); overflow: auto; display: flex; flex-direction: column; gap: 10px; }
+  h1 { margin: 0; font-size: 15px; }
+  fieldset { border: 1px solid var(--line); padding: 8px 10px; margin: 0; }
+  legend { color: var(--faint); font-size: 12px; padding: 0 4px; }
+  label { display: block; font-size: 12px; color: var(--faint); margin-top: 6px; }
+  input[type=text], input[type=number] { width: 100%; padding: 5px 6px; border: 1px solid var(--line); font: inherit; }
+  input[type=color] { width: 48px; height: 28px; padding: 0; border: 1px solid var(--line); vertical-align: middle; }
+  .linha { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  button { padding: 5px 9px; border: 1px solid var(--line); background: #fff; font: inherit; cursor: pointer; }
+  button.ativa { background: var(--ink); color: #fff; border-color: var(--ink); }
+  button:disabled { opacity: .45; cursor: default; }
+  .k { font-family: ui-monospace, monospace; font-size: 11px; color: var(--faint); }
+  #pendentes { font-size: 12px; margin: 0; padding-left: 16px; max-height: 160px; overflow: auto; }
+  #aviso { font-size: 12px; color: #a33; min-height: 1.2em; }
+  .faint { color: var(--faint); font-size: 12px; }
+</style>
+</head>
+<body>
+  <div id="quadro"><div id="hud">carregando…</div></div>
+  <aside id="painel">
+    <h1>Editor do mapa geral</h1>
+    <fieldset>
+      <legend>Ano</legend>
+      <div class="linha">
+        <button type="button" id="ant" title="← (Shift: 10 anos)">←</button>
+        <input type="text" id="ano" style="width:9rem" placeholder="586 a.C. / 30 d.C." />
+        <button type="button" id="prox" title="→ (Shift: 10 anos)">→</button>
+        <span id="rotulo-ano" class="k"></span>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Ferramenta</legend>
+      <div class="linha" id="ferramentas">
+        <button type="button" data-f="v" title="Seleção (V): clique num estado; Shift+clique seleciona o segundo">V seleção</button>
+        <button type="button" data-f="a" title="Seleção direta (A): mostra e arrasta os vértices do estado selecionado">A vértices</button>
+        <button type="button" data-f="p" title="Caneta (P): clique na borda do estado selecionado para acrescentar um ponto">P caneta</button>
+        <button type="button" data-f="h" title="Mão (H): arrasta o mapa; espaço faz o mesmo em qualquer ferramenta">H mão</button>
+        <button type="button" data-f="z" title="Zoom (Z): clique aproxima, Alt+clique afasta; roda do mouse também">Z zoom</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Estado selecionado</legend>
+      <div id="sel-vazio" class="faint">Nenhum. Clique num estado (V).</div>
+      <div id="sel-campos" hidden>
+        <div class="k" id="sel-id"></div>
+        <label>Nome (pt-BR)</label><input type="text" id="nome" />
+        <label>Nome no vídeo (en)</label><input type="text" id="nome-video" />
+        <label>Cor</label>
+        <div class="linha"><input type="color" id="cor" /><span class="k" id="cor-hex"></span></div>
+        <div class="faint" id="sel-vida"></div>
+        <div class="faint" id="sel-nomes"></div>
+      </div>
+      <div id="sel2" class="faint"></div>
+      <div class="linha" style="margin-top:8px">
+        <button type="button" id="unir" disabled title="Ctrl+J: une o segundo estado ao primeiro, em todos os anos">Unir (Ctrl+J)</button>
+        <button type="button" id="apagar-vertice" disabled title="Delete: apaga o vértice selecionado">Apagar vértice</button>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Edições pendentes</legend>
+      <ol id="pendentes"></ol>
+      <div class="linha" style="margin-top:6px">
+        <button type="button" id="desfazer" disabled title="Ctrl+Z">Desfazer</button>
+        <button type="button" id="salvar" disabled title="Ctrl+S">Salvar (Ctrl+S)</button>
+      </div>
+      <div id="aviso"></div>
+    </fieldset>
+    <div class="faint">Roda do mouse: zoom · Ctrl+0: mundo inteiro · Esc: limpa a seleção · ←/→: ano (Shift: 10).
+      As edições salvas vão para <span class="k">scripts/mapa-geral/edicoes.json</span> e valem após regenerar.</div>
+  </aside>
+<script src="/frontend/compartilhado/js/projecao.js"></script>
+<script>
+(function () {
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var P = Projecao.criar(3600, 80, -58);
+  var L = P.largura, A = P.altura;
+  var quadro = document.getElementById("quadro");
+  var hud = document.getElementById("hud");
+  var svg, gBase, gEstados, gNomes, gVertices;
+  var vb = { x: 0, y: 0, w: L, h: A };
+  var indice = null, meta = {};
+  var blocos = {};
+  var atual = 0;           // posição do ano
+  var ferramenta = "v";
+  var espaco = false;
+  var sel = null, sel2 = null;   // ids
+  var vertice = null;      // {forma, anel, i}
+  var pendentes = [];      // edições ainda não salvas; "forma" guarda antes/depois
+  var desenhados = {};     // id -> {path, forma}
+
+  function el(nome, attrs, pai) {
+    var e = document.createElementNS(NS, nome);
+    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
+    if (pai) pai.appendChild(e);
+    return e;
+  }
+  function anoDePos(i) { return i < 2500 ? 2500 - i : -(i - 2499); }
+  function posDeAno(a) { return a > 0 ? 2500 - a : 2499 - a; }
+  function rotuloAno(a) { return a > 0 ? a + " a.C." : (-a) + " d.C."; }
+  function nomeArquivo(a) { return a > 0 ? "a" + a : "d" + (-a); }
+  function lerAno(texto) {
+    var m = /^\s*(-?\d+)\s*(a\.?\s*c\.?|d\.?\s*c\.?)?\s*$/i.exec(texto || "");
+    if (!m) return null;
+    var n = parseInt(m[1], 10);
+    if (!n) return null;
+    if (m[2] && /^d/i.test(m[2])) n = -Math.abs(n); else if (m[2]) n = Math.abs(n);
+    return n;
+  }
+  function limitar(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function aviso(t) { document.getElementById("aviso").textContent = t || ""; }
+
+  /* ---------- anéis: codificados (centésimos, deltas) <-> graus ---------- */
+  function decodificar(anel) {
+    var pts = [], x = anel[0], y = anel[1];
+    pts.push([x / 100, y / 100]);
+    for (var i = 2; i < anel.length; i += 2) { x += anel[i]; y += anel[i + 1]; pts.push([x / 100, y / 100]); }
+    return pts;
+  }
+  function graus(f) {      // anéis da forma em graus (cache na forma)
+    if (!f._g) f._g = f.aneis.map(decodificar);
+    return f._g;
+  }
+  function caminho(aneisGraus) {
+    var d = "";
+    for (var i = 0; i < aneisGraus.length; i++) {
+      var r = aneisGraus[i];
+      for (var j = 0; j < r.length; j++) {
+        var q = P.proj(r[j][0], r[j][1]);
+        d += (j === 0 ? "M" : "L") + q[0].toFixed(2) + "," + q[1].toFixed(2);
+      }
+      d += "Z";
+    }
+    return d;
+  }
+  function copiar(aneis) { return aneis.map(function (r) { return r.map(function (p) { return [p[0], p[1]]; }); }); }
+
+  /* ---------- janela ---------- */
+  function razao() { var r = svg.getBoundingClientRect(); return r.height / (r.width || 1); }
+  function aplicar() {
+    vb.w = limitar(vb.w, L / 400, L);
+    vb.h = vb.w * razao();
+    vb.x = limitar(vb.x, -vb.w * 0.3, L - vb.w * 0.7);
+    vb.y = limitar(vb.y, -vb.h * 0.3, A - vb.h * 0.7);
+    svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+    ajustarNomes();
+    desenharVertices();
+  }
+  function mundoInteiro() { vb.x = 0; vb.y = 0; vb.w = L; aplicar(); }
+  function zoomEm(f, cx, cy) {
+    var nw = limitar(vb.w * f, L / 400, L), r = nw / vb.w;
+    vb.x = cx - (cx - vb.x) * r; vb.y = cy - (cy - vb.y) * r; vb.w = nw; aplicar();
+  }
+  function ponto(ev) {
+    var r = svg.getBoundingClientRect(), k = vb.w / r.width;
+    return [vb.x + (ev.clientX - r.left) * k, vb.y + (ev.clientY - r.top) * k];
+  }
+  function escala() { return vb.w / svg.getBoundingClientRect().width; }   // unidades do SVG por pixel
+
+  /* ---------- dados ---------- */
+  function carregarBloco(b) {
+    if (blocos[b]) return Promise.resolve(blocos[b]);
+    return fetch("/frontend/mapa-geral/dados/blocos/" + nomeArquivo(anoDePos(b * 25)) + ".json?" + Date.now())
+      .then(function (r) { return r.json(); }).then(function (d) { blocos[b] = d; return d; });
+  }
+  function recarregar() {
+    blocos = {};
+    return fetch("/frontend/mapa-geral/dados/indice.json?" + Date.now()).then(function (r) { return r.json(); })
+      .then(function (ind) { indice = ind; meta = ind.estados; return irPara(atual, true); });
+  }
+  function formaAtual(id) { return desenhados[id] ? desenhados[id].forma : null; }
+  function nomeNoAno(id) {
+    var m = meta[id]; if (!m) return id;
+    var p = atual, lista = m.nomes || [];
+    for (var i = 0; i < lista.length; i++) if (posDeAno(lista[i][0]) <= p && p <= posDeAno(lista[i][1])) return lista[i][2];
+    return m.nome || "";
+  }
+
+  /* ---------- desenho ---------- */
+  var rotulos = [];
+  function ajustarNomes() {
+    var k = escala();
+    for (var i = 0; i < rotulos.length; i++) {
+      var t = rotulos[i], cabe = t.larg / k > 30 + t.chars * 5.2;
+      t.g.style.display = cabe ? "" : "none";
+      if (cabe) t.g.setAttribute("transform", "translate(" + t.x.toFixed(1) + "," + t.y.toFixed(1) + ") scale(" + k.toFixed(4) + ")");
+    }
+  }
+  function desenharAno() {
+    var b = Math.floor(atual / 25);
+    var d = blocos[b];
+    gEstados.textContent = ""; gNomes.textContent = ""; desenhados = {}; rotulos = [];
+    var formas = d.formas.filter(function (f) { return posDeAno(f.de) <= atual && atual <= posDeAno(f.ate); });
+    formas.forEach(function (f) { var g = graus(f); var a = 0; g.forEach(function (r) { a += r.length; }); f._n = a; });
+    formas.sort(function (a, b) { return b._n - a._n; });
+    formas.forEach(function (f) {
+      var m = meta[f.id] || { nome: f.id, cor: "#888" };
+      var p = el("path", { "class": "estado" + (f.id === sel ? " sel" : f.id === sel2 ? " sel2" : ""), d: caminho(graus(f)),
+        fill: m.cor, stroke: m.cor, "fill-rule": "evenodd", "data-id": f.id }, gEstados);
+      desenhados[f.id] = { path: p, forma: f };
+      var nome = nomeNoAno(f.id);
+      if (!nome) return;
+      var g = graus(f), maior = g[0];
+      for (var i = 1; i < g.length; i++) if (g[i].length > maior.length) maior = g[i];
+      var xs = 0, ys = 0, mn = 1e9, mx = -1e9;
+      for (var j = 0; j < maior.length; j++) { var q = P.proj(maior[j][0], maior[j][1]); xs += q[0]; ys += q[1]; if (q[0] < mn) mn = q[0]; if (q[0] > mx) mx = q[0]; }
+      var gg = el("g", {}, gNomes); var t = el("text", { "class": "nome" }, gg); t.textContent = nome;
+      rotulos.push({ g: gg, x: xs / maior.length, y: ys / maior.length, larg: mx - mn, chars: nome.length });
+    });
+    ajustarNomes();
+    if (sel && !desenhados[sel]) selecionar(null);
+    if (sel2 && !desenhados[sel2]) { sel2 = null; mostrarPainel(); }
+    desenharVertices();
+    hud.textContent = rotuloAno(anoDePos(atual)) + " · " + formas.length + " estados · bloco " + nomeArquivo(d.anos[0]);
+  }
+  function redesenharForma(id) {
+    var t = desenhados[id]; if (!t) return;
+    t.path.setAttribute("d", caminho(graus(t.forma)));
+    desenharVertices();
+  }
+  function desenharVertices() {
+    gVertices.textContent = "";
+    if (!sel || (ferramenta !== "a" && ferramenta !== "p")) return;
+    var t = desenhados[sel]; if (!t) return;
+    var g = graus(t.forma), k = escala(), n = 0;
+    g.forEach(function (r) { n += r.length; });
+    if (n > 4000 && vb.w > L / 8) { hud.textContent = rotuloAno(anoDePos(atual)) + " · aproxime mais para ver os " + n + " vértices"; return; }
+    var raio = 4 * k;
+    for (var ai = 0; ai < g.length; ai++) {
+      for (var i = 0; i < g[ai].length; i++) {
+        var q = P.proj(g[ai][i][0], g[ai][i][1]);
+        if (q[0] < vb.x - raio || q[0] > vb.x + vb.w + raio || q[1] < vb.y - raio || q[1] > vb.y + vb.h + raio) continue;
+        var ativo = vertice && vertice.anel === ai && vertice.i === i;
+        el("circle", { "class": "vertice" + (ativo ? " ativo" : ""), cx: q[0], cy: q[1], r: raio, "data-anel": ai, "data-i": i }, gVertices);
+      }
+    }
+  }
+
+  function irPara(i, forcar) {
+    atual = limitar(i, 0, 4524);
+    var a = anoDePos(atual);
+    document.getElementById("rotulo-ano").textContent = rotuloAno(a) + " (posição " + atual + ")";
+    document.getElementById("ano").value = rotuloAno(a);
+    vertice = null;
+    return carregarBloco(Math.floor(atual / 25)).then(function () { desenharAno(); mostrarPainel(); });
+  }
+
+  /* ---------- seleção e painel ---------- */
+  function selecionar(id, segundo) {
+    if (segundo) { sel2 = (id && id !== sel) ? id : null; }
+    else { sel = id; sel2 = null; vertice = null; }
+    for (var k in desenhados) if (Object.prototype.hasOwnProperty.call(desenhados, k)) {
+      desenhados[k].path.setAttribute("class", "estado" + (k === sel ? " sel" : k === sel2 ? " sel2" : ""));
+    }
+    desenharVertices();
+    mostrarPainel();
+  }
+  var mudandoPainel = false;
+  function mostrarPainel() {
+    mudandoPainel = true;
+    var m = sel ? meta[sel] : null;
+    document.getElementById("sel-vazio").hidden = !!m;
+    document.getElementById("sel-campos").hidden = !m;
+    if (m) {
+      document.getElementById("sel-id").textContent = "id: " + sel;
+      document.getElementById("nome").value = nomeNoAno(sel);
+      var nv = m.nome_video || "";
+      (m.nomes || []).forEach(function (t) { if (posDeAno(t[0]) <= atual && atual <= posDeAno(t[1])) nv = t[3]; });
+      document.getElementById("nome-video").value = nv;
+      document.getElementById("cor").value = m.cor;
+      document.getElementById("cor-hex").textContent = m.cor;
+      document.getElementById("sel-vida").textContent = "Vida: " + rotuloAno(m.desde) + " – " + rotuloAno(m.ate) + (m.nota ? " · " + m.nota : "");
+      document.getElementById("sel-nomes").textContent = m.nomes ? "Nomes por período: " + m.nomes.map(function (t) { return rotuloAno(t[0]) + "–" + rotuloAno(t[1]) + " " + t[2]; }).join("; ") : "";
+    }
+    document.getElementById("sel2").textContent = sel2 ? "Segundo selecionado (laranja): " + (nomeNoAno(sel2) || sel2) + " — Ctrl+J une ao primeiro." : "";
+    document.getElementById("unir").disabled = !(sel && sel2);
+    document.getElementById("apagar-vertice").disabled = !vertice;
+    document.getElementById("desfazer").disabled = !pendentes.length;
+    document.getElementById("salvar").disabled = !pendentes.length;
+    var ol = document.getElementById("pendentes"); ol.textContent = "";
+    pendentes.forEach(function (e) { var li = document.createElement("li"); li.textContent = e.descricao; ol.appendChild(li); });
+    mudandoPainel = false;
+  }
+  function registrar(ed) { pendentes.push(ed); mostrarPainel(); }
+
+  document.getElementById("nome").addEventListener("change", function () {
+    if (mudandoPainel || !sel) return;
+    var ed = { tipo: "nome", id: sel, nome: this.value.trim(), nome_video: document.getElementById("nome-video").value.trim(), ano: anoDePos(atual),
+      descricao: "nome de " + sel + " → \"" + this.value.trim() + "\"", antes: JSON.parse(JSON.stringify(meta[sel])) };
+    aplicarLocal(ed); registrar(ed);
+  });
+  document.getElementById("nome-video").addEventListener("change", function () {
+    if (mudandoPainel || !sel) return;
+    var ed = { tipo: "nome", id: sel, nome: document.getElementById("nome").value.trim(), nome_video: this.value.trim(), ano: anoDePos(atual),
+      descricao: "nome no vídeo de " + sel + " → \"" + this.value.trim() + "\"", antes: JSON.parse(JSON.stringify(meta[sel])) };
+    aplicarLocal(ed); registrar(ed);
+  });
+  document.getElementById("cor").addEventListener("change", function () {
+    if (mudandoPainel || !sel) return;
+    var ed = { tipo: "cor", id: sel, cor: this.value.toLowerCase(), descricao: "cor de " + sel + " → " + this.value, antes: JSON.parse(JSON.stringify(meta[sel])) };
+    aplicarLocal(ed); registrar(ed);
+  });
+
+  // aplica nome/cor localmente (o servidor aplica de verdade ao salvar, com a mesma regra do construir.py)
+  function aplicarLocal(ed) {
+    var m = meta[ed.id];
+    if (ed.tipo === "nome") {
+      var feito = false;
+      (m.nomes || []).forEach(function (t) { if (posDeAno(t[0]) <= posDeAno(ed.ano) && posDeAno(ed.ano) <= posDeAno(t[1])) { t[2] = ed.nome; t[3] = ed.nome_video; feito = true; } });
+      if (!feito) { m.nome = ed.nome; m.nome_video = ed.nome_video; delete m.nomes; }
+    } else if (ed.tipo === "cor") {
+      m.cor = ed.cor;
+      if (desenhados[ed.id]) { desenhados[ed.id].path.setAttribute("fill", ed.cor); desenhados[ed.id].path.setAttribute("stroke", ed.cor); }
+    }
+    if (ed.tipo === "nome") desenharAno();
+    mostrarPainel();
+  }
+
+  /* ---------- geometria: mover, acrescentar e apagar vértices ---------- */
+  function edicaoForma(f) {   // uma edição "forma" por (bloco, id, de) entre os pendentes, criada na primeira mexida
+    var bloco = nomeArquivo(blocos[Math.floor(atual / 25)].anos[0]);
+    for (var i = pendentes.length - 1; i >= 0; i--) {
+      var e = pendentes[i];
+      if (e.tipo === "forma" && e.bloco === bloco && e.id === f.id && e.de === f.de) return e;
+    }
+    var ed = { tipo: "forma", bloco: bloco, id: f.id, de: f.de, aneis: null, antes: copiar(graus(f)), forma: f,
+      descricao: "pontos de " + f.id + " (" + rotuloAno(f.de) + "–" + rotuloAno(f.ate) + ")" };
+    pendentes.push(ed);
+    return ed;
+  }
+  function confirmarForma(f) {
+    var ed = edicaoForma(f);
+    ed.aneis = copiar(graus(f));
+    mostrarPainel();
+  }
+  function adicionarPonto(f, p) {   // p em unidades do SVG: insere no segmento mais próximo
+    var g = graus(f), melhor = null;
+    for (var ai = 0; ai < g.length; ai++) {
+      var r = g[ai];
+      for (var i = 0; i < r.length; i++) {
+        var a = P.proj(r[i][0], r[i][1]), b = P.proj(r[(i + 1) % r.length][0], r[(i + 1) % r.length][1]);
+        var dx = b[0] - a[0], dy = b[1] - a[1], l2 = dx * dx + dy * dy || 1;
+        var t = limitar(((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / l2, 0, 1);
+        var qx = a[0] + t * dx, qy = a[1] + t * dy, d2 = (p[0] - qx) * (p[0] - qx) + (p[1] - qy) * (p[1] - qy);
+        if (!melhor || d2 < melhor.d2) melhor = { d2: d2, anel: ai, i: i, q: [qx, qy] };
+      }
+    }
+    if (!melhor || Math.sqrt(melhor.d2) > 12 * escala()) { aviso("Clique mais perto da borda do estado selecionado."); return; }
+    var ll = P.inversa(melhor.q[0], melhor.q[1]);
+    g[melhor.anel].splice(melhor.i + 1, 0, [Math.round(ll[0] * 100) / 100, Math.round(ll[1] * 100) / 100]);
+    vertice = { forma: f, anel: melhor.anel, i: melhor.i + 1 };
+    redesenharForma(f.id); confirmarForma(f); aviso("");
+  }
+  function apagarVertice() {
+    if (!vertice) return;
+    var g = graus(vertice.forma);
+    if (g[vertice.anel].length <= 3) { aviso("Um anel precisa de pelo menos 3 pontos."); return; }
+    g[vertice.anel].splice(vertice.i, 1);
+    var f = vertice.forma; vertice = null;
+    redesenharForma(f.id); confirmarForma(f);
+  }
+
+  /* ---------- gestos ---------- */
+  function ligarGestos() {
+    var arrasto = null, arrastoVertice = null, alvo = null;
+    svg.addEventListener("pointerdown", function (ev) {
+      svg.setPointerCapture(ev.pointerId);
+      alvo = ev.target;
+      var mao = ferramenta === "h" || espaco || ev.button === 1;
+      if (!mao && (ferramenta === "a") && alvo.classList && alvo.classList.contains("vertice")) {
+        var f = desenhados[sel].forma;
+        vertice = { forma: f, anel: +alvo.getAttribute("data-anel"), i: +alvo.getAttribute("data-i") };
+        arrastoVertice = { mexeu: false };
+        desenharVertices(); mostrarPainel();
+        return;
+      }
+      arrasto = { x: ev.clientX, y: ev.clientY, vx: vb.x, vy: vb.y, mexeu: false, mao: mao };
+      if (mao) svg.classList.add("arrastando");
+    });
+    svg.addEventListener("pointermove", function (ev) {
+      if (arrastoVertice) {
+        var p = ponto(ev), ll = P.inversa(p[0], p[1]);
+        graus(vertice.forma)[vertice.anel][vertice.i] = [Math.round(ll[0] * 100) / 100, Math.round(ll[1] * 100) / 100];
+        arrastoVertice.mexeu = true;
+        redesenharForma(vertice.forma.id);
+        return;
+      }
+      if (!arrasto) return;
+      if (Math.abs(ev.clientX - arrasto.x) + Math.abs(ev.clientY - arrasto.y) > 4) arrasto.mexeu = true;
+      if (arrasto.mao || arrasto.mexeu && ferramenta !== "p") {
+        var k = escala();
+        vb.x = arrasto.vx - (ev.clientX - arrasto.x) * k; vb.y = arrasto.vy - (ev.clientY - arrasto.y) * k; aplicar();
+      }
+    });
+    function soltar(ev) {
+      if (arrastoVertice) {
+        if (arrastoVertice.mexeu) confirmarForma(vertice.forma);
+        arrastoVertice = null; return;
+      }
+      var a = arrasto; arrasto = null; svg.classList.remove("arrastando");
+      if (!a || a.mexeu || a.mao) return;
+      var id = alvo && alvo.getAttribute ? alvo.getAttribute("data-id") : null;
+      var p = ponto(ev);
+      if (ferramenta === "z") { zoomEm(ev.altKey ? 1.6 : 0.625, p[0], p[1]); return; }
+      if (ferramenta === "p") { if (sel && desenhados[sel]) adicionarPoint(p); else aviso("Selecione um estado antes (V) e depois clique na borda dele com a caneta."); return; }
+      if (ferramenta === "a") { if (id && id !== sel) selecionar(id); else if (!id) { vertice = null; desenharVertices(); mostrarPainel(); } return; }
+      selecionar(id, ev.shiftKey);
+    }
+    function adicionarPoint(p) { adicionarPonto(desenhados[sel].forma, p); }
+    svg.addEventListener("pointerup", soltar);
+    svg.addEventListener("pointercancel", function () { arrasto = null; arrastoVertice = null; });
+    svg.addEventListener("wheel", function (ev) { ev.preventDefault(); var p = ponto(ev); zoomEm(ev.deltaY < 0 ? 0.8 : 1.25, p[0], p[1]); }, { passive: false });
+    window.addEventListener("resize", aplicar);
+  }
+
+  /* ---------- ferramentas e atalhos ---------- */
+  function mudarFerramenta(f) {
+    ferramenta = f;
+    var bs = document.querySelectorAll("#ferramentas button");
+    for (var i = 0; i < bs.length; i++) bs[i].className = bs[i].getAttribute("data-f") === f ? "ativa" : "";
+    svg.setAttribute("class", f === "h" ? "mao" : f === "p" ? "caneta" : f === "z" ? "zoom" : "");
+    if (f !== "a") vertice = null;
+    desenharVertices(); mostrarPainel();
+  }
+  document.getElementById("ferramentas").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button"); if (b) mudarFerramenta(b.getAttribute("data-f"));
+  });
+  document.getElementById("ant").addEventListener("click", function (ev) { irPara(atual - (ev.shiftKey ? 10 : 1)); });
+  document.getElementById("prox").addEventListener("click", function (ev) { irPara(atual + (ev.shiftKey ? 10 : 1)); });
+  document.getElementById("ano").addEventListener("change", function () { var a = lerAno(this.value); if (a != null) irPara(posDeAno(a)); else aviso("Ano inválido: use 586 a.C., -586 ou 30 d.C."); });
+  document.getElementById("unir").addEventListener("click", unir);
+  document.getElementById("apagar-vertice").addEventListener("click", apagarVertice);
+  document.getElementById("desfazer").addEventListener("click", desfazer);
+  document.getElementById("salvar").addEventListener("click", salvar);
+
+  document.addEventListener("keydown", function (ev) {
+    var campo = /INPUT|TEXTAREA|SELECT/.test(ev.target.tagName || "");
+    if (ev.key === " " && !campo) { espaco = true; svg.classList.add("mao"); ev.preventDefault(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "s") { ev.preventDefault(); salvar(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "z" && !campo) { ev.preventDefault(); desfazer(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === "j") { ev.preventDefault(); unir(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && (ev.key === "0")) { ev.preventDefault(); mundoInteiro(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && (ev.key === "+" || ev.key === "=")) { ev.preventDefault(); zoomEm(0.8, vb.x + vb.w / 2, vb.y + vb.h / 2); return; }
+    if ((ev.ctrlKey || ev.metaKey) && ev.key === "-") { ev.preventDefault(); zoomEm(1.25, vb.x + vb.w / 2, vb.y + vb.h / 2); return; }
+    if (campo) { if (ev.key === "Escape") ev.target.blur(); return; }
+    var k = ev.key.toLowerCase();
+    if (k === "v" || k === "a" || k === "p" || k === "h" || k === "z") { mudarFerramenta(k); return; }
+    if (ev.key === "Escape") { selecionar(null); return; }
+    if (ev.key === "Delete" || ev.key === "Backspace") { ev.preventDefault(); apagarVertice(); return; }
+    if (ev.key === "ArrowLeft") { ev.preventDefault(); irPara(atual - (ev.shiftKey ? 10 : 1)); return; }
+    if (ev.key === "ArrowRight") { ev.preventDefault(); irPara(atual + (ev.shiftKey ? 10 : 1)); return; }
+  });
+  document.addEventListener("keyup", function (ev) { if (ev.key === " ") { espaco = false; if (ferramenta !== "h") svg.classList.remove("mao"); } });
+
+  /* ---------- unir, desfazer, salvar ---------- */
+  function unir() {
+    if (!(sel && sel2)) { aviso("Selecione o primeiro estado (clique) e o segundo (Shift+clique) antes de unir."); return; }
+    var a = nomeNoAno(sel) || sel, b = nomeNoAno(sel2) || sel2;
+    if (!window.confirm("Unir \"" + b + "\" a \"" + a + "\" em todos os anos? O estado \"" + b + "\" deixa de existir e a edição é salva agora.")) return;
+    var ed = { tipo: "unir", ids: [sel, sel2], descricao: "unir " + sel2 + " a " + sel };
+    pendentes.push(ed);
+    salvar();
+  }
+  function desfazer() {
+    var ed = pendentes.pop(); if (!ed) return;
+    if (ed.tipo === "forma") { ed.forma._g = copiar(ed.antes); redesenharForma(ed.id); }
+    else if (ed.tipo === "nome" || ed.tipo === "cor") { meta[ed.id] = ed.antes; desenharAno(); }
+    vertice = null; desenharVertices(); mostrarPainel();
+  }
+  function salvar() {
+    if (!pendentes.length) return;
+    var envio = pendentes.map(function (e) {
+      var o = {};
+      for (var k in e) if (Object.prototype.hasOwnProperty.call(e, k) && k !== "antes" && k !== "forma" && k !== "descricao") o[k] = e[k];
+      return o;
+    }).filter(function (e) { return e.tipo !== "forma" || e.aneis; });
+    if (!envio.length) { pendentes = []; mostrarPainel(); return; }
+    aviso("Salvando…");
+    fetch("/scripts/mapa-geral/edicoes.json", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ edicoes: envio }) })
+      .then(function (r) { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+      .then(function (r) { pendentes = []; aviso("Salvo: " + r.aplicadas + " edição(ões) aplicada(s); " + r.total + " no total em edicoes.json."); return recarregar(); })
+      .catch(function (e) { aviso("Não salvou: " + e.message + " (o painel.py está rodando?)"); });
+  }
+
+  /* ---------- início ---------- */
+  function base(mundo) {
+    svg = el("svg", { viewBox: "0 0 " + L + " " + A });
+    gBase = el("g", {}, svg);
+    mundo.fundo.forEach(function (f) {
+      if (f.tipo === "terra") {
+        el("path", { "class": "terra", d: f.aneis.map(function (a) { return "M" + a.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join("L") + "Z"; }).join("") }, gBase);
+      } else if (f.tipo === "mar") {
+        el("polygon", { "class": "agua", points: f.pontos.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ") }, gBase);
+      }
+    });
+    gEstados = el("g", {}, svg); gNomes = el("g", {}, svg); gVertices = el("g", {}, svg);
+    quadro.appendChild(svg);
+    ligarGestos();
+    var a = P.proj(-12, 50), b = P.proj(75, 8);
+    vb.x = a[0]; vb.y = a[1]; vb.w = b[0] - a[0]; aplicar();
+    mudarFerramenta("v");
+  }
+  Promise.all([
+    fetch("/frontend/mapa/mundo.json").then(function (r) { return r.json(); }),
+    fetch("/frontend/mapa-geral/dados/indice.json?" + Date.now()).then(function (r) { return r.json(); })
+  ]).then(function (r) {
+    indice = r[1]; meta = indice.estados;
+    base(r[0]);
+    var pedido = /[?&]ano=(-?\d+)/.exec(location.search);
+    irPara(pedido ? posDeAno(parseInt(pedido[1], 10)) : posDeAno(586));
+  }).catch(function (e) { hud.textContent = "Não carregou: " + e.message + ". Rode python3 scripts/mapa-geral/painel.py e abra pela porta 8001."; });
+})();
+</script>
+</body>
+</html>

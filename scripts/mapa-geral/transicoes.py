@@ -5,7 +5,8 @@
 # são decodificados e comparados (discordância de terra) com a calibração do trecho do ano anterior e do seguinte; o
 # último quadro que se encaixa num trecho (discordância <= 1,5 × a do mapa vizinho no mesmo trecho, mín. 0,04) vira o
 # mapa do ano: o PNG em mapas/<id>.png é regravado e a calibração do mapa vira a do trecho, refinada (ajustar). Sem
-# quadro bom, o ano passa a usar o mapa do ano anterior (no tempo do vídeo).
+# quadro bom, o ano passa a usar o mapa do ano anterior (no tempo do vídeo). A calibração corrigida vai para a loja da
+# E3 (cache.py) como variante "<aprovada>-transicoes", que passa a ser a aprovada; a anterior continua na loja.
 # Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/transicoes.py [--so-listar]
 # Grava .cache/v2/transicoes.json com o que foi feito; anos.json ganha "transicao": {...} nos anos corrigidos.
 import glob, json, os, subprocess, sys
@@ -48,7 +49,9 @@ def falha(im, terra, lagos, p):
 
 
 def main():
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))
+    import cache
+    et3 = cache.Etapa("e3")
+    cal = json.load(open(cache.calibracao()))
     mapas = json.load(open(os.path.join(V2, "mapas.json")))
     anos = json.load(open(os.path.join(V2, "anos.json")))
     terra, lagos = c.carregar_mundo()
@@ -106,7 +109,19 @@ def main():
                 relatorio.append({"ano": ano, "mapa": k, "acao": "mapa do ano anterior", "usa": ka})
     ids = sorted(cal["por_mapa"], key=lambda k: mapas[k]["quadro"])
     cal["trechos"] = c.montar_trechos(ids, cal["por_mapa"])
-    json.dump(cal, open(os.path.join(V2, "calibracao.json"), "w"))
+    # E3 na loja: a calibração corrigida é um objeto novo, numa variante "<aprovada>-transicoes" (aprovada em seguida)
+    base = et3.m["aprovada"] or "base"
+    var_t = base if base.endswith("-transicoes") else base + "-transicoes"
+    p_base = dict(et3.m["variantes"][base]["params"]) if base in et3.m["variantes"] else {}
+    et3.garantir(var_t, dict(p_base, transicoes=True))
+    ch_base = (et3.itens(base).get("calibracao") or {}).get("chave")
+    ch = cache.chave(1, {"transicoes": True}, [ch_base, cache.hash_obj(relatorio)])
+    arq = et3.obj(ch, ".json")
+    json.dump(cal, open(arq + ".tmp", "w"))
+    os.replace(arq + ".tmp", arq)
+    et3.m["variantes"][var_t]["itens"]["calibracao"] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": None}
+    et3.gravar()
+    et3.aprovar(var_t)
     json.dump(mapas, open(os.path.join(V2, "mapas.json"), "w"))
     json.dump(anos, open(os.path.join(V2, "anos.json"), "w"), indent=0)
     json.dump(relatorio, open(os.path.join(V2, "transicoes.json"), "w"), indent=1)

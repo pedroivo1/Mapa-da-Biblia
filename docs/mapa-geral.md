@@ -5,9 +5,10 @@ A página `frontend/mapa-geral/` mostra o mundo todo, ano a ano, de 2500 a.C. em
 e depois recalculadas sobre a costa do projeto. Este documento explica a origem dos dados, o caminho que eles fazem
 até o site, os limites do resultado e como regenerar tudo.
 
-Estado: **primeira etapa (Antiguidade) entregue.** Os estados do período bíblico, de 2500 a.C. a 100 d.C., têm nome e cor
-por regras. Do medieval em diante as formas existem, mas **ainda sem nome** (aparecem como manchas de cor, "Estado sem
-nome identificado"). Os 27 mapas por história continuam como estavam; o mapa geral ainda não os substitui.
+Estado (2026-10-16): **versão 2, ano a ano, de 2500 a.C. a 2025 d.C.**, feita pelo plano `docs/mapa-geral-plano-2.md`
+(etapas E0–E9; desvios e decisões no §11 de lá). Todas as formas, cores e nomes vêm só do vídeo; os nomes são lidos por
+OCR e traduzidos em `scripts/mapa-geral/nomes.json`. Estados sem etiqueta legível ficam sem rótulo ("Estado sem nome
+lido"). Os 27 mapas por história continuam como estavam. Pendente: E10 (apagar os scripts da v1, revisão por época).
 
 ## 1. Fontes
 
@@ -69,31 +70,61 @@ id `x-<cor>-<célula de 10°>` e ficam sem nome.
   id, mais `israel` e `fenicia`); os demais entram do menor para o maior, cada um menos a união dos anteriores.
 - Saída com 2 casas decimais e simplificação final de 0,03°; estados sem nome menores que 1 grau² são descartados.
 
-## 3. Formato dos dados do site
+## 3. Formato dos dados do site (versão 2)
 
-- `frontend/mapa-geral/dados/<a|d><ano>.json`: `{"ano": N, "estados": [{"id", "area", "aneis"}]}`. `a<N>` é N a.C. e
-  `d<N>` é N d.C. `aneis` são anéis em [lon, lat]; o desenho usa preenchimento par-ímpar (buracos entram como anéis).
-- `frontend/mapa-geral/dados/indice.json`: `{"anos": [2500, 2400, ..., -2025], "estados": {id: {nome, cor, desde, ate,
-  nota}}, "fonte"}`. `desde`/`ate` vêm da faixa de anos da regra (ou dos quadros em que o estado aparece).
-- A página (`mapa-geral.js`) usa `Projecao` (Equal Earth, `compartilhado/js/projecao.js`), carrega o ano sob demanda e
-  aceita `?ano=-30` para abrir no quadro-chave mais próximo.
+Gerados por `scripts/mapa-geral/construir.py` (cabeçalho do script tem o detalhe):
+
+- `frontend/mapa-geral/dados/indice.json`: `{"versao": 2, "de": 2500, "ate": -2025, "bloco": 25, "estados": {id:
+  {nome, nome_video, cor, desde, ate, nota, nomes?}}, "fonte"}`. A sequência de anos é implícita: 2500…1 a.C.,
+  1…2025 d.C. (sem ano 0), posição `i` = 0…4524. `nomes` = `[[de, ate, nome, nome_video], ...]` quando o nome muda ao
+  longo da vida (trocas aprovadas em `nomes.json`); `nome` é o mais duradouro. Ids são o slug do nome pt-BR (`egito`,
+  `egito-2`…) ou o id interno (`e01234`) quando não há nome.
+- `frontend/mapa-geral/dados/blocos/<a|d><ano>.json`: um arquivo por bloco de 25 posições, com o nome do primeiro ano
+  (`a2500` = 2500–2476 a.C.): `{"anos": [de, ate], "formas": [{"id", "de", "ate", "aneis"}]}`. Cada forma vale de `de`
+  a `ate` (inclusive) e só é gravada de novo quando a geometria muda. Anéis em centésimos de grau, o primeiro ponto
+  absoluto e os seguintes como deltas (`[x0, y0, dx1, dy1, ...]`), abertos; a página fecha e desenha em par-ímpar
+  (buracos são anéis). Total ≈ 55 MB (15 MB gzip), 181 blocos, média 300 KB (83 KB gzip).
+- A página (`mapa-geral.js`) usa `Projecao` (Equal Earth), carrega o bloco do ano sob demanda (cache de 20 blocos,
+  pré-carga do seguinte), redesenha só o que muda e aceita `?ano=-30` (30 d.C.); a URL acompanha o ano.
 
 ## 4. Regenerar
 
-Dependências Python fora do repositório (o Python do sistema não traz nenhuma):
+Dependências Python fora do repositório (o Python do sistema não traz nenhuma): numpy, shapely, pillow,
+opencv-python-headless, tesserocr e rapidocr-onnxruntime em `~/.cache/mapa-biblia-lib/lib` (tessdata_best `eng` em
+`~/.cache/mapa-biblia-lib/tessdata/`, fonte `sarabun.ttf` em `~/.cache/mapa-biblia-lib/fontes/`).
 
 ```
-uv pip install --target ~/.cache/mapa-biblia-lib/lib numpy shapely pillow opencv-python-headless
 export PYTHONPATH=~/.cache/mapa-biblia-lib/lib
-python3 scripts/mapa-geral/extrair.py            # quadros + OCR do ano
-python3 scripts/mapa-geral/indexar.py            # limpa anos, quadros-chave
-python3 scripts/mapa-geral/calibrar.py todos 20  # calibração a cada 20 s (5–10 min)
-python3 scripts/mapa-geral/gerar.py [ano ...]    # segmenta e nomeia (≈7 min para todos)
-python3 scripts/mapa-geral/construir.py [ano ...] # dados do site (≈30 s)
-node scripts/verificar.mjs
+python3 scripts/mapa-geral/quadros.py            # E2: quadros e mapas distintos (.cache/v2/anos.json, mapas/)
+python3 scripts/mapa-geral/calibrar.py           # E3: calibração por mapa
+python3 scripts/mapa-geral/rotular.py            # E4: rótulo por pixel
+python3 scripts/mapa-geral/vetorizar.py          # E5: cobertura em lon/lat
+python3 scripts/mapa-geral/rastrear.py           # E6: ids persistentes
+python3 scripts/mapa-geral/nomear.py textos --amostra todos --variante det-d   # E7a: OCR das etiquetas (≈1,5 h, 4 processos)
+python3 scripts/mapa-geral/nomear.py unioes --variante-textos det-d           # E7: uniões de pedaços
+python3 scripts/mapa-geral/nomear.py vetores --variante-textos det-d --variante e7
+MAPA_GERAL_EXP=e7 python3 scripts/mapa-geral/rastrear.py --fonte e7u --variante e7   # E6 refeita sobre os vetores unidos
+python3 scripts/mapa-geral/nomear.py nomes --variante-e6 e7 --variante-vetores e7 --variante-textos det-d --variante v1
+python3 scripts/mapa-geral/cache.py aprovar e7 v1      # (e e7u e7, e6 e7)
+python3 scripts/mapa-geral/construir.py          # E8: dados do site (≈40 s)
+python3 scripts/mapa-geral/testar.py e8          # testes da E8 (≈15 min; e0…e7 para as etapas anteriores)
+node scripts/verificar.mjs && node scripts/mapa-geral/testar-pagina.mjs   # E9
 ```
 
-Com `construir.py <ano>` só o arquivo do ano é regravado e `indice.json` não muda.
+**Painel local** (tudo num lugar): `python3 scripts/mapa-geral/painel.py` e `http://localhost:8001/scripts/mapa-geral/painel.html`.
+Abas: **Mapa** (quadro do vídeo × vetores ano a ano, casos e pares, seletor de variante e comparação A/B de duas variantes,
+anotações por clique em `anotacoes.json`), **Mapas** (grade com o estado de cada mapa distinto em cada etapa: pronto na
+aprovada, desatualizado, faltando, esperando; usa as mesmas chaves de cache dos scripts), **Versões** (variantes de cada
+etapa da loja por chave, com aprovar, voltar e apagar; dados publicados e arquivos de mão), **Rodar** (fila de rodadas dos
+scripts, uma por vez, log ao vivo, interromper), **Andamento** (manifestos e logs), **Revisão** (imagens) e **Editor**
+(`editor.html`: unir dois estados, nome pt-BR e do vídeo, cor, mover/acrescentar/apagar vértices; atalhos no padrão Adobe:
+V, A, P, H, Z, espaço, Ctrl+J, Ctrl+S, Ctrl+Z, Delete). As edições ficam em `scripts/mapa-geral/edicoes.json` e o
+`construir.py` as reaplica depois de cada regeneração.
+
+Cada etapa é incremental (cache por chave em `scripts/mapa-geral/.cache/v2/`, variantes e aprovação:
+`docs/mapa-geral-incremental.md`; a calibração da E3 também fica na loja, e `calibracao.json` é o apontador para a
+variante aprovada). Nomes: edite `scripts/mapa-geral/nomes.json` (`traducoes`, `entidades`, `trocas`) e rode só
+`construir.py`.
 
 ## 5. Limites conhecidos
 

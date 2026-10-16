@@ -3,6 +3,10 @@
 # Uso (na raiz do repositório):
 #   PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/rotular.py [id ...] [--amostra rapida|media|todos]
 #                                                                                 [--forcar] [--forcar-e] [--so-chaves]
+#                                                                                 [--variante <nome>]
+# A E4e grava na loja por chave (.cache/v2/obj/e4e/<chave>.png e .json; cache.py); rotulos/<id>.* são apontadores
+# para a variante aprovada. Sem --variante roda a aprovada; com --variante (ou MAPA_GERAL_EXP) é um experimento
+# que não toca no aprovado. Parâmetros de um experimento: MAPA_GERAL_PARAMS='{"COR_UNIAO": 19}'.
 # Sub-etapas com cache (docs/mapa-geral-incremental.md): cada uma só é recalculada se a chave dela mudou (versão,
 # parâmetros, hash do conteúdo das entradas). Artefatos em .cache/v2/e4/<sub>/ e manifesto.json por sub-etapa:
 #   E4a  zonas planas, classificação, vãos de letra, fragmentos -> marcadores       e4/a/<id>.npz
@@ -10,7 +14,8 @@
 #   E4d  tabela dos pares vizinhos (fronteira, letra, preenchimento, linha; áreas)     e4/d/<id>.json
 #   E4e  regras (uniões pela tabela, ilhas, costa, fragmentos, minúsculas), numeração  rotulos/<id>.png e .json
 # Mudar só uma regra de união refaz só a E4e. decidir_unioes() roda sobre a tabela, sem pixels.
-# Lê .cache/v2/mapas/<id>.png (E2), .cache/v2/calibracao.json (E3) e frontend/mapa/mundo.json (costa).
+# Lê .cache/v2/mapas/<id>.png (E2), a calibração da E3 (cache.calibracao(): calibracao.json ou a variante
+# MAPA_GERAL_EXP) e frontend/mapa/mundo.json (costa).
 # Grava .cache/v2/rotulos/<id>.png (16 bits; 0 = mar, 1..N = regiões de terra) e <id>.json:
 #   {"regioes": [{"r": 1, "tipo": "estado"|"sem-dono", "cor": [R,G,B], "area_px", "caixa": [x0,y0,x1,y1],
 #                 "texto": [[x,y,w,h], ...]}], "ornamento": [x0,y0,x1,y1]}
@@ -793,6 +798,23 @@ def params(sub):
     return {}
 
 
+def chave_sub(sub, h_png, h_a=None, h_b=None, h_d=None, cal_k=None, mundo_h=None, nota=None):
+    """Chave de cache de uma sub-etapa para um mapa (a fórmula fica só aqui: processar() e o painel usam a mesma).
+    E4a: PNG do mapa; E4b: + E4a; E4d: + E4b; E4e: + E4d, calibração do mapa, mundo.json, lagos e, se houver, a
+    anotação do mapa (anotacoes.json; só entra na chave dos mapas anotados)."""
+    if sub == "a":
+        return cache.chave(VERSAO["a"], params("a"), [h_png])
+    if sub == "b":
+        return cache.chave(VERSAO["b"], params("b"), [h_png, h_a])
+    if sub == "d":
+        return cache.chave(VERSAO["d"], params("d"), [h_png, h_a, h_b])
+    from calibrar import LAGOS_NO_VIDEO
+    entradas = [h_png, h_a, h_b, h_d, cache.hash_obj(cal_k), mundo_h, sorted(LAGOS_NO_VIDEO)]
+    if nota:
+        entradas.append(cache.hash_obj(nota))
+    return cache.chave(VERSAO["e"], params("e"), entradas)
+
+
 def _sobrepor_params():
     """MAPA_GERAL_PARAMS='{"COR_UNIAO": 19}' muda parâmetros sem editar o código (usado pelo teste T-C3)."""
     extra = os.environ.get("MAPA_GERAL_PARAMS")
@@ -805,11 +827,23 @@ def _sobrepor_params():
 _sobrepor_params()
 
 
-def arquivos(k):
+_E4E = []
+
+
+def etapa_e():
+    if not _E4E:
+        _E4E.append(cache.Etapa("e4e"))
+    return _E4E[0]
+
+
+def arquivos(k, variante=None):
+    """Artefatos de um mapa. "e"/"e_json": o rótulo final da variante pedida (argumento ou MAPA_GERAL_EXP) se ela o
+    tem, senão o aprovado (apontador em rotulos/)."""
     e4 = os.path.join(V2, "e4")
+    et = etapa_e()
     return {"a": os.path.join(e4, "a", f"{k}.npz"), "b": os.path.join(e4, "b", f"{k}.png"),
             "d": os.path.join(e4, "d", f"{k}.json"),
-            "e": os.path.join(V2, "rotulos", f"{k}.png"), "e_json": os.path.join(V2, "rotulos", f"{k}.json")}
+            "e": et.caminho(k, ".png", variante), "e_json": et.caminho(k, ".json", variante)}
 
 
 def gravar_a(caminho, a):
@@ -881,12 +915,14 @@ def notas_por_mapa(cal):
 def processar(args):
     """Um lote de mapas: para cada um, cada sub-etapa só é recalculada se a chave mudou. Devolve as entradas novas
     dos manifestos, o que foi recalculado e o tempo de cada sub-etapa."""
-    ids, mans, forcar = args
+    ids, mans, forcar, variante, man_e = args
+    et_e = cache.Etapa.__new__(cache.Etapa)
+    et_e.nome, et_e.m = "e4e", man_e
     cv2.setNumThreads(1)      # 8 processos em paralelo: threads do OpenCV dentro de cada um só disputam CPU
     forcar_e = forcar == "e"  # --forcar-e: refaz só a E4e (medir o tempo de uma mudança de regra)
     forcar = forcar is True
     from calibrar import carregar_mundo, renderizar, LAGOS_NO_VIDEO
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    cal = json.load(open(cache.calibracao()))["por_mapa"]
     notas = notas_por_mapa(cal)
     mundo_h = cache.hash_arquivo(os.path.join(AQUI, "..", "..", "frontend", "mapa", "mundo.json"))
     terra = lagos = None
@@ -909,7 +945,7 @@ def processar(args):
                     im = cv2.imread(png)
                 return im
             # E4a
-            ch = cache.chave(VERSAO["a"], params("a"), [h_png])
+            ch = chave_sub("a", h_png)
             if forcar or cache.precisa(mans["a"], k, ch, arq["a"]):
                 t0 = time.time()
                 dados["a"] = e4a(imagem())
@@ -926,7 +962,7 @@ def processar(args):
                     dados["a"] = ler_a(arq["a"])
                 return dados["a"]
             # E4b
-            ch = cache.chave(VERSAO["b"], params("b"), [h_png, h_a])
+            ch = chave_sub("b", h_png, h_a)
             if forcar or cache.precisa(mans["b"], k, ch, arq["b"]):
                 t0 = time.time()
                 dados["b"] = e4b(imagem(), a_())
@@ -943,7 +979,7 @@ def processar(args):
                     dados["b"] = cv2.imread(arq["b"], cv2.IMREAD_UNCHANGED).astype(np.int32)
                 return dados["b"]
             # E4d
-            ch = cache.chave(VERSAO["d"], params("d"), [h_png, h_a, h_b])
+            ch = chave_sub("d", h_png, h_a, h_b)
             if forcar or cache.precisa(mans["d"], k, ch, arq["d"]):
                 t0 = time.time()
                 dados["d"] = e4d(imagem(), b_(), a_())
@@ -955,16 +991,12 @@ def processar(args):
             if k not in novas["d"] and "stat" not in mans["d"].get(k, {"stat": 1}):
                 novas["d"][k] = dict(mans["d"][k], stat=cache.assinatura(arq["d"]))     # manifesto antigo
             # E4e
-            entradas_e = [h_png, h_a, h_b, h_d, cache.hash_obj(cal[k]), mundo_h, sorted(LAGOS_NO_VIDEO)]
-            if notas.get(k):
-                entradas_e.append(cache.hash_obj(notas[k]))       # só entra na chave dos mapas com anotação
-            ch = cache.chave(VERSAO["e"], params("e"), entradas_e)
-            e_ok = os.path.exists(arq["e"]) and os.path.exists(arq["e_json"])
-            ent = mans["e"].get(k)
-            h_ok = e_ok and ent and (cache.hash_conhecido(ent, arq["e"], arq["e_json"]) or hash_e(arq)) == ent.get("hash_saida")
-            if not forcar and h_ok and ent.get("chave") == ch and "stat" not in ent:
-                novas["e"][k] = dict(ent, stat=cache.assinatura(arq["e"], arq["e_json"]))     # manifesto antigo
-            if forcar or forcar_e or not e_ok or not ent or ent.get("chave") != ch or not h_ok:
+            ch = chave_sub("e", h_png, h_a, h_b, h_d, cal[k], mundo_h, notas.get(k))
+            achado = None if (forcar or forcar_e) else et_e.procurar(k, ch)
+            if achado:
+                if et_e.itens(variante).get(k) != achado:
+                    novas["e"][k] = achado            # objeto já existe (outra variante, ou lógica antiga): reaproveita
+            else:
                 t0 = time.time()
                 if "d" not in dados:
                     dados["d"] = json.load(open(arq["d"]))
@@ -973,17 +1005,18 @@ def processar(args):
                 p = cal[k]
                 tm = renderizar(terra, lagos, p["S"], p["X0"], p["Y0"]) > 0
                 reg, info, orn, unioes, candidatos, enclaves, anot = e4e(imagem(), b_(), a_(), dados["d"], tm, notas.get(k))
-                gravar_png16(arq["e"], reg)
-                # mesmo formato de antes da divisão (json.dump padrão, ordem de inserção): bytes idênticos, para a
-                # chave da E5 (hash do arquivo) não mudar à toa
-                tmp = cache.atomico(arq["e_json"])
+                png_o, json_o = et_e.obj(ch, ".png"), et_e.obj(ch, ".json")
+                gravar_png16(png_o, reg)
+                # mesmo formato de antes da divisão (json.dump padrão, ordem de inserção)
+                tmp = cache.atomico(json_o)
                 saida_j = {"regioes": info, "ornamento": orn, "unioes": unioes, "candidatos": candidatos, "enclaves": enclaves}
                 if notas.get(k):
                     saida_j["anotacoes"] = anot
                 json.dump(saida_j, open(tmp, "w"))
-                os.replace(tmp, arq["e_json"])
+                os.replace(tmp, json_o)
                 t_mapa["e"] = time.time() - t0
-                novas["e"][k] = cache.entrada(ch, hash_e(arq), round(t_mapa["e"], 3), arq["e"], arq["e_json"])
+                novas["e"][k] = {"chave": ch, "hash_saida": hash_e({"e": png_o, "e_json": json_o}),
+                                 "segundos": round(t_mapa["e"], 3)}
                 feitos["e"] += 1
             tempos[k] = t_mapa
         except Exception as ex_:          # registra e segue; a lista de falhas sai no fim
@@ -997,24 +1030,33 @@ def amostra_ids(nome, mapas):
     return json.load(open(os.path.join(AQUI, "amostras.json")))[nome]["ids"]
 
 
-def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True):
+def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True, variante=None):
     """Roda as sub-etapas para os ids (com cache) e atualiza os manifestos. Devolve o resumo da rodada."""
     t_ini = time.time()
-    mans = {s_: cache.manifesto(f"e4/{s_}") for s_ in "abde"}
+    mans = {s_: cache.manifesto(f"e4/{s_}") for s_ in "abd"}
+    mans["e"] = {}
+    et = cache.Etapa("e4e")
+    if variante is None:
+        variante = cache.exp_atual() or et.m["aprovada"]
+    et.garantir(variante, {"versao": VERSAO["e"], **params("e")})
     lotes = [ids[i:i + lote] for i in range(0, len(ids), lote)]
     feitos = {s_: 0 for s_ in "abde"}
     tempos, falhas = {}, {}
     from concurrent.futures import as_completed
     with ProcessPoolExecutor(nproc) as ex:
-        futs = [ex.submit(processar, (l, mans, forcar)) for l in lotes]
+        futs = [ex.submit(processar, (l, mans, forcar, variante, et.m)) for l in lotes]
         n = 0
         for f in as_completed(futs):
             novas, fe, te, fa = f.result()
-            for s_ in "abde":
+            for s_ in "abd":
                 mans[s_].update(novas[s_])
-                feitos[s_] += fe[s_]
                 if novas[s_]:
                     cache.gravar_manifesto(f"e4/{s_}", mans[s_])
+            for s_ in "abde":
+                feitos[s_] += fe[s_]
+            if novas["e"]:
+                et.m["variantes"][variante]["itens"].update(novas["e"])
+                et.gravar()
             tempos.update(te)
             falhas.update(fa)
             n += 1
@@ -1023,8 +1065,10 @@ def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True):
                 eta = dec / n * (len(lotes) - n)
                 print(f"lotes {n}/{len(lotes)}  recalculados a={feitos['a']} b={feitos['b']} d={feitos['d']} "
                       f"e={feitos['e']}  {dec:.0f} s, faltam ~{eta:.0f} s", flush=True)
+    trocados = et.aprovar(variante) if variante == et.m["aprovada"] else 0
     soma = {s_: round(sum(t.get(s_, 0) for t in tempos.values()), 1) for s_ in "abde"}
-    resumo = {"mapas": len(ids), "recalculados": feitos, "segundos_total": round(time.time() - t_ini, 1),
+    resumo = {"variante": variante, "apontadores_trocados": trocados,
+              "mapas": len(ids), "recalculados": feitos, "segundos_total": round(time.time() - t_ini, 1),
               "segundos_por_subetapa_somados": soma, "falhas": falhas}
     return resumo
 
@@ -1034,18 +1078,20 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     amostra = "todos"
     for i, a in enumerate(sys.argv):
-        if a == "--amostra":
-            amostra = sys.argv[i + 1]
-            args = [x for x in args if x != amostra]
+        if a in ("--amostra", "--variante"):
+            args = [x for x in args if x != sys.argv[i + 1]]
+            if a == "--amostra":
+                amostra = sys.argv[i + 1]
     ids = args or amostra_ids(amostra, mapas)
     if "--so-chaves" in sys.argv:
         # o que seria recalculado na E4a (as seguintes dependem do conteúdo das anteriores: "depois")
         mans = cache.manifesto("e4/a")
-        n = sum(1 for k in ids if cache.precisa(mans, k, cache.chave(VERSAO["a"], params("a"), [
-            cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png"))]), arquivos(k)["a"]))
+        n = sum(1 for k in ids if cache.precisa(mans, k, chave_sub("a",
+            cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png"))), arquivos(k)["a"]))
         print(f"E4a recalcularia {n} de {len(ids)}; E4b/E4d/E4e dependem do conteúdo das anteriores")
         return
-    resumo = rodar(ids, forcar="e" if "--forcar-e" in sys.argv else ("--forcar" in sys.argv))
+    variante = sys.argv[sys.argv.index("--variante") + 1] if "--variante" in sys.argv else None
+    resumo = rodar(ids, forcar="e" if "--forcar-e" in sys.argv else ("--forcar" in sys.argv), variante=variante)
     json.dump(resumo, open(os.path.join(V2, "rotulos-tempo.json"), "w"), indent=1)
     print(json.dumps({k: v for k, v in resumo.items() if k != "falhas"}, ensure_ascii=False))
     if resumo["falhas"]:

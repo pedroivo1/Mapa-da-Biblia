@@ -52,8 +52,8 @@
 
     <main class="frame geral-pagina">
       <header class="biblia-topo">
-        <h1>O mundo antigo, <em>ano a ano.</em></h1>
-        <p class="hud muted">Mapa geral · povos e impérios de 2500 a.C. até hoje · arraste a linha do tempo</p>
+        <h1>O mundo, <em>ano a ano.</em></h1>
+        <p class="hud muted">Mapa geral · povos e impérios de 2500 a.C. a 2025 d.C. · setas ← → andam 1 ano (Shift: 10) · arraste a linha do tempo</p>
       </header>
 
       <section id="geral" class="geral" aria-label="Mapa geral com linha do tempo">
@@ -67,6 +67,16 @@
           <button type="button" id="geral-prox" aria-label="Próximo ano">&rarr;</button>
           <input type="range" id="geral-ano" min="0" max="0" value="0" step="1" aria-label="Ano" />
           <output id="geral-rotulo" class="hud">&nbsp;</output>
+          <label class="geral-vel hud faint"><span class="geral-vel-txt">Velocidade</span>
+            <select id="geral-vel" aria-label="Velocidade da reprodução, em anos por segundo">
+              <option value="5">5 anos/s</option>
+              <option value="10" selected>10 anos/s</option>
+              <option value="25">25 anos/s</option>
+            </select>
+          </label>
+          <form class="geral-ir-form" action="#" autocomplete="off">
+            <input type="text" id="geral-ir" class="hud" inputmode="numeric" placeholder="Ir para… 586 a.C." aria-label="Ir para o ano (ex.: 586 a.C. ou 30 d.C.)" />
+          </form>
         </div>
         <p class="hud faint geral-nota" id="geral-nota"></p>
       </section>

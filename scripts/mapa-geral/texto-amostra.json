@@ -1,0 +1,1119 @@
+{
+ "_ajuda": "Amostra conferida à mão para o teste da detecção de texto (E7). Cada etiqueta visível num recorte de 480×300 px: texto e ponto no meio do texto (coordenadas do quadro 1920×960). Recortes: 16 (150,230); 191 (300,250); 584 (600,250); 799 (0,40) e (960,380); 1347 (380,260) e (1040,520); 1692 (1300,460) e (740,500); 2180 (820,420). Etiquetas cortadas na borda do recorte ficam de fora.",
+ "mapas": {
+  "16": [
+   {
+    "texto": "Minoa",
+    "x": 198,
+    "y": 370
+   },
+   {
+    "texto": "Ebla",
+    "x": 417,
+    "y": 330
+   },
+   {
+    "texto": "Mari",
+    "x": 476,
+    "y": 337
+   },
+   {
+    "texto": "Kish",
+    "x": 490,
+    "y": 392
+   },
+   {
+    "texto": "Uruk",
+    "x": 500,
+    "y": 421
+   },
+   {
+    "texto": "Ur",
+    "x": 567,
+    "y": 453
+   },
+   {
+    "texto": "Elam",
+    "x": 606,
+    "y": 422
+   },
+   {
+    "texto": "Egypt",
+    "x": 273,
+    "y": 456
+   }
+  ],
+  "191": [
+   {
+    "texto": "Rome",
+    "x": 320,
+    "y": 340
+   },
+   {
+    "texto": "Greeks",
+    "x": 403,
+    "y": 384
+   },
+   {
+    "texto": "M.",
+    "x": 451,
+    "y": 329
+   },
+   {
+    "texto": "A.",
+    "x": 470,
+    "y": 394
+   },
+   {
+    "texto": "S.",
+    "x": 452,
+    "y": 410
+   },
+   {
+    "texto": "Lydia",
+    "x": 530,
+    "y": 379
+   },
+   {
+    "texto": "Phrygia",
+    "x": 588,
+    "y": 372
+   },
+   {
+    "texto": "Assyria",
+    "x": 694,
+    "y": 406
+   }
+  ],
+  "584": [
+   {
+    "texto": "Al.",
+    "x": 784,
+    "y": 336
+   },
+   {
+    "texto": "Parthian Empire",
+    "x": 833,
+    "y": 441
+   },
+   {
+    "texto": "Kushans",
+    "x": 978,
+    "y": 447
+   }
+  ],
+  "799": [
+   {
+    "texto": "Picts",
+    "x": 122,
+    "y": 72
+   },
+   {
+    "texto": "Gaels",
+    "x": 69,
+    "y": 132
+   },
+   {
+    "texto": "D.",
+    "x": 152,
+    "y": 125
+   },
+   {
+    "texto": "W.",
+    "x": 130,
+    "y": 154
+   },
+   {
+    "texto": "M.",
+    "x": 157,
+    "y": 155
+   },
+   {
+    "texto": "W",
+    "x": 150,
+    "y": 177
+   },
+   {
+    "texto": "Saxony",
+    "x": 290,
+    "y": 156
+   },
+   {
+    "texto": "Neu.",
+    "x": 200,
+    "y": 207
+   },
+   {
+    "texto": "Austrasia",
+    "x": 265,
+    "y": 200
+   },
+   {
+    "texto": "B.",
+    "x": 132,
+    "y": 227
+   },
+   {
+    "texto": "Bavaria",
+    "x": 340,
+    "y": 227
+   },
+   {
+    "texto": "Burgundy",
+    "x": 211,
+    "y": 259
+   },
+   {
+    "texto": "Lomb.",
+    "x": 286,
+    "y": 271
+   },
+   {
+    "texto": "Avars",
+    "x": 450,
+    "y": 251
+   },
+   {
+    "texto": "K.",
+    "x": 1110,
+    "y": 436
+   },
+   {
+    "texto": "Sindh",
+    "x": 1034,
+    "y": 544
+   },
+   {
+    "texto": "Gurjara",
+    "x": 1096,
+    "y": 535
+   },
+   {
+    "texto": "Vardhana",
+    "x": 1178,
+    "y": 538
+   },
+   {
+    "texto": "Vanga",
+    "x": 1282,
+    "y": 551
+   },
+   {
+    "texto": "Gauda",
+    "x": 1255,
+    "y": 567
+   },
+   {
+    "texto": "Kalachuri",
+    "x": 1131,
+    "y": 583
+   },
+   {
+    "texto": "Nala",
+    "x": 1236,
+    "y": 601
+   },
+   {
+    "texto": "Maitraka",
+    "x": 1021,
+    "y": 612
+   },
+   {
+    "texto": "Lata",
+    "x": 1069,
+    "y": 631
+   },
+   {
+    "texto": "Vishnuk.",
+    "x": 1157,
+    "y": 625
+   },
+   {
+    "texto": "Arakan",
+    "x": 1318,
+    "y": 635
+   }
+  ],
+  "1347": [
+   {
+    "texto": "Empire",
+    "x": 445,
+    "y": 286
+   },
+   {
+    "texto": "Hungary",
+    "x": 553,
+    "y": 304
+   },
+   {
+    "texto": "V",
+    "x": 469,
+    "y": 327
+   },
+   {
+    "texto": "Bulgaria",
+    "x": 599,
+    "y": 341
+   },
+   {
+    "texto": "Ser.",
+    "x": 543,
+    "y": 354
+   },
+   {
+    "texto": "Byzantine Empire",
+    "x": 681,
+    "y": 358
+   },
+   {
+    "texto": "P.S.",
+    "x": 454,
+    "y": 375
+   },
+   {
+    "texto": "Georgia",
+    "x": 820,
+    "y": 380
+   },
+   {
+    "texto": "Rum",
+    "x": 694,
+    "y": 398
+   },
+   {
+    "texto": "Sicily",
+    "x": 484,
+    "y": 403
+   },
+   {
+    "texto": "A.",
+    "x": 756,
+    "y": 405
+   },
+   {
+    "texto": "Erm.",
+    "x": 788,
+    "y": 405
+   },
+   {
+    "texto": "Ilden.",
+    "x": 830,
+    "y": 416
+   },
+   {
+    "texto": "C",
+    "x": 716,
+    "y": 424
+   },
+   {
+    "texto": "Banu Ghaniya",
+    "x": 493,
+    "y": 468
+   },
+   {
+    "texto": "Crusaders",
+    "x": 671,
+    "y": 477
+   },
+   {
+    "texto": "Ab.",
+    "x": 824,
+    "y": 493
+   },
+   {
+    "texto": "Ayyubids",
+    "x": 650,
+    "y": 514
+   },
+   {
+    "texto": "M.",
+    "x": 1245,
+    "y": 544
+   },
+   {
+    "texto": "A",
+    "x": 1321,
+    "y": 555
+   },
+   {
+    "texto": "Dali",
+    "x": 1412,
+    "y": 563
+   },
+   {
+    "texto": "Cha.",
+    "x": 1183,
+    "y": 567
+   },
+   {
+    "texto": "Sena",
+    "x": 1270,
+    "y": 576
+   },
+   {
+    "texto": "Paramara",
+    "x": 1148,
+    "y": 582
+   },
+   {
+    "texto": "Ka.",
+    "x": 1213,
+    "y": 582
+   },
+   {
+    "texto": "G.",
+    "x": 1183,
+    "y": 599
+   },
+   {
+    "texto": "Ratn.",
+    "x": 1229,
+    "y": 602
+   },
+   {
+    "texto": "Pagan",
+    "x": 1356,
+    "y": 612
+   },
+   {
+    "texto": "Yadava",
+    "x": 1148,
+    "y": 620
+   },
+   {
+    "texto": "E.",
+    "x": 1233,
+    "y": 621
+   },
+   {
+    "texto": "Arakan",
+    "x": 1302,
+    "y": 631
+   },
+   {
+    "texto": "Dai",
+    "x": 1475,
+    "y": 628
+   },
+   {
+    "texto": "Viet",
+    "x": 1475,
+    "y": 645
+   },
+   {
+    "texto": "Hari",
+    "x": 1393,
+    "y": 640
+   },
+   {
+    "texto": "Kakatiya",
+    "x": 1234,
+    "y": 666
+   },
+   {
+    "texto": "Khmers",
+    "x": 1436,
+    "y": 681
+   },
+   {
+    "texto": "Hoysala",
+    "x": 1097,
+    "y": 687
+   },
+   {
+    "texto": "Chola",
+    "x": 1159,
+    "y": 713
+   },
+   {
+    "texto": "Kerala kingdoms",
+    "x": 1093,
+    "y": 737
+   },
+   {
+    "texto": "Polonnaruwa",
+    "x": 1243,
+    "y": 763
+   }
+  ],
+  "1692": [
+   {
+    "texto": "Sindh",
+    "x": 1366,
+    "y": 480
+   },
+   {
+    "texto": "Jodhpur",
+    "x": 1412,
+    "y": 474
+   },
+   {
+    "texto": "M.",
+    "x": 1496,
+    "y": 475
+   },
+   {
+    "texto": "K",
+    "x": 1523,
+    "y": 473
+   },
+   {
+    "texto": "A",
+    "x": 1543,
+    "y": 481
+   },
+   {
+    "texto": "Malwa",
+    "x": 1425,
+    "y": 493
+   },
+   {
+    "texto": "Chandela",
+    "x": 1460,
+    "y": 492
+   },
+   {
+    "texto": "Bengal",
+    "x": 1506,
+    "y": 491
+   },
+   {
+    "texto": "Sh.",
+    "x": 1564,
+    "y": 489
+   },
+   {
+    "texto": "Cutch",
+    "x": 1358,
+    "y": 508
+   },
+   {
+    "texto": "G.",
+    "x": 1453,
+    "y": 511
+   },
+   {
+    "texto": "Kala.",
+    "x": 1487,
+    "y": 514
+   },
+   {
+    "texto": "Ava",
+    "x": 1560,
+    "y": 513
+   },
+   {
+    "texto": "H.",
+    "x": 1580,
+    "y": 511
+   },
+   {
+    "texto": "Kh.",
+    "x": 1428,
+    "y": 517
+   },
+   {
+    "texto": "C.",
+    "x": 1448,
+    "y": 523
+   },
+   {
+    "texto": "Gujarat",
+    "x": 1381,
+    "y": 528
+   },
+   {
+    "texto": "Ber",
+    "x": 1436,
+    "y": 529
+   },
+   {
+    "texto": "G.",
+    "x": 1485,
+    "y": 526
+   },
+   {
+    "texto": "Arakan",
+    "x": 1530,
+    "y": 532
+   },
+   {
+    "texto": "Dai",
+    "x": 1645,
+    "y": 531
+   },
+   {
+    "texto": "Lanna",
+    "x": 1591,
+    "y": 535
+   },
+   {
+    "texto": "Ahm.",
+    "x": 1416,
+    "y": 537
+   },
+   {
+    "texto": "Pr.",
+    "x": 1567,
+    "y": 538
+   },
+   {
+    "texto": "Viet",
+    "x": 1649,
+    "y": 541
+   },
+   {
+    "texto": "Lan",
+    "x": 1625,
+    "y": 550
+   },
+   {
+    "texto": "B.",
+    "x": 1432,
+    "y": 548
+   },
+   {
+    "texto": "Bijapur",
+    "x": 1390,
+    "y": 559
+   },
+   {
+    "texto": "Ayutt.",
+    "x": 1598,
+    "y": 564
+   },
+   {
+    "texto": "Xang",
+    "x": 1624,
+    "y": 561
+   },
+   {
+    "texto": "Bahmani",
+    "x": 1472,
+    "y": 566
+   },
+   {
+    "texto": "Pegu",
+    "x": 1560,
+    "y": 565
+   },
+   {
+    "texto": "Maynila",
+    "x": 1717,
+    "y": 569
+   },
+   {
+    "texto": "Tondo",
+    "x": 1760,
+    "y": 563
+   },
+   {
+    "texto": "Camb.",
+    "x": 1628,
+    "y": 580
+   },
+   {
+    "texto": "Champa",
+    "x": 1676,
+    "y": 588
+   },
+   {
+    "texto": "Vijayanagara",
+    "x": 1389,
+    "y": 599
+   },
+   {
+    "texto": "Jaffna",
+    "x": 1472,
+    "y": 605
+   },
+   {
+    "texto": "Kotte",
+    "x": 1438,
+    "y": 620
+   },
+   {
+    "texto": "Kandy",
+    "x": 1478,
+    "y": 620
+   },
+   {
+    "texto": "Brunei",
+    "x": 1686,
+    "y": 630
+   },
+   {
+    "texto": "Pasau",
+    "x": 1552,
+    "y": 644
+   },
+   {
+    "texto": "Berau",
+    "x": 1730,
+    "y": 648
+   },
+   {
+    "texto": "A.",
+    "x": 1590,
+    "y": 655
+   },
+   {
+    "texto": "Malacca",
+    "x": 1638,
+    "y": 655
+   },
+   {
+    "texto": "Ku.",
+    "x": 1708,
+    "y": 670
+   },
+   {
+    "texto": "D",
+    "x": 1602,
+    "y": 680
+   },
+   {
+    "texto": "Majapahit",
+    "x": 1689,
+    "y": 709
+   },
+   {
+    "texto": "Pajajaran",
+    "x": 1642,
+    "y": 731
+   },
+   {
+    "texto": "Houaras",
+    "x": 1116,
+    "y": 525
+   },
+   {
+    "texto": "Jolof",
+    "x": 760,
+    "y": 558
+   },
+   {
+    "texto": "Fulo",
+    "x": 790,
+    "y": 561
+   },
+   {
+    "texto": "Songhai",
+    "x": 874,
+    "y": 555
+   },
+   {
+    "texto": "Tunjurs",
+    "x": 1102,
+    "y": 553
+   },
+   {
+    "texto": "Alo.",
+    "x": 1131,
+    "y": 553
+   },
+   {
+    "texto": "Mali",
+    "x": 830,
+    "y": 573
+   },
+   {
+    "texto": "Bornu",
+    "x": 990,
+    "y": 573
+   },
+   {
+    "texto": "Ethiopia",
+    "x": 1146,
+    "y": 571
+   },
+   {
+    "texto": "Hausa",
+    "x": 933,
+    "y": 584
+   },
+   {
+    "texto": "Kwa",
+    "x": 960,
+    "y": 587
+   },
+   {
+    "texto": "Adal",
+    "x": 1175,
+    "y": 593
+   },
+   {
+    "texto": "Oyo",
+    "x": 915,
+    "y": 603
+   },
+   {
+    "texto": "Igala",
+    "x": 945,
+    "y": 604
+   },
+   {
+    "texto": "Benin",
+    "x": 926,
+    "y": 619
+   },
+   {
+    "texto": "Nri",
+    "x": 946,
+    "y": 624
+   },
+   {
+    "texto": "Bamum",
+    "x": 975,
+    "y": 620
+   },
+   {
+    "texto": "Mandara",
+    "x": 976,
+    "y": 640
+   },
+   {
+    "texto": "Gold Coast",
+    "x": 880,
+    "y": 643
+   },
+   {
+    "texto": "Ajuran",
+    "x": 1205,
+    "y": 645
+   },
+   {
+    "texto": "Bunyoro",
+    "x": 1090,
+    "y": 657
+   },
+   {
+    "texto": "Buganda",
+    "x": 1089,
+    "y": 680
+   },
+   {
+    "texto": "Kongo",
+    "x": 998,
+    "y": 718
+   },
+   {
+    "texto": "Kilwa",
+    "x": 1180,
+    "y": 719
+   },
+   {
+    "texto": "Mbailundu",
+    "x": 956,
+    "y": 760
+   },
+   {
+    "texto": "Maravi",
+    "x": 1140,
+    "y": 776
+   }
+  ],
+  "2180": [
+   {
+    "texto": "Madeira",
+    "x": 853,
+    "y": 429
+   },
+   {
+    "texto": "Morocco",
+    "x": 915,
+    "y": 439
+   },
+   {
+    "texto": "Algeria",
+    "x": 962,
+    "y": 439
+   },
+   {
+    "texto": "Tun.",
+    "x": 996,
+    "y": 427
+   },
+   {
+    "texto": "Qajars",
+    "x": 1236,
+    "y": 431
+   },
+   {
+    "texto": "Canaries",
+    "x": 860,
+    "y": 452
+   },
+   {
+    "texto": "Tripolitania",
+    "x": 1031,
+    "y": 456
+   },
+   {
+    "texto": "Egypt",
+    "x": 1089,
+    "y": 472
+   },
+   {
+    "texto": "Ha'il",
+    "x": 1182,
+    "y": 483
+   },
+   {
+    "texto": "T.S.",
+    "x": 1235,
+    "y": 479
+   },
+   {
+    "texto": "Oro",
+    "x": 868,
+    "y": 486
+   },
+   {
+    "texto": "Rivo",
+    "x": 866,
+    "y": 496
+   },
+   {
+    "texto": "Muscat",
+    "x": 1278,
+    "y": 501
+   },
+   {
+    "texto": "& Oman",
+    "x": 1278,
+    "y": 509
+   },
+   {
+    "texto": "Ery.",
+    "x": 1154,
+    "y": 531
+   },
+   {
+    "texto": "Aden",
+    "x": 1215,
+    "y": 533
+   },
+   {
+    "texto": "Dendi",
+    "x": 958,
+    "y": 539
+   },
+   {
+    "texto": "Senegal",
+    "x": 864,
+    "y": 538
+   },
+   {
+    "texto": "Chad",
+    "x": 1045,
+    "y": 542
+   },
+   {
+    "texto": "Sudan",
+    "x": 1104,
+    "y": 543
+   },
+   {
+    "texto": "Soudan",
+    "x": 906,
+    "y": 545
+   },
+   {
+    "texto": "Gambia",
+    "x": 840,
+    "y": 545
+   },
+   {
+    "texto": "Sokoto",
+    "x": 994,
+    "y": 553
+   },
+   {
+    "texto": "D.",
+    "x": 958,
+    "y": 560
+   },
+   {
+    "texto": "Guinea",
+    "x": 884,
+    "y": 561
+   },
+   {
+    "texto": "Guinea",
+    "x": 845,
+    "y": 557
+   },
+   {
+    "texto": "S.",
+    "x": 1193,
+    "y": 566
+   },
+   {
+    "texto": "Majerteen",
+    "x": 1238,
+    "y": 567
+   },
+   {
+    "texto": "Ivory",
+    "x": 917,
+    "y": 568
+   },
+   {
+    "texto": "Ethiopia",
+    "x": 1157,
+    "y": 572
+   },
+   {
+    "texto": "D.",
+    "x": 1198,
+    "y": 575
+   },
+   {
+    "texto": "Sierra Leone",
+    "x": 855,
+    "y": 576
+   },
+   {
+    "texto": "Coast",
+    "x": 917,
+    "y": 577
+   },
+   {
+    "texto": "Hobyo",
+    "x": 1225,
+    "y": 583
+   },
+   {
+    "texto": "G.C.",
+    "x": 937,
+    "y": 580
+   },
+   {
+    "texto": "Nigeria",
+    "x": 983,
+    "y": 583
+   },
+   {
+    "texto": "Togo",
+    "x": 957,
+    "y": 591
+   },
+   {
+    "texto": "Bengui",
+    "x": 1068,
+    "y": 583
+   },
+   {
+    "texto": "Kamerun",
+    "x": 1010,
+    "y": 590
+   },
+   {
+    "texto": "Liberia",
+    "x": 883,
+    "y": 591
+   },
+   {
+    "texto": "Uganda",
+    "x": 1130,
+    "y": 596
+   },
+   {
+    "texto": "Guinea",
+    "x": 985,
+    "y": 606
+   },
+   {
+    "texto": "Somaliland",
+    "x": 1212,
+    "y": 608
+   },
+   {
+    "texto": "East Africa",
+    "x": 1150,
+    "y": 611
+   },
+   {
+    "texto": "Protectorate",
+    "x": 1152,
+    "y": 619
+   },
+   {
+    "texto": "Geledi",
+    "x": 1195,
+    "y": 616
+   },
+   {
+    "texto": "Gabon",
+    "x": 1010,
+    "y": 620
+   },
+   {
+    "texto": "Congo",
+    "x": 1031,
+    "y": 616
+   },
+   {
+    "texto": "Congo",
+    "x": 1074,
+    "y": 621
+   },
+   {
+    "texto": "East Africa",
+    "x": 1132,
+    "y": 652
+   },
+   {
+    "texto": "Zanzibar",
+    "x": 1175,
+    "y": 647
+   },
+   {
+    "texto": "Kongo",
+    "x": 1027,
+    "y": 657
+   },
+   {
+    "texto": "Katanga",
+    "x": 1092,
+    "y": 657
+   },
+   {
+    "texto": "NE",
+    "x": 1113,
+    "y": 671
+   },
+   {
+    "texto": "Rhodesia",
+    "x": 1113,
+    "y": 680
+   },
+   {
+    "texto": "N.",
+    "x": 1129,
+    "y": 692
+   },
+   {
+    "texto": "Angola",
+    "x": 1030,
+    "y": 690
+   },
+   {
+    "texto": "NW",
+    "x": 1080,
+    "y": 697
+   },
+   {
+    "texto": "Mburu",
+    "x": 1053,
+    "y": 702
+   },
+   {
+    "texto": "Rhodesia",
+    "x": 1080,
+    "y": 705
+   }
+  ]
+ }
+}

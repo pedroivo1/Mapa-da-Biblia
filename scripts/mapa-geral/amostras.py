@@ -5,13 +5,15 @@
 #                 primeiro e o último de cada trecho de enquadramento e os mapas de transição de zoom.
 #   media (~200): a rápida + sorteio estratificado por trecho de enquadramento (semente fixa 42).
 # Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/amostras.py  -> scripts/mapa-geral/amostras.json
-import json, os, random
+import json, os, random, sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, AQUI)
+import cache
 V2 = os.path.join(os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache"), "v2")
 anos = json.load(open(os.path.join(V2, "anos.json")))
 mapas = json.load(open(os.path.join(V2, "mapas.json")))
-cal = json.load(open(os.path.join(V2, "calibracao.json")))
+cal = json.load(open(cache.calibracao()))
 
 
 def m(ano):

@@ -13,6 +13,30 @@ RAIZ = os.path.normpath(os.path.join(AQUI, "..", ".."))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
 
+
+# Artefatos versionados (cache.py): a variante de MAPA_GERAL_EXP, se a etapa a tem; senão a aprovada.
+def vet_(k):
+    """Vetor do mapa k: da E5, ou da E7u (uniões da E7) se a variante da E6 em teste foi feita sobre eles."""
+    import cache
+    if "fonte" not in _memo_vet:
+        et6 = cache.Etapa("e6")
+        v6 = cache.exp_atual() if cache.exp_atual() in et6.m["variantes"] else et6.m["aprovada"]
+        _memo_vet["fonte"] = et6.m["variantes"].get(v6, {}).get("params", {}).get("FONTE", "e5")
+    return cache.Etapa(_memo_vet["fonte"]).caminho(str(k), ".json")
+
+
+_memo_vet = {}
+
+
+def rot_(k, ext):
+    import cache
+    return cache.Etapa("e4e").caminho(str(k), ext)
+
+
+def ent_():
+    import cache
+    return cache.Etapa("e6").caminho("entidades", ".json")
+
 falhas = 0
 
 
@@ -78,7 +102,7 @@ def e1():
     urls = re.findall(r"""["'](/[A-Za-z0-9_\-./]+)["']""", js)
     fora = [u for u in urls if not (u.startswith("/mapa-geral/dados/") or u == "/mapa/mundo.json" or u.startswith("/compartilhado/"))]
     teste("T1.2 mapa-geral.js só usa dados do próprio mapa geral, mundo.json e compartilhado", not fora, fora[:5])
-    teste("T1.3 (polígonos × territorios-<ano>.json) feito na E8 com os dados finais", True, "pendente até a E8")
+    teste("T1.3 (polígonos × territorios-<ano>.json) feito na E8 com os dados finais", True, "ver T8.5 (testar.py e8)")
     r = sh(["git", "diff", "--stat", "8186a61", "--", "frontend/mapa", "frontend/linha-do-tempo"])
     teste("T1.4 git diff de frontend/mapa e linha-do-tempo = só o que a E0 decidiu manter", True, r.stdout.strip().splitlines()[-1] if r.stdout.strip() else "sem diferenças")
 
@@ -263,15 +287,15 @@ def e4():
     anos = carregar("anos.json")
     cal = carregar("calibracao.json")["por_mapa"]
     ordem = sorted(mapas, key=lambda k: mapas[k]["quadro"])
-    faltam = [k for k in mapas if not os.path.exists(os.path.join(V2, "rotulos", f"{k}.png"))]
+    faltam = [k for k in mapas if not os.path.exists(rot_(k, ".png"))]
     teste("T4.0 todos os mapas rotulados", not faltam, f"faltam {len(faltam)}")
     amostra = ordem[::10]
     cob, estado_sem, residuo, holes_pretos, instaveis = [], [], 0, 0, []
     pior_cor = []
     for k in amostra:
         im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
-        info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+        info = json.load(open(rot_(k, ".json")))
         rgb = im[:, :, ::-1].astype(np.int32)
         orn = np.zeros(reg.shape, bool)
         orn[815:945, 600:1400] = True
@@ -328,8 +352,8 @@ def e4():
         k = str(anos[str(c["ano"])]["mapa"])
         reg = por_ano.get(k)
         if reg is None:
-            reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
-            info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+            reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
+            info = json.load(open(rot_(k, ".json")))
             por_ano[k] = (reg, info)
         reg, info = por_ano[k]
         from calibrar import merc
@@ -373,7 +397,7 @@ def e4():
     for ano, nome in ((-999, "Holy Roman Empire"), (-1799, "Ottomans"), (584, "Kush")):
         rs = reg_de(ano, nome)
         k, r = next(iter(rs))
-        info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))["regioes"][r - 1]
+        info = json.load(open(rot_(k, ".json")))["regioes"][r - 1]
         teste(f"T4.3b {nome} {ano} existe como estado (cor {info['cor']}, {info['area_px']} px)", info["tipo"] == "estado" and info["area_px"] > 300)
     teste("T4.4 sem resíduos de texto: nenhuma região quase preta e nenhuma região < 40 px colada em outra", residuo == 0, f"resíduos={residuo}")
     pior_cor.sort(reverse=True)
@@ -382,7 +406,7 @@ def e4():
     # T4.7 uniões feitas na E4 (só as quase certas; o resto vira candidato para a E7)
     ruins, total, tipos, n_cand = [], 0, {}, 0
     for k in mapas:
-        j = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+        j = json.load(open(rot_(k, ".json")))
         n_cand += len(j.get("candidatos", []))
         for u in j.get("unioes", []):
             total += 1
@@ -409,7 +433,7 @@ def e4():
     erradas, soltos = [], []
     for pr in pares_m:
         k = str(anos[str(pr["ano"])]["mapa"])
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
         p = cal[k]
         rs = []
         for lon, lat in (pr["ponto_a"], pr["ponto_b"]):
@@ -461,13 +485,13 @@ def e5():
     mapas = carregar("mapas.json")
     cal = carregar("calibracao.json")["por_mapa"]
     anos = carregar("anos.json")
-    faltam = [k for k in mapas if not os.path.exists(os.path.join(V2, "vetores", f"{k}.json"))]
+    faltam = [k for k in mapas if not os.path.exists(vet_(k))]
     teste("T5.0 todos os mapas vetorizados", not faltam, f"faltam {len(faltam)}")
     # T5.1 (todos os mapas): polígonos válidos, anéis com >= 3 pontos distintos; T5.8: longitudes em [-180, 180]
     invalidos, curtos, fora_lon, cob_ruim = [], 0, 0, []
     vet = {}
     for k in mapas:
-        v = json.load(open(os.path.join(V2, "vetores", f"{k}.json")))
+        v = json.load(open(vet_(k)))
         vet[k] = v
         if not (v["metricas"]["cobertura_simplificada"] and v["metricas"]["cobertura_tremida"]):
             cob_ruim.append(k)
@@ -594,7 +618,7 @@ def e5():
     piores_iou = []
     for k in amostra[:12]:
         p = cal[k]
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
         # rasteriza as regiões finais no espaço do quadro
         ras = np.zeros(reg.shape, np.int32)
         for r, d in vet[k]["regioes"].items():
@@ -617,7 +641,7 @@ def e5():
         costa_px = cv2.dilate(costa_px.astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
         mask = (reg > 0) & terra_px & ~lago_px & ~orn & ~costa_px
         conc.append(float((ras[mask] == reg[mask]).mean()))
-        rot_j = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+        rot_j = json.load(open(rot_(k, ".json")))
         info = rot_j["regioes"]
         pecas = {c_["r_a"] for c_ in rot_j.get("candidatos", [])} | {c_["r_b"] for c_ in rot_j.get("candidatos", [])}
         for rr in info:
@@ -696,7 +720,7 @@ def e5():
     for c in casos:
         k = str(anos[str(c["ano"])]["mapa"])
         p = cal[k]
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
         u = int(round(float((c["lon"] + 180) * p["S"] - p["X0"])))
         v = int(round(float((miller_px(80.0) - miller_px(c["lat"])) * p["S"] - p["Y0"])))
         r = int(reg[v, u])
@@ -757,18 +781,34 @@ def cache_testes():
         for f in os.listdir(pasta):
             if f != "manifesto.json" and f.split(".")[0] not in man:
                 inco.append((sub, f, "fora do manifesto"))
-    man_e = cache.manifesto("e4/e")
-    for k, e in man_e.items():
-        if rt.hash_e(rt.arquivos(k)) != e["hash_saida"]:
-            inco.append(("e", k, "hash"))
-    teste("T-C5 manifestos coerentes (todo artefato no manifesto e com o mesmo hash; nenhum .tmp)",
+    # loja por chave: toda entrada das variantes tem o objeto com o mesmo hash; os apontadores públicos levam à aprovada
+    for nome_et in ("e4e", "e5", "e6"):
+        et_ = cache.Etapa(nome_et)
+        for var, v in et_.m["variantes"].items():
+            for k, e in v["itens"].items():
+                exts = et_.exts()
+                objs = [et_.obj(e["chave"], x) for x in exts]
+                if not all(os.path.exists(o) for o in objs):
+                    inco.append((nome_et, var, k, "objeto ausente"))
+                    continue
+                h = rt.hash_e({"e": objs[0], "e_json": objs[1]}) if nome_et == "e4e" else cache.hash_arquivo(objs[0])
+                if h != e["hash_saida"]:
+                    inco.append((nome_et, var, k, "hash"))
+                if var == et_.m["aprovada"]:
+                    for x, o in zip(exts, objs):
+                        pub = et_.publico(k, x)
+                        if not (os.path.islink(pub) and os.path.realpath(pub) == os.path.realpath(o)):
+                            inco.append((nome_et, k, "apontador"))
+    teste("T-C5 manifestos coerentes (todo artefato no manifesto e com o mesmo hash; objetos da loja presentes e com o "
+          "hash do manifesto; apontadores públicos = variante aprovada; nenhum .tmp)",
           not inco and not any(cache.tmp_pendentes(f"e4/{s_}") for s_ in "abd"), f"{len(inco)} {inco[:5]}")
     # T-C1: 20 ids de cada sub-etapa recalculados do zero = artefato do cache
     random.seed(5)
     terra, lagos = carregar_mundo()
     cal = carregar("calibracao.json")["por_mapa"]
     ruins = []
-    sorteio = random.sample(sorted(cache.manifesto("e4/e")), min(20, len(cache.manifesto("e4/e"))))
+    itens_e = cache.Etapa("e4e").itens(cache.Etapa("e4e").m["aprovada"])
+    sorteio = random.sample(sorted(itens_e), min(20, len(itens_e)))
     with tempfile.TemporaryDirectory() as tmp:
         for k in sorteio:
             arq = rt.arquivos(k)
@@ -808,26 +848,62 @@ def cache_testes():
     def ultima_json(out):
         return json.loads([l for l in out.splitlines() if l.startswith("{")][-1])
 
-    def rodar_script(nome, extra_env=None):
+    def rodar_script(nome, extra_env=None, extra_args=()):
         env = dict(os.environ, **(extra_env or {}))
-        return ultima_json(subprocess.run([sys.executable, os.path.join(AQUI, nome), "--amostra", "rapida"], env=env,
-                                          capture_output=True, text=True).stdout)
+        return ultima_json(subprocess.run([sys.executable, os.path.join(AQUI, nome), "--amostra", "rapida", *extra_args],
+                                          env=env, capture_output=True, text=True).stdout)
+    def apagar_variante_teste():
+        for et_n in ("e4e", "e5"):
+            if "teste-tc3" in cache.Etapa(et_n).m["variantes"]:
+                subprocess.run([sys.executable, os.path.join(AQUI, "limpar_cache.py"), "--variante", et_n, "teste-tc3",
+                                "--apagar"], capture_output=True)
+    apagar_variante_teste()          # o experimento do teste começa do zero (senão a loja reaproveita a rodada anterior)
+    et_e, et_5 = cache.Etapa("e4e"), cache.Etapa("e5")
+    base_e, base_5 = et_e.m["aprovada"], et_5.m["aprovada"]
+    ant_e, ant_5 = et_e.m["anterior"], et_5.m["anterior"]
     vet0 = rodar_script("vetorizar.py")         # garante a E5 em dia na amostra antes de medir
+    pub_antes = {k: (os.readlink(et_e.publico(k, ".png")), os.readlink(et_5.publico(k, ".json"))) for k in rapida}
     antes = {k: cache.hash_arquivo(rt.arquivos(k)["e"]) for k in rapida}
-    res = rodar_script("rotular.py", {"MAPA_GERAL_PARAMS": json.dumps({"EXPANSAO_COSTA": 7})})
-    mudaram = sum(1 for k in rapida if cache.hash_arquivo(rt.arquivos(k)["e"]) != antes[k])
-    vet1 = rodar_script("vetorizar.py")
+    exp = {"MAPA_GERAL_PARAMS": json.dumps({"EXPANSAO_COSTA": 7}), "MAPA_GERAL_EXP": "teste-tc3"}
+    res = rodar_script("rotular.py", exp)
+    rt._E4E.clear()          # o manifesto da E4e mudou em outro processo: reler
+    mudaram = sum(1 for k in rapida if cache.hash_arquivo(rt.arquivos(k, "teste-tc3")["e"]) != antes[k])
+    vet1 = rodar_script("vetorizar.py", {"MAPA_GERAL_EXP": "teste-tc3"})
+    intactos = all((os.readlink(et_e.publico(k, ".png")), os.readlink(et_5.publico(k, ".json"))) == pub_antes[k] for k in rapida)
     res2 = rodar_script("rotular.py")
     vet2 = rodar_script("vetorizar.py")
     rec = res["recalculados"]
-    teste("T-C3 invalidação mínima: mudar só EXPANSAO_COSTA refaz só a E4e; a E5 refaz só os mapas cujos rótulos "
-          "mudaram (e voltar ao normal idem)",
-          rec["a"] == rec["b"] == rec["d"] == 0 and rec["e"] == len(rapida) and
-          res2["recalculados"]["a"] == res2["recalculados"]["b"] == res2["recalculados"]["d"] == 0 and
-          vet1["recalculados"] == mudaram and vet2["recalculados"] == mudaram,
-          f"E4 com o parâmetro novo={rec} ({res['segundos_total']} s); rótulos que mudaram={mudaram}; E5 refez "
-          f"{vet1['recalculados']} ({vet1['segundos_total']} s); de volta: E4={res2['recalculados']}, E5 refez "
-          f"{vet2['recalculados']}; E5 antes do teste refez {vet0['recalculados']}")
+    teste("T-C3 invalidação mínima: um experimento (MAPA_GERAL_EXP, só EXPANSAO_COSTA) refaz só a E4e; a E5 refaz só "
+          "os mapas cujos rótulos mudaram; o aprovado não é tocado e a rodada normal depois recalcula 0",
+          rec["a"] == rec["b"] == rec["d"] == 0 and rec["e"] == len(rapida) and intactos and
+          sum(res2["recalculados"].values()) == 0 and vet1["recalculados"] == mudaram and vet2["recalculados"] == 0,
+          f"E4 no experimento={rec} ({res['segundos_total']} s); rótulos que mudaram={mudaram}; E5 refez "
+          f"{vet1['recalculados']} ({vet1['segundos_total']} s); apontadores aprovados intactos={intactos}; "
+          f"rodada normal depois: E4={res2['recalculados']}, E5 refez {vet2['recalculados']}")
+    # T-C7: trocar o aprovado para a variante do experimento e voltar: 0 recálculos e arquivos idênticos
+    t0 = time.time()
+    et_e, et_5 = cache.Etapa("e4e"), cache.Etapa("e5")
+    et_e.aprovar("teste-tc3")
+    et_5.aprovar("teste-tc3")
+    rt._E4E.clear()
+    trocou = sum(1 for k in rapida if os.readlink(et_e.publico(k, ".png")) != pub_antes[k][0])
+    for et_, base_, ant_ in ((cache.Etapa("e4e"), base_e, ant_e), (cache.Etapa("e5"), base_5, ant_5)):
+        et_.aprovar(base_)
+        et_.m["anterior"] = ant_        # o teste não deixa rastro no histórico de aprovações
+        et_.gravar()
+    et_e, et_5 = cache.Etapa("e4e"), cache.Etapa("e5")
+    t_troca = time.time() - t0
+    voltou = all((os.readlink(et_e.publico(k, ".png")), os.readlink(et_5.publico(k, ".json"))) == pub_antes[k] for k in rapida)
+    rt._E4E.clear()
+    iguais = all(cache.hash_arquivo(rt.arquivos(k)["e"]) == antes[k] for k in rapida)
+    res4 = rodar_script("rotular.py")
+    vet4 = rodar_script("vetorizar.py")
+    teste("T-C7 trocar o aprovado para uma variante e voltar: troca instantânea, a volta recalcula 0 mapas e os "
+          "arquivos são idênticos", trocou == len(rapida) and voltou and iguais and sum(res4["recalculados"].values()) == 0
+          and vet4["recalculados"] == 0,
+          f"apontadores trocados na ida={trocou} de {len(rapida)} (conteúdo diferente em {mudaram}); ida e volta em {t_troca:.2f} s; "
+          f"volta idêntica={voltou and iguais}; recalculados depois: E4={res4['recalculados']} E5={vet4['recalculados']}")
+    apagar_variante_teste()
     # T-C4: retomada: --forcar na amostra rápida, interrompida no meio; a rodada seguinte termina sem corromper nada
     antes_c4 = {k: open(rt.arquivos(k)["e"], "rb").read() for k in rapida}
     pr = subprocess.Popen([sys.executable, os.path.join(AQUI, "rotular.py"), "--amostra", "rapida", "--forcar"],
@@ -857,8 +933,9 @@ def regioes_cercadas(pasta, k, area_max=1000):
     import numpy as np
     import cv2
     import rotular as rt
-    reg = cv2.imread(os.path.join(pasta, f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
-    info = json.load(open(os.path.join(pasta, f"{k}.json")))
+    vivo = os.path.basename(pasta) == "rotulos"       # os rótulos atuais: variante (MAPA_GERAL_EXP) ou aprovada
+    reg = cv2.imread(rot_(k, ".png") if vivo else os.path.join(pasta, f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+    info = json.load(open(rot_(k, ".json") if vivo else os.path.join(pasta, f"{k}.json")))
     px = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))[:, :, ::-1].astype(np.int32)
     cor = {r["r"]: np.array(r["cor"]) for r in info["regioes"]}
     caixas = [c for r in info["regioes"] for c in r["texto"]]
@@ -956,7 +1033,7 @@ def miolos(amostra="media"):
             if n["tipo"] not in ("mesmo_estado", "estados_diferentes"):
                 continue
             k = str(anos[str(n["ano"])]["mapa"])
-            reg = cv2.imread(os.path.join(depois_d, f"{k}.png"), cv2.IMREAD_UNCHANGED)
+            reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
             p = cal[k]
             rs = []
             for lon, lat in (n["ponto_a"], n["ponto_b"]):
@@ -965,13 +1042,13 @@ def miolos(amostra="media"):
                 rs.append(int(reg[v, u]))
             if (n["tipo"] == "mesmo_estado") != (rs[0] == rs[1]):
                 ruins.append((n["ano"], n["tipo"], rs))
-            j = json.load(open(os.path.join(depois_d, f"{k}.json")))
+            j = json.load(open(rot_(k, ".json")))
             if n["id"] not in j.get("anotacoes", {}).get("aplicadas", []):
                 ruins.append((n["ano"], n["id"], "não registrada no rótulo"))
         probs = [n for n in json.load(open(arq))["anotacoes"] if n["tipo"] == "problema"]
         for n in probs:
             k = str(n["mapa"])
-            j = json.load(open(os.path.join(depois_d, f"{k}.json")))
+            j = json.load(open(rot_(k, ".json")))
             if n["id"] not in [p_["id"] for p_ in j.get("anotacoes", {}).get("problemas", [])]:
                 ruins.append((n["ano"], n["id"], "problema não listado"))
         teste("T4.9c anotações (anotacoes.json) respeitadas e registradas nos rótulos", not ruins, ruins[:5])
@@ -982,7 +1059,7 @@ def e6():
     import numpy as np
     import cv2
     from calibrar import merc
-    ent = carregar("entidades.json")
+    ent = json.load(open(ent_()))
     anos = carregar("anos.json")
     cal = carregar("calibracao.json")["por_mapa"]
     ordem = [int(a) for a in anos]
@@ -997,7 +1074,7 @@ def e6():
     cobertos = sum(pos[c[1]] - pos[c[0]] + 1 for c in corridas)
     sem_id = []
     for a_de, a_ate, k, ids in corridas:
-        v = json.load(open(os.path.join(V2, "vetores", f"{k}.json")))
+        v = json.load(open(vet_(k)))
         for r, d in v["regioes"].items():
             if d["tipo"] == "estado" and r not in ids:
                 sem_id.append((k, r))
@@ -1007,7 +1084,7 @@ def e6():
     import rastrear
     dup = []
     for a_de, a_ate, k, ids in corridas:
-        v = json.load(open(os.path.join(V2, "vetores", f"{k}.json")))
+        v = json.load(open(vet_(k)))
         am = {frozenset(p) for p in rastrear.antimeridiano(v)}
         por = {}
         for r, e in ids.items():
@@ -1037,10 +1114,10 @@ def e6():
         ka, kb = corridas[i - 1][2], corridas[i][2]
         if cal[ka] != cal[kb] and any(abs(cal[ka][x] - cal[kb][x]) > 1e-9 for x in ("S", "X0", "Y0")):
             continue
-        ra_ = cv2.imread(os.path.join(V2, "rotulos", f"{ka}.png"), cv2.IMREAD_UNCHANGED)
-        rb_ = cv2.imread(os.path.join(V2, "rotulos", f"{kb}.png"), cv2.IMREAD_UNCHANGED)
-        va = json.load(open(os.path.join(V2, "vetores", f"{ka}.json")))["regioes"]
-        vb = json.load(open(os.path.join(V2, "vetores", f"{kb}.json")))["regioes"]
+        ra_ = cv2.imread(rot_(ka, ".png"), cv2.IMREAD_UNCHANGED)
+        rb_ = cv2.imread(rot_(kb, ".png"), cv2.IMREAD_UNCHANGED)
+        va = json.load(open(vet_(ka)))["regioes"]
+        vb = json.load(open(vet_(kb)))["regioes"]
         inv_a = {e: r for r, e in corridas[i - 1][3].items()}
         # rótulos -> ids de entidade (sem-dono = -1, mar = 0) para comparar a vizinhança nos dois mapas
         def para_ids(rot, ids):
@@ -1081,7 +1158,7 @@ def e6():
         c = corrida_de(ano)
         k = c[2]
         p = cal[k]
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
         u = int(round(float((lon + 180) * p["S"] - p["X0"])))
         v = int(round(float((merc(80.0) - merc(lat)) * p["S"] - p["Y0"])))
         r = int(reg[v, u])
@@ -1105,7 +1182,399 @@ def e6():
     print(f"      entidades={ev['entidades']} corridas de mapa={ev['mapas']} recolorações={len(ev['recoloracoes'])}")
 
 
-ETAPAS = {"e6": e6, "miolos": lambda: miolos(os.environ.get("AMOSTRA", "media")), "cache": cache_testes, "e0": e0, "e1": e1, "e2": e2, "e3": e3, "e4": e4, "e5": e5}
+def e7():
+    import cv2
+    import texto
+    # T7.0 detecção de texto: na amostra conferida à mão (texto-amostra.json: etiquetas visíveis em recortes de 7
+    # mapas de 2500 a.C. a 1900 d.C.), >= 95 % das etiquetas têm o ponto do meio dentro de uma caixa (folga de 3 px)
+    am = json.load(open(os.path.join(AQUI, "texto-amostra.json")))["mapas"]
+    ok = n = 0
+    perdidos = []
+    for k, lst in am.items():
+        cx = texto.detectar(cv2.imread(os.path.join(V2, "mapas", f"{k}.png")))
+        for e in lst:
+            n += 1
+            if any(x - 3 <= e["x"] <= x + w + 3 and y - 3 <= e["y"] <= y + h + 3 for t, x, y, w, h in cx):
+                ok += 1
+            else:
+                perdidos.append((k, e["texto"]))
+    teste("T7.0 detecção de texto >= 95 % na amostra conferida à mão", ok >= 0.95 * n,
+          f"{ok}/{n} = {ok / n:.1%}; perdidas: {perdidos}")
+    import cache
+    import numpy as np
+    from calibrar import merc
+    et7 = cache.Etapa("e7")
+    arq = et7.caminho("nomes-lidos", ".json")
+    if not os.path.exists(arq):
+        teste("T7.x nomes-lidos.json existe", False, arq)
+        return
+    nl = json.load(open(arq))
+    et6 = cache.Etapa("e6")
+    var6 = nl["e6"]["variante"]
+    ent = json.load(open(et6.caminho("entidades", ".json", var6)))
+    etv = cache.Etapa(nl["e6"]["fonte"])
+    var_v = var6 if var6 in etv.m["variantes"] else etv.m["aprovada"]
+    anos = carregar("anos.json")
+    cal = carregar("calibracao.json")["por_mapa"]
+    ordem = [int(a) for a in anos]
+    pos = {a: i for i, a in enumerate(ordem)}
+
+    def nome_em(e6id, ano):
+        for t in nl["entidades"].get(e6id, {}).get("trechos", []):
+            if pos[t[0]] <= pos[ano] <= pos[t[1]]:
+                return t[2]
+        return None
+
+    def corrida(ano):
+        for c in ent["por_ano"]:
+            if pos[c[0]] <= pos[ano] <= pos[c[1]]:
+                return c
+
+    def area_graus(aneis):
+        s = 0.0
+        for a in aneis:
+            x = np.asarray(a)[:, 0]
+            y = np.asarray(a)[:, 1]
+            s += 0.5 * (np.dot(x, np.roll(y, -1)) - np.dot(y, np.roll(x, -1)))
+        return abs(s)
+    # T7.1 área nomeada por século (um ano por século: o primeiro de cada século na sequência)
+    res, piores = {}, []
+    ok71 = True
+    for a in ordem:
+        if not (a > 0 and a % 100 == 0) and not (a < 0 and (-a - 1) % 100 == 0):
+            continue
+        c = corrida(a)
+        v = json.load(open(etv.caminho(c[2], ".json", var_v)))
+        tot5 = nom5 = 0.0
+        n1 = nn1 = 0
+        for r, e in c[3].items():
+            d = v["regioes"].get(r)
+            if not d or d["tipo"] != "estado":
+                continue
+            ar = area_graus(d["aneis"])
+            tem = nome_em(e, a) is not None
+            if ar >= 5:
+                tot5 += ar
+                nom5 += ar if tem else 0
+            if ar >= 1:
+                n1 += 1
+                nn1 += tem
+        f5 = nom5 / tot5 if tot5 else 1.0
+        f1 = nn1 / n1 if n1 else 1.0
+        res[a] = (round(f5, 3), round(f1, 3))
+        if f5 < 0.98 or f1 < 0.90:
+            ok71 = False
+            piores.append((a, round(f5, 3), round(f1, 3)))
+    teste("T7.1 por século: >= 98 % da área dos estados >= 5 grau² e >= 90 % dos estados >= 1 grau² com nome", ok71,
+          f"{len(piores)} séculos abaixo de {len(res)}: {piores[:12]}")
+    # T7.3 nenhum ano com dois estados (ids finais diferentes) de mesmo nome
+    dup = []
+    for a_de, a_ate, k, ids in ent["por_ano"]:
+        vistos = {}
+        for r, e in ids.items():
+            nm = nome_em(e, a_de)
+            if nm is None:
+                continue
+            f = nl["entidades"][e]["final"]
+            n_ = nm.casefold().replace(".", "").strip()
+            if n_ in vistos and vistos[n_] != f:
+                dup.append((a_de, nm, vistos[n_], f))
+            vistos.setdefault(n_, f)
+    teste("T7.3 nenhum ano com dois estados de mesmo nome que não sejam o mesmo id (informativo até a lista de "
+          "exceções em nomes.json)", True, f"{len(dup)} casos: {dup[:8]}")
+    # T7.4 casos de referência: o nome lido no ponto bate com nome_video
+    ruins, n74 = [], 0
+    for cs in json.load(open(os.path.join(AQUI, "casos.json")))["casos"]:
+        if not cs.get("nome_video") or cs["espera"] != "estado":
+            continue
+        n74 += 1
+        c = corrida(cs["ano"])
+        p = cal[c[2]]
+        reg = cv2.imread(rot_(c[2], ".png"), cv2.IMREAD_UNCHANGED)
+        u = int(round(float((cs["lon"] + 180) * p["S"] - p["X0"])))
+        v_ = int(round(float((merc(80.0) - merc(cs["lat"])) * p["S"] - p["Y0"])))
+        r = str(int(reg[v_, u]))
+        vv = json.load(open(etv.caminho(c[2], ".json", var_v)))
+        r = vv.get("unidas", {}).get(r, r)
+        nm = nome_em(c[3].get(r), cs["ano"]) if c[3].get(r) else None
+        if (nm or "").casefold().replace(".", "") != cs["nome_video"].casefold().replace(".", ""):
+            ruins.append((cs["ano"], cs["nome_video"], nm))
+    teste("T7.4 casos de referência: nome lido = nome do vídeo em 100 %", not ruins,
+          f"{n74 - len(ruins)}/{n74}; diferentes: {ruins[:20]}")
+    # T7.6 cores: toda entidade com #rrggbb (a cor publicada é a da E6, mediana do vídeo ao longo da vida)
+    sem_cor = [e for e, d in ent["entidades"].items() if not re.fullmatch(r"#[0-9a-f]{6}", d.get("cor", ""))]
+    teste("T7.6 toda entidade tem cor #rrggbb do vídeo", not sem_cor, sem_cor[:5])
+    # T7.7 nenhum id com dois nomes ao mesmo tempo; toda troca de nome está na lista aprovada (nomes.json "trocas")
+    duplo = []
+    for e, d in nl["finais"].items():
+        ts = d["trechos"]
+        for i in range(len(ts) - 1):
+            if pos[ts[i][1]] >= pos[ts[i + 1][0]]:
+                duplo.append((e, ts[i][:3], ts[i + 1][:3]))
+    nomes_j = json.load(open(os.path.join(AQUI, "nomes.json")))
+    aprov = {(t["id"], t["ano"]) for t in nomes_j.get("trocas", []) if t.get("decisao")} if isinstance(nomes_j, dict) else set()
+    fora = [t for t in nl["trocas"] if (t[0], t[1]) not in aprov]
+    teste("T7.7 nenhum id com dois nomes ao mesmo tempo e nenhuma troca de nome fora da lista aprovada", not duplo and not fora,
+          f"sobrepostos={duplo[:5]}; trocas={len(nl['trocas'])}, fora da lista aprovada={len(fora)}")
+    # T7.8 pares.json depois das uniões da E7: 0 uniões erradas e <= 3 pedaços soltos
+    erradas, soltos = [], []
+    for pr in json.load(open(os.path.join(AQUI, "pares.json")))["pares"]:
+        c = corrida(pr["ano"])
+        p = cal[c[2]]
+        reg = cv2.imread(rot_(c[2], ".png"), cv2.IMREAD_UNCHANGED)
+        vv = json.load(open(etv.caminho(c[2], ".json", var_v))).get("unidas", {})
+        rs = []
+        for lon, lat in (pr["ponto_a"], pr["ponto_b"]):
+            u = int(round(float((lon + 180) * p["S"] - p["X0"])))
+            v_ = int(round(float((merc(80.0) - merc(lat)) * p["S"] - p["Y0"])))
+            r = str(int(reg[v_, u]))
+            rs.append(vv.get(r, r))
+        if pr["mesmo_estado"] and rs[0] != rs[1]:
+            soltos.append(pr["id_folha"])
+        if not pr["mesmo_estado"] and rs[0] == rs[1]:
+            erradas.append(pr["id_folha"])
+    teste("T7.8 pares.json depois das uniões da E7: 0 uniões erradas e <= 3 pedaços soltos",
+          not erradas and len(soltos) <= 3, f"erradas={erradas}; soltos={len(soltos)} {soltos}")
+    # T7.9 anotações "estados_diferentes" respeitadas depois da E7 (pontos em regiões diferentes nos vetores unidos)
+    an_arq = os.path.join(AQUI, "anotacoes.json")
+    viol = []
+    if os.path.exists(an_arq):
+        import rotular
+        for k, ns in rotular.notas_por_mapa(cal).items():
+            reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
+            vv = json.load(open(etv.caminho(k, ".json", var_v))).get("unidas", {})
+            for n_ in ns:
+                if n_["tipo"] != "estados_diferentes":
+                    continue
+                ra = str(int(reg[n_["px_a"][1], n_["px_a"][0]]))
+                rb = str(int(reg[n_["px_b"][1], n_["px_b"][0]]))
+                if vv.get(ra, ra) == vv.get(rb, rb):
+                    viol.append((k, n_["id"]))
+    teste("T7.9 anotações 'estados diferentes' respeitadas depois das uniões da E7", not viol,
+          viol[:5] if os.path.exists(an_arq) else "sem anotacoes.json: nada a conferir")
+    # T7.10 Ebla e Mari (2500 a.C.) são estados diferentes (ids finais diferentes)
+    def final_em(ano, lon, lat):
+        c = corrida(ano)
+        p = cal[c[2]]
+        reg = cv2.imread(rot_(c[2], ".png"), cv2.IMREAD_UNCHANGED)
+        u = int(round(float((lon + 180) * p["S"] - p["X0"])))
+        v_ = int(round(float((merc(80.0) - merc(lat)) * p["S"] - p["Y0"])))
+        r = str(int(reg[v_, u]))
+        vv = json.load(open(etv.caminho(c[2], ".json", var_v))).get("unidas", {})
+        e = c[3].get(vv.get(r, r))
+        return nl["entidades"][e]["final"] if e else None
+    eb, ma = final_em(2500, 38.22, 36.76), final_em(2500, 42.22, 35.26)
+    teste("T7.10 Ebla e Mari em 2500 a.C. são estados diferentes", eb and ma and eb != ma, f"Ebla={eb} Mari={ma}")
+    print(f"      ids da E6={len(ent['entidades'])}; entidades finais={len(nl['finais'])}; juntadas pelo nome="
+          f"{len(nl['juntadas'])}; trocas de nome={len(nl['trocas'])}")
+
+
+
+# ---------------------------------------------------------------- E8
+def e8():
+    """Dados do site (frontend/mapa-geral/dados): esquema, reconstrução, validade, casos, mapas antigos, orçamento."""
+    import gzip
+    import numpy as np
+    import shapely
+    from shapely.geometry import Polygon, MultiPolygon
+    import construir as C
+    pasta = C.SAIDA
+    ind = json.load(open(os.path.join(pasta, "indice.json")))
+    nl, ent, vet, ordem = C.carregar()
+    pos = {a: i for i, a in enumerate(ordem)}
+    n_blocos = (len(ordem) + C.BLOCO - 1) // C.BLOCO
+    # T8.1 esquema
+    probl = []
+    blocos = {}
+    for b in range(n_blocos):
+        p0, p1 = b * C.BLOCO, min((b + 1) * C.BLOCO, len(ordem)) - 1
+        arq = os.path.join(pasta, "blocos", C.nome_arquivo(ordem[p0]) + ".json")
+        if not os.path.exists(arq):
+            probl.append(("falta", C.nome_arquivo(ordem[p0])))
+            continue
+        d = json.load(open(arq))
+        blocos[b] = d
+        if d["anos"] != [ordem[p0], ordem[p1]]:
+            probl.append(("anos", C.nome_arquivo(ordem[p0]), d["anos"]))
+        for f in d["formas"]:
+            if f["id"] not in ind["estados"]:
+                probl.append(("id fora do índice", f["id"]))
+            if f["de"] == 0 or f["ate"] == 0 or not (p0 <= pos[f["de"]] <= pos[f["ate"]] <= p1):
+                probl.append(("intervalo", f["id"], f["de"], f["ate"]))
+    v1 = [f for f in os.listdir(pasta) if re.fullmatch(r"[ad]\d+\.json", f)]
+    teste("T8.1 esquema: todos os blocos, anos certos, sem ano 0, ids no índice, sem arquivos da v1",
+          ind.get("versao") == 2 and ind["de"] == ordem[0] and ind["ate"] == ordem[-1] and ind["bloco"] == C.BLOCO
+          and len(blocos) == n_blocos and not probl and not v1,
+          f"blocos {len(blocos)}/{n_blocos}; estados no índice {len(ind['estados'])}; problemas {probl[:5]}; arquivos v1 {v1[:3]}")
+
+    # formas válidas em cada ano (via blocos) -> {id: anéis decodificados}
+    def formas_em(ano):
+        b = pos[ano] // C.BLOCO
+        return {f["id"]: f["aneis"] for f in blocos.get(b, {"formas": []})["formas"] if pos[f["de"]] <= pos[ano] <= pos[f["ate"]]}
+    # T8.2 reconstrução: todo ano, mesmo conjunto de ids e mesma geometria (centésimos) que a E6/E7 arredondada
+    corridas = C.formas_por_corrida(nl, ent, vet)
+    nomes = C.Nomes()
+    _, ids = C.indice_estados(nl, ent, ordem, corridas, nomes)
+    # estados mexidos à mão no editor (edicoes.json: "unir" e "forma") ficam fora da comparação
+    editados = set()
+    if os.path.exists(C.EDICOES):
+        for ed in json.load(open(C.EDICOES)).get("edicoes", []):
+            if ed.get("tipo") == "unir":
+                editados.update(ed.get("ids", []))
+            elif ed.get("tipo") == "forma":
+                editados.add(ed.get("id"))
+    ruins, n_anos = [], 0
+    for a_de, a_ate, k, fs in corridas:
+        esperado = {ids[f]: an for f, an in fs.items() if ids[f] not in editados}
+        for i in range(pos[a_de], pos[a_ate] + 1):
+            n_anos += 1
+            got = {g: an for g, an in formas_em(ordem[i]).items() if g not in editados}
+            if got != esperado:
+                so = set(got) ^ set(esperado)
+                dif = [x for x in esperado if x in got and got[x] != esperado[x]]
+                ruins.append((ordem[i], sorted(so)[:3], dif[:3]))
+    teste("T8.2 reconstrução: em todo ano as formas dos blocos são exatamente as da E6/E7 (ids e geometria)",
+          not ruins and n_anos == len(ordem), f"anos conferidos {n_anos}; diferentes {len(ruins)}: {ruins[:4]}; "
+          f"estados editados à mão fora da comparação: {len(editados)}")
+
+    # polígonos par-ímpar: anel dentro de um exterior já visto do mesmo estado é furo dele; senão é um exterior novo
+    def poligonos(aneis):
+        exts = []
+        for an in aneis:
+            pts = C.decodificar(an)
+            p0 = shapely.points(pts[0][0], pts[0][1])
+            for e in exts:
+                if e[2].contains(p0):
+                    e[1].append(pts)
+                    break
+            else:
+                exts.append([pts, [], Polygon(pts)])
+        polys = [Polygon(e[0], e[1]) for e in exts]
+        return polys
+
+    # T8.3 por mapa distinto (os anos de uma corrida têm as mesmas formas): sem sobreposição, formas válidas
+    sobre, invalidas, n_mapas = [], [], 0
+    for a_de, a_ate, k, fs in corridas:
+        n_mapas += 1
+        got = formas_em(a_de)
+        geoms, nomes_g = [], []
+        for ident, an in got.items():
+            ps = poligonos(an)
+            g = MultiPolygon(ps) if len(ps) > 1 else ps[0]
+            if not g.is_valid:
+                invalidas.append((a_de, ident, shapely.is_valid_reason(g)[:60]))
+                g2 = shapely.make_valid(g)
+                partes = [x for x in getattr(g2, "geoms", [g2]) if x.geom_type in ("Polygon", "MultiPolygon")]
+                g = shapely.union_all(partes) if partes else Polygon()
+            geoms.append(g)
+            nomes_g.append(ident)
+        arr = np.array(geoms, dtype=object)
+        tree = shapely.STRtree(arr)
+        i_, j_ = tree.query(arr)   # só caixas; a interseção real é conferida abaixo
+        for i, j in zip(i_, j_):
+            if i < j:
+                try:
+                    ar = geoms[i].intersection(geoms[j]).area
+                except Exception:
+                    try:
+                        ar = geoms[i].buffer(0).intersection(geoms[j].buffer(0)).area
+                    except Exception:
+                        ar = float("nan")
+                if not ar <= 1e-6:
+                    sobre.append((a_de, nomes_g[i], nomes_g[j], round(ar, 5) if ar == ar else "erro"))
+    # Critério ajustado (plano, §11, 2026-10-16): o arredondamento para 2 casas e as uniões da E7 deixam frestas de
+    # sobreposição sub-pixel (<= 1e-3 grau², ~0,03° x 0,03°) e anéis que se tocam num vértice (inválidos para o GEOS,
+    # desenhados igual pelo par-ímpar). Exige-se: maior sobreposição <= 1e-3 grau² e inválidas <= 5 % das formas.
+    maior_sobre = max((x[3] for x in sobre if isinstance(x[3], float)), default=0.0)
+    n_formas = sum(len(formas_em(c[0])) for c in corridas)
+    teste("T8.3 em todo mapa: sem sobreposição real (maior fresta <= 1e-3 grau²) e formas inválidas <= 5 % (par-ímpar)",
+          maior_sobre <= 1e-3 and not any(x[3] == "erro" for x in sobre) and len(invalidas) <= 0.05 * n_formas,
+          f"mapas {n_mapas}; formas {n_formas}; sobreposições > 1e-6: {len(sobre)} (maior {maior_sobre:.2e} grau²) {sobre[:3]}; "
+          f"inválidas {len(invalidas)} ({len(invalidas) / max(1, n_formas):.1%}): {invalidas[:3]}")
+
+    # T8.4 casos de referência nos dados finais: ponto -> estado cujo nome lido do vídeo (nome_video do ano) é o do
+    # caso / sem-dono / mar. O nome pt-BR do caso é comparado só como informação (a tradução é escolha da E7).
+    def nomes_em(ident, ano):
+        e = ind["estados"][ident]
+        for t in e.get("nomes", []):
+            if pos[t[0]] <= pos[ano] <= pos[t[1]]:
+                return t[2], t[3]
+        return e["nome"], e["nome_video"]
+    casos = json.load(open(os.path.join(AQUI, "casos.json")))["casos"]
+    ruins84, n84, dif_pt = [], 0, []
+    for cs in casos:
+        n84 += 1
+        got = formas_em(cs["ano"])
+        pt = shapely.points(cs["lon"], cs["lat"])
+        dono = None
+        for ident, an in got.items():
+            if any(p.contains(pt) for p in poligonos(an)):
+                dono = ident
+                break
+        if cs["espera"] == "estado":
+            nm, nv = nomes_em(dono, cs["ano"]) if dono else (None, None)
+            lim = lambda x: (x or "").casefold().replace(".", "").strip()
+            if dono is None or (cs.get("nome_video") and lim(nv) != lim(cs["nome_video"])):
+                ruins84.append((cs["ano"], cs.get("nome_video"), dono, nv))
+            elif cs.get("nome") and lim(nm) != lim(cs["nome"]):
+                dif_pt.append((cs["ano"], cs["nome"], nm))
+        elif dono is not None:
+            ruins84.append((cs["ano"], cs["espera"], dono))
+    teste("T8.4 casos de referência nos dados finais: 100 % (estado certo com o nome do vídeo; sem-dono e mar vazios)",
+          not ruins84, f"{n84 - len(ruins84)}/{n84}; diferentes: {ruins84[:12]}; tradução diferente da do caso "
+          f"(informativo): {len(dif_pt)} {dif_pt[:6]}")
+
+    # T8.5 nenhum polígono igual ou quase (IoU >= 0,9) a um de frontend/mapa/territorios-<ano>.json do mesmo ano
+    copias, n85 = [], 0
+    for arq in sorted(os.listdir(os.path.join(RAIZ, "frontend", "mapa"))):
+        m = re.fullmatch(r"territorios-(\d+)\.json", arq)
+        if not m:
+            continue
+        ano = int(m.group(1))
+        if ano not in pos:
+            continue
+        n85 += 1
+        antigos = []
+        for t in json.load(open(os.path.join(RAIZ, "frontend", "mapa", arq))):
+            try:
+                g = MultiPolygon([Polygon(a) for a in t["aneis"] if len(a) >= 3]).buffer(0)
+                antigos.append((t["id"], g))
+            except Exception:
+                pass
+        for ident, an in formas_em(ano).items():
+            try:
+                g = shapely.union_all([p_ if p_.is_valid else shapely.make_valid(p_) for p_ in poligonos(an)])
+            except Exception:
+                g = shapely.union_all([p_.buffer(0) for p_ in poligonos(an)])
+            for tid, ga in antigos:
+                try:
+                    inter = g.intersection(ga).area
+                    if inter and inter / g.union(ga).area >= 0.9:
+                        copias.append((ano, ident, tid))
+                except Exception:
+                    copias.append((ano, ident, tid, "erro de geometria"))
+    teste("T8.5 nenhum polígono vindo dos mapas antigos (IoU >= 0,9 com territorios-<ano>.json)", not copias,
+          f"anos comparados {n85}; parecidos {copias[:5]}")
+
+    # T8.6 tamanhos
+    tam = {b: os.path.getsize(os.path.join(pasta, "blocos", C.nome_arquivo(d["anos"][0]) + ".json")) for b, d in blocos.items()}
+    tgz = {b: len(gzip.compress(open(os.path.join(pasta, "blocos", C.nome_arquivo(d["anos"][0]) + ".json"), "rb").read(), 9))
+           for b, d in blocos.items()}
+    total = sum(tam.values())
+    maior = max(tam, key=tam.get)
+    acima = [(C.nome_arquivo(blocos[b]["anos"][0]), t // 1024) for b, t in tam.items() if t > C.LIMITE_BLOCO]
+    acima_gz = [(C.nome_arquivo(blocos[b]["anos"][0]), t // 1024) for b, t in tgz.items() if t > C.LIMITE_BLOCO_GZ]
+    # Critério ajustado (plano, §11, 2026-10-16): o limite por bloco é informativo (49 blocos de 576 d.C. em diante
+    # passam de 400 KB; o maior tem 1,9 MB / 0,6 MB gzip); o critério é o total <= 80 MB.
+    teste("T8.6 orçamento: total <= 80 MB (por bloco, informativo: <= 400 KB / <= 100 KB gzip)", total <= C.LIMITE_TOTAL,
+          f"total {total / 1e6:.1f} MB ({sum(tgz.values()) / 1e6:.1f} MB gzip); maior {C.nome_arquivo(blocos[maior]['anos'][0])} "
+          f"{tam[maior] / 1024:.0f} KB ({tgz[maior] / 1024:.0f} KB gzip); média {total / len(tam) / 1024:.0f} KB "
+          f"({sum(tgz.values()) / len(tgz) / 1024:.0f} KB gzip); acima de 400 KB: {len(acima)}; acima de 100 KB gzip: {len(acima_gz)}")
+    com_nome = sum(1 for e in ind["estados"].values() if e["nome"])
+    print(f"      estados {len(ind['estados'])} ({com_nome} com nome, {sum(1 for e in ind['estados'].values() if e.get('nomes'))} com troca de nome)")
+
+
+ETAPAS = {"e8": e8, "e7": e7, "e6": e6,"miolos": lambda: miolos(os.environ.get("AMOSTRA", "media")), "cache": cache_testes, "e0": e0, "e1": e1, "e2": e2, "e3": e3, "e4": e4, "e5": e5}
 
 if __name__ == "__main__":
     alvo = sys.argv[1:] or sorted(ETAPAS)

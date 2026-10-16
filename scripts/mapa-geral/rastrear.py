@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # E6 do mapa geral (v2): dá a cada estado um id que dura toda a vida dele (entidade), ano a ano.
 # Uso (na raiz do repositório):  PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/rastrear.py
-# Lê .cache/v2/anos.json (mapa de cada ano) e .cache/v2/vetores/<id>.json (E5).
+#                                  [--variante <nome>] [--forcar] [--fonte e7u]
+# Loja por chave (cache.py): o resultado fica em .cache/v2/obj/e6/<chave>.json; entidades.json é um apontador para a
+# variante aprovada. A chave sai dos parâmetros, de anos.json e das chaves dos vetores (E5) usados.
+# Lê .cache/v2/anos.json (mapa de cada ano) e .cache/v2/vetores/<id>.json (E5) ou, com --fonte e7u, os vetores com as
+# uniões da E7 (.cache/v2/vetores-e7/<id>.json; a E6 é refeita depois das uniões da E7).
 # Grava .cache/v2/entidades.json:
 #   {"entidades": {"<ent>": {"anos": [de, ate], "cor": "#rrggbb", "trechos": [[ano_de, ano_ate, mapa, [r, ...]], ...]}},
 #    "por_ano": [[ano_de, ano_ate, mapa, {"<r>": "<ent>"}], ...],     (corridas de anos com o mesmo mapa)
@@ -23,6 +27,8 @@ AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.expanduser("~/.cache/mapa-biblia-lib/lib"))
 import numpy as np
 import cv2
+sys.path.insert(0, AQUI)
+import cache
 
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
@@ -32,6 +38,17 @@ GW, GH = int(360 / PASSO), int(150 / PASSO)    # lon -180..180, lat 90..-60
 LIM_COR = 60                # L1 entre as cores para herdar id (o vídeo varia poucos níveis; antialias)
 IOU_RECOLOR = 0.8
 MIN_CELULAS = 3             # sobreposição mínima (células de 0,1°) para casar
+VERSAO = 1
+
+
+FONTE = "e5"
+
+
+def params():
+    p = {"versao": VERSAO, "PASSO": PASSO, "LIM_COR": LIM_COR, "IOU_RECOLOR": IOU_RECOLOR, "MIN_CELULAS": MIN_CELULAS}
+    if FONTE != "e5":
+        p["FONTE"] = FONTE
+    return p
 
 
 def rasterizar(vet):
@@ -111,8 +128,29 @@ def hexa(c):
 
 
 def main():
+    global FONTE
     t0 = time.time()
+    if "--fonte" in sys.argv:
+        FONTE = sys.argv[sys.argv.index("--fonte") + 1]
+    variante_ = sys.argv[sys.argv.index("--variante") + 1] if "--variante" in sys.argv else None
+    et = cache.Etapa("e6")
+    variante = variante_ or cache.exp_atual() or et.m["aprovada"] or "base"
+    et.garantir(variante, params())
+    e5 = cache.Etapa(FONTE)
     anos = json.load(open(os.path.join(V2, "anos.json")))
+    # chave: parâmetros + anos.json + a chave do vetor (E5) de cada mapa usado
+    usados = sorted({str(d["mapa"]) for d in anos.values()}, key=int)
+    var_e5 = cache.exp_atual() if cache.exp_atual() in e5.m["variantes"] else e5.m["aprovada"]
+    chaves_e5 = [e5.itens(var_e5)[k]["chave"] for k in usados]
+    ch = cache.chave(VERSAO, params(), [cache.hash_arquivo(os.path.join(V2, "anos.json")), cache.hash_obj(chaves_e5)])
+    achado = None if "--forcar" in sys.argv else et.procurar("entidades", ch)
+    if achado:
+        et.m["variantes"][variante]["itens"]["entidades"] = achado
+        et.gravar()
+        if variante == et.m["aprovada"] or et.m["aprovada"] is None:
+            et.aprovar(variante)
+        print(f"e6: nada a recalcular (chave {ch[:10]}); variante {variante}")
+        return
     ordem = list(anos)      # 2500 a.C. -> 2025 d.C.
     corridas = []           # [ano_de, ano_ate, mapa]
     for a in ordem:
@@ -130,7 +168,7 @@ def main():
     ent_info = {}
     anterior = None          # (grade, vet, {r: ent})
     for i, (a_de, a_ate, k) in enumerate(corridas):
-        vet = json.load(open(os.path.join(V2, "vetores", f"{k}.json")))
+        vet = json.load(open(e5.caminho(k, ".json", var_e5)))
         g = rasterizar(vet)
         ids = {}
         if anterior is not None:
@@ -173,8 +211,14 @@ def main():
         cor = max(inf["cores"].items(), key=lambda t: t[1])[0]      # a cor mais frequente ao longo da vida
         ents[e] = {"anos": inf["anos"], "cor": cor, "trechos": inf["trechos"]}
     eventos["entidades"] = len(ents)
-    json.dump({"entidades": ents, "por_ano": por_ano, "eventos": eventos},
-              open(os.path.join(V2, "entidades.json"), "w"), separators=(",", ":"))
+    arq = et.obj(ch, ".json")
+    json.dump({"entidades": ents, "por_ano": por_ano, "eventos": eventos}, open(arq + ".tmp", "w"), separators=(",", ":"))
+    os.replace(arq + ".tmp", arq)
+    et.m["variantes"][variante]["itens"]["entidades"] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq),
+                                                         "segundos": round(time.time() - t0, 1)}
+    et.gravar()
+    if variante == et.m["aprovada"] or et.m["aprovada"] is None:
+        et.aprovar(variante)
     print(f"entidades {len(ents)}  corridas de mapa {len(corridas)}  recolorações {len(eventos['recoloracoes'])}  "
           f"{time.time() - t0:.0f} s")
 

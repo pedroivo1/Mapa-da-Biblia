@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # E3 do mapa geral (v2): para cada mapa distinto, a transformação exata pixel -> (lon, lat) do vídeo.
 # Uso (na raiz do repositório):
-#   PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/calibrar.py
+#   PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/calibrar.py [--variante <nome>] [--forcar] [--so-chave]
 # Lê .cache/v2/mapas.json e .cache/v2/mapas/<id>.png (E2) e frontend/mapa/mundo.json (costa).
-# Grava .cache/v2/calibracao.json: {"trechos": [...], "por_mapa": {"<id>": {"S","X0","Y0","falha","mediana_px","p90_px"}}}.
+# Grava na loja por chave (.cache/v2/obj/e3/<chave>.json; ver o fim do arquivo) e .cache/v2/calibracao.json é o
+# apontador para a variante aprovada: {"trechos": [...], "por_mapa": {"<id>": {"S","X0","Y0","falha","mediana_px","p90_px"}}}.
 #
 # Modelo (cilíndrica de Miller, medida no vídeo: com Mercator o ajuste pedia escala vertical 0,98 e deixava 2× mais
 # erro; com Miller a razão vertical/horizontal sai 0,999; quadro de 1920×960):
@@ -223,17 +224,91 @@ def tarefa(args):
     return saida
 
 
+# ------------------------------------------------------------------ loja por chave (cache.py, formato 2)
+# A calibração inteira é um item ("calibracao") da etapa e3: .cache/v2/obj/e3/<chave>.json, e calibracao.json é o
+# apontador para a variante aprovada. Chave = VERSAO + params() + mapas.json + mundo.json + o conteúdo de cada PNG dos
+# mapas. Uma recalibração nunca sobrescreve a aprovada: sem --variante, só roda se a aprovada tiver os mesmos
+# parâmetros; com parâmetros ou lógica novos, dê um nome (--variante) e aprove depois (painel ou
+# `python3 scripts/mapa-geral/cache.py aprovar e3 <nome>`). As etapas seguintes leem cache.calibracao().
+sys.path.insert(0, AQUI)
+import time
+import cache
+
+VERSAO = 1
+
+
+def params():
+    return {"versao": VERSAO, "projecao": "miller", "LIM_MAR": LIM_MAR, "LAT_TOPO": LAT_TOPO,
+            "LAGOS_NO_VIDEO": sorted(LAGOS_NO_VIDEO), "INICIAIS": [[round(v, 4) for v in p] for p in INICIAIS]}
+
+
+def chave_atual(mapas, ids):
+    h_png = [cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png")) for k in ids]
+    return cache.chave(VERSAO, params(), [cache.hash_arquivo(os.path.join(V2, "mapas.json")), cache.hash_arquivo(MUNDO),
+                                          cache.hash_obj(h_png)])
+
+
+def adotar_antiga(et):
+    """calibracao.json de antes da loja (arquivo comum, não apontador): vira a variante "v1" (aprovada), com uma chave
+    própria que nunca coincide com a de um cálculo novo (não dá para garantir com que entradas foi feita)."""
+    pub = et.publico("calibracao", ".json")
+    if not os.path.exists(pub) or os.path.islink(pub):
+        return False
+    h = cache.hash_arquivo(pub)
+    cache.adotar_publicos("e3", "v1", dict(params(), origem="adotada de antes da loja"),
+                          {"calibracao": {"chave": cache.sha1(("adotada:" + h).encode()), "hash_saida": h, "segundos": None}})
+    print("calibracao.json antigo adotado como variante e3/v1 (aprovada)")
+    return True
+
+
 def main():
+    def opcao(nome):
+        return sys.argv[sys.argv.index(nome) + 1] if nome in sys.argv else None
+    et = cache.Etapa("e3")
+    if adotar_antiga(et):
+        et = cache.Etapa("e3")               # relê o manifesto gravado pela adoção
+    variante = opcao("--variante") or cache.exp_atual()
+    if not variante:
+        aprovada = et.m["aprovada"]
+        # a adotada não é recalculável: sem --variante, um cálculo novo vai para "base"
+        if aprovada and "origem" in et.m["variantes"][aprovada]["params"]:
+            variante = "base"
+        else:
+            variante = aprovada or "base"
+    et.garantir(variante, params())          # recusa rodar sobre uma variante feita com outros parâmetros
     mapas = json.load(open(os.path.join(V2, "mapas.json")))
     ids = sorted(mapas, key=lambda k: mapas[k]["quadro"])
-    pedacos = np.array_split(np.arange(len(ids)), 16)
-    tarefas = [([ids[i] for i in c], [mapas[ids[i]]["quadro"] for i in c], os.path.join(V2, "mapas")) for c in pedacos if len(c)]
-    por_mapa = {}
-    with ProcessPoolExecutor(8) as ex:
-        for r in ex.map(tarefa, tarefas):
-            por_mapa.update(r)
-            print("mapas calibrados:", len(por_mapa), flush=True)
-    json.dump({"trechos": montar_trechos(ids, por_mapa), "por_mapa": por_mapa}, open(os.path.join(V2, "calibracao.json"), "w"))
+    ch = chave_atual(mapas, ids)
+    if "--so-chave" in sys.argv:
+        print("chave", ch[:12], "já na loja" if et.existe(ch) else "a calcular", "· variante", variante)
+        return
+    achado = None if "--forcar" in sys.argv else et.procurar("calibracao", ch)
+    if achado is None and et.existe(ch):
+        achado = {"chave": ch, "hash_saida": cache.hash_arquivo(et.obj(ch, ".json")), "segundos": None}
+    t0 = time.time()
+    if achado:
+        print("e3: nada a recalcular (chave %s); variante %s" % (ch[:10], variante))
+    else:
+        pedacos = np.array_split(np.arange(len(ids)), 16)
+        tarefas = [([ids[i] for i in c], [mapas[ids[i]]["quadro"] for i in c], os.path.join(V2, "mapas")) for c in pedacos if len(c)]
+        por_mapa = {}
+        with ProcessPoolExecutor(8) as ex:
+            for r in ex.map(tarefa, tarefas):
+                por_mapa.update(r)
+                print("mapas calibrados:", len(por_mapa), flush=True)
+        arq = et.obj(ch, ".json")
+        tmp = arq + ".tmp"
+        json.dump({"trechos": montar_trechos(ids, por_mapa), "por_mapa": por_mapa}, open(tmp, "w"))
+        os.replace(tmp, arq)
+        achado = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": round(time.time() - t0, 1)}
+    et.m["variantes"][variante]["itens"]["calibracao"] = achado
+    et.gravar()
+    if variante == et.m["aprovada"] or et.m["aprovada"] is None:
+        et.aprovar(variante)
+        print("calibracao.json aponta para a variante", variante)
+    else:
+        print("variante", variante, "gravada na loja; a aprovada continua", et.m["aprovada"],
+              "(aprovar: python3 scripts/mapa-geral/cache.py aprovar e3 %s)" % variante)
 
 
 def montar_trechos(ids, por_mapa):

@@ -10,10 +10,27 @@ sys.path.insert(0, os.path.expanduser("~/.cache/mapa-biblia-lib/lib"))
 sys.path.insert(0, AQUI)
 import numpy as np
 import cv2
+import cache
 
 RAIZ = os.path.normpath(os.path.join(AQUI, "..", ".."))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
+
+
+# Artefatos versionados (cache.py): a variante de MAPA_GERAL_EXP, se a etapa a tem; senão a aprovada.
+def vet_(k):
+    import cache
+    return cache.Etapa("e5").caminho(str(k), ".json")
+
+
+def rot_(k, ext):
+    import cache
+    return cache.Etapa("e4e").caminho(str(k), ext)
+
+
+def ent_():
+    import cache
+    return cache.Etapa("e6").caminho("entidades", ".json")
 SAIDA = os.path.join(V2, "revisao")
 os.makedirs(SAIDA, exist_ok=True)
 
@@ -105,7 +122,7 @@ def e3(args):
     """Por trecho: quadro inteiro com a costa de mundo.json (vermelho, 1 px) e a costa do vídeo a > 12 px dela
     (magenta = "fora"), mais recortes ampliados (4x) nas bordas do quadro."""
     from calibrar import renderizar, carregar_mundo, merc, mascara_terra, regiao_valida
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))
+    cal = json.load(open(cache.calibracao()))
     mapas = json.load(open(os.path.join(V2, "mapas.json")))
     terra, lagos = carregar_mundo()
     REGIOES = [("Coreia/China leste", 122, 36, 18), ("Filipinas/Japão", 130, 25, 18), ("Sri Lanka", 80.5, 8, 9), ("Américas (Caribe)", -80, 22, 18),
@@ -195,8 +212,8 @@ def colorir(reg, info):
 
 
 def imagem_rotulos(k, caixas_texto=True):
-    reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
-    info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+    reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+    info = json.load(open(rot_(k, ".json")))
     tab, dm = colorir(reg, info)
     out = tab[reg]
     borda = np.zeros(reg.shape, bool)
@@ -228,7 +245,7 @@ def recorte(ano, lon0, lon1, lat0, lat1, nome, escala=3):
     """Quadro × rótulos, ampliado, numa caixa lon/lat."""
     from calibrar import merc
     anos = json.load(open(os.path.join(V2, "anos.json")))
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    cal = json.load(open(cache.calibracao()))["por_mapa"]
     k = str(anos[str(ano)]["mapa"])
     p = cal[k]
     def px(lon, lat):
@@ -270,7 +287,7 @@ def e4_unioes(args):
     todas = []
     por_mapa = {}
     for k in mapas:
-        info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))
+        info = json.load(open(rot_(k, ".json")))
         u = info.get("unioes", [])
         por_mapa[k] = len(u)
         for x in u:
@@ -298,7 +315,7 @@ def e4_unioes(args):
     for grupo, lista in (("sorteada", sorteio), ("maior", maiores)):
         for k, u in lista:
             im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-            reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+            reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
             x0, y0, x1, y1 = u["caixa_menor"]
             cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
             meia = max(40, (x1 - x0) // 2 + 25, (y1 - y0) // 2 + 25)
@@ -335,8 +352,8 @@ def e4_pares(args):
     for ano in [int(a) for a in args] or [-835, -1927]:
         k = str(anos[str(ano)]["mapa"])
         im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
-        info = json.load(open(os.path.join(V2, "rotulos", f"{k}.json")))["regioes"]
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+        info = json.load(open(rot_(k, ".json")))["regioes"]
         pares = []
         for a, b in vizinhos(reg):
             ca, cb = np.array(info[a - 1]["cor"]), np.array(info[b - 1]["cor"])
@@ -421,7 +438,7 @@ def e5(args):
     com o quadro do vídeo à esquerda e os polígonos finais (Equal Earth, cores do vídeo) à direita."""
     from calibrar import merc
     anos = json.load(open(os.path.join(V2, "anos.json")))
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    cal = json.load(open(cache.calibracao()))["por_mapa"]
     lista = [int(a) for a in args] or [2000, 1200, 584, -31, -326, -700, -999, -1148, -1598, -1799, -1914, -2022]
     RECORTES = [("Levante e Mesopotâmia", 30, 50, 27, 38), ("Grécia e Egeu", 19, 30, 34, 42),
                 ("Europa central", 3, 25, 44, 56), ("Índia", 68, 92, 8, 30), ("Ásia Central", 55, 95, 34, 50),
@@ -430,7 +447,7 @@ def e5(args):
         k = str(anos[str(ano)]["mapa"])
         p = cal[k]
         im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-        vet = json.load(open(os.path.join(V2, "vetores", f"{k}.json")))["regioes"]
+        vet = json.load(open(vet_(k)))["regioes"]
         linhas = []
         for nome, lo0, lo1, la0, la1 in RECORTES:
             u0 = int((lo0 + 180) * p["S"] - p["X0"])
@@ -456,9 +473,9 @@ def e6(args):
     """Filmes de 12 anos seguidos (3 trechos) com o id escrito no centro de cada estado, e folha das entidades
     curtas (< 3 anos)."""
     from calibrar import merc
-    ent = json.load(open(os.path.join(V2, "entidades.json")))
+    ent = json.load(open(ent_()))
     anos = json.load(open(os.path.join(V2, "anos.json")))
-    cal = json.load(open(os.path.join(V2, "calibracao.json")))["por_mapa"]
+    cal = json.load(open(cache.calibracao()))["por_mapa"]
     ordem = [int(a) for a in anos]
     pos = {a: i for i, a in enumerate(ordem)}
     corr_pos = {}
@@ -470,7 +487,7 @@ def e6(args):
         c = ent["por_ano"][corr_pos[pos[ano]]]
         k = c[2]
         im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
         borda = np.zeros(reg.shape, bool)
         borda[:, 1:] |= reg[:, 1:] != reg[:, :-1]
         borda[1:, :] |= reg[1:, :] != reg[:-1, :]
@@ -506,7 +523,7 @@ def e6(args):
     for e, d in random.sample(curtas, min(10, len(curtas))):
         a_, a1, k, rs = d["trechos"][0]
         im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
-        reg = cv2.imread(os.path.join(V2, "rotulos", f"{k}.png"), cv2.IMREAD_UNCHANGED)
+        reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
         m = np.isin(reg, rs)
         ys, xs = np.where(m)
         cx, cy = int(np.median(xs)), int(np.median(ys))
