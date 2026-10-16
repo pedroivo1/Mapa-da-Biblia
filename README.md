@@ -23,6 +23,7 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | `frontend/` (`index.html`, `inicio/`) | Página inicial | `inicio/inicio.css` |
 | `biblia/` | Bíblia: leitor do texto (NVI), com livros, capítulos, tamanho da letra, voz e última posição. `?plano=id` segue a ordem de um plano; sem ele, a dos livros. Mostra os botões Leitura e Mapas do capítulo. | `biblia.js`, `biblia.css`, `nvi.json` |
 | `plano-de-leitura/` | Planos de leitura (o primeiro é o Plano histórico): lista, ordem de cada um e plano padrão (exige conta). | `planos.json` |
+| `versiculos/` | Versículos salvos: a lista do que a pessoa salvou no leitor, filtrada por tema, com o modo decorar (sorteia um versículo salvo, mostra só a referência e revela o texto ao pedir). No leitor, tocar num versículo abre a barra para grifar (quatro cores) ou salvar por temas. Exige conta. | `versiculos.js`, `versiculos.css` |
 | `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
 | `mapas/` | Lista de mapas, por livro. Mapa novo entra sozinho. Os com `ano` aparecem como pontos na coluna Eras da linha do tempo. | `mapas.json` |
 | `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `mundo.json` |
@@ -54,10 +55,11 @@ Adicionar um profeta: copie um objeto em `profetas`. Os reis contemporâneos sae
 - `conta/`: entrar, criar conta, esqueci a senha e nova senha. `privacidade/`: o que é guardado.
 - `supabase/migrations/0001_progresso.sql`: tabela `progresso` (uma linha por usuário: `lido` e `versiculos` em JSONB) com RLS.
 - `supabase/migrations/0002_configuracoes.sql`: tabela `configuracoes` (uma linha por usuário, `dados` em JSONB, com RLS). Chaves: `linha_do_tempo` (`desktop` e `mobile`: filtros de colunas e livros), `plano` (`padrao` e `pos`), `leitor` (livro, capítulo e tamanho da letra) e `tema`. Aplique no SQL Editor do Supabase.
+- `supabase/migrations/0003_marcacoes.sql`: tabela `marcacoes` (uma linha por versículo grifado ou salvo: `livro`, `capitulo`, `versiculo`, `grifo`, `salvo`, `temas`, com RLS). O leitor grava na hora (`Conta.salvarMarcacoes`), linha a linha; sem grifo e sem salvar, a linha é apagada. Aplique no SQL Editor do Supabase.
 
 Sem login, a Leitura só consulta: nada é marcado, e não há plano de leitura padrão (escolher o plano exige conta). Com login, cada marcação é salva na conta cerca de 1 s depois, e as configurações também. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.
 
-Assim que a sessão é reconhecida, `js/conta.js` busca progresso e configurações em segundo plano e guarda uma cópia no navegador (`biblia-cache`, apagada ao sair). As páginas abrem com essa cópia na hora e o servidor só confirma ou atualiza; a Leitura mostra a cópia só para consulta e libera as marcações quando o servidor confirma (o envio substitui a linha inteira).
+Assim que a sessão é reconhecida, `js/conta.js` busca progresso e configurações em segundo plano e guarda uma cópia no navegador (`biblia-cache`, apagada ao sair); as marcações entram na mesma cópia quando o leitor ou a página Versículos as pede. As páginas abrem com essa cópia na hora e o servidor só confirma ou atualiza; a Leitura mostra a cópia só para consulta e libera as marcações quando o servidor confirma (o envio substitui a linha inteira).
 
 No navegador ficam o tema (`notas-theme`), os filtros da linha do tempo (`biblia-linha-do-tempo`, um conjunto para computador e outro para celular), a posição e o tamanho da letra do leitor (`biblia-leitor`), a posição em cada plano (`biblia-mapa`) e a cópia da conta (`biblia-cache`).
 

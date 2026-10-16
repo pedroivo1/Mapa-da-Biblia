@@ -24,6 +24,7 @@ const PAGINAS = [
   ["linha-do-tempo/", 'document.querySelectorAll(".marco-g, .barra").length'],
   ["biblia/", 'document.getElementById("leitor").innerText.length > 200 ? 1 : 0'],
   ["plano-de-leitura/", 'document.querySelectorAll(".plano-card").length'],
+  ["versiculos/", 'document.querySelectorAll(".vazio, .versiculos-item").length'],
   ["mapas/", 'document.querySelectorAll(".mapas-livro li").length'],
   ["mapa/?m=jo", 'document.querySelectorAll(".mapa-lugar").length'],
   ["mapa/", 'document.querySelectorAll(".mapa-lugar").length'],

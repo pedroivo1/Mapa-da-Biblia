@@ -4,7 +4,8 @@
 # calibração de um quadro de transição cai num mínimo falso. Para cada ano com mapa suspeito, os quadros do próprio ano
 # são decodificados e comparados (discordância de terra) com a calibração do trecho do ano anterior e do seguinte; o
 # último quadro que se encaixa num trecho (discordância <= 1,5 × a do mapa vizinho no mesmo trecho, mín. 0,04) vira o
-# mapa do ano: o PNG em mapas/<id>.png é regravado e a calibração do mapa vira a do trecho, refinada (ajustar). Sem
+# mapa do ano: os PNGs do mapa (1920, 4K e 8K; quadros_medios.py) são regravados e a calibração do mapa vira a do
+# trecho, refinada (ajustar). Sem
 # quadro bom, o ano passa a usar o mapa do ano anterior (no tempo do vídeo). A calibração corrigida vai para a loja da
 # E3 (cache.py) como variante "<aprovada>-transicoes", que passa a ser a aprovada; a anterior continua na loja.
 # Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/transicoes.py [--so-listar]
@@ -17,6 +18,7 @@ sys.path.insert(0, AQUI)
 import numpy as np
 import cv2
 import calibrar as c
+import escala
 
 V2 = c.V2
 FPS = 30000 / 1001
@@ -36,11 +38,10 @@ def suspeitos(cal, mapas):
 
 
 def quadros(i0, i1):
-    video = glob.glob(os.path.join(AQUI, "..", "..", "vídeos", "*hzWwp9JM7Hw*.webm"))[0]
-    b = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{(i0 - 0.5) / FPS:.4f}", "-i", video, "-frames:v",
-                        str(i1 - i0 + 1), "-f", "rawvideo", "-pix_fmt", "bgr24", "-"], capture_output=True).stdout
-    n = len(b) // (960 * 1920 * 3)
-    return [np.frombuffer(b[j * 960 * 1920 * 3:(j + 1) * 960 * 1920 * 3], np.uint8).reshape(960, 1920, 3) for j in range(n)]
+    """Gera os quadros i0..i1 do ano no quadro da geometria (escala.W × escala.H), um por vez (um ano pode ter
+    centenas de quadros; em 4K cada um tem 22 MB)."""
+    import quadros as q
+    return q.decodificar(i0, i1 - i0 + 1, escala.W, escala.H, threads=8)
 
 
 def falha(im, terra, lagos, p):
@@ -73,22 +74,25 @@ def main():
                     kv = str(anos[ordem_anos[j]]["mapa"])
                     vizinhos.append((kv, cal["por_mapa"][kv]))
             i0, i1 = anos[str(ano)]["quadros"]
-            fs = quadros(i0, i1)
+            # o ÚLTIMO quadro do ano que se encaixa num trecho vizinho (varre em fluxo, guardando só o melhor até aqui)
             escolhido = None
-            for jj in range(len(fs) - 1, -1, -1):
+            for jj, f in enumerate(quadros(i0, i1)):
                 for kv, pv in vizinhos:
                     ref = max(0.04, 1.5 * pv["falha"])
-                    fa = falha(fs[jj], terra, lagos, pv)
+                    fa = falha(f, terra, lagos, pv)
                     if fa <= ref:
                         escolhido = (i0 + jj, kv, pv, fa)
                         break
-                if escolhido:
-                    break
             if escolhido:
                 q, kv, pv, fa = escolhido
-                p_ref, cu = c.ajustar(*c.mascara_terra(fs[q - i0]), terra, lagos, (pv["S"], pv["X0"], pv["Y0"]), dX0=1.0)
-                cv2.imwrite(os.path.join(V2, "mapas", f"{k}.png"), fs[q - i0], [cv2.IMWRITE_PNG_COMPRESSION, 1])
-                tv, val = c.mascara_terra(fs[q - i0])
+                # as três cópias do mapa passam a ser a mediana dos quadros estáveis do ano até q (quadros_medios.py)
+                import quadros_medios
+                corr = quadros_medios.corridas()
+                ini_c, fim_c = corr.get(int(k), (q, q))
+                mapas[k]["mediana"] = quadros_medios.gravar_de_corrida(k, max(ini_c, i0), fim_c, cap=q)
+                fq = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
+                p_ref, cu = c.ajustar(*c.mascara_terra(fq), terra, lagos, (pv["S"], pv["X0"], pv["Y0"]), dX0=escala.px(1.0))
+                tv, val = c.mascara_terra(fq)
                 r = c.renderizar(terra, lagos, *p_ref)
                 med, p90, n, fora = c.residuo_costa(tv, val, r, p_ref)
                 cal["por_mapa"][k] = {"S": round(p_ref[0], 4), "X0": round(p_ref[1], 2), "Y0": round(float(p_ref[2]), 2),

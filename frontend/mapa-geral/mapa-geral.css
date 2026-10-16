@@ -47,6 +47,19 @@
   vector-effect: non-scaling-stroke;
 }
 
+.geral-rios {
+  pointer-events: none;
+}
+
+.geral-rio {
+  stroke: var(--rio);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.85;
+  vector-effect: non-scaling-stroke;
+}
+
 .geral-estado {
   fill-opacity: 0.5;
   stroke-width: 1;

@@ -16,6 +16,10 @@ import numpy as np
 AQUI = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
+# toda cache (inclusive uma alternativa, ex. .cache-4k) fica fora do git: um .gitignore "*" dentro dela
+os.makedirs(CACHE, exist_ok=True)
+if not os.path.exists(os.path.join(CACHE, ".gitignore")):
+    open(os.path.join(CACHE, ".gitignore"), "w").write("*\n")
 
 _memo = {}
 
@@ -156,6 +160,15 @@ PUBLICOS = {"e3": [("", ".json")], "e4e": [("rotulos", ".png"), ("rotulos", ".js
 NOME_PUBLICO_UNICO = {"e3": "calibracao", "e6": "entidades", "e7": "nomes-lidos"}
 PASTA_MANIFESTO = {"e3": "e3", "e4e": "e4/e", "e5": "e5", "e6": "e6", "e7a": "e7/a", "e7u": "e7/u", "e7": "e7"}
 ETAPAS_LOJA = ("e3", "e4e", "e5", "e6", "e7a", "e7u", "e7")
+
+
+def amostras():
+    """amostras.json da cache ativa (.cache*/v2/, gerado por amostras.py; os ids de mapa dependem da E2) ou, se não
+    houver, o de scripts/mapa-geral/."""
+    for p in (os.path.join(V2, "amostras.json"), os.path.join(AQUI, "amostras.json")):
+        if os.path.exists(p):
+            return json.load(open(p))
+    raise SystemExit("amostras.json não encontrado: rode scripts/mapa-geral/amostras.py")
 
 
 def calibracao():

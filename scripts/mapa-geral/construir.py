@@ -12,7 +12,8 @@
 #   ("nomes" só quando o nome publicado muda ao longo da vida: trocas aprovadas em nomes.json; "nome" é o mais duradouro)
 # e frontend/mapa-geral/dados/blocos/<a|d><ano>.json, um por bloco de 25 posições da sequência de anos
 #   (2500…1, -1…-2025, sem ano 0; posição i = 0…4524; o bloco tem o nome do seu primeiro ano, ex.: a2500 = 2500–2476 a.C.):
-#   {"anos": [de, ate], "formas": [{"id", "de", "ate", "aneis": [[x0, y0, dx1, dy1, dx2, dy2, ...], ...]}, ...]}
+#   {"anos": [de, ate], "formas": [{"id", "de", "ate", "aneis": [[x0, y0, dx1, dy1, dx2, dy2, ...], ...], "r": [lon, lat]}, ...]}
+#   ("r" = ponto para o nome: polo de inacessibilidade do maior anel)
 #   Cada forma vale de "de" a "ate" (inclusive, recortado ao bloco); uma forma nova só é gravada quando a geometria
 #   muda. Coordenadas com 2 casas, gravadas como inteiros em centésimos de grau: o primeiro ponto absoluto (lon, lat)
 #   e os seguintes como diferenças do ponto anterior (o tremor dá passos de ~0,25°, então os deltas são curtos).
@@ -21,6 +22,8 @@
 #   ("e01234") para entidades sem nome lido. Estáveis entre execuções (dependem só dos dados).
 # Orçamento: <= 400 KB por bloco (<= 100 KB com gzip); se o total passar de 80 MB, para e pergunta (plano, §9).
 # Uso (na raiz do repositório):  PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/construir.py [--so-medir]
+#   [--saida <pasta>]   (ou MAPA_GERAL_SAIDA; padrão frontend/mapa-geral/dados/. Uma rodada em outra cache, por exemplo
+#   MAPA_GERAL_CACHE=.cache-4k, grava em --saida .cache-4k/dados para comparar antes de aprovar.)
 import gzip, json, os, re, sys, time, unicodedata
 from collections import defaultdict
 
@@ -31,7 +34,7 @@ sys.path.insert(0, AQUI)
 import cache
 
 V2 = cache.V2
-SAIDA = os.path.join(RAIZ, "frontend", "mapa-geral", "dados")
+SAIDA = os.environ.get("MAPA_GERAL_SAIDA") or os.path.join(RAIZ, "frontend", "mapa-geral", "dados")   # ou --saida <pasta>
 BLOCO = 25
 CASAS = 2
 FONTE = ("Formas, cores e nomes lidos de um vídeo de história mundial ano a ano (de terceiros), usado só como "
@@ -147,6 +150,23 @@ def formas_por_corrida(nl, ent, vet):
     return saida
 
 
+def final_em(corridas, pos, ano, lon, lat):
+    """Entidade final cuja forma contém o ponto (lon, lat) no ano; None se nenhuma."""
+    from shapely.geometry import Point, Polygon
+    pt = Point(lon, lat)
+    for a_de, a_ate, k, fs in corridas:
+        if pos[a_de] <= pos.get(ano, -1) <= pos[a_ate]:
+            for f, aneis in fs.items():
+                for an in aneis:
+                    try:
+                        if Polygon(decodificar(an)).contains(pt):
+                            return f
+                    except Exception:
+                        pass
+            return None
+    return None
+
+
 def indice_estados(nl, ent, ordem, corridas, nomes):
     """Metadados de cada entidade final publicada: id legível, nome pt-BR (mais duradouro), nome do vídeo, cor da E6
     (do id mais longo), vida (dos anos em que aparece com geometria) e nomes por trecho quando mudam."""
@@ -157,6 +177,16 @@ def indice_estados(nl, ent, ordem, corridas, nomes):
             v = vida.setdefault(f, [a_de, a_ate])
             if pos[a_de] < pos[v[0]]: v[0] = a_de
             if pos[a_ate] > pos[v[1]]: v[1] = a_ate
+    # correções de nomes.json "entidades": por localizador 'onde' [ano, lon, lat] (estável entre rodadas) ou pelo id da E7
+    corr_por_final = {}
+    for chave, corr in nomes.ent.items():
+        f = None
+        if corr.get("onde"):
+            f = final_em(corridas, pos, corr["onde"][0], corr["onde"][1], corr["onde"][2])
+        if f is None and chave in vida:
+            f = chave
+        if f is not None:
+            corr_por_final[f] = corr
     estados, ids, usados = {}, {}, {}
     for f in sorted(vida, key=lambda f: (pos[vida[f][0]], f)):
         fin = nl["finais"][f]
@@ -165,11 +195,12 @@ def indice_estados(nl, ent, ordem, corridas, nomes):
             nome = nomes.traduzir(lido)
             if nome:
                 trechos.append([a_de, a_ate, nome, lido])
-        corr = nomes.ent.get(f, {})
+        corr = corr_por_final.get(f, {})
+        lido_corr = corr.get("nome_video") or (trechos[0][3] if trechos else "")
         if corr.get("nomes"):      # nomes por período, conferidos à mão: [[de, ate, nome], ...]
-            trechos = [[a_de, a_ate, nm, (trechos[0][3] if trechos else "")] for a_de, a_ate, nm in corr["nomes"]]
+            trechos = [[a_de, a_ate, nm, lido_corr] for a_de, a_ate, nm in corr["nomes"]]
         elif corr.get("nome"):
-            trechos = [[vida[f][0], vida[f][1], corr["nome"], (trechos[0][3] if trechos else "")]]
+            trechos = [[vida[f][0], vida[f][1], corr["nome"], lido_corr]]
         peso = defaultdict(int)
         for a_de, a_ate, nome, lido in trechos:
             peso[nome] += pos[a_ate] - pos[a_de] + 1
@@ -187,6 +218,33 @@ def indice_estados(nl, ent, ordem, corridas, nomes):
             e["nomes"] = [[a_de, a_ate, nm, ld] for a_de, a_ate, nm, ld in trechos]
         estados[ident] = e
     return estados, ids
+
+
+_memo_rotulo = {}
+
+
+def ponto_rotulo(aneis):
+    """[lon, lat] para o nome: polo de inacessibilidade do maior anel (fica dentro mesmo em formas curvas, como o
+    Vietnã, onde o centro de massa cai fora)."""
+    maior = max(aneis, key=len)
+    ch = (maior[0], maior[1], len(maior), maior[-1])
+    if ch in _memo_rotulo:
+        return _memo_rotulo[ch]
+    from shapely.geometry import Polygon
+    from shapely.algorithms.polylabel import polylabel
+    try:
+        pol = Polygon(decodificar(maior))
+        if not pol.is_valid:
+            pol = pol.buffer(0)
+            if pol.geom_type != "Polygon":
+                pol = max(pol.geoms, key=lambda g: g.area)
+        p = polylabel(pol, tolerance=0.05)
+        out = [round(p.x, 2), round(p.y, 2)]
+    except Exception:
+        pts = decodificar(maior)
+        out = [round(sum(q[0] for q in pts) / len(pts), 2), round(sum(q[1] for q in pts) / len(pts), 2)]
+    _memo_rotulo[ch] = out
+    return out
 
 
 def blocos(ordem, corridas, ids):
@@ -209,7 +267,7 @@ def blocos(ordem, corridas, ids):
                 if ab is not None and ab["aneis"] == aneis and pos[ab["ate"]] == pos[de] - 1:
                     ab["ate"] = ate
                     continue
-                forma = {"id": ids[f], "de": de, "ate": ate, "aneis": aneis}
+                forma = {"id": ids[f], "de": de, "ate": ate, "aneis": aneis, "r": ponto_rotulo(aneis)}
                 formas.append(forma)
                 abertas[f] = forma
             for f in list(abertas):
@@ -259,11 +317,42 @@ def unir_em_bloco(d, fica, some):
     return True
 
 
+def id_em(ler_bloco, nomes_blocos, ano, lon, lat):
+    """Id (do site) da forma que contém o ponto no ano, lendo o bloco do ano; None se nenhuma."""
+    from shapely.geometry import Point, Polygon
+    nome = nome_arquivo(_ano((_pos(ano) // BLOCO) * BLOCO))
+    if nome not in nomes_blocos:
+        return None
+    pt = Point(lon, lat)
+    for f in ler_bloco(nome)["formas"]:
+        if _pos(f["de"]) <= _pos(ano) <= _pos(f["ate"]):
+            for an in f["aneis"]:
+                try:
+                    if Polygon(decodificar(an)).contains(pt):
+                        return f["id"]
+                except Exception:
+                    pass
+    return None
+
+
 def aplicar_edicao(ed, indice, ler_bloco, gravar_bloco, nomes_blocos):
     """Aplica uma edição de edicoes.json ao índice (em memória) e aos blocos (ler_bloco(nome) -> dict,
-    gravar_bloco(nome, dict)). Devolve True se algo mudou."""
+    gravar_bloco(nome, dict)). Devolve True se algo mudou. Os ids do site mudam quando os dados são regenerados;
+    por isso cada edição pode trazer 'onde' ([ano, lon, lat], ou uma lista deles em 'unir'): se o id não existe
+    mais, a entidade é achada pelo ponto."""
     est = indice["estados"]
     t = ed.get("tipo")
+    if t in ("nome", "cor", "forma") and ed.get("id") not in est and ed.get("onde"):
+        novo = id_em(ler_bloco, nomes_blocos, *ed["onde"])
+        if novo is None:
+            return False
+        ed = dict(ed, id=novo)
+    if t == "unir" and ed.get("onde"):
+        ids = list(ed["ids"])
+        for i in (0, 1):
+            if ids[i] not in est and ed["onde"][i]:
+                ids[i] = id_em(ler_bloco, nomes_blocos, *ed["onde"][i]) or ids[i]
+        ed = dict(ed, ids=ids)
     if t == "nome":
         e = est.get(ed["id"])
         if not e:
@@ -309,7 +398,7 @@ def aplicar_edicao(ed, indice, ler_bloco, gravar_bloco, nomes_blocos):
             return False
         d = ler_bloco(ed["bloco"])
         for f in d["formas"]:
-            if f["id"] == ed["id"] and f["de"] == ed["de"]:
+            if f["id"] == ed["id"] and (f["de"] == ed["de"] or (ed.get("onde") and _pos(f["de"]) <= _pos(ed["onde"][0]) <= _pos(f["ate"]))):
                 f["aneis"] = arredondar(ed["aneis"])
                 gravar_bloco(ed["bloco"], d)
                 return True
@@ -331,6 +420,9 @@ def aplicar_edicoes(indice, ler_bloco, gravar_bloco, nomes_blocos, edicoes=None)
 
 
 def main():
+    global SAIDA
+    if "--saida" in sys.argv:
+        SAIDA = os.path.abspath(sys.argv[sys.argv.index("--saida") + 1])     # ex.: a cache 4K, antes de aprovar
     so_medir = "--so-medir" in sys.argv
     t0 = time.time()
     nl, ent, vet, ordem = carregar()

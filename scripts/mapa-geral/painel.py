@@ -29,6 +29,7 @@ sys.path.insert(0, LIB)
 sys.path.insert(0, AQUI)
 import cache
 import construir
+import escala
 
 V2 = cache.V2
 PAINEL = os.path.join(V2, "painel")
@@ -41,10 +42,14 @@ MUNDO = os.path.join(RAIZ, "frontend", "mapa", "mundo.json")
 
 # scripts que o painel pode rodar e os argumentos aceitos (sem shell; cada argumento é uma palavra simples)
 SCRIPTS = {"rotular", "vetorizar", "rastrear", "nomear", "construir", "calibrar", "transicoes", "testar", "revisar",
-           "limpar_cache", "quadros", "amostras", "cache", "testar-pagina"}
+           "limpar_cache", "quadros", "quadros_medios", "amostras", "cache", "testar-pagina"}
 ARG_OK = re.compile(r"^[A-Za-z0-9_.:,=+\-]{1,80}$")
 ENV_OK = {"MAPA_GERAL_EXP": re.compile(r"^[A-Za-z0-9_\-]{1,40}$"), "MAPA_GERAL_PROCS": re.compile(r"^\d{1,2}$"),
-          "AMOSTRA": re.compile(r"^(rapida|media|todos)$"), "MAPA_GERAL_PARAMS": None}
+          "MAPA_GERAL_PROCS_E2": re.compile(r"^\d{1,2}$"), "AMOSTRA": re.compile(r"^(rapida|media|todos)$"),
+          "MAPA_GERAL_PARAMS": None}
+# escala e cache ativa vêm do ambiente do próprio painel (os processos filhos herdam): uma instância por cache, ex.:
+#   MAPA_GERAL_CACHE=$PWD/scripts/mapa-geral/.cache-4k MAPA_GERAL_ESCALA=2 MAPA_GERAL_ESCALA_OCR=4 python3 painel.py 8003
+PASTA_CACHE_PADRAO = os.path.join(AQUI, ".cache")
 
 
 def json_ler(caminho, padrao=None):
@@ -193,7 +198,7 @@ def calcular_mapas():
         m = mapas[k]
         r = {"quadro": m.get("quadro"), "anos": [m["anos"][0], m["anos"][-1]] if m.get("anos") else None, "n_anos": len(m.get("anos", [])),
              "cal": bool(cal.get(k)), "nota": bool(notas.get(k)), "falhas": falhas.get(k), "s": {}}
-        png = os.path.join(V2, "mapas", f"{k}.png")
+        png = os.path.join(V2, escala.pasta_mapas(), f"{k}.png")
         if not os.path.exists(png):
             for e in ETAPAS:
                 r[e] = "falta"
@@ -441,6 +446,14 @@ class Manipulador(http.server.SimpleHTTPRequestHandler):
         if "/api/" in linha and "/api/rodadas" not in linha and "/api/log" not in linha:
             super().log_message(fmt, *args)
 
+    def translate_path(self, caminho):
+        """A página pede .cache/v2/... (relativo a scripts/mapa-geral/); aqui isso vira a cache ATIVA (MAPA_GERAL_CACHE),
+        para uma instância do painel por cache sem mudar o HTML."""
+        r = super().translate_path(caminho)
+        if cache.CACHE != PASTA_CACHE_PADRAO and (r == PASTA_CACHE_PADRAO or r.startswith(PASTA_CACHE_PADRAO + os.sep)):
+            return cache.CACHE + r[len(PASTA_CACHE_PADRAO):]
+        return r
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
         if self.path.split("?")[0] == CAMINHO_ANOTACOES:
@@ -483,7 +496,8 @@ class Manipulador(http.server.SimpleHTTPRequestHandler):
             if u.path == "/api/log":
                 return self.responder(log(int(q.get("id", ["0"])[0]), int(q.get("de", ["0"])[0])))
             if u.path == "/api/estado":
-                return self.responder({"painel": True, "rodando": _processo["id"], "mapas_pronto": _mapas["pronto"], "hora": time.time()})
+                return self.responder({"painel": True, "rodando": _processo["id"], "mapas_pronto": _mapas["pronto"], "hora": time.time(),
+                                       "cache": cache.CACHE, "escala": escala.E, "escala_ocr": escala.E_OCR})
             self.responder({"erro": "rota desconhecida"}, 404)
         except (ValueError, OSError) as e:
             self.responder({"erro": str(e)}, 400)
@@ -538,7 +552,7 @@ if __name__ == "__main__":
     carregar_rodadas()
     threading.Thread(target=laco_rodadas, daemon=True).start()
     servidor = http.server.ThreadingHTTPServer(("127.0.0.1", porta), functools.partial(Manipulador, directory=RAIZ))
-    print("http://localhost:%d/scripts/mapa-geral/painel.html" % porta)
+    print("http://localhost:%d/scripts/mapa-geral/painel.html  (cache %s, escala %d, OCR %d)" % (porta, cache.CACHE, escala.E, escala.E_OCR))
     print("anotações em %s · edições em %s · rodadas em %s" % (ANOTACOES, construir.EDICOES, PAINEL))
     try:
         servidor.serve_forever()

@@ -1,7 +1,8 @@
 # E2 (parte 3) do mapa geral v2: monta a sequência de anos a partir da varredura e do OCR das caixas.
 # Chamado por quadros.py (passo "montar"). Lê .cache/v2/varredura.npz e anos-lidos.json; grava
-#   anos.json         {"<ano>": {"quadros": [i0, i1], "mapa": id, "zoom": bool, "meio": n, "inferido": bool}}
-#   mapas.json        {"<id>": {"quadro": i, "anos": [primeiro, ultimo]}}  (um PNG por id em mapas/)
+#   anos.json         {"<ano>": {"quadros": [i0, i1], "quadros_mapa": [i0, q], "quadro_mapa": q, "mapa": id, "zoom": bool,
+#                      "meio": n, "inferido": bool, "corrigido": bool, "sem_quadro"?: true}}
+#   mapas.json        {"<id>": {"quadro": q, "anos": [todos os anos do mapa], "mediana": {...}}}  (PNGs por quadros_medios.py)
 #   montagem.json     resumo (contagens, anos inferidos, anos com mapa que muda no meio)
 # Posição na sequência: 0 = 2500 a.C. ... 2499 = 1 a.C., 2500 = 1 d.C. ... 4524 = 2025 d.C. (não existe ano 0).
 import json, os, re, subprocess, sys
@@ -160,8 +161,6 @@ def montar():
         d["zoom"] = bool(seguidas[i0:i1 + 1].max() >= 4)
         d["quadro_mapa"] = int(q)
         mapas.setdefault(ultimo, {"quadro": int(q), "anos": []})["anos"].append(a)
-    # 7. grava PNG de cada mapa distinto (lendo os quadros escolhidos do vídeo, em um passe só por trecho)
-    gravar_pngs(mapas)
     resumo = {
         "anos": len(anos), "esperados": N_ANOS,
         "faltando": [ano_de_pos(p) for p in range(N_ANOS) if ano_de_pos(p) not in anos],
@@ -178,55 +177,19 @@ def montar():
     json.dump({str(k): v for k, v in mapas.items()}, open(os.path.join(V2, "mapas.json"), "w"))
     json.dump(resumo, open(os.path.join(V2, "montagem.json"), "w"), indent=1, ensure_ascii=False)
     print({k: (v if not isinstance(v, list) else len(v)) for k, v in resumo.items()})
+    # 7. PNG de cada mapa distinto (1920, 4K e 8K; mediana dos quadros da corrida): quadros_medios.py (E2.4)
+    import quadros_medios
+    quadros_medios.gerar()
 
 
 def ultimo_quadro_sem_fade(i0, i1):
     """O vídeo termina com um fade para o escuro dentro do último ano: último quadro com brilho ≥ 99,5 % do normal."""
-    import glob
-    video = glob.glob(os.path.join(AQUI, "..", "..", "vídeos", "*hzWwp9JM7Hw*.webm"))[0]
-    fps = 30000 / 1001
-    cmd = ["ffmpeg", "-v", "error", "-ss", f"{(i0 - 0.5) / fps:.4f}", "-i", video, "-frames:v", str(i1 - i0 + 1),
-           "-f", "rawvideo", "-pix_fmt", "gray", "-vf", "scale=240:120", "-"]
-    b = subprocess.run(cmd, capture_output=True).stdout
-    n = len(b) // (240 * 120)
-    br = np.frombuffer(b[:n * 240 * 120], np.uint8).reshape(n, -1).mean(axis=1)
+    import quadros
+    br = np.array([f.mean() for f in quadros.decodificar(i0, i1 - i0 + 1, 240, 120, threads=4, pix="gray")])
+    n = len(br)
     ref = np.median(br[:max(5, n // 3)])
     ok = np.where(br >= 0.995 * ref)[0]
     return int(i0 + (ok[ok < n].max() if len(ok) else n - 1))
-
-
-def gravar_pngs(mapas):
-    """Um PNG por mapa distinto. Decodifica o vídeo uma vez por intervalo, só nos quadros pedidos."""
-    pasta = os.path.join(V2, "mapas")
-    os.makedirs(pasta, exist_ok=True)
-    pedidos = sorted((m["quadro"], k) for k, m in mapas.items())
-    falta = [(q, k) for q, k in pedidos if not os.path.exists(os.path.join(pasta, f"{k}.png"))]
-    if not falta:
-        return
-    import glob
-    video = glob.glob(os.path.join(AQUI, "..", "..", "vídeos", "*hzWwp9JM7Hw*.webm"))[0]
-    # lê por trechos de 2000 quadros: select por lista de números via arquivo de filtro
-    fps = 30000 / 1001
-    por_trecho = {}
-    for q, k in falta:
-        por_trecho.setdefault(q // 2000, []).append((q, k))
-    for t, itens in sorted(por_trecho.items()):
-        i0 = t * 2000
-        n = 2000
-        cmd = ["ffmpeg", "-v", "error", "-threads", "4", "-ss", f"{max(0.0, (i0 - 0.5) / fps):.4f}", "-i", video,
-               "-frames:v", str(n), "-f", "rawvideo", "-pix_fmt", "bgr24", "-"]
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-        tam = 960 * 1920 * 3
-        quer = {q: k for q, k in itens}
-        for q in range(i0, i0 + n):
-            b = p.stdout.read(tam)
-            if len(b) < tam:
-                break
-            if q in quer:
-                f = np.frombuffer(b, np.uint8).reshape(960, 1920, 3)
-                cv2.imwrite(os.path.join(pasta, f"{quer[q]}.png"), f, [cv2.IMWRITE_PNG_COMPRESSION, 1])
-        p.stdout.close(); p.kill(); p.wait()
-        print("pngs trecho", t, len(itens), flush=True)
 
 
 if __name__ == "__main__":

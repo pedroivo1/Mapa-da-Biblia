@@ -17,7 +17,7 @@ Os vídeos são de terceiros e servem **só de referência** (formas e nomes pr�
 
 | Vídeo | Resolução | Duração | Papel |
 |---|---|---|---|
-| "Every Year" (`hzWwp9JM7Hw`) | 1920×960 | 17 min 24 s | Fonte principal das formas: mapa claro, estados em cores chapadas, ano no rodapé, começa em 2500 a.C. |
+| "Every Year" (`hzWwp9JM7Hw`) | 7680×3840 (render nativo; baixado em 8K em 2026-10-16, antes era o 1920×960 a 205 kb/s) | 17 min 24 s | Fonte principal das formas: mapa claro, estados em cores chapadas, ano no rodapé, começa em 2500 a.C. |
 | "Every Year (3400 BCE – 2026)" (`4BzUDJDiE8c`) | 1920×1080 | 17 min | Conferência de nomes e do período 3400–2500 a.C. (ainda não usado nos dados) |
 | "World history 3500 BCE – PRESENT" (`pWP0Z9XLxH8`) | 1920×1080 | 20 min 30 s | Muito denso (rótulos por cima); só contexto |
 
@@ -125,6 +125,27 @@ Cada etapa é incremental (cache por chave em `scripts/mapa-geral/.cache/v2/`, v
 `docs/mapa-geral-incremental.md`; a calibração da E3 também fica na loja, e `calibracao.json` é o apontador para a
 variante aprovada). Nomes: edite `scripts/mapa-geral/nomes.json` (`traducoes`, `entidades`, `trocas`) e rode só
 `construir.py`.
+
+### Escalas e a rodada em 4K/8K (`scripts/mapa-geral/escala.py`, `cadeia-4k.sh`)
+
+O pipeline foi escrito para quadros de 1920×960 e continua a dar o mesmo resultado nesse tamanho. Com a fonte em 8K,
+três variáveis de ambiente mudam a resolução de cada parte, sem outro ajuste:
+
+| Variável | Padrão | Efeito |
+|---|---|---|
+| `MAPA_GERAL_CACHE` | `scripts/mapa-geral/.cache` | pasta da cache (uma rodada em outra resolução vai para outra pasta, ex. `.cache-4k`) |
+| `MAPA_GERAL_ESCALA` | 1 | quadro da geometria (E3, E4, E5, detecção e nota da E7a): 2 = 3840×1920 (`mapas-4k/`); toda constante em pixels dos scripts é convertida (`escala.px`, `area`, `it`, `impar`) |
+| `MAPA_GERAL_ESCALA_OCR` | = ESCALA | quadro onde os motores de OCR leem as etiquetas: 4 = 7680×3840 (`mapas-8k/`) |
+
+A E2 (`quadros.py` + `quadros_medios.py`) sempre faz a varredura (ano e mudança de mapa) em 1920 e grava cada mapa
+distinto em três tamanhos (`mapas/`, `mapas-4k/`, `mapas-8k/`) como **mediana de até 9 quadros** da corrida
+(`mapas.json` "mediana"), o que tira o ruído de compressão sem borrar. `scripts/mapa-geral/cadeia-4k.sh` roda tudo em
+`.cache-4k` (E2 ~45 min, E3 ~10 min, E4 ~3 h, E5 ~45 min com duas tolerâncias, E6, E7a ~3–4 h, E7, E8 em `--saida`
+e os testes) e um segundo painel acompanha: `MAPA_GERAL_CACHE=$PWD/scripts/mapa-geral/.cache-4k MAPA_GERAL_ESCALA=2
+MAPA_GERAL_ESCALA_OCR=4 python3 scripts/mapa-geral/painel.py 8003`. Aprovar a rodada = `mv .cache .cache-1920 && mv
+.cache-4k .cache` em `scripts/mapa-geral/` (e `mv` de volta para reverter), depois `construir.py` normal, `node
+scripts/verificar.mjs` e `testar-pagina.mjs`. `amostras.json` passa a ficar na cache (`.cache*/v2/amostras.json`,
+lido por `cache.amostras()`), porque os ids de mapa mudam quando a E2 é refeita.
 
 ## 5. Limites conhecidos
 

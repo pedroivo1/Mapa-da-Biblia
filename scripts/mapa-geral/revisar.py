@@ -11,6 +11,7 @@ sys.path.insert(0, AQUI)
 import numpy as np
 import cv2
 import cache
+import escala
 
 RAIZ = os.path.normpath(os.path.join(AQUI, "..", ".."))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
@@ -133,7 +134,7 @@ def e3(args):
         ids = sorted([k for k in mapas if mapas[a]["quadro"] <= mapas[k]["quadro"] <= mapas[b]["quadro"]], key=lambda k: mapas[k]["quadro"])
         k = ids[len(ids) // 2]
         p = cal["por_mapa"][k]
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         tv, val = mascara_terra(im)
         r = renderizar(terra, lagos, p["S"], p["X0"], p["Y0"])
         br = cv2.morphologyEx(r, cv2.MORPH_GRADIENT, kern) > 0
@@ -234,7 +235,7 @@ def e4(args):
     lista = [int(a) for a in args] or [2000, 1200, 584, -31, -326, -700, -999, -1148, -1598, -1799, -1914, -2022]
     for ano in lista:
         k = str(anos[str(ano)]["mapa"])
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         out, reg, info, dm = imagem_rotulos(k)
         cv2.imwrite(os.path.join(SAIDA, f"e4-{ano}.png"), np.hstack([im, out]))
         cv2.imwrite(os.path.join(SAIDA, f"e4-{ano}-regioes.png"), out)
@@ -252,8 +253,8 @@ def recorte(ano, lon0, lon1, lat0, lat1, nome, escala=3):
         return int((lon + 180) * p["S"] - p["X0"]), int((merc(80.0) - merc(lat)) * p["S"] - p["Y0"])
     x0, y1 = px(lon0, lat0)
     x1, y0 = px(lon1, lat1)
-    x0, y0, x1, y1 = max(0, x0), max(0, y0), min(1920, x1), min(960, y1)
-    im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+    x0, y0, x1, y1 = max(0, x0), max(0, y0), min(escala.W, x1), min(escala.H, y1)
+    im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
     out, reg, info, dm = imagem_rotulos(k)
     a = cv2.resize(im[y0:y1, x0:x1], None, fx=escala, fy=escala, interpolation=cv2.INTER_NEAREST)
     b = cv2.resize(out[y0:y1, x0:x1], None, fx=escala, fy=escala, interpolation=cv2.INTER_NEAREST)
@@ -314,13 +315,13 @@ def e4_unioes(args):
     celulas = []
     for grupo, lista in (("sorteada", sorteio), ("maior", maiores)):
         for k, u in lista:
-            im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+            im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
             reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
             x0, y0, x1, y1 = u["caixa_menor"]
             cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
             meia = max(40, (x1 - x0) // 2 + 25, (y1 - y0) // 2 + 25)
             xa, ya = max(0, cx - meia), max(0, cy - meia)
-            xb, yb = min(1920, cx + meia), min(960, cy + meia)
+            xb, yb = min(escala.W, cx + meia), min(escala.H, cy + meia)
             a = im[ya:yb, xa:xb].copy()
             m = reg[ya:yb, xa:xb] == u["r"]
             borda = m & ~cv2.erode(m.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
@@ -351,7 +352,7 @@ def e4_pares(args):
     celulas = []
     for ano in [int(a) for a in args] or [-835, -1927]:
         k = str(anos[str(ano)]["mapa"])
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
         info = json.load(open(rot_(k, ".json")))["regioes"]
         pares = []
@@ -370,7 +371,7 @@ def e4_pares(args):
             fy, fx = np.where(fr)
             cx, cy = int(np.median(fx)), int(np.median(fy))
             meia = 45
-            xa, ya, xb, yb = max(0, cx - meia), max(0, cy - meia), min(1920, cx + meia), min(960, cy + meia)
+            xa, ya, xb, yb = max(0, cx - meia), max(0, cy - meia), min(escala.W, cx + meia), min(escala.H, cy + meia)
             o = im[ya:yb, xa:xb].copy()
             o2 = o.copy()
             bd = np.zeros(m.shape, bool)
@@ -446,7 +447,7 @@ def e5(args):
     for ano in lista:
         k = str(anos[str(ano)]["mapa"])
         p = cal[k]
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         vet = json.load(open(vet_(k)))["regioes"]
         linhas = []
         for nome, lo0, lo1, la0, la1 in RECORTES:
@@ -454,7 +455,7 @@ def e5(args):
             u1 = int((lo1 + 180) * p["S"] - p["X0"])
             v0 = int((merc(80.0) - merc(la1)) * p["S"] - p["Y0"])
             v1 = int((merc(80.0) - merc(la0)) * p["S"] - p["Y0"])
-            if u0 < 0 or u1 > 1920 or v0 < 0 or v1 > 960 or u1 - u0 < 20:
+            if u0 < 0 or u1 > escala.W or v0 < 0 or v1 > escala.H or u1 - u0 < 20:
                 continue
             q = im[v0:v1, u0:u1]
             dir_ = desenhar_vetores(vet, lo0, lo1, la0, la1, 640)
@@ -486,7 +487,7 @@ def e6(args):
     def quadro_ids(ano, caixa=None):
         c = ent["por_ano"][corr_pos[pos[ano]]]
         k = c[2]
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
         borda = np.zeros(reg.shape, bool)
         borda[:, 1:] |= reg[:, 1:] != reg[:, :-1]
@@ -522,7 +523,7 @@ def e6(args):
     cel = []
     for e, d in random.sample(curtas, min(10, len(curtas))):
         a_, a1, k, rs = d["trechos"][0]
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))
         reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED)
         m = np.isin(reg, rs)
         ys, xs = np.where(m)

@@ -78,7 +78,7 @@
 }
 
 .plano-trechos a {
-  color: var(--ink-strong);
+  color: var(--link);
 }
 
 @media (max-width: 720px) {
@@ -100,23 +100,16 @@
   border-bottom: 1px solid var(--line);
 }
 
-/* links do mapa: sem o roxo de "visitado" */
+/* links do plano: azuis (base.css), sublinhado só ao passar o mouse */
 .plano-voltar a,
 .leitor-plano a {
-  color: var(--muted);
   text-decoration: none;
 }
 
 .plano-voltar a:hover,
 .leitor-plano a:hover,
 .plano-trechos a:hover {
-  color: var(--ink-strong);
   text-decoration: underline;
-}
-
-.plano-trechos a,
-.plano-trechos a:visited {
-  color: var(--ink-strong);
 }
 
 @media (pointer: coarse) {

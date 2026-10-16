@@ -2,6 +2,8 @@
 // Aberto com ?plano=id segue a ordem do plano de leitura (plano-de-leitura/planos.json); sem ele, a dos livros.
 // Posição e letra: navegador (biblia-leitor) e conta ("leitor"); posição por plano: "plano".
 // Botões Leitura (popup leitura/index.html) e Mapas (popup com os mapas do capítulo, mapas/mapas.json).
+// Tocar num versículo seleciona; a barra que aparece grifa (quatro cores) ou salva por temas
+// (Conta.salvarMarcacoes, tabela marcacoes). Os salvos ficam em /versiculos/. Sem login, só lê.
 (function () {
   "use strict";
 
@@ -28,6 +30,13 @@
   var eras = {};
   var ordem = [];
   var indice = {};
+  // grifos e versículos salvos: chave "livro/cap/verso" (vem da conta; aqui só com login)
+  var CORES = ["amarelo", "verde", "azul", "rosa"];
+  var marc = {};
+  var marcPronto = false; // o servidor confirmou a lista: só então grifar e salvar
+  var selecao = []; // versículos selecionados no capítulo aberto, em ordem
+  var barra = null;
+  var dlgSalvar = null;
 
   // posição e letra do leitor, e o plano: ficam na conta quando há login, e no navegador sempre
   function guardarLeitor(v) {
@@ -58,6 +67,7 @@
   function ir(i, c, mantemVoz) {
     if (!mantemVoz) parar();
     pos = { i: i, c: c };
+    selecao = [];
     guardarLeitor({ livro: canon[i].id, cap: c, tam: tam });
     if (plano) {
       var m = estadoPlano();
@@ -176,7 +186,7 @@
       if (v === 0) h += "<p>";
       else if (abre || fechouAgora) h += "</p><p>";
       else h += " ";
-      h += "<sup>" + (v + 1) + "</sup>" + esc(versos[v]);
+      h += '<span class="leitor-v" data-v="' + (v + 1) + '"><sup>' + (v + 1) + "</sup>" + esc(versos[v]) + "</span>";
       aberta = ((aberta ? 1 : 0) + aspas) % 2 === 1;
       fechouAgora = aspas > 0 && !aberta;
     }
@@ -239,6 +249,247 @@
     raiz.innerHTML = h;
     raiz.style.setProperty("--leitor-fonte", tam + "rem");
     document.title = b.nome + " " + pos.c + " — Bíblia NVI — Mapa da Bíblia";
+    pintar();
+  }
+
+  /* ---------- grifar e salvar ---------- */
+
+  function chaveDe(v) {
+    return canon[pos.i].id + "/" + pos.c + "/" + v;
+  }
+  function aplicarMarcacoes(lista) {
+    marc = {};
+    (lista || []).forEach(function (m) {
+      marc[m.livro + "/" + m.capitulo + "/" + m.versiculo] = m;
+    });
+  }
+  function marcacaoDe(v) {
+    return marc[chaveDe(v)] || { livro: canon[pos.i].id, capitulo: pos.c, versiculo: v, grifo: null, salvo: false, temas: [] };
+  }
+  function copiaMarcacao(m) {
+    return { livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: (m.temas || []).slice() };
+  }
+  function temasTodos() {
+    var t = {};
+    Object.keys(marc).forEach(function (k) {
+      (marc[k].temas || []).forEach(function (x) { t[x] = true; });
+    });
+    return Object.keys(t).sort(function (a, b) { return a.localeCompare(b, "pt-BR"); });
+  }
+
+  // põe grifo, salvo e seleção nos versículos já desenhados, sem redesenhar o capítulo
+  function pintar() {
+    var spans = raiz.querySelectorAll(".leitor-v");
+    for (var k = 0; k < spans.length; k++) {
+      var v = Number(spans[k].getAttribute("data-v"));
+      var m = marc[chaveDe(v)];
+      if (m && m.grifo) spans[k].setAttribute("data-grifo", m.grifo);
+      else spans[k].removeAttribute("data-grifo");
+      if (m && m.salvo) spans[k].setAttribute("data-salvo", "");
+      else spans[k].removeAttribute("data-salvo");
+      spans[k].classList.toggle("sel", selecao.indexOf(v) >= 0);
+    }
+    atualizarBarra();
+  }
+
+  function alternarVerso(v) {
+    var k = selecao.indexOf(v);
+    if (k >= 0) selecao.splice(k, 1);
+    else selecao.push(v);
+    selecao.sort(function (a, b) { return a - b; });
+    pintar();
+  }
+
+  // "João 3:16-18" ou "João 3:1, 5-6"
+  function refSelecao() {
+    var partes = [];
+    for (var k = 0; k < selecao.length; k++) {
+      var ini = selecao[k], fim = ini;
+      while (k + 1 < selecao.length && selecao[k + 1] === fim + 1) fim = selecao[++k];
+      partes.push(ini === fim ? String(ini) : ini + "-" + fim);
+    }
+    return canon[pos.i].nome + " " + pos.c + ":" + partes.join(", ");
+  }
+
+  var ICONE_SALVAR = ICONE_SVG + '<path d="M6 3h12v18l-6-4-6 4z"/></svg>';
+
+  // barra fixa embaixo, só enquanto há versículo selecionado
+  function atualizarBarra() {
+    if (!barra) {
+      barra = document.createElement("div");
+      barra.className = "leitor-acoes";
+      barra.setAttribute("role", "toolbar");
+      barra.setAttribute("aria-label", "Versículos selecionados");
+      barra.addEventListener("click", clicarBarra);
+      document.body.appendChild(barra);
+    }
+    if (!selecao.length) {
+      barra.hidden = true;
+      return;
+    }
+    var h = '<span class="leitor-acoes-ref hud">' + esc(refSelecao()) + "</span>";
+    h += '<button type="button" data-cancelar aria-label="Desmarcar">×</button>';
+    if (!Conta || !Conta.usuario()) {
+      h += '<a class="leitor-acoes-entrar hud" href="' + esc(Conta ? Conta.urlEntrar() : "/conta/") + '">Entre para grifar e salvar</a>';
+    } else if (!marcPronto) {
+      h += '<span class="leitor-acoes-fazer hud faint">Carregando…</span>';
+    } else {
+      var algumSalvo = selecao.some(function (v) { return marcacaoDe(v).salvo; });
+      h += '<span class="leitor-acoes-fazer"><span class="leitor-cores">';
+      CORES.forEach(function (c) {
+        h += '<button type="button" class="leitor-cor" data-grifo="' + c + '" aria-label="Grifar de ' + c + '"></button>';
+      });
+      h += '<button type="button" class="leitor-cor sem" data-grifo="" aria-label="Tirar o grifo"></button></span>';
+      h += '<button type="button" data-salvar aria-haspopup="dialog"' + (algumSalvo ? ' aria-pressed="true"' : "") + ">" + ICONE_SALVAR + (algumSalvo ? "Salvo" : "Salvar") + "</button></span>";
+    }
+    barra.innerHTML = h;
+    barra.hidden = false;
+  }
+
+  function clicarBarra(ev) {
+    var t = ev.target.closest("button");
+    if (!t) return;
+    if (t.hasAttribute("data-cancelar")) {
+      selecao = [];
+      return pintar();
+    }
+    if (t.hasAttribute("data-salvar")) return abrirSalvar();
+    if (t.hasAttribute("data-grifo")) {
+      var cor = t.getAttribute("data-grifo") || null;
+      gravarMarcacoes(selecao.map(function (v) {
+        var m = copiaMarcacao(marcacaoDe(v));
+        m.grifo = cor;
+        return m;
+      }));
+    }
+  }
+
+  // aplica na hora e manda para a conta; se falhar, avisa e volta ao que está no servidor
+  function gravarMarcacoes(lista) {
+    lista.forEach(function (m) {
+      var k = m.livro + "/" + m.capitulo + "/" + m.versiculo;
+      if (m.grifo || m.salvo) marc[k] = m;
+      else delete marc[k];
+    });
+    selecao = [];
+    pintar();
+    avisarVoz("");
+    Conta.salvarMarcacoes(lista).catch(function () {
+      avisarVoz("Não consegui salvar a marcação. Confira a conexão e tente de novo.");
+      Conta.carregarMarcacoes().then(function (l) {
+        aplicarMarcacoes(l);
+        pintar();
+      }, function () {});
+    });
+  }
+
+  // popup Salvar: escolhe os temas (ou cria um) e confirma; ou tira dos salvos
+  function abrirSalvar() {
+    if (!dlgSalvar) {
+      dlgSalvar = document.createElement("dialog");
+      dlgSalvar.className = "leitor-dlg leitor-dlg-salvar";
+      dlgSalvar.addEventListener("click", function (ev) {
+        if (ev.target === dlgSalvar || ev.target.closest("[data-fechar]")) return dlgSalvar.close();
+        var t = ev.target.closest("button");
+        if (!t) return;
+        if (t.hasAttribute("data-confirmar")) return confirmarSalvar(true);
+        if (t.hasAttribute("data-remover")) return confirmarSalvar(false);
+      });
+      // Enter no campo (ou o botão Adicionar) cria o tema
+      dlgSalvar.addEventListener("submit", function (ev) {
+        ev.preventDefault();
+        adicionarTema();
+      });
+      document.body.appendChild(dlgSalvar);
+    }
+    var temas = temasTodos();
+    // já vêm marcados os temas de qualquer versículo selecionado que já esteja salvo
+    var comuns = temas.filter(function (t) {
+      return selecao.some(function (v) { return marcacaoDe(v).temas.indexOf(t) >= 0; });
+    });
+    var algumSalvo = selecao.some(function (v) { return marcacaoDe(v).salvo; });
+    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Salvar · ' + esc(refSelecao()) + '</span><button type="button" data-fechar>Fechar</button></div>';
+    h += '<div class="leitor-temas"><p class="hud faint">Temas</p><div class="leitor-temas-lista">';
+    if (temas.length) {
+      temas.forEach(function (t) {
+        h += '<label class="chip"><input type="checkbox" value="' + esc(t) + '"' + (comuns.indexOf(t) >= 0 ? " checked" : "") + "><span>" + esc(t) + "</span></label>";
+      });
+    } else {
+      h += '<span class="leitor-temas-vazio hud faint">Nenhum tema ainda. Crie o primeiro abaixo ou salve sem tema.</span>';
+    }
+    h += "</div>";
+    h += '<form class="leitor-tema-novo"><input type="text" name="tema" maxlength="40" placeholder="Novo tema (ex.: Fé)" autocomplete="off" aria-label="Novo tema"><button type="submit">Adicionar</button></form>';
+    h += '<div class="leitor-temas-acoes"><button type="button" class="btn" data-confirmar>Salvar</button>' +
+      (algumSalvo ? '<button type="button" class="btn secundario" data-remover>Remover dos salvos</button>' : "") + "</div></div>";
+    dlgSalvar.innerHTML = h;
+    if (!dlgSalvar.open) dlgSalvar.showModal();
+  }
+
+  function adicionarTema() {
+    var campo = dlgSalvar.querySelector('input[name="tema"]');
+    var nome = campo.value.replace(/\s+/g, " ").trim();
+    if (!nome) return;
+    var lista = dlgSalvar.querySelector(".leitor-temas-lista");
+    var caixas = lista.querySelectorAll("input");
+    var existe = false;
+    for (var k = 0; k < caixas.length; k++) {
+      if (caixas[k].value.toLowerCase() === nome.toLowerCase()) {
+        caixas[k].checked = true;
+        existe = true;
+      }
+    }
+    if (!existe) {
+      var vazio = lista.querySelector(".leitor-temas-vazio");
+      if (vazio) lista.removeChild(vazio);
+      var rotulo = document.createElement("label");
+      rotulo.className = "chip";
+      var caixa = document.createElement("input");
+      caixa.type = "checkbox";
+      caixa.value = nome;
+      caixa.checked = true;
+      var txt = document.createElement("span");
+      txt.textContent = nome;
+      rotulo.appendChild(caixa);
+      rotulo.appendChild(txt);
+      lista.appendChild(rotulo);
+    }
+    campo.value = "";
+    campo.focus();
+  }
+
+  function confirmarSalvar(salvo) {
+    adicionarTema(); // o que ficou digitado também conta
+    var marcados = [];
+    var caixas = dlgSalvar.querySelectorAll(".leitor-temas-lista input");
+    for (var k = 0; k < caixas.length; k++) if (caixas[k].checked) marcados.push(caixas[k].value);
+    dlgSalvar.close();
+    gravarMarcacoes(selecao.map(function (v) {
+      var m = copiaMarcacao(marcacaoDe(v));
+      m.salvo = salvo;
+      m.temas = salvo ? marcados : [];
+      return m;
+    }));
+  }
+
+  // a cópia guardada aparece na hora; grifar e salvar só depois que o servidor confirmar
+  function carregarMarcacoes() {
+    marcPronto = false;
+    selecao = [];
+    if (!Conta || !Conta.usuario()) {
+      aplicarMarcacoes([]);
+      return pintar();
+    }
+    aplicarMarcacoes(Conta.marcacoesGuardadas() || []);
+    pintar();
+    var u = Conta.usuario().id;
+    Conta.carregarMarcacoes().then(function (lista) {
+      if (!Conta.usuario() || Conta.usuario().id !== u) return;
+      aplicarMarcacoes(lista);
+      marcPronto = true;
+      pintar();
+    }, function () {
+      avisarVoz("Não consegui carregar seus grifos e versículos salvos. Recarregue a página para tentar de novo.");
+    });
   }
 
   function abrirEscolha(livro) {
@@ -375,6 +626,8 @@
   }
 
   raiz.addEventListener("click", function (ev) {
+    var verso = ev.target.closest && ev.target.closest(".leitor-v");
+    if (verso) return alternarVerso(Number(verso.getAttribute("data-v")));
     var t = ev.target.closest && ev.target.closest("button");
     if (!t || t.disabled) return;
     if (t.hasAttribute("data-mapas")) return abrirMapas();
@@ -408,7 +661,11 @@
   }, { passive: true });
 
   document.addEventListener("keydown", function (ev) {
-    if (!canon.length || (dlg && dlg.open) || (dlgLeitura && dlgLeitura.open) || (dlgMapas && dlgMapas.open) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    if (!canon.length || (dlg && dlg.open) || (dlgLeitura && dlgLeitura.open) || (dlgMapas && dlgMapas.open) || (dlgSalvar && dlgSalvar.open) || ev.altKey || ev.ctrlKey || ev.metaKey) return;
+    if (ev.key === "Escape" && selecao.length) {
+      selecao = [];
+      return pintar();
+    }
     var alvo = ev.key === "ArrowLeft" ? anterior() : ev.key === "ArrowRight" ? proximo() : null;
     if (alvo) ir(alvo.i, alvo.c);
   });
@@ -418,6 +675,7 @@
     if (p && (p.i !== pos.i || p.c !== pos.c)) {
       parar();
       pos = p;
+      selecao = [];
       render();
       window.scrollTo(0, 0);
     }
@@ -468,6 +726,12 @@
     }
     pos = p || { i: 0, c: 1 };
     render();
+    carregarMarcacoes();
+    if (Conta) {
+      Conta.aoMudar(function (evento, u, mudou) {
+        if (mudou) carregarMarcacoes();
+      });
+    }
   }
 
   var comPlano = /[?&](?:plano|mapa)=/.test(location.search);

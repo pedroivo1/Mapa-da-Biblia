@@ -22,12 +22,14 @@
 # ficam guardadas: a E7 junta as leituras de toda a vida de uma entidade e reavalia.
 # Os parâmetros são de três grupos (detecção, OCR, nota); nomear.py guarda o OCR bruto e as notas em caches por
 # recorte separados, para que mudar só a nota não exija rodar o OCR de novo.
-import os, re
+import os, re, sys
 
 os.environ.setdefault("OMP_THREAD_LIMIT", "1")      # tesseract: uma thread por processo (nomear.py usa 8 processos)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np
 import cv2
 from PIL import Image, ImageDraw, ImageFont
+import escala
 
 LIB = os.path.expanduser("~/.cache/mapa-biblia-lib")
 FONTE = os.path.join(LIB, "fontes", "sarabun.ttf")
@@ -40,7 +42,10 @@ PARAMS = {
     "OCR": [[2, 6, "tess"], [1, 5, "rapid"], [1, 3, "rapid"], [2, 8, "rapid"], [2, 3, "rapid"], [2, 4, "tess-otsu"]],
     "OCR_CEDO": 2, "NOTA_CEDO": 0.45,
     "FONTE": os.path.basename(FONTE), "SS": 4, "MARGEM_REC": 6, "VARIACOES": 2, "FAIXA_TAM": 0.5,
-}
+    # escala do quadro onde os motores de OCR leem os recortes (1 = o próprio mapa de 1920; 4 = mapas-8k/), relativa a
+    # 1920; e a escala da geometria (detecção e nota), quando não é 1. Ver escala.py. As constantes em pixels acima
+    # estão em pixels de 1920 e são convertidas no código (escala.px/area/impar).
+    "ESCALA": escala.E_OCR, **({"ESCALA_GEO": escala.E} if escala.E != 1 else {})}
 GRUPOS = {
     "det": ["MEDIANA", "CONTRASTE", "ESCURO_MAX", "CROMA_MAX", "CONTRASTE_CLARO", "CLARO_MIN", "GROSSO", "VAO",
             "TINTA_FORTE", "LETRA_SO"],
@@ -50,20 +55,25 @@ GRUPOS = {
 
 
 def grupo(nome, p=PARAMS):
-    return {"versao": p["versao"], **{k: p[k] for k in GRUPOS[nome]}}
+    d = {"versao": p["versao"], **{k: p[k] for k in GRUPOS[nome]}}
+    if nome in ("ocr", "nota") and p.get("ESCALA", 1) != 1:
+        d["ESCALA"] = p["ESCALA"]          # recortes de outro quadro: outro arquivo de memória por recorte (nomear.arq_mem)
+    if p.get("ESCALA_GEO"):
+        d["ESCALA_GEO"] = p["ESCALA_GEO"]
+    return d
 
 
 # ------------------------------------------------------------------ detecção
 def mascaras(im, p=PARAMS):
     g = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     ch = im.max(2).astype(np.int16) - im.min(2)
-    med = cv2.medianBlur(g, p["MEDIANA"]).astype(np.int16)
+    med = cv2.medianBlur(g, escala.impar(p["MEDIANA"])).astype(np.int16)
     gi = g.astype(np.int16)
     out = {"escuro": (med - gi > p["CONTRASTE"]) & (g <= p["ESCURO_MAX"]) & (ch <= p["CROMA_MAX"]),
            "claro": (gi - med > p["CONTRASTE_CLARO"]) & (g >= p["CLARO_MIN"])}
-    k = cv2.getStructuringElement(cv2.MORPH_RECT, (p["GROSSO"], p["GROSSO"]))
+    k = cv2.getStructuringElement(cv2.MORPH_RECT, (escala.impar(p["GROSSO"]), escala.impar(p["GROSSO"])))
     for n, m in out.items():
-        grosso = cv2.dilate(cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, k), np.ones((3, 3), np.uint8))
+        grosso = cv2.dilate(cv2.morphologyEx(m.astype(np.uint8), cv2.MORPH_OPEN, k), np.ones((3, 3), np.uint8), iterations=escala.it(1))
         out[n] = m & (grosso == 0)
     return g, out, med
 
@@ -76,8 +86,9 @@ def letras(b):
     out = []
     for i in range(1, n):
         x, y, w, h, a = (int(v) for v in st[i])
-        if (2 <= h <= 34 and w <= 300 and a <= (0.92 * w * h + 4 if w <= 1.5 * h else 0.7 * w * h)
-                and (max(w, h) < 8 or a >= ENCHIMENTO * w * h)):      # traço fino e comprido (fronteira) não é letra
+        if (escala.px(2) <= h <= escala.px(34) and w <= escala.px(300)
+                and a <= (0.92 * w * h + escala.area(4) if w <= 1.5 * h else 0.7 * w * h)
+                and (max(w, h) < escala.px(8) or a >= ENCHIMENTO * w * h)):      # traço fino e comprido (fronteira) não é letra
             out.append((x, y, w, h))
     return out
 
@@ -94,13 +105,13 @@ def agrupar(L, vao, letra_so=1):
     for i, (x, y, w, h) in enumerate(L):
         for j in range(i + 1, len(L)):
             x2, y2, w2, h2 = L[j]
-            if x2 > x + w + 40:
+            if x2 > x + w + escala.px(40):
                 break
             gap = x2 - (x + w)
-            if gap > vao * max(h, h2, 6):
+            if gap > vao * max(h, h2, escala.px(6)):
                 continue
             ov = min(y + h, y2 + h2) - max(y, y2)
-            if (ov >= 0.5 * min(h, h2) and max(h, h2) <= 2.2 * max(3, min(h, h2))) or (min(h, h2) <= 3 and ov >= 0):
+            if (ov >= 0.5 * min(h, h2) and max(h, h2) <= 2.2 * max(escala.px(3), min(h, h2))) or (min(h, h2) <= escala.px(3) and ov >= 0):
                 pai[raiz(j)] = raiz(i)
     grupos = {}
     for i in range(len(L)):
@@ -112,11 +123,11 @@ def agrupar(L, vao, letra_so=1):
         x1 = max(t[0] + t[2] for t in m)
         y1 = max(t[1] + t[3] for t in m)
         hm = sorted(t[3] for t in m)[len(m) // 2]
-        altas = [t for t in m if t[3] >= 4]
-        if ((sum(1 for t in m if t[3] >= 3) >= 2 or (len(m) == 1 and m[0][2] >= 2 * m[0][3]))
-                and 3 <= hm <= 30 and y1 - y0 >= 5 and x1 - x0 >= 1.2 * (y1 - y0)):
+        altas = [t for t in m if t[3] >= escala.px(4)]
+        if ((sum(1 for t in m if t[3] >= escala.px(3)) >= 2 or (len(m) == 1 and m[0][2] >= 2 * m[0][3]))
+                and escala.px(3) <= hm <= escala.px(30) and y1 - y0 >= escala.px(5) and x1 - x0 >= 1.2 * (y1 - y0)):
             out.append((x0, y0, x1 - x0, y1 - y0))
-        elif letra_so and len(altas) == 1 and 5 <= altas[0][3] <= 16 and 0.4 * altas[0][3] <= altas[0][2] <= 1.4 * altas[0][3]:
+        elif letra_so and len(altas) == 1 and escala.px(5) <= altas[0][3] <= escala.px(16) and 0.4 * altas[0][3] <= altas[0][2] <= 1.4 * altas[0][3]:
             # etiqueta de uma letra ("A", "K.", "D"): uma letra, com ou sem ponto
             out.append((x0, y0, x1 - x0, y1 - y0))
     return out
@@ -133,7 +144,7 @@ def detectar(im, p=PARAMS, rot=None, brancas=None):
         for x, y, w, h in agrupar(letras(b), p["VAO"], p["LETRA_SO"]):
             c = g[y:y + h, x:x + w].astype(np.int16)
             forte = (c <= 60).sum() if tipo == "escuro" else ((c - med[y:y + h, x:x + w] >= 40) | (c >= 240)).sum()
-            if forte >= p["TINTA_FORTE"]:
+            if forte >= escala.area(p["TINTA_FORTE"]):
                 out.append((tipo, x, y, w, h))
     return out
 
@@ -168,14 +179,14 @@ def _tess():
 
 
 def preparar(crop, claro, E):
-    """Cinza com fundo branco e letra preta, esticado (fundo = mediana), ampliado E vezes."""
+    """Cinza com fundo branco e letra preta, esticado (fundo = mediana), ampliado E vezes (E < 1 reduz, por área)."""
     g = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY).astype(np.float32)
     med = float(np.median(g))
     if claro:
         g = 255 - g
         med = 255 - med
     g = np.clip((g - g.min()) / max(1.0, med - g.min()) * 255, 0, 255).astype(np.uint8)
-    return cv2.resize(g, None, fx=E, fy=E, interpolation=cv2.INTER_CUBIC)
+    return cv2.resize(g, None, fx=E, fy=E, interpolation=cv2.INTER_CUBIC if E >= 1 else cv2.INTER_AREA)
 
 
 def ocr(g, motor):
@@ -236,7 +247,7 @@ def render(txt, tam, SS=PARAMS["SS"]):
             bb = a[oy:, ox:]
             H, W = bb.shape[0] // SS * SS, bb.shape[1] // SS * SS
             moldes.append(bb[:H, :W].reshape(H // SS, SS, W // SS, SS).mean((1, 3)))
-    if len(_rend) > 3000:         # cada entrada guarda 16 moldes; 50 mil entradas chegavam a ~2 GB por processo
+    if len(_rend) > 3000 // (escala.E * escala.E):   # cada entrada guarda 16 moldes; 50 mil entradas chegavam a ~2 GB por processo
         _rend.clear()
     _rend[k] = moldes
     return moldes
@@ -254,10 +265,10 @@ def nota(ink, txt, tam):
     cima/embaixo (letra que falta ou sobra conta contra; tinta longe não), na melhor posição."""
     if not txt.strip():
         return -1.0
-    mx = max(2, int(round(0.55 * tam)))
+    mx = max(escala.px(2), int(round(0.55 * tam)))
     best = -1.0
     for m in render(txt, tam):
-        t = cv2.copyMakeBorder(m, 1, 1, mx, mx, cv2.BORDER_CONSTANT, value=0)
+        t = cv2.copyMakeBorder(m, escala.px(1), escala.px(1), mx, mx, cv2.BORDER_CONSTANT, value=0)
         dy, dx = max(0, t.shape[0] - ink.shape[0]), max(0, t.shape[1] - ink.shape[1])
         i2 = cv2.copyMakeBorder(ink, dy, dy, dx, dx, cv2.BORDER_CONSTANT, value=0) if dy or dx else ink
         best = max(best, float(cv2.matchTemplate(i2, t, cv2.TM_CCOEFF_NORMED).max()))
@@ -265,7 +276,11 @@ def nota(ink, txt, tam):
 
 
 def tamanhos(h):
-    return [x / 4 for x in range(int(h * 0.85 * 4), int(h * 1.5 * 4) + 1)]
+    """Tamanhos de letra a testar para uma caixa de altura h: 0,85h a 1,5h em passos de 0,25 px de 1920."""
+    if escala.E == 1:
+        return [x / 4 for x in range(int(h * 0.85 * 4), int(h * 1.5 * 4) + 1)]
+    passo = escala.E / 4
+    return [x * passo for x in range(int(h * 0.85 / passo), int(h * 1.5 / passo) + 1)]
 
 
 def notas(ink, h, cands):
@@ -278,14 +293,19 @@ def notas(ink, h, cands):
     return out
 
 
-def ler_bruto(im, caixa, p=PARAMS):
-    """As leituras do OCR (limpas e válidas), na ordem das variantes; para cedo numa caixa falsa."""
+def ler_bruto(im, caixa, p=PARAMS, im_ocr=None, F=1):
+    """As leituras do OCR (limpas e válidas), na ordem das variantes; para cedo numa caixa falsa.
+    im e caixa estão na escala da geometria; os motores leem o recorte de im_ocr (o mesmo mapa num quadro F vezes
+    maior, ex. 8K com F = 2 sobre 4K), com a ampliação de cada variante medida em relação a 1920 (um recorte de 8K
+    é reduzido para a mesma altura de letra que os motores viam antes, mas vindo de pixels nativos)."""
     tipo, x, y, w, h = caixa
     claro = tipo == "claro"
-    ink = tinta(recorte(im, x, y, w, h, p["MARGEM_REC"]), claro)
+    ink = tinta(recorte(im, x, y, w, h, escala.px(p["MARGEM_REC"])), claro)
+    io = im if im_ocr is None else im_ocr
+    fo = F * escala.E                  # pixels do quadro do OCR por pixel de 1920
     lidos, melhor = [], -1.0
     for i, (P, E, motor) in enumerate(p["OCR"]):
-        s = limpa(ocr(preparar(recorte(im, x, y, w, h, P), claro, E), motor))
+        s = limpa(ocr(preparar(recorte(io, x * F, y * F, w * F, h * F, P * fo), claro, E / fo), motor))
         if valido(s) and s not in lidos:
             lidos.append(s)
             if i < p["OCR_CEDO"]:
@@ -313,18 +333,18 @@ def pontuar(im, caixa, lidos, p=PARAMS):
     tipo, x, y, w, h = caixa
     if not lidos:
         return []
-    ink = tinta(recorte(im, x, y, w, h, p["MARGEM_REC"]), tipo == "claro")
+    ink = tinta(recorte(im, x, y, w, h, escala.px(p["MARGEM_REC"])), tipo == "claro")
     ns = notas(ink, h, lidos)
     if p["VARIACOES"]:
         t0 = max(ns.values())[1]
-        tams = [t0 + d / 4 for d in range(-int(p["FAIXA_TAM"] * 4), int(p["FAIXA_TAM"] * 4) + 1)]
+        tams = [t0 + d / 4 * escala.E for d in range(-int(p["FAIXA_TAM"] * 4), int(p["FAIXA_TAM"] * 4) + 1)]
         for c in sorted(set().union(*(variacoes(s) for s in lidos)) - set(ns)):
             sc, t = max((nota(ink, c, t), t) for t in tams)
             ns[c] = [round(sc, 4), t]
     return [[c, sc, t] for c, (sc, t) in sorted(ns.items(), key=lambda kv: (-kv[1][0], kv[0]))]
 
 
-def ler(im, caixa, p=PARAMS):
+def ler(im, caixa, p=PARAMS, im_ocr=None, F=1):
     """Leitura de uma caixa: {"lidos": [...], "cands": [[texto, nota, tamanho], ...]}."""
-    lidos = ler_bruto(im, caixa, p)
+    lidos = ler_bruto(im, caixa, p, im_ocr, F)
     return {"lidos": lidos, "cands": pontuar(im, caixa, lidos, p)}

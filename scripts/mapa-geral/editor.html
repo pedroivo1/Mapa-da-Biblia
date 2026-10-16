@@ -114,6 +114,7 @@
   var ferramenta = "v";
   var espaco = false;
   var sel = null, sel2 = null;   // ids
+  var ondeSel = {};              // id -> [ano, lon, lat] do clique que o selecionou (localizador estável)
   var vertice = null;      // {forma, anel, i}
   var pendentes = [];      // edições ainda não salvas; "forma" guarda antes/depois
   var desenhados = {};     // id -> {path, forma}
@@ -234,7 +235,8 @@
       var xs = 0, ys = 0, mn = 1e9, mx = -1e9;
       for (var j = 0; j < maior.length; j++) { var q = P.proj(maior[j][0], maior[j][1]); xs += q[0]; ys += q[1]; if (q[0] < mn) mn = q[0]; if (q[0] > mx) mx = q[0]; }
       var gg = el("g", {}, gNomes); var t = el("text", { "class": "nome" }, gg); t.textContent = nome;
-      rotulos.push({ g: gg, x: xs / maior.length, y: ys / maior.length, larg: mx - mn, chars: nome.length });
+      var pr = f.r ? P.proj(f.r[0], f.r[1]) : [xs / maior.length, ys / maior.length];
+      rotulos.push({ g: gg, x: pr[0], y: pr[1], larg: mx - mn, chars: nome.length });
     });
     ajustarNomes();
     if (sel && !desenhados[sel]) selecionar(null);
@@ -275,7 +277,8 @@
   }
 
   /* ---------- seleção e painel ---------- */
-  function selecionar(id, segundo) {
+  function selecionar(id, segundo, lonlat) {
+    if (id && lonlat) ondeSel[id] = [anoDePos(atual), Math.round(lonlat[0] * 100) / 100, Math.round(lonlat[1] * 100) / 100];
     if (segundo) { sel2 = (id && id !== sel) ? id : null; }
     else { sel = id; sel2 = null; vertice = null; }
     for (var k in desenhados) if (Object.prototype.hasOwnProperty.call(desenhados, k)) {
@@ -314,19 +317,19 @@
 
   document.getElementById("nome").addEventListener("change", function () {
     if (mudandoPainel || !sel) return;
-    var ed = { tipo: "nome", id: sel, nome: this.value.trim(), nome_video: document.getElementById("nome-video").value.trim(), ano: anoDePos(atual),
+    var ed = { tipo: "nome", id: sel, nome: this.value.trim(), nome_video: document.getElementById("nome-video").value.trim(), ano: anoDePos(atual), onde: ondeSel[sel] || null,
       descricao: "nome de " + sel + " → \"" + this.value.trim() + "\"", antes: JSON.parse(JSON.stringify(meta[sel])) };
     aplicarLocal(ed); registrar(ed);
   });
   document.getElementById("nome-video").addEventListener("change", function () {
     if (mudandoPainel || !sel) return;
-    var ed = { tipo: "nome", id: sel, nome: document.getElementById("nome").value.trim(), nome_video: this.value.trim(), ano: anoDePos(atual),
+    var ed = { tipo: "nome", id: sel, nome: document.getElementById("nome").value.trim(), nome_video: this.value.trim(), ano: anoDePos(atual), onde: ondeSel[sel] || null,
       descricao: "nome no vídeo de " + sel + " → \"" + this.value.trim() + "\"", antes: JSON.parse(JSON.stringify(meta[sel])) };
     aplicarLocal(ed); registrar(ed);
   });
   document.getElementById("cor").addEventListener("change", function () {
     if (mudandoPainel || !sel) return;
-    var ed = { tipo: "cor", id: sel, cor: this.value.toLowerCase(), descricao: "cor de " + sel + " → " + this.value, antes: JSON.parse(JSON.stringify(meta[sel])) };
+    var ed = { tipo: "cor", id: sel, cor: this.value.toLowerCase(), onde: ondeSel[sel] || null, descricao: "cor de " + sel + " → " + this.value, antes: JSON.parse(JSON.stringify(meta[sel])) };
     aplicarLocal(ed); registrar(ed);
   });
 
@@ -352,7 +355,7 @@
       var e = pendentes[i];
       if (e.tipo === "forma" && e.bloco === bloco && e.id === f.id && e.de === f.de) return e;
     }
-    var ed = { tipo: "forma", bloco: bloco, id: f.id, de: f.de, aneis: null, antes: copiar(graus(f)), forma: f,
+    var ed = { tipo: "forma", bloco: bloco, id: f.id, de: f.de, aneis: null, onde: ondeSel[f.id] || null, antes: copiar(graus(f)), forma: f,
       descricao: "pontos de " + f.id + " (" + rotuloAno(f.de) + "–" + rotuloAno(f.ate) + ")" };
     pendentes.push(ed);
     return ed;
@@ -432,8 +435,9 @@
       var p = ponto(ev);
       if (ferramenta === "z") { zoomEm(ev.altKey ? 1.6 : 0.625, p[0], p[1]); return; }
       if (ferramenta === "p") { if (sel && desenhados[sel]) adicionarPoint(p); else aviso("Selecione um estado antes (V) e depois clique na borda dele com a caneta."); return; }
-      if (ferramenta === "a") { if (id && id !== sel) selecionar(id); else if (!id) { vertice = null; desenharVertices(); mostrarPainel(); } return; }
-      selecionar(id, ev.shiftKey);
+      var ll = P.inversa(p[0], p[1]);
+      if (ferramenta === "a") { if (id && id !== sel) selecionar(id, false, ll); else if (!id) { vertice = null; desenharVertices(); mostrarPainel(); } return; }
+      selecionar(id, ev.shiftKey, ll);
     }
     function adicionarPoint(p) { adicionarPonto(desenhados[sel].forma, p); }
     svg.addEventListener("pointerup", soltar);
@@ -486,7 +490,7 @@
     if (!(sel && sel2)) { aviso("Selecione o primeiro estado (clique) e o segundo (Shift+clique) antes de unir."); return; }
     var a = nomeNoAno(sel) || sel, b = nomeNoAno(sel2) || sel2;
     if (!window.confirm("Unir \"" + b + "\" a \"" + a + "\" em todos os anos? O estado \"" + b + "\" deixa de existir e a edição é salva agora.")) return;
-    var ed = { tipo: "unir", ids: [sel, sel2], descricao: "unir " + sel2 + " a " + sel };
+    var ed = { tipo: "unir", ids: [sel, sel2], onde: [ondeSel[sel] || null, ondeSel[sel2] || null], descricao: "unir " + sel2 + " a " + sel };
     pendentes.push(ed);
     salvar();
   }

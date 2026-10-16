@@ -47,6 +47,15 @@ def teste(nome, cond, detalhe=""):
     print(("OK    " if cond else "FALHA ") + nome + ("  " + str(detalhe) if detalhe != "" else ""), flush=True)
 
 
+import escala
+PX, AREA, IT = escala.px, escala.area, escala.it      # limiares em pixels de 1920 convertidos para a escala da geometria
+
+
+def mapa_png(k):
+    """PNG do mapa no quadro da geometria (mapas/ em escala 1; mapas-4k/ em escala 2)."""
+    return os.path.join(V2, escala.pasta_mapas(), f"{k}.png")
+
+
 def carregar(nome):
     return json.load(open(os.path.join(V2, nome)))
 
@@ -136,6 +145,10 @@ def e2():
         im = Image.open(os.path.join(V2, "mapas", f"{k}.png"))
         ok = ok and im.size == (1920, 960)
     teste("T2.5 todo ano aponta para um PNG 1920×960", not faltam and ok, f"faltando={len(faltam)} mapas_distintos={len(mapas)}")
+    if escala.E > 1:
+        falt_g = [k for k in mapas if not os.path.exists(mapa_png(k))]
+        ok_g = all(Image.open(mapa_png(k)).size == (escala.W, escala.H) for k in list(mapas)[:20] if os.path.exists(mapa_png(k)))
+        teste(f"T2.5b todo mapa tem o quadro da geometria {escala.W}×{escala.H} ({escala.pasta_mapas()}/)", not falt_g and ok_g, f"faltando={len(falt_g)}")
     amostra = os.path.join(V2, "revisao", "e2-caixas.png")
     teste("T2.6 folha de 40 caixas de ano sorteadas (conferência visual)", os.path.exists(amostra), amostra)
     meio = [a for a, d in anos.items() if d["meio"] > 0]
@@ -162,7 +175,7 @@ def e3():
         med = [pm[k]["mediana_px"] for k in grupo if pm[k]["mediana_px"] is not None]
         p90 = [pm[k]["p90_px"] for k in grupo if pm[k]["p90_px"] is not None]
         fora = [pm[k]["fora"] for k in grupo]
-        ok = (np.median(med) <= 2.0 and np.percentile(p90, 90) <= 6.0) if med else False
+        ok = (np.median(med) <= PX(2.0) and np.percentile(p90, 90) <= PX(6.0)) if med else False
         teste(f"T3.2 resíduo de costa, trecho S={t['S']}", ok,
               f"mediana das medianas={np.median(med):.2f}px  p90 dos p90={np.percentile(p90, 90):.2f}px  "
               f"pior mediana={max(med):.2f}  fração de costa 'de forma diferente'={np.median(fora):.3f}  mapas={len(grupo)}")
@@ -196,28 +209,28 @@ def e3():
         fora = []
         for k in amostra:
             p = pm[k]
-            im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+            im = cv2.imread(mapa_png(k))
             tv, val = mascara_terra(im)
             r = renderizar(terra_m, lagos_m, p["S"], p["X0"], p["Y0"])
             br = cv2.morphologyEx(r, cv2.MORPH_GRADIENT, kern) > 0
             bv = cv2.morphologyEx(tv, cv2.MORPH_GRADIENT, kern) > 0
             dist = cv2.distanceTransform((~br).astype(np.uint8), cv2.DIST_L2, 3)
             y0, y1 = regiao_valida(p["S"], p["Y0"])
-            m = np.zeros((960, 1920), bool)
-            m[y0 + 3:y1 - 3, 3:-3] = True
+            m = np.zeros((escala.H, escala.W), bool)
+            m[y0 + PX(3):y1 - PX(3), PX(3):-PX(3)] = True
             m &= val > 0
             sel = bv & m
-            fora.append(float((dist[sel] > 12).mean()))
-            for nome, (xa, xb) in {"oeste": (0, 640), "centro": (640, 1280), "leste": (1280, 1920)}.items():
+            fora.append(float((dist[sel] > PX(12)).mean()))
+            for nome, (xa, xb) in {"oeste": (0, PX(640)), "centro": (PX(640), PX(1280)), "leste": (PX(1280), escala.W)}.items():
                 q = np.zeros_like(sel)
                 q[:, xa:xb] = True
                 d = dist[sel & q]
-                d = d[d <= 12]
-                if len(d) > 50:
+                d = d[d <= PX(12)]
+                if len(d) > PX(50):
                     res[nome].append(float(d.mean()))
         mo, mc, ml = (float(np.mean(res[n])) for n in ("oeste", "centro", "leste"))
-        teste(f"T3.6 trecho S={t['S']}: fração fora <= 20 %; resíduo médio de cada terço <= centro + 1 px e <= 2 px",
-              np.mean(fora) <= 0.20 and max(mo, ml) <= mc + 1.0 and max(mo, mc, ml) <= 2.0,
+        teste(f"T3.6 trecho S={t['S']}: fração fora <= 20 %; resíduo médio de cada terço <= centro + 1 px e <= 2 px (de 1920)",
+              np.mean(fora) <= 0.20 and max(mo, ml) <= mc + PX(1.0) and max(mo, mc, ml) <= PX(2.0),
               f"fora={np.mean(fora):.3f}  resíduo médio oeste={mo:.2f} centro={mc:.2f} leste={ml:.2f} px")
     # T3.7 alinhamento local: em tiles 4×3 com costa suficiente, o deslocamento que mais reduz a discordância
     # (busca ±5 px) tem que ser <= 1 px nos dois eixos; se crescesse para as bordas, escala/deslocamento estariam errados
@@ -227,30 +240,30 @@ def e3():
         piores = []
         for k in [grupo[int(len(grupo) * f)] for f in (0.1, 0.5, 0.9)]:
             p = pm[k]
-            im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+            im = cv2.imread(mapa_png(k))
             tv, val = mascara_terra(im)
             r = renderizar(terra_m, lagos_m, p["S"], p["X0"], p["Y0"])
             y0, y1 = regiao_valida(p["S"], p["Y0"])
-            R = np.pad(r, ((6, 6), (6, 6))) > 0
-            cols = np.linspace(0, 1920, 5).astype(int)
+            R = np.pad(r, ((PX(6), PX(6)), (PX(6), PX(6)))) > 0
+            cols = np.linspace(0, escala.W, 5).astype(int)
             rows = np.linspace(y0, y1, 4).astype(int)
             bv = cv2.morphologyEx(tv, cv2.MORPH_GRADIENT, kern) > 0
             for ri in range(3):
                 for ci in range(4):
                     xs, xe, ys, ye = cols[ci], cols[ci + 1], rows[ri], rows[ri + 1]
-                    if int(bv[ys:ye, xs:xe].sum()) < 800:
+                    if int(bv[ys:ye, xs:xe].sum()) < AREA(800):
                         continue
                     A = tv[ys:ye, xs:xe] > 0
                     V = val[ys:ye, xs:xe] > 0
                     melhor = None
-                    for dy in range(-5, 6):
-                        for dx in range(-5, 6):
-                            B = R[ys + 6 + dy:ye + 6 + dy, xs + 6 + dx:xe + 6 + dx]
+                    for dy in range(-PX(5), PX(5) + 1):
+                        for dx in range(-PX(5), PX(5) + 1):
+                            B = R[ys + PX(6) + dy:ye + PX(6) + dy, xs + PX(6) + dx:xe + PX(6) + dx]
                             cst = int(((A != B) & V).sum())
                             if melhor is None or cst < melhor[0] - 0 or (cst == melhor[0] and abs(dx) + abs(dy) < abs(melhor[1]) + abs(melhor[2])):
                                 melhor = (cst, dx, dy)
                     piores.append(max(abs(melhor[1]), abs(melhor[2])))
-        teste(f"T3.7 trecho S={t['S']}: deslocamento local ótimo <= 1 px em todos os tiles com costa", max(piores) <= 1,
+        teste(f"T3.7 trecho S={t['S']}: deslocamento local ótimo <= 1 px (de 1920) em todos os tiles com costa", max(piores) <= PX(1),
               f"tiles={len(piores)} maior deslocamento={max(piores)} px")
     # T3.5 casos de referência (NÃO valida a calibração: os pontos foram convertidos com ela; a validação é o T3.2/T3.6): cor no ponto bate com o tipo esperado
     casos = json.load(open(os.path.join(AQUI, "casos.json")))["casos"]
@@ -264,9 +277,9 @@ def e3():
         from calibrar import merc
         u = (c["lon"] + 180) * p["S"] - p["X0"]
         v = (merc(80.0) - merc(c["lat"])) * p["S"] - p["Y0"]
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(mapa_png(k))
         ui, vi = int(round(float(u))), int(round(float(v)))
-        if not (0 <= ui < 1920 and 0 <= vi < 960):
+        if not (0 <= ui < escala.W and 0 <= vi < escala.H):
             maus.append((c["ano"], c["nome"], "fora do quadro"))
             continue
         b, g, r = [int(x) for x in im[vi, ui]]
@@ -293,12 +306,12 @@ def e4():
     cob, estado_sem, residuo, holes_pretos, instaveis = [], [], 0, 0, []
     pior_cor = []
     for k in amostra:
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(mapa_png(k))
         reg = cv2.imread(rot_(k, ".png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
         info = json.load(open(rot_(k, ".json")))
         rgb = im[:, :, ::-1].astype(np.int32)
         orn = np.zeros(reg.shape, bool)
-        orn[815:945, 600:1400] = True
+        orn[PX(815):PX(945), PX(600):PX(1400)] = True
         mar_cor = np.abs(rgb - np.array([216, 225, 237])).sum(axis=2) <= 24
         # pixels "planos" (sem borda nos 4 vizinhos): a antialias e as linhas finas não contam
         f16 = im.astype(np.int16)
@@ -306,7 +319,7 @@ def e4():
         gx = np.abs(f16[:, 1:] - f16[:, :-1]).max(axis=2) > 8
         gy = np.abs(f16[1:, :] - f16[:-1, :]).max(axis=2) > 8
         borda[:, 1:] |= gx; borda[:, :-1] |= gx; borda[1:, :] |= gy; borda[:-1, :] |= gy
-        plano = ~cv2.dilate(borda.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(bool)
+        plano = ~cv2.dilate(borda.astype(np.uint8), np.ones((3, 3), np.uint8), iterations=IT(1)).astype(bool)
         sat = rgb.max(axis=2) - rgb.min(axis=2)
         colorido = (sat >= 25) & ~mar_cor & ~orn & plano & (rgb.max(axis=2) > 60)
         branco = (rgb.min(axis=2) >= 246) & ~orn & plano
@@ -315,19 +328,19 @@ def e4():
         estado_sem.append(float((tipo[reg][colorido] == "sem-dono").mean()))
         for r in info["regioes"]:
             c = r["cor"]
-            if max(c) <= 80 and r["area_px"] >= 25:
+            if max(c) <= 80 and r["area_px"] >= AREA(25):
                 residuo += 1
-            if r["area_px"] < 40:
+            if r["area_px"] < AREA(40):
                 m = (reg == r["r"]).astype(np.uint8)
                 anel = cv2.dilate(m, np.ones((3, 3), np.uint8)).astype(bool) & (m == 0)
                 if (reg[anel] > 0).any():
                     residuo += 1
         # estabilidade de cor: fração de pixels da região longe da cor mediana (sem as caixas de texto)
         k3 = np.ones((3, 3), np.uint8)
-        letra_b = cv2.dilate((rgb.min(axis=2) >= 225).astype(np.uint8), k3, iterations=3).astype(bool)
-        letra_p = cv2.dilate((rgb.max(axis=2) <= 100).astype(np.uint8), k3, iterations=3).astype(bool)
+        letra_b = cv2.dilate((rgb.min(axis=2) >= 225).astype(np.uint8), k3, iterations=IT(3)).astype(bool)
+        letra_p = cv2.dilate((rgb.max(axis=2) <= 100).astype(np.uint8), k3, iterations=IT(3)).astype(bool)
         for r in info["regioes"]:
-            if r["area_px"] < 1500:
+            if r["area_px"] < AREA(1500):
                 continue
             c = np.array(r["cor"])
             m = (reg == r["r"]) & plano
@@ -338,7 +351,7 @@ def e4():
             if c.max() > 100:
                 m &= ~letra_p
             px = rgb[m]
-            if len(px) < 400:
+            if len(px) < AREA(400):
                 continue
             d = np.abs(px - c).sum(axis=1)
             pior_cor.append((float((d > 60).mean()), k, r["r"], r["area_px"]))
@@ -398,7 +411,7 @@ def e4():
         rs = reg_de(ano, nome)
         k, r = next(iter(rs))
         info = json.load(open(rot_(k, ".json")))["regioes"][r - 1]
-        teste(f"T4.3b {nome} {ano} existe como estado (cor {info['cor']}, {info['area_px']} px)", info["tipo"] == "estado" and info["area_px"] > 300)
+        teste(f"T4.3b {nome} {ano} existe como estado (cor {info['cor']}, {info['area_px']} px)", info["tipo"] == "estado" and info["area_px"] > AREA(300))
     teste("T4.4 sem resíduos de texto: nenhuma região quase preta e nenhuma região < 40 px colada em outra", residuo == 0, f"resíduos={residuo}")
     pior_cor.sort(reverse=True)
     teste("T4.5 estabilidade de cor: no máx. 10 % dos pixels planos (sem letras) de uma região a > 60 (L1) da cor mediana", not pior_cor or pior_cor[0][0] <= 0.10,
@@ -417,8 +430,8 @@ def e4():
             ok = u["dif_cor"] <= 20 and (
                 (t_ == "letra" and L >= 0.9 - e and O <= 0.1 + e) or
                 (t_ == "sem-linha" and L + P_ >= 0.9 - e and O <= 0.1 + e) or
-                (t_ == "gargalo" and u["fronteira_px"] < 6 and min(u["areas"]) < 1500 and L + P_ >= 0.7 - e) or
-                (t_ == "fragmento" and min(u["areas"]) < 150 and u.get("fracao_perimetro", 0) >= 0.4))
+                (t_ == "gargalo" and u["fronteira_px"] < PX(6) and min(u["areas"]) < AREA(1500) and L + P_ >= 0.7 - e) or
+                (t_ == "fragmento" and min(u["areas"]) < AREA(150) and u.get("fracao_perimetro", 0) >= 0.4))
             if t_ == "miolo":       # miolo de letra: não exige cor parecida; a regra é conferida pelo T4.9
                 ok = u.get("motivo") in ("texto", "mesma-cor") and (u["motivo"] == "texto" or u["dif_cor"] <= 20)
             if not ok:
@@ -635,10 +648,10 @@ def e5():
         terra_px = renderizar(terra_an, [], p["S"], p["X0"], p["Y0"]) > 0
         lago_px = renderizar(lagos_an, [], p["S"], p["X0"], p["Y0"]) > 0
         orn = np.zeros(reg.shape, bool)
-        orn[815:945, 600:1400] = True
+        orn[PX(815):PX(945), PX(600):PX(1400)] = True
         # a costa é a de mundo.json por regra (não a do vídeo): a faixa de 2 px junto dela não entra na comparação
         costa_px = cv2.morphologyEx(terra_px.astype(np.uint8), cv2.MORPH_GRADIENT, np.ones((3, 3), np.uint8)) > 0
-        costa_px = cv2.dilate(costa_px.astype(np.uint8), np.ones((3, 3), np.uint8)) > 0
+        costa_px = cv2.dilate(costa_px.astype(np.uint8), np.ones((3, 3), np.uint8), iterations=IT(1)) > 0
         mask = (reg > 0) & terra_px & ~lago_px & ~orn & ~costa_px
         conc.append(float((ras[mask] == reg[mask]).mean()))
         rot_j = json.load(open(rot_(k, ".json")))
@@ -649,29 +662,29 @@ def e5():
                 continue
             a_ = (reg == rr["r"]) & mask
             n = int(a_.sum())
-            if n < 200:
+            if n < AREA(200):
                 continue
             b_ = (ras == rr["r"]) & mask
             iou_estrito = float((a_ & b_).sum()) / max(1, int((a_ | b_).sum()))
             # tolerância de 1 px de cada lado da borda do vídeo: a simplificação de 1 px e o tremor movem os pixels de
             # borda, o que numa região compacta de ~250 px já leva o IoU estrito a ~0,79 sem erro de forma
             x0_, y0_, x1_, y1_ = rr["caixa"]
-            x0_, y0_, x1_, y1_ = max(0, x0_ - 3), max(0, y0_ - 3), min(1920, x1_ + 4), min(960, y1_ + 4)
+            x0_, y0_, x1_, y1_ = max(0, x0_ - PX(3)), max(0, y0_ - PX(3)), min(escala.W, x1_ + PX(3) + 1), min(escala.H, y1_ + PX(3) + 1)
             sub = (reg[y0_:y1_, x0_:x1_] == rr["r"]).astype(np.uint8)
             faixa = np.zeros(reg.shape, bool)
-            faixa[y0_:y1_, x0_:x1_] = cv2.dilate(sub, np.ones((3, 3), np.uint8)).astype(bool) & ~cv2.erode(sub, np.ones((3, 3), np.uint8)).astype(bool)
+            faixa[y0_:y1_, x0_:x1_] = cv2.dilate(sub, np.ones((3, 3), np.uint8), iterations=IT(1)).astype(bool) & ~cv2.erode(sub, np.ones((3, 3), np.uint8), iterations=IT(1)).astype(bool)
             a2_, b2_ = a_ & ~faixa, b_ & ~faixa
             iou = float((a2_ & b2_).sum()) / max(1, int((a2_ | b2_).sum()))
             estritos.append(iou_estrito)
             if rr["r"] in pecas:
                 ious_p.append(iou)          # peça de candidato (estado cortado pelo nome): só informa até a E7
                 continue
-            (ious_g if n >= 2000 else ious_m).append(iou)
+            (ious_g if n >= AREA(2000) else ious_m).append(iou)
             piores_iou.append((round(iou, 3), n, k, rr["r"]))
         # T5.3: para cada par de regiões vizinhas na imagem, a fronteira comum final é linha com >= 80 % do
         # comprimento da fronteira (simplificada, dentro da terra) — só pares com fronteira >= 0,5°
         # interior da terra: a mais de 2 px da costa (2/S graus; no mínimo 0,1°)
-        terra_int = terra.buffer(-max(0.1, 2.0 / p["S"]), join_style=2)
+        terra_int = terra.buffer(-max(0.1, PX(2.0) / p["S"]), join_style=2)
         qd = vet[k]["metricas"]["quadro"]
         dentro_q = shapely.box(max(-180, qd[0] + 0.5), qd[1] + 0.5, min(180, qd[2] - 0.5), qd[3] - 0.5)  # longe da borda do quadro
         pol_px = vz.poligonos_pixel(reg.astype(np.uint16))
@@ -748,8 +761,8 @@ def cache_testes():
     import rotular as rt
     from calibrar import carregar_mundo, renderizar
     mapas = carregar("mapas.json")
-    ids = json.load(open(os.path.join(AQUI, "amostras.json")))["media"]["ids"]
-    rapida = json.load(open(os.path.join(AQUI, "amostras.json")))["rapida"]["ids"]
+    ids = cache.amostras()["media"]["ids"]
+    rapida = cache.amostras()["rapida"]["ids"]
     ref = os.path.join(V2, "referencia-e4")
     # T-C6: rótulos do código dividido = rótulos da rodada de referência (antes da divisão). Prova única da
     # refatoração (passou em 2026-10-15, 200 mapas); depois disso as regras da E4e mudaram (miolos, traço fino) e a
@@ -812,7 +825,7 @@ def cache_testes():
     with tempfile.TemporaryDirectory() as tmp:
         for k in sorteio:
             arq = rt.arquivos(k)
-            im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+            im = cv2.imread(mapa_png(k))
             a = rt.e4a(im)
             rt.gravar_a(os.path.join(tmp, "a.npz"), a)
             if cache.hash_npz(os.path.join(tmp, "a.npz")) != cache.hash_arquivo(arq["a"]):
@@ -925,7 +938,7 @@ def cache_testes():
 
 
 # ---------------------------------------------------------------- miolos de letra (E4e)
-def regioes_cercadas(pasta, k, area_max=1000):
+def regioes_cercadas(pasta, k, area_max=None):
     """Regiões < area_max px, sem contato com o mar, cercadas (anel de 2 px) em >= 90 % por um vizinho (ou vizinhos da
     mesma cor dele), medidas
     nos rótulos gravados em pasta (independente do rotular.py): fração de letra no anel, diferença de cor, se a cor é
@@ -933,10 +946,12 @@ def regioes_cercadas(pasta, k, area_max=1000):
     import numpy as np
     import cv2
     import rotular as rt
+    if area_max is None:
+        area_max = AREA(1000)
     vivo = os.path.basename(pasta) == "rotulos"       # os rótulos atuais: variante (MAPA_GERAL_EXP) ou aprovada
     reg = cv2.imread(rot_(k, ".png") if vivo else os.path.join(pasta, f"{k}.png"), cv2.IMREAD_UNCHANGED).astype(np.int32)
     info = json.load(open(rot_(k, ".json") if vivo else os.path.join(pasta, f"{k}.json")))
-    px = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))[:, :, ::-1].astype(np.int32)
+    px = cv2.imread(mapa_png(k))[:, :, ::-1].astype(np.int32)
     cor = {r["r"]: np.array(r["cor"]) for r in info["regioes"]}
     caixas = [c for r in info["regioes"] for c in r["texto"]]
     k3 = np.ones((3, 3), np.uint8)
@@ -946,10 +961,10 @@ def regioes_cercadas(pasta, k, area_max=1000):
             continue
         x0, y0, x1, y1 = R["caixa"]
         cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
-        x0, y0, x1, y1 = max(0, x0 - 4), max(0, y0 - 4), min(1920, x1 + 5), min(960, y1 + 5)
+        x0, y0, x1, y1 = max(0, x0 - PX(4)), max(0, y0 - PX(4)), min(escala.W, x1 + PX(4) + 1), min(escala.H, y1 + PX(4) + 1)
         sub = reg[y0:y1, x0:x1]
         m = (sub == R["r"]).astype(np.uint8)
-        anel = cv2.dilate(m, k3, iterations=2).astype(bool) & (m == 0)
+        anel = cv2.dilate(m, k3, iterations=IT(2)).astype(bool) & (m == 0)
         viz = sub[anel]
         jan = px[y0:y1, x0:x1]
         mar_v = np.abs(jan - np.array([216, 225, 237])).sum(axis=2) <= 24
@@ -965,9 +980,9 @@ def regioes_cercadas(pasta, k, area_max=1000):
         cv_ = np.array(R["cor"])
         raio = float(cv2.distanceTransform(np.pad(m, 1), cv2.DIST_L2, 3).max())
         traco = bool(((cv_.min() >= 225 and cor[dono].min() < 200) or (cv_.max() <= 80 and cor[dono].max() > 150))
-                     and (fora >= 0.05 or raio <= 3.5))
+                     and (fora >= 0.05 or raio <= PX(3.5)))
         na_caixa = any(x <= cx <= x + w and y <= cy <= y + h for x, y, w, h in caixas)
-        nuc = cv2.dilate((jan.max(axis=2) <= 80).astype(np.uint8), k3).astype(bool)
+        nuc = cv2.dilate((jan.max(axis=2) <= 80).astype(np.uint8), k3, iterations=IT(1)).astype(bool)
         lin = float((((jan.max(axis=2) - jan.min(axis=2)) < 20) & (jan.max(axis=2) >= 100) & (jan.max(axis=2) <= 215) & ~nuc)[anel].mean())
         linha = (((jan.max(axis=2) - jan.min(axis=2)) < 20) & (jan.max(axis=2) >= 100) & (jan.max(axis=2) <= 215) & ~nuc)
         dm = np.isin(sub, [u_ for u_ in u.tolist() if u_ in cor and np.abs(cor[u_] - cor[dono]).sum() <= 20])
@@ -996,7 +1011,7 @@ def regioes_cercadas(pasta, k, area_max=1000):
 
 def miolos(amostra="media"):
     """T4.9: miolos de letra antes (cópia .cache/v2/antes-miolo/) e depois, na amostra; e enclaves que ficaram."""
-    ids = json.load(open(os.path.join(AQUI, "amostras.json")))[amostra]["ids"] if amostra != "todos" else \
+    ids = cache.amostras()[amostra]["ids"] if amostra != "todos" else \
         sorted(carregar("mapas.json"), key=int)
     antes_d = os.path.join(V2, "antes-miolo")
     depois_d = os.path.join(V2, "rotulos")
@@ -1138,9 +1153,9 @@ def e6():
                 continue
             # vizinhança (anel de 3 px) também igual: senão a borda comum mudou e os dois vetores mudam (aceito)
             ys, xs = np.divmod(pa, ra_.shape[1])
-            y0, y1, x0, x1 = max(0, ys.min() - 4), ys.max() + 5, max(0, xs.min() - 4), xs.max() + 5
+            y0, y1, x0, x1 = max(0, ys.min() - PX(4)), ys.max() + PX(4) + 1, max(0, xs.min() - PX(4)), xs.max() + PX(4) + 1
             ma = ra_[y0:y1, x0:x1] == int(ra)
-            anel = cv2.dilate(ma.astype(np.uint8), np.ones((3, 3), np.uint8), iterations=3).astype(bool)
+            anel = cv2.dilate(ma.astype(np.uint8), np.ones((3, 3), np.uint8), iterations=IT(3)).astype(bool)
             if not np.array_equal(ea[y0:y1, x0:x1][anel], eb[y0:y1, x0:x1][anel]):
                 viz_mudou += 1
                 continue
@@ -1191,10 +1206,11 @@ def e7():
     ok = n = 0
     perdidos = []
     for k, lst in am.items():
-        cx = texto.detectar(cv2.imread(os.path.join(V2, "mapas", f"{k}.png")))
+        cx = texto.detectar(cv2.imread(mapa_png(k)))
         for e in lst:
             n += 1
-            if any(x - 3 <= e["x"] <= x + w + 3 and y - 3 <= e["y"] <= y + h + 3 for t, x, y, w, h in cx):
+            ex, ey = PX(e["x"]), PX(e["y"])          # texto-amostra.json está em pixels de 1920
+            if any(x - PX(3) <= ex <= x + w + PX(3) and y - PX(3) <= ey <= y + h + PX(3) for t, x, y, w, h in cx):
                 ok += 1
             else:
                 perdidos.append((k, e["texto"]))

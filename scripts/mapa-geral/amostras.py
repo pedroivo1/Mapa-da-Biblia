@@ -4,7 +4,8 @@
 #                 (casos.json), de casos difíceis já vistos (Elam 1200 a.C., Bengala 1452, Ahmednagar 1602...), o
 #                 primeiro e o último de cada trecho de enquadramento e os mapas de transição de zoom.
 #   media (~200): a rápida + sorteio estratificado por trecho de enquadramento (semente fixa 42).
-# Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/amostras.py  -> scripts/mapa-geral/amostras.json
+# Uso: PYTHONPATH=~/.cache/mapa-biblia-lib/lib python3 scripts/mapa-geral/amostras.py  -> .cache/v2/amostras.json (da cache ativa;
+# os ids de mapa mudam quando a E2 é refeita). Os scripts leem por cache.amostras(), que cai no scripts/mapa-geral/amostras.json antigo.
 import json, os, random, sys
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +26,7 @@ DIFICEIS = [1200, -1452, -835, -687, -1602, -1502, -824, -1927]   # Elam, K. de 
 rap = [m(a) for a in REVISAO]
 rap += [m(p["ano"]) for p in json.load(open(os.path.join(AQUI, "pares.json")))["pares"]]
 rap += [m(c["ano"]) for c in json.load(open(os.path.join(AQUI, "casos.json")))["casos"]]
-rap += [m(a) for a in DIFICEIS] + ["26"]
+rap += [m(a) for a in DIFICEIS] + [m(2350)]      # (2350 a.C.: mapa 26 na E2 de 2026-10-15)
 ordem = sorted(mapas, key=lambda k: mapas[k]["quadro"])
 # primeiro e último mapa de cada trecho de enquadramento e os mapas de transição de zoom (fora dos trechos longos)
 longos = [t for t in cal["trechos"] if t["n"] >= 20]
@@ -50,5 +51,6 @@ for t in trechos:
 media = list(dict.fromkeys(media))
 saida = {"_ajuda": "Gerado por amostras.py; ids de mapas distintos (.cache/v2/mapas.json).",
          "rapida": {"ids": rap}, "media": {"ids": media}}
-json.dump(saida, open(os.path.join(AQUI, "amostras.json"), "w"), indent=1)
-print("rapida", len(rap), "media", len(media))
+saida["_ajuda"] = "Gerado por amostras.py; ids de mapas distintos desta cache (mapas.json). Lido por cache.amostras()."
+json.dump(saida, open(os.path.join(V2, "amostras.json"), "w"), indent=1)
+print("rapida", len(rap), "media", len(media), "->", os.path.join(V2, "amostras.json"))

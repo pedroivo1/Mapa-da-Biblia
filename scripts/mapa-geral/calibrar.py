@@ -7,7 +7,8 @@
 # apontador para a variante aprovada: {"trechos": [...], "por_mapa": {"<id>": {"S","X0","Y0","falha","mediana_px","p90_px"}}}.
 #
 # Modelo (cilíndrica de Miller, medida no vídeo: com Mercator o ajuste pedia escala vertical 0,98 e deixava 2× mais
-# erro; com Miller a razão vertical/horizontal sai 0,999; quadro de 1920×960):
+# erro; com Miller a razão vertical/horizontal sai 0,999; quadro de 1920×960 × MAPA_GERAL_ESCALA, ver escala.py; S, X0 e
+# Y0 ficam em pixels desse quadro e o JSON leva "escala"):
 #     u = (lon + 180) * S - X0            (px)
 #     v = (miller(80) - miller(lat)) * S - Y0 (px),  miller(lat) = deg(1,25 · ln tan(45° + 0,4·lat))
 # O mundo pode aparecer repetido (±360° de longitude) nos quadros que passam do antimeridiano.
@@ -20,14 +21,17 @@ from concurrent.futures import ProcessPoolExecutor
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.expanduser("~/.cache/mapa-biblia-lib/lib"))
+sys.path.insert(0, AQUI)
 import numpy as np
 import cv2
+import escala
+from escala import px, area
 
 RAIZ = os.path.normpath(os.path.join(AQUI, "..", ".."))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
 MUNDO = os.path.join(RAIZ, "frontend", "mapa", "mundo.json")
-H, W = 960, 1920
+H, W = escala.H, escala.W            # quadro da geometria (1920×960 × MAPA_GERAL_ESCALA)
 MAR_BGR = np.array([237, 225, 216], np.int32)   # mar do vídeo (medido: RGB 216,225,237)
 LIM_MAR = 24                                      # distância L1 máxima à cor do mar
 LAT_TOPO = 80.0
@@ -43,14 +47,15 @@ def merc_puro(lat):
     return np.degrees(np.log(np.tan(np.pi / 4 + np.radians(np.clip(lat, -85.0, 85.0)) / 2)))
 
 
-# tabela da v1 (quadros de 1280 px, supunha Mercator), ×1,5 para 1920 px: (S, X0, Y0). Y0 é convertido para Miller
-# mantendo a linha da latitude 40 no mesmo pixel.
+# tabela da v1 (quadros de 1280 px, supunha Mercator), ×1,5 para 1920 px e ×E para a escala da geometria:
+# (S, X0, Y0). Y0 é convertido para Miller mantendo a linha da latitude 40 no mesmo pixel.
 def _iniciais():
     out = []
     for S, X0, Y0 in [(11.28, 2174, 919), (8.40, 1397, 577), (7.049, 1045, 419), (4.673, 248, 203), (3.60, 16, 87)]:
         S, X0, Y0 = S * 1.5, X0 * 1.5, Y0 * 1.5
         v40 = (merc_puro(80.0) - merc_puro(40.0)) * S - Y0
-        out.append((S, X0, (merc(80.0) - merc(40.0)) * S - v40))
+        Y0 = (merc(80.0) - merc(40.0)) * S - v40
+        out.append((px(S), px(X0), px(Y0)))
     return out
 
 
@@ -111,7 +116,7 @@ def mascara_terra(im):
     d = np.abs(im.astype(np.int32) - MAR_BGR[None, None, :]).sum(axis=2)
     terra = ((d > LIM_MAR).astype(np.uint8)) * 255
     valido = np.ones((H, W), np.uint8)
-    valido[815:945, 700:1100] = 0          # ornamento do ano (a posição horizontal varia; faixa generosa)
+    valido[px(815):px(945), px(700):px(1100)] = 0          # ornamento do ano (a posição horizontal varia; faixa generosa)
     return terra, valido
 
 
@@ -132,10 +137,14 @@ def custo(terra_v, valido, terra, lagos, p):
     return float(dif.sum()) * H / (y1 - y0)     # normalizado para a altura inteira (regiões diferentes comparáveis)
 
 
-def ajustar(terra_v, valido, terra, lagos, p0, dX0=8.0):
+def ajustar(terra_v, valido, terra, lagos, p0, dX0=None):
     """Descida de coordenadas em (S, X0, Y0). A mudança de escala mantém fixo o ponto do mundo sob o centro do
     quadro (senão uma variação de 0,3 % de S desloca a costa em ~10 px e a descida nunca aceita o passo: a v1 desta
-    etapa parou 0,3 % abaixo do ótimo). Passos: X0/Y0 dX0 px; S 0,05 % por px de dX0; caem pela metade até 0,03 px."""
+    etapa parou 0,3 % abaixo do ótimo). Passos: X0/Y0 dX0 px (8 px de 1920 por padrão); S 0,05 % por px de 1920 de
+    dX0; caem pela metade até 0,03 px (de 1920). Os passos em pixels e a melhora mínima (0,5 px² de 1920) seguem a
+    escala; o passo relativo de S não."""
+    if dX0 is None:
+        dX0 = px(8.0)
     cx, cy = W / 2.0, H / 2.0
 
     def com_escala(p, f):
@@ -144,8 +153,8 @@ def ajustar(terra_v, valido, terra, lagos, p0, dX0=8.0):
 
     p = list(p0)
     c = custo(terra_v, valido, terra, lagos, p)
-    dS, dX = 0.0005 * dX0, dX0
-    while dX > 0.03:
+    dS, dX = 0.0005 * dX0 / escala.E, dX0
+    while dX > px(0.03):
         melhorou = True
         while melhorou:
             melhorou = False
@@ -157,7 +166,7 @@ def ajustar(terra_v, valido, terra, lagos, p0, dX0=8.0):
                         q = list(p)
                         q[i] += sinal * dX
                     cq = custo(terra_v, valido, terra, lagos, q)
-                    if cq < c - 0.5:
+                    if cq < c - area(0.5):
                         p, c, melhorou = q, cq, True
                         break
         dS /= 2
@@ -174,17 +183,17 @@ def residuo_costa(terra_v, valido, terra_r, p):
     borda_r = cv2.morphologyEx(terra_r, cv2.MORPH_GRADIENT, kern) > 0
     dist = cv2.distanceTransform((~borda_r).astype(np.uint8), cv2.DIST_L2, 3)
     m = np.zeros((H, W), bool)
-    m[y0 + 3:y1 - 3, 3:W - 3] = True
+    m[y0 + px(3):y1 - px(3), px(3):W - px(3)] = True
     m &= valido > 0
     sel = borda_v & m
     d = dist[sel]
-    if len(d) < 100:
+    if len(d) < px(100):
         return None, None, 0, 1.0
     # costa do vídeo a mais de 12 px da de mundo.json é diferença de forma (ilhas, lagos e detalhes que o mundo.json
     # não tem), não de alinhamento: fica fora da mediana e do p90, e a fração fora é registrada
-    perto = d[d <= 12.0]
+    perto = d[d <= px(12.0)]
     fora = 1.0 - len(perto) / len(d)
-    if len(perto) < 100:
+    if len(perto) < px(100):
         return None, None, int(len(d)), fora
     return float(np.median(perto)), float(np.percentile(perto, 90)), int(len(d)), float(fora)
 
@@ -202,7 +211,7 @@ def tarefa(args):
         area0 = float(((valido > 0)).sum())
         melhor = None
         if anterior is not None:
-            p, cu = ajustar(terra_v, valido, terra, lagos, anterior, dX0=1.0)
+            p, cu = ajustar(terra_v, valido, terra, lagos, anterior, dX0=px(1.0))
             if cu / area0 < 0.04:
                 melhor = (p, cu)
         if melhor is None:
@@ -239,11 +248,12 @@ VERSAO = 1
 
 def params():
     return {"versao": VERSAO, "projecao": "miller", "LIM_MAR": LIM_MAR, "LAT_TOPO": LAT_TOPO,
-            "LAGOS_NO_VIDEO": sorted(LAGOS_NO_VIDEO), "INICIAIS": [[round(v, 4) for v in p] for p in INICIAIS]}
+            "LAGOS_NO_VIDEO": sorted(LAGOS_NO_VIDEO), "INICIAIS": [[round(v, 4) for v in p] for p in INICIAIS],
+            **escala.params()}
 
 
 def chave_atual(mapas, ids):
-    h_png = [cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png")) for k in ids]
+    h_png = [cache.hash_arquivo(os.path.join(V2, escala.pasta_mapas(), f"{k}.png")) for k in ids]
     return cache.chave(VERSAO, params(), [cache.hash_arquivo(os.path.join(V2, "mapas.json")), cache.hash_arquivo(MUNDO),
                                           cache.hash_obj(h_png)])
 
@@ -290,7 +300,7 @@ def main():
         print("e3: nada a recalcular (chave %s); variante %s" % (ch[:10], variante))
     else:
         pedacos = np.array_split(np.arange(len(ids)), 16)
-        tarefas = [([ids[i] for i in c], [mapas[ids[i]]["quadro"] for i in c], os.path.join(V2, "mapas")) for c in pedacos if len(c)]
+        tarefas = [([ids[i] for i in c], [mapas[ids[i]]["quadro"] for i in c], os.path.join(V2, escala.pasta_mapas())) for c in pedacos if len(c)]
         por_mapa = {}
         with ProcessPoolExecutor(8) as ex:
             for r in ex.map(tarefa, tarefas):
@@ -298,7 +308,7 @@ def main():
                 print("mapas calibrados:", len(por_mapa), flush=True)
         arq = et.obj(ch, ".json")
         tmp = arq + ".tmp"
-        json.dump({"trechos": montar_trechos(ids, por_mapa), "por_mapa": por_mapa}, open(tmp, "w"))
+        json.dump({"escala": escala.E, "trechos": montar_trechos(ids, por_mapa), "por_mapa": por_mapa}, open(tmp, "w"))
         os.replace(tmp, arq)
         achado = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": round(time.time() - t0, 1)}
     et.m["variantes"][variante]["itens"]["calibracao"] = achado
@@ -318,7 +328,7 @@ def montar_trechos(ids, por_mapa):
         c = por_mapa.get(k)
         if not c:
             continue
-        if atual and abs(c["S"] / atual["S"] - 1) <= 0.002 and abs(c["X0"] - atual["X0"]) <= 4 and abs(c["Y0"] - atual["Y0"]) <= 4:
+        if atual and abs(c["S"] / atual["S"] - 1) <= 0.002 and abs(c["X0"] - atual["X0"]) <= px(4) and abs(c["Y0"] - atual["Y0"]) <= px(4):
             atual["ids"].append(k)
         else:
             atual = {"S": c["S"], "X0": c["X0"], "Y0": c["Y0"], "ids": [k]}

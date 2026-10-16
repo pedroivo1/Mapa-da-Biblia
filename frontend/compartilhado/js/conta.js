@@ -1,5 +1,6 @@
-// Conta (Supabase Auth) e tudo que é da conta: progresso (tabela progresso) e configurações
-// (tabela configuracoes). Expõe window.Conta. Busca ambos em segundo plano assim que há sessão e
+// Conta (Supabase Auth) e tudo que é da conta: progresso (tabela progresso), configurações
+// (tabela configuracoes) e marcações de versículos (tabela marcacoes: grifos e versículos salvos por tema).
+// Expõe window.Conta. Busca progresso e configurações em segundo plano assim que há sessão e
 // guarda uma cópia no navegador (biblia-cache); salva com atraso e despeja ao fechar a aba.
 // Precisa de compartilhado/js/util.js, supabase-js (CDN) e compartilhado/js/config.js carregados antes.
 (function () {
@@ -97,6 +98,7 @@
           alteradas = {};
           config = null;
           buscaDe = null;
+          buscaMarcacoes = null;
           if (!usuario) cacheLimpar();
           iniciarBusca();
           montarNav();
@@ -387,6 +389,85 @@
     caixaAviso.hidden = false;
   }
 
+  /* ---------- marcações: grifos e versículos salvos (tabela marcacoes) ---------- */
+
+  // cada marcação é { livro, capitulo, versiculo, grifo, salvo, temas }: uma linha por versículo
+  var buscaMarcacoes = null;
+
+  function lerMarcacoes() {
+    return sb
+      .from("marcacoes")
+      .select("livro, capitulo, versiculo, grifo, salvo, temas")
+      .then(function (r) {
+        if (r.error) throw r.error;
+        var lista = (r.data || []).map(function (m) {
+          return { livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] };
+        });
+        cacheGravar({ marcacoes: lista, tm: Date.now() });
+        return lista;
+      });
+  }
+
+  // a lista inteira da conta; uma cópia recém-confirmada vale sem ir ao banco
+  function carregarMarcacoes() {
+    if (!sb || !usuario) return Promise.resolve([]);
+    if (buscaMarcacoes) return buscaMarcacoes;
+    var c = cacheLer();
+    if (c && c.marcacoes && Date.now() - (c.tm || 0) < TTL_CACHE) {
+      buscaMarcacoes = Promise.resolve(c.marcacoes);
+    } else {
+      buscaMarcacoes = lerMarcacoes().catch(function (e) {
+        buscaMarcacoes = null;
+        throw e;
+      });
+    }
+    return buscaMarcacoes;
+  }
+
+  // a cópia guardada neste navegador (vale depois de pronto()), só para mostrar
+  function marcacoesGuardadas() {
+    var c = cacheLer();
+    return c && c.marcacoes ? c.marcacoes : null;
+  }
+
+  function mesmaMarcacao(a, b) {
+    return a.livro === b.livro && a.capitulo === b.capitulo && a.versiculo === b.versiculo;
+  }
+
+  // grava várias de uma vez (os versículos selecionados): sem grifo e sem salvar, a linha some
+  function salvarMarcacoes(lista) {
+    if (!sb || !usuario) return Promise.reject(new Error("sem usuário"));
+    var agora = new Date().toISOString();
+    var envia = [];
+    var apaga = [];
+    lista.forEach(function (m) {
+      if (!m.grifo && !m.salvo) apaga.push(m);
+      else envia.push({ user_id: usuario.id, livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [], atualizado_em: agora });
+    });
+    var pedidos = [];
+    if (envia.length) pedidos.push(sb.from("marcacoes").upsert(envia));
+    apaga.forEach(function (m) {
+      pedidos.push(sb.from("marcacoes").delete().match({ user_id: usuario.id, livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo }));
+    });
+    return Promise.all(pedidos).then(function (rs) {
+      rs.forEach(function (r) {
+        if (r.error) throw r.error;
+      });
+      // a cópia local passa a refletir o que ficou no servidor
+      var c = cacheLer();
+      var atual = (c && c.marcacoes) || [];
+      var nova = atual.filter(function (a) {
+        return !lista.some(function (m) { return mesmaMarcacao(a, m); });
+      });
+      lista.forEach(function (m) {
+        if (m.grifo || m.salvo) nova.push({ livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] });
+      });
+      cacheGravar({ marcacoes: nova, tm: Date.now() });
+      buscaMarcacoes = Promise.resolve(nova);
+      return nova;
+    });
+  }
+
   /* ---------- menu da conta na barra do topo ---------- */
 
   var esc = Util.esc;
@@ -479,6 +560,9 @@
     salvar: salvar,
     salvarAgora: salvarAgora,
     temPendente: temPendente,
+    carregarMarcacoes: carregarMarcacoes,
+    marcacoesGuardadas: marcacoesGuardadas,
+    salvarMarcacoes: salvarMarcacoes,
     entrarGoogle: entrarGoogle,
     entrar: entrar,
     criar: criar,

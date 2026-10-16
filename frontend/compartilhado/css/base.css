@@ -32,6 +32,13 @@
   --tl-governo: #a9c9f3;
   --tl-roma: #e34948;
   --tl-potencia: #c2ae93;
+  --rio: #3a86d9; /* rios do mapa geral */
+  --link: #1f63d6; /* links no texto, sempre desta cor (também depois de visitados) */
+  /* grifos do leitor (biblia/) e dos versículos salvos */
+  --grifo-amarelo: #f3df6e;
+  --grifo-verde: #bfe3a3;
+  --grifo-azul: #b4d4f4;
+  --grifo-rosa: #f3bfd3;
   color-scheme: light;
 }
 
@@ -61,6 +68,12 @@
   --tl-governo: #9dbdf0;
   --tl-roma: #e66767;
   --tl-potencia: #8c7660;
+  --rio: #5aa0f0;
+  --link: #73a9ff;
+  --grifo-amarelo: #5c4d0f;
+  --grifo-verde: #2a4d24;
+  --grifo-azul: #1f3d5e;
+  --grifo-rosa: #5a2a44;
   color-scheme: dark;
 }
 
@@ -96,6 +109,30 @@ body > .frame {
 
 * {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* links de texto (os sublinhados): sempre azuis, visitados ou não. Nav, logo, botões e chips não entram. */
+.prose a,
+.prose a:visited,
+.footer-inner a,
+.footer-inner a:visited,
+.biblia-topo p a,
+.biblia-topo p a:visited,
+.vazio a:not(.chip),
+.vazio a:not(.chip):visited,
+.geral-nota a,
+.geral-nota a:visited,
+.leitor-plano a,
+.leitor-plano a:visited,
+.plano-voltar a,
+.plano-voltar a:visited,
+.plano-trechos a,
+.plano-trechos a:visited,
+.versiculos-ref a,
+.versiculos-ref a:visited,
+.leitor-acoes-entrar,
+.leitor-acoes-entrar:visited {
+  color: var(--link);
 }
 
 .hud {
@@ -288,7 +325,6 @@ body > .frame {
 }
 
 .prose a {
-  color: var(--ink-strong);
   text-decoration-thickness: 1px;
   text-underline-offset: 0.18em;
 }
@@ -422,7 +458,7 @@ body > .frame {
 }
 
 .footer-inner a {
-  color: inherit;
+  color: var(--link);
 }
 
 .conta-aviso {
@@ -572,6 +608,47 @@ body > .frame {
 a.btn {
   display: inline-block;
   text-decoration: none;
+}
+
+/* tela média (metade de um monitor, tablet deitado): a nav cabe numa linha sem quebrar
+   o nome do site nem os links, e o e-mail some (fica só o Sair) */
+@media (min-width: 721px) and (max-width: 1100px) {
+  .wordmark,
+  .nav-link {
+    white-space: nowrap;
+  }
+
+  .wordmark {
+    padding: 0 0.75rem;
+  }
+
+  .nav-link {
+    padding: 0 0.3rem;
+  }
+
+  .nav-links .nav-link:first-child {
+    padding-left: 0.5rem;
+  }
+
+  .nav-links .nav-link:last-child {
+    padding-right: 0.5rem;
+  }
+
+  .nav-email {
+    display: none;
+  }
+}
+
+/* logo abaixo disso, letra um ponto menor para caber o Sair antes do botão de tema */
+@media (min-width: 721px) and (max-width: 800px) {
+  .wordmark {
+    font-size: 0.95rem;
+  }
+
+  .nav-link {
+    padding: 0 0.2rem;
+    font-size: 10px;
+  }
 }
 
 /* celular: logo, tema e menu; os links descem em um painel */

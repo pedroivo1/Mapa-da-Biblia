@@ -734,6 +734,38 @@ Testes `testar.py e10` (roda tudo):
     campo "ir para", URL com `?ano=`); `testar-pagina.mjs` (T9.2–T9.5) e `verificar.mjs` com os 4 anos do plano.
     `sw.js` VERSAO v4. Capturas em `.cache/v2/revisao/e9-*.png`.
 
+- **2026-10-16 (revisão do usuário do mapa publicado; 7 casos):** peças de um estado quebradas pela etiqueta (Arábia
+  Saudita, Afeganistão, Espanha, Vietnã/Laos, Egito 2500 a.C.), nomes trocados por causa disso (Mascate no Paquistão,
+  Marrocos na Espanha), Ebla sem nome e Uruk lido como Lagash, Oriente Médio de 2025 com Síria/Líbano/Israel/Jordânia
+  fundidos (cores quase iguais e linhas finas). Diagnóstico: no mapa de 2025 a E7 não fez **nenhuma** união, porque
+  só unia duas peças da mesma cor com o mesmo nome lido, e uma etiqueta de duas linhas ("Saudi" / "Arabia") caía
+  uma linha em cada peça. **Regra nova (`decidir_unioes`, VERSAO_U = 2):** fronteira feita de letras
+  (`fracao_letra >= 0,5`, mesma cor) une mesmo com nomes diferentes e mesmo com linha; fresta sem linha nem letra
+  (`SEM_LINHA_UNIAO`) une se só uma das peças tem nome. 55.625 uniões em 1.953 mapas (variante e7c): T7.8 caiu
+  de 37 soltos para 2, mas com 15 uniões erradas (estados minúsculos de 999 e 1799 d.C., com etiquetas abreviadas
+  que transbordam para o vizinho: a fronteira fica "de letras" sem ser cortada por etiqueta). As métricas da
+  fronteira não separam os dois casos (tabela em experimentos/pares_unioes2.py). **Regra final (VERSAO_U = 5):**
+  (a) mesmo nome e sem linha; (b) duas etiquetas empilhadas, linhas da mesma ("Saudi"/"Arabia", `empilhadas`);
+  (c) uma etiqueta cobre as duas peças (>= 25 % da caixa sobre cada, `SOBRE_UNIAO`) e a fronteira é de letras;
+  (d) fresta sem linha nem letra com só uma peça nomeada e a outra >= 5 % da área (o Nilo corta o Egito);
+  (e) fronteira de letras entre peças grandes (>= 600 px cada, fronteira >= 40 px). Etiqueta deslocada (dada por
+  proximidade) conta como peça sem nome. Resultado em pares.json: 3 erradas, 35 soltos (v1: 0/37); os casos do
+  usuário (Arábia Saudita, Afeganistão, Paquistão, Marrocos, Egito 2500 a.C.) ficam unidos. O arquivo de decisões
+  ganhou a versão no nome (`unioes-<textos>-u<versão>.json`). Obs.: pares.json tem o par 256/257 anotado dos dois
+  jeitos.
+- **Vídeo em 8K (pedido do usuário):** `vídeos/*8k.mp4` (7680×3840, AV1, 193 MB, formato 571 do yt-dlp). O quadro 8K
+  tem texto e linhas nítidos (o 1080 é borrado). Refazer E2–E6 em 8K custaria dias; a leitura dos nomes, não:
+  `quadros4k.py` grava o quadro de cada mapa distinto reduzido a 3840×1920 (`.cache/v2/mapas-4k/`, ~5 GB), e a E7a com
+  `MAPA_GERAL_ESCALA=2` detecta as caixas no mapa 1080 mas lê os recortes no quadro 4K (variante det-4k; a chave
+  inclui o quadro 4K). Amostra de 40 etiquetas de 2025: 1080 → 4K corrige "Cuos"→"Cuba", "Jomoka"→"Jamaica",
+  "Sahaea"→"Sahara", "Yrindod"→"Trinidad", "Butis"→"Barbados"…; tempo por recorte ~1,2× (2025) a ~4× (etiquetas
+  minúsculas). Cadeia noturna: det-4k → uniões → E6 (e7d) → nomes (e7d) → aprovar → construir → testes.
+- **Correções e edições robustas a regenerações:** `nomes.json` "entidades" e `edicoes.json` passaram a trazer `onde`
+  [ano, lon, lat]; o `construir.py` acha a entidade pelo ponto nesse ano (os ids da E7 e os slugs do site mudam quando
+  a E6 é refeita). O editor grava o ponto do clique em cada edição.
+- **Outro agente (2026-10-16, manhã):** moveu a E3 para a loja, trocou `visualizar.py`/`editor.py` pelo `painel.py`
+  (porta 8001, com os mesmos endpoints) e fez o commit `b2da5e8`, já enviado ao `origin`.
+
 ## 12. Instruções para o agente (copie e cole)
 
 > Você vai executar o plano `docs/mapa-geral-plano-2.md` no projeto "Mapa da Bíblia"
@@ -1013,3 +1045,29 @@ Testes `testar.py e10` (roda tudo):
 - E3 na loja por chave (`e3`, item `calibracao`); `calibracao.json` vira apontador; `cache.calibracao()` para ler;
   `rotular.chave_sub` concentra a fórmula das chaves da E4 (rodada sem mudança: 0 recálculos na amostra rápida da E4 e
   da E5 depois da mudança). Detalhe em `docs/mapa-geral-incremental.md` §7, itens 8 e 9.
+
+**2026-10-16 (qualidade máxima da extração: geometria em 4K, mediana por mapa, OCR em 8K; decisão do usuário)**
+
+- Fonte: o vídeo principal em 7680×3840 (render nativo, conferido num quadro: letras e fronteiras limpas; o 1920 do
+  YouTube tinha 205 kb/s). Decisão do usuário: qualidade máxima mesmo que leve um dia; dados do site podem crescer,
+  ele decide vendo os números; tudo como variante/cache nova, aprovar só com testes iguais ou melhores.
+- `escala.py` (fator E da geometria e E_OCR do OCR; `px`, `area`, `it`, `impar`, `pasta_mapas`, `pasta_ocr`): todas as
+  constantes em pixels dos scripts passam por ele; E = 1 é byte a byte o de antes (T-C1 OK, 0 recálculos, OCR 0
+  recortes lidos). Em `rotular.py` as funções são importadas como `_px/_area/_it` (há variáveis locais `px`/`area`).
+- E2: `quadros.decodificar()` é o único decodificador (ffmpeg com `scale=...:flags=area`; a varredura continua em
+  1920); `quadros_medios.py` grava cada mapa distinto em 1920, 4K e 8K como mediana de até 9 quadros da corrida (até
+  o `quadro_mapa`), numa passada sequencial por trecho (4 processos, ~1 GB cada); `montar_anos.gravar_pngs` saiu;
+  `transicoes.py` lê em fluxo e regrava pelo `quadros_medios`. O `quadros4k.py` (busca por quadro, 14 divergências)
+  foi substituído.
+- E3: `INICIAIS`, passos e limiares em pixels seguem a escala (o passo relativo de S não); `calibracao.json` ganha
+  `"escala"`; o painel divide S, X0, Y0 por ela ao desenhar. Recalibração em escala 1 comparada à adotada: 95 mapas
+  diferem em até 0,07 px / 0,01 % de S, todos encadeados depois dos dois mapas que `transicoes.py` trocou (a descida
+  parte do mapa anterior): não é efeito da refatoração.
+- E7a: detecção, caixas, hash e nota no quadro da geometria (as caixas ficam na escala dos rótulos, que a E7b indexa);
+  os motores leem o recorte no quadro do OCR com a ampliação de cada variante medida em relação a 1920 (um recorte de
+  8K é reduzido à mesma altura de letra de antes, mas de pixels nativos). `Reavaliador` passou a ler a mesma imagem
+  da nota (antes pontuava `tam` de 4K sobre o quadro 1080). `RAIO_PERTO`, `AREA_GRANDE`, `FRONTEIRA_GRANDE` escalados.
+- `construir.py --saida`; `cache.amostras()` (amostras na cache); `cadeia-4k.sh` roda tudo em `.cache-4k`; painel na
+  8003 para essa cache (`translate_path` troca `.cache/` pela cache ativa). Medidas prévias: E4 em 4K 44 s/mapa e
+  0,9 GB por processo (8 cabem), E5 8–11 s/mapa com `TOL_PX` 1 px de 4K (+50 % de vértices; variante `tol2`
+  reproduz a tolerância de hoje), decodificar o 8K inteiro 43–55 fps.

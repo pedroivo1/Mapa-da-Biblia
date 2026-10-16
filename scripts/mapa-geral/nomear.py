@@ -6,7 +6,10 @@
 #
 # E7a "textos": para cada mapa distinto, as etiquetas (texto.detectar) e as leituras de cada uma (texto.ler).
 #   Loja por chave (cache.py): .cache/v2/obj/e7a/<chave>.json, apontador .cache/v2/textos/<id>.json; a chave sai de
-#   texto.PARAMS, do hash do PNG do mapa e dos rótulos da E4e (a letra clara só vale dentro de região colorida).
+#   texto.PARAMS, do hash do PNG do mapa e dos rótulos da E4e (a letra clara só vale dentro de região colorida) e, se
+#   o OCR lê outro quadro, do hash dele. Escalas (escala.py): detecção, caixas, hash e nota no quadro da geometria
+#   (mapas/ ou mapas-4k/ com MAPA_GERAL_ESCALA=2); os motores de OCR leem os recortes no quadro do OCR (mapas-8k/
+#   com MAPA_GERAL_ESCALA_OCR=4), F_OCR vezes maior. Caixas em pixels da geometria; "tam" idem.
 #   Formato: {"caixas": [[tipo, x, y, w, h, hash_recorte, [[texto, nota, tam],
 #   ...]], ...]}.
 #   Caches por recorte (hash = sha1 dos pixels do recorte, caixa + MARGEM_REC px, + tipo), em .cache/v2/e7/:
@@ -26,6 +29,7 @@ import cv2
 cv2.setNumThreads(1)
 import cache
 import texto
+import escala
 
 V2 = cache.V2
 VERSAO_A = 1
@@ -51,17 +55,32 @@ def carregar_mem():
                 _MEM[qual][d["h"]] = d["r"]
 
 
-def hash_recorte(im, caixa):
+F_OCR = escala.E_OCR // escala.E      # pixels do quadro do OCR por pixel do quadro da geometria (8K sobre 4K: 2)
+
+
+def hash_recorte(im, caixa, F=1):
+    """Hash dos pixels do recorte no quadro do OCR (caixa na escala da geometria, ×F; margem MARGEM_REC de 1920)."""
     tipo, x, y, w, h = caixa
-    c = texto.recorte(im, x, y, w, h, texto.PARAMS["MARGEM_REC"])
+    c = texto.recorte(im, x * F, y * F, w * F, h * F, escala.px(texto.PARAMS["MARGEM_REC"]) * F)
     return hashlib.sha1(tipo.encode() + str(c.shape).encode() + c.tobytes()).hexdigest()[:20]
+
+
+def imagem_mapa(k):
+    return os.path.join(V2, escala.pasta_mapas(), f"{k}.png")
+
+
+def imagem_ocr(k):
+    """Quadro onde os motores de OCR leem os recortes (mapas-8k/ com MAPA_GERAL_ESCALA_OCR=4; quadros_medios.py)."""
+    return os.path.join(V2, escala.pasta_ocr(), f"{k}.png")
 
 
 def chave_mapa(k, et4):
     rot = et4.caminho(k, ".png")
-    return cache.chave(VERSAO_A, texto.PARAMS, [cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png")),
-                                                cache.hash_arquivo(os.path.realpath(rot)),
-                                                cache.hash_arquivo(os.path.realpath(et4.caminho(k, ".json")))])
+    entradas = [cache.hash_arquivo(imagem_mapa(k)), cache.hash_arquivo(os.path.realpath(rot)),
+                cache.hash_arquivo(os.path.realpath(et4.caminho(k, ".json")))]
+    if escala.E_OCR != escala.E:
+        entradas.append(cache.hash_arquivo(imagem_ocr(k)))
+    return cache.chave(VERSAO_A, texto.PARAMS, entradas)
 
 
 BRANCA = 235            # região com todos os canais >= 235 (branca, creme): não leva letra clara
@@ -87,14 +106,19 @@ def tarefa_textos(args):
             if et.itens(variante).get(k) != achado:
                 novas[k] = achado
             continue
-        im = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+        im = cv2.imread(imagem_mapa(k))
         rot, _, brancas = rotulos(k, et4)
+        # detecção, caixas, hash e nota na escala da geometria (a dos rótulos); os motores de OCR leem o recorte no
+        # quadro do OCR (F_OCR vezes maior; o 8K com a geometria em 4K)
+        im_ocr = cv2.imread(imagem_ocr(k)) if F_OCR > 1 else im
+        if im_ocr is None:
+            raise SystemExit(f"falta {imagem_ocr(k)} (rode quadros_medios.py)")
         caixas = []
         for cx in texto.detectar(im, texto.PARAMS, rot, brancas):
-            h = hash_recorte(im, cx)
+            h = hash_recorte(im_ocr, cx, F_OCR)
             lidos = _MEM["ocr"].get(h, novos["ocr"].get(h))
             if lidos is None:
-                lidos = novos["ocr"][h] = texto.ler_bruto(im, cx)
+                lidos = novos["ocr"][h] = texto.ler_bruto(im, cx, texto.PARAMS, im_ocr, F_OCR)
                 n_rec += 1
             else:
                 n_cache += 1
@@ -103,7 +127,10 @@ def tarefa_textos(args):
                 cands = novos["nota"][h] = texto.pontuar(im, cx, lidos)
             caixas.append(list(cx) + [h, cands])
         arq = et.obj(ch, ".json")
-        json.dump({"caixas": caixas}, open(arq + ".tmp", "w"), separators=(",", ":"), ensure_ascii=False)
+        saida = {"caixas": caixas}
+        if escala.E != 1 or escala.E_OCR != 1:
+            saida["escala"], saida["escala_ocr"] = escala.E, escala.E_OCR
+        json.dump(saida, open(arq + ".tmp", "w"), separators=(",", ":"), ensure_ascii=False)
         os.replace(arq + ".tmp", arq)
         novas[k] = {"chave": ch, "hash_saida": cache.hash_arquivo(arq), "segundos": round(time.time() - t0, 2)}
     return novas, novos, n_rec, n_cache
@@ -120,7 +147,7 @@ def ids_pedidos(args):
         return soltos
     if amostra == "todos":
         return sorted(mapas, key=lambda k: mapas[k]["quadro"])
-    return json.load(open(os.path.join(AQUI, "amostras.json")))[amostra]["ids"]
+    return cache.amostras()[amostra]["ids"]
 
 
 def textos(args):
@@ -159,7 +186,7 @@ def textos(args):
 # ------------------------------------------------------------------ E7b: etiqueta -> região -> entidade
 NOTA_MIN = 0.55         # leitura abaixo disso é descartada (caixa falsa ou ilegível)
 NOTA_CURTA = 0.8        # leitura com até 2 letras ("A", "Ka.") precisa de nota maior (caixa falsa lê letra solta)
-RAIO_PERTO = 30         # etiqueta sem região própria: estado sem etiqueta mais próximo até 30 px (1920×960)
+RAIO_PERTO = escala.px(30)   # etiqueta sem região própria: estado sem etiqueta mais próximo até 30 px (de 1920)
 FRACAO_REGIAO = 0.15    # região sob a etiqueta: a que cobre mais da caixa, se >= 15 % (estados pequenos: a caixa
                         # passa por vários)
 
@@ -382,7 +409,7 @@ class Reavaliador:
         if k not in self.ims:
             if len(self.ims) > 64:
                 self.ims.clear()
-            self.ims[k] = cv2.imread(os.path.join(V2, "mapas", f"{k}.png"))
+            self.ims[k] = cv2.imread(imagem_mapa(k))          # a mesma imagem (e escala) da nota do OCR
         return self.ims[k]
 
     def recortes(self, obs):
@@ -396,8 +423,8 @@ class Reavaliador:
         soma = {c: 0.0 for c in cands}
         for o in rec:
             x, y, w, h = o[7]
-            ink = texto.tinta(texto.recorte(self.im(o[2]), x, y, w, h, texto.PARAMS["MARGEM_REC"]), o[6] == "claro")
-            tams = [o[5] + d / 4 for d in range(-2, 3)]
+            ink = texto.tinta(texto.recorte(self.im(o[2]), x, y, w, h, escala.px(texto.PARAMS["MARGEM_REC"])), o[6] == "claro")
+            tams = [o[5] + d / 4 * escala.E for d in range(-2, 3)]
             for c in cands:
                 soma[c] += max(texto.nota(ink, c, t) for t in tams)
         return soma
@@ -604,7 +631,7 @@ def nomes(args):
     et_vet = cache.Etapa(fonte)
     var_vet = opcao("--variante-vetores", et_vet.m["aprovada"])
     var_t = opcao("--variante-textos", cache.Etapa("e7a").m["aprovada"])
-    un_arq = os.path.join(V2, "e7", f"unioes-{var_t}.json")
+    un_arq = os.path.join(V2, "e7", f"unioes-{var_t}-u{VERSAO_U}.json")
     unidas = {}
     if fonte == "e7u" and os.path.exists(un_arq):
         for k, lst in json.load(open(un_arq))["mapas"].items():
@@ -671,26 +698,54 @@ def nomes(args):
 # anotacoes.json "estados_diferentes" veta qualquer união que ponha os dois pontos na mesma região.
 LINHA_UNIAO = 0.0
 LETRA_UNIAO = 0.5
+SEM_LINHA_UNIAO = 0.5      # fresta entre peças da mesma cor sem linha nem letra (ex.: o Nilo corta a faixa do Egito)
 COR_UNIAO = 20
-VERSAO_U = 1
+PECA_MINIMA = 0.05         # a peça sem nome tem de ter >= 5 % da área da outra (senão é um vizinho minúsculo colado)
+SOBRE_UNIAO = 0.25         # uma etiqueta "cobre" as duas peças se >= 25 % da caixa dela está sobre cada uma
+AREA_GRANDE = escala.area(600)     # (e) peças grandes (>= 600 px de 1920 cada) com fronteira longa (>= FRONTEIRA_GRANDE px)
+FRONTEIRA_GRANDE = escala.px(40)   #     feita de letras são o mesmo estado mesmo sem etiqueta sobre as duas (minúsculos, não)
+VERSAO_U = 5               # 4: peças da mesma cor são unidas (a) com o mesmo nome e sem linha, (b) com duas etiquetas
+                           #    empilhadas (linhas da mesma: "Saudi"/"Arabia"), (c) quando uma etiqueta cobre as duas
+                           #    (SOBRE_UNIAO) e a fronteira é de letras, ou (d) por fresta sem linha nem letra com só
+                           #    uma peça nomeada e a outra >= PECA_MINIMA (o Nilo corta a faixa do Egito)
 
 
 def params_unioes():
     return {"versao": VERSAO_U, "LINHA_UNIAO": LINHA_UNIAO, "LETRA_UNIAO": LETRA_UNIAO, "COR_UNIAO": COR_UNIAO,
+            "SEM_LINHA_UNIAO": SEM_LINHA_UNIAO, "PECA_MINIMA": PECA_MINIMA, "SOBRE_UNIAO": SOBRE_UNIAO,
+            "AREA_GRANDE": AREA_GRANDE, "FRONTEIRA_GRANDE": FRONTEIRA_GRANDE,
             "NOTA_MIN": NOTA_MIN, "NOTA_CURTA": NOTA_CURTA, "RAIO_PERTO": RAIO_PERTO, "FRACAO_REGIAO": FRACAO_REGIAO}
 
 
-def decidir_unioes(info, dono, rot, notas):
-    """[[r_maior, r_menor, motivo], ...] (fecho transitivo: cada r_menor aponta para a raiz do grupo)."""
+def empilhadas(ca, cb):
+    """Duas caixas de texto são linhas da mesma etiqueta: uma logo abaixo da outra (vão <= 0,8 x altura), centradas
+    (centros a <= metade da largura maior) e com alturas parecidas (±30 %)."""
+    (xa, ya, wa, ha), (xb, yb, wb, hb) = ca, cb
+    if ya > yb:
+        (xa, ya, wa, ha), (xb, yb, wb, hb) = (xb, yb, wb, hb), (xa, ya, wa, ha)
+    vao = yb - (ya + ha)
+    return (abs(ha - hb) <= 0.3 * max(ha, hb) and -0.2 * max(ha, hb) <= vao <= 0.8 * max(ha, hb)
+            and abs((xa + wa / 2) - (xb + wb / 2)) <= 0.5 * max(wa, wb))
+
+
+def decidir_unioes(info, dono, rot, notas, ets=()):
+    """[[r_maior, r_menor, motivo], ...] (fecho transitivo: cada r_menor aponta para a raiz do grupo).
+    ets: todas as etiquetas do mapa (linhas_de_etiqueta), com "fr" = fração da caixa sobre cada região."""
     area = {q["r"]: q["area_px"] for q in info["regioes"]}
+    sobre = set()
+    for e in ets:
+        regs = [int(r) for r, v in e.get("fr", {}).items() if v >= SOBRE_UNIAO]
+        for i in range(len(regs)):
+            for j in range(i + 1, len(regs)):
+                sobre.add(tuple(sorted((regs[i], regs[j]))))
     linha = {}
     for c in info["candidatos"]:
         p = tuple(sorted((c["r_a"], c["r_b"])))
-        d = linha.setdefault(p, {"linha": 0.0, "letra": 0.0, "cor": 0, "fronteira": 0})
+        d = linha.setdefault(p, {"linha": 0.0, "letra": 0.0, "sem_linha": 0.0, "cor": 0, "fronteira": 0})
         d["linha"] = max(d["linha"], c["fracao_linha"])
         d["cor"] = max(d["cor"], c["dif_cor"])
         if c["fronteira_px"] > d["fronteira"]:
-            d["fronteira"], d["letra"] = c["fronteira_px"], c["fracao_letra"]
+            d["fronteira"], d["letra"], d["sem_linha"] = c["fronteira_px"], c["fracao_letra"], c.get("fracao_sem_linha", 0.0)
     pai = {}
 
     def raiz(x):
@@ -705,15 +760,24 @@ def decidir_unioes(info, dono, rot, notas):
         return any({raiz(x), raiz(y)} == {ra, rb} for x, y in diferentes)
     out = []
     for (a, b), d in sorted(linha.items(), key=lambda kv: -kv[1]["fronteira"]):
-        if d["linha"] > LINHA_UNIAO or d["cor"] > COR_UNIAO or raiz(a) == raiz(b):
+        if d["cor"] > COR_UNIAO or raiz(a) == raiz(b):
             continue
         ta, tb = dono.get(a), dono.get(b)
-        if ta and tb:
-            ok, mot = normal(ta["texto"]) == normal(tb["texto"]), "mesmo nome"
-        elif ta or tb:
-            ok, mot = d["letra"] >= LETRA_UNIAO, "parte sem nome"
-        else:
-            ok, mot = False, ""
+        da = ta if ta and not ta.get("deslocada") else None      # etiqueta dentro da peça
+        db = tb if tb and not tb.get("deslocada") else None
+        pequena = min(area.get(a, 0), area.get(b, 0)) >= PECA_MINIMA * max(area.get(a, 0), area.get(b, 0))
+        ok, mot = False, ""
+        if da and db and normal(da["texto"]) == normal(db["texto"]):
+            ok, mot = d["linha"] <= LINHA_UNIAO, "mesmo nome"
+        elif da and db and d["letra"] >= LETRA_UNIAO and empilhadas(da["caixa"], db["caixa"]):
+            ok, mot = True, "etiqueta de duas linhas"
+        elif (a, b) in sobre and d["letra"] >= LETRA_UNIAO and not (da and db):
+            ok, mot = True, "etiqueta sobre as duas"
+        elif (ta or tb) and pequena and d["linha"] <= LINHA_UNIAO and d["letra"] <= 0.1 and d["sem_linha"] >= SEM_LINHA_UNIAO:
+            ok, mot = True, "fresta sem linha"
+        elif (not (da and db) and d["letra"] >= LETRA_UNIAO and d["fronteira"] >= FRONTEIRA_GRANDE
+              and min(area.get(a, 0), area.get(b, 0)) >= AREA_GRANDE):
+            ok, mot = True, "fronteira de letras entre peças grandes"
         if ok and not vetado(a, b):
             ra, rb = raiz(a), raiz(b)
             if area.get(rb, 0) > area.get(ra, 0):
@@ -724,7 +788,7 @@ def decidir_unioes(info, dono, rot, notas):
 
 
 def unioes(args):
-    """E7d: grava .cache/v2/e7/unioes-<variante dos textos>.json {mapa: [[r_maior, r_menor, motivo], ...]}."""
+    """E7d: grava .cache/v2/e7/unioes-<variante dos textos>-u<VERSAO_U>.json {mapa: [[r_maior, r_menor, motivo], ...]}."""
     et7a, et4 = cache.Etapa("e7a"), cache.Etapa("e4e")
     var = sys.argv[sys.argv.index("--variante-textos") + 1] if "--variante-textos" in sys.argv else et7a.m["aprovada"]
     import rotular
@@ -735,12 +799,13 @@ def unioes(args):
     for k in sorted(et7a.itens(var), key=int):
         rot, info, _ = rotulos(k, et4)
         estados = {q["r"] for q in info["regioes"] if q["tipo"] == "estado"}
-        dono, _ = associar(json.load(open(et7a.caminho(k, ".json", var)))["caixas"], rot, estados)
-        u = decidir_unioes(info, dono, rot, notas.get(k, []))
+        caixas = json.load(open(et7a.caminho(k, ".json", var)))["caixas"]
+        dono, _ = associar(caixas, rot, estados)
+        u = decidir_unioes(info, dono, rot, notas.get(k, []), linhas_de_etiqueta(pecas(caixas, rot, estados)))
         if u:
             out[k] = u
             n += len(u)
-    arq = os.path.join(V2, "e7", f"unioes-{var}.json")
+    arq = os.path.join(V2, "e7", f"unioes-{var}-u{VERSAO_U}.json")
     json.dump({"params": params_unioes(), "variante_textos": var, "mapas": out}, open(arq, "w"), separators=(",", ":"))
     print(f"uniões: {n} em {len(out)} mapas de {len(et7a.itens(var))}  {time.time() - t0:.0f} s -> {arq}")
 
@@ -802,7 +867,7 @@ def tarefa_vetores(args):
 def vetores(args):
     """E7u: os vetores da E5 com as uniões da E7d (loja por chave; a chave inclui a lista de uniões do mapa)."""
     var_t = sys.argv[sys.argv.index("--variante-textos") + 1] if "--variante-textos" in sys.argv else cache.Etapa("e7a").m["aprovada"]
-    lista = json.load(open(os.path.join(V2, "e7", f"unioes-{var_t}.json")))["mapas"]
+    lista = json.load(open(os.path.join(V2, "e7", f"unioes-{var_t}-u{VERSAO_U}.json")))["mapas"]
     e5 = cache.Etapa("e5")
     var_e5 = e5.m["aprovada"]
     et = cache.Etapa("e7u")

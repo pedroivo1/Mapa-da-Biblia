@@ -48,27 +48,34 @@ sys.path.insert(0, AQUI)
 import numpy as np
 import cv2
 import cache
+import escala
+from escala import px as _px, area as _area, it as _it   # (_: funções têm variáveis locais px/area)
 
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
-H, W = 960, 1920
+H, W = escala.H, escala.W     # quadro da geometria (1920×960 × MAPA_GERAL_ESCALA; escala.py)
 MAR_RGB = np.array([216, 225, 237], np.int32)
+# constantes em pixels de 1920×960, convertidas pela escala (px: comprimento, area: área; cores não mudam)
 LIM_BORDA = 8          # diferença máxima por canal entre vizinhos dentro de uma zona plana
 LIM_MAR = 24
-AREA_SEMENTE = 25
-RAIO_TEXTO = 5.5
-AREA_TEXTO = 4000
+AREA_SEMENTE = _area(25)
+RAIO_TEXTO = _px(5.5)
+AREA_TEXTO = _area(4000)
 FRACAO_VIZINHA = 0.85
-EXPANSAO_COSTA = 8
-AREA_MINIMA = 40
-AREA_MIOLO = 1000         # px: regiões menores que isso, cercadas por um vizinho, são testadas como miolo de letra
+EXPANSAO_COSTA = _px(8)
+AREA_MINIMA = _area(40)
+AREA_MIOLO = _area(1000)   # px: regiões menores que isso, cercadas por um vizinho, são testadas como miolo de letra
 COR_UNIAO = 20            # L1 máxima entre "mesma cor" (ruído ±3 por canal + antialias; creme × branco >= 25)
 
 
 def ornamento(g):
-    """(x0, x1) da moldura do ano no quadro (cinza), como em quadros.py; None se não achar."""
+    """(x0, x1) da moldura do ano no quadro (cinza), como em quadros.py (que trabalha em 1920×960: o quadro é
+    reduzido para procurar e o resultado volta à escala); None se não achar."""
     from quadros import moldura
-    return moldura(g)
+    if escala.E == 1:
+        return moldura(g)
+    lr = moldura(cv2.resize(g, (escala.W0, escala.H0), interpolation=cv2.INTER_AREA))
+    return (_px(lr[0]), _px(lr[1])) if lr else None
 
 
 def zonas_planas(im):
@@ -92,7 +99,7 @@ def evidencia_letra(px, cor):
     (máx. canal > 150). A linha cinza entre estados cremes (máx. canal ~120–160) não é letra."""
     branco = np.all(px >= cor + 0.25 * (255 - cor), axis=2) & (px.min(axis=2) > cor.min(axis=2) + 25) & (cor.min(axis=2) < 200)
     nucleo = (px.max(axis=2) <= 80).astype(np.uint8)
-    preto = cv2.dilate(nucleo, np.ones((3, 3), np.uint8)).astype(bool) & (cor.max(axis=2) > 150)
+    preto = cv2.dilate(nucleo, np.ones((3, 3), np.uint8), iterations=_it(1)).astype(bool) & (cor.max(axis=2) > 150)
     return branco | preto
 
 
@@ -121,11 +128,12 @@ def e4a(im):
     n, lab, st = zonas_planas(im)
     gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     lr = ornamento(gray)
+    from quadros import ORN_Y, ORN_MARGEM
     orn = np.zeros((H, W), bool)
     if lr:
-        orn[815:945, max(0, lr[0] - 22):lr[1] + 22] = True
+        orn[_px(ORN_Y[0]):_px(ORN_Y[1]), max(0, lr[0] - _px(ORN_MARGEM)):lr[1] + _px(ORN_MARGEM)] = True
     else:
-        orn[815:945, 600:1400] = True
+        orn[_px(ORN_Y[0]):_px(ORN_Y[1]), _px(600):_px(1400)] = True
     rgb = im[:, :, ::-1]
     # cor mediana e raio inscrito de cada zona (nas caixas)
     classe = np.zeros(n, np.int8)       # 0 = nada, 1 = mar, 2 = texto candidato, 3 = semente
@@ -133,14 +141,14 @@ def e4a(im):
     areas = st[:, cv2.CC_STAT_AREA]
     for i in range(1, n):
         a = areas[i]
-        if a < 3:
+        if a < _area(3):
             continue
         x, y, w, h = st[i, 0], st[i, 1], st[i, 2], st[i, 3]
         m = lab[y:y + h, x:x + w] == i
         px = rgb[y:y + h, x:x + w][m]
         c = np.median(px, axis=0).astype(np.int32)
         cores[i] = c
-        if a < 12:
+        if a < _area(12):
             continue            # só a cor (para os fragmentos de estados cobertos pelo nome)
         if np.abs(c - MAR_RGB).sum() <= LIM_MAR:
             classe[i] = 1
@@ -164,10 +172,10 @@ def e4a(im):
     dono_texto = {}
     for i in cand:
         x, y, w, h = st[i, 0], st[i, 1], st[i, 2], st[i, 3]
-        x0, y0, x1, y1 = max(0, x - 5), max(0, y - 5), min(W, x + w + 5), min(H, y + h + 5)
+        x0, y0, x1, y1 = max(0, x - _px(5)), max(0, y - _px(5)), min(W, x + w + _px(5)), min(H, y + h + _px(5))
         sub = lab[y0:y1, x0:x1]
         m = (sub == i).astype(np.uint8)
-        anel = cv2.dilate(m, k, iterations=4).astype(bool) & ~(m > 0)
+        anel = cv2.dilate(m, k, iterations=_it(4)).astype(bool) & ~(m > 0)
         ids = sub[anel]
         ids = ids[(classe[ids] == 1) | (classe[ids] == 3)]
         if len(ids) == 0:
@@ -189,31 +197,31 @@ def e4a(im):
     def buraco_de_letra(ids_zona, cor):
         mg_full = np.isin(lab, ids_zona)
         ys, xs = np.where(mg_full)
-        x0, y0, x1, y1 = max(0, xs.min() - 8), max(0, ys.min() - 8), min(W, xs.max() + 9), min(H, ys.max() + 9)
+        x0, y0, x1, y1 = max(0, xs.min() - _px(8)), max(0, ys.min() - _px(8)), min(W, xs.max() + _px(8) + 1), min(H, ys.max() + _px(8) + 1)
         mg = mg_full[y0:y1, x0:x1].astype(np.uint8)
         sub = lab[y0:y1, x0:x1]
-        anel = cv2.dilate(mg, k, iterations=6).astype(bool) & (mg == 0)
+        anel = cv2.dilate(mg, k, iterations=_it(6)).astype(bool) & (mg == 0)
         ids = sub[anel]
         ids = ids[((classe[ids] == 1) | (classe[ids] == 3)) & ~np.isin(ids, ids_zona)]
-        if len(ids) < 8:
+        if len(ids) < _area(8):
             return False
         u, c = np.unique(ids, return_counts=True)
         j = c.argmax()
         if c[j] / float(len(ids)) < FRACAO_VIZINHA or np.abs(cores[u[j]] - cor).sum() > 60 or areas[u[j]] <= mg.sum():
             return False
-        borda = cv2.dilate(mg, k, iterations=2).astype(bool) & (mg == 0)
+        borda = cv2.dilate(mg, k, iterations=_it(2)).astype(bool) & (mg == 0)
         jan = rgb[y0:y1, x0:x1].astype(np.int32)
         letra = evidencia_letra(jan, np.broadcast_to(np.asarray(cor, np.int32), jan.shape))
         return letra[borda].mean() >= 0.5
 
     for i in np.where(classe == 3)[0]:
-        if areas[i] < 500 and buraco_de_letra([i], cores[i]):
+        if areas[i] < _area(500) and buraco_de_letra([i], cores[i]):
             classe[i] = 0
     # estados quase cobertos pelo próprio nome ("K.", "M."): sobram só fragmentos < 25 px da cor do estado entre as
     # letras. Fragmentos de 3..24 px da mesma cor (L1 <= COR_UNIAO), a <= 10 px uns dos outros, somando >= 20 px e
     # que não sejam vão de letra de outra semente (buraco_de_letra), viram uma semente só.
     grupos = []
-    peq = np.where((classe == 0) & (areas >= 3) & (areas < AREA_SEMENTE))[0]
+    peq = np.where((classe == 0) & (areas >= _area(3)) & (areas < AREA_SEMENTE))[0]
     peq = [i for i in peq if not (cores[i].max() <= 80 or cores[i].min() >= 246) and not orn[st[i, 1], st[i, 0]]]
     if peq:
         classes_cor = []
@@ -224,14 +232,14 @@ def e4a(im):
             classes_cor.append(mesma)
             restantes = [i for i in restantes if i not in set(mesma)]
         for ids_c in classes_cor:
-            if sum(areas[i] for i in ids_c) < 20:
+            if sum(areas[i] for i in ids_c) < _area(20):
                 continue
             m = np.isin(lab, ids_c).astype(np.uint8)
-            ng, lg = cv2.connectedComponents(cv2.dilate(m, k, iterations=5), connectivity=8)
+            ng, lg = cv2.connectedComponents(cv2.dilate(m, k, iterations=_it(5)), connectivity=8)
             for g in range(1, ng):
                 membros = [i for i in ids_c if (lg[st[i, 1]:st[i, 1] + st[i, 3], st[i, 0]:st[i, 0] + st[i, 2]][
                     lab[st[i, 1]:st[i, 1] + st[i, 3], st[i, 0]:st[i, 0] + st[i, 2]] == i] == g).any()]
-                if sum(areas[i] for i in membros) < 20:
+                if sum(areas[i] for i in membros) < _area(20):
                     continue
                 if buraco_de_letra(membros, cores[membros[0]]):
                     continue
@@ -295,7 +303,7 @@ def e4d(im, ws, a):
     cor_marc = a["cor_marc"]
     # estados cortados pelo próprio nome (as letras separam o estado em duas zonas da mesma cor): estatísticas da
     # fronteira entre regiões vizinhas de cor quase igual (L1 <= COR_UNIAO): letra, preenchimento, linha
-    tpx = cv2.dilate(a["texto_px"].astype(np.uint8), k, iterations=1).astype(bool)
+    tpx = cv2.dilate(a["texto_px"].astype(np.uint8), k, iterations=_it(1)).astype(bool)
     # evidência de letra: pixel branco sobre região colorida, ou escuro sobre região clara (as letras finas não formam
     # zona plana própria; só aparecem como pixels de borda)
     cor_lab = np.zeros((ws.max() + 1, 3), np.int32)
@@ -316,10 +324,10 @@ def e4d(im, ws, a):
     seg = (MAR_RGB - cl).astype(np.float32)
     tt_ = np.clip(((pxr - cl) * seg).sum(axis=2) / np.maximum((seg * seg).sum(axis=2), 1.0), 0, 1)
     resid = np.abs(pxr - (cl + tt_[:, :, None] * seg)).sum(axis=2)
-    junto_mar = cv2.dilate((ws == 1).astype(np.uint8), k, iterations=2).astype(bool)
+    junto_mar = cv2.dilate((ws == 1).astype(np.uint8), k, iterations=_it(2)).astype(bool)
     preench = (np.abs(pxr - cl).sum(axis=2) <= 24) | ((resid <= 40) & junto_mar)
     # linha de contorno: cinza sem saturação (máx. canal 100..215, saturação < 20) longe (> 1 px) de núcleo de letra
-    nucleo_l = cv2.dilate((pxr.max(axis=2) <= 80).astype(np.uint8), k, iterations=1).astype(bool)
+    nucleo_l = cv2.dilate((pxr.max(axis=2) <= 80).astype(np.uint8), k, iterations=_it(1)).astype(bool)
     sat_l = pxr.max(axis=2) - pxr.min(axis=2)
     linha = (sat_l < 20) & (pxr.max(axis=2) >= 100) & (pxr.max(axis=2) <= 215) & ~nucleo_l
     pares = {}
@@ -363,17 +371,18 @@ def e4d(im, ws, a):
 def decidir_unioes(pares, cor_marc, area):
     """Regras de união sobre a tabela da E4d (sem pixels). Devolve (uniões [(a, b, registro)], candidatos [registro]).
     Pura: a mesma tabela dá sempre o mesmo resultado, e serve para testar regras novas em segundos."""
+    area_ = escala.area            # (o argumento `area` é a tabela de áreas por rótulo)
     unioes, candidatos = [], []
     for kk, tot, tt, ff, ll in pares:
         a, b = divmod(kk, 100000)
         dc = int(np.abs(cor_marc[a] - cor_marc[b]).sum())
-        if tot < 2 or dc > COR_UNIAO:
+        if tot < _px(2) or dc > COR_UNIAO:
             continue
         outro = (tot - tt - ff) / tot
         claro = min(cor_marc[a].min(), cor_marc[b].min()) >= 200
         tipo_u = None
-        if tot < 6:
-            if not claro and min(area[a], area[b]) < 1500 and (tt + ff) / tot >= 0.7:
+        if tot < _px(6):
+            if not claro and min(area[a], area[b]) < area_(1500) and (tt + ff) / tot >= 0.7:
                 tipo_u = "gargalo"
         elif claro and ll / tot >= 0.15:
             tipo_u = None
@@ -474,18 +483,18 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
     sat = mx.astype(np.int16) - mn
     nao_mar = dmar > LIM_MAR
     # (o halo branco dos rótulos sobre o mar não é ilha: os pixels a <= 2 px do núcleo preto das letras saem)
-    perto_letra = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=2).astype(bool)
+    perto_letra = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=_it(2)).astype(bool)
     cand_ilha = (ws == 1) & nao_mar & ((sat >= 25) | (mn >= 246)) & ~orn & ~perto_letra
     ni, li, sti, _ = cv2.connectedComponentsWithStats(cand_ilha.astype(np.uint8), connectivity=8)
     maior_ws = int(ws.max())
     for c_ in range(1, ni):
-        if sti[c_, cv2.CC_STAT_AREA] < 4:
+        if sti[c_, cv2.CC_STAT_AREA] < _area(4):
             continue
         x, y, w, h = sti[c_, :4]
-        x0, y0, x1, y1 = max(0, x - 2), max(0, y - 2), min(W, x + w + 2), min(H, y + h + 2)
+        x0, y0, x1, y1 = max(0, x - _px(2)), max(0, y - _px(2)), min(W, x + w + _px(2)), min(H, y + h + _px(2))
         m = li[y0:y1, x0:x1] == c_
         cor_i = np.median(pxr[y0:y1, x0:x1][m], axis=0)
-        anel = cv2.dilate(m.astype(np.uint8), k, iterations=1).astype(bool) & ~m
+        anel = cv2.dilate(m.astype(np.uint8), k, iterations=_it(1)).astype(bool) & ~m
         viz = ws[y0:y1, x0:x1][anel]
         viz = viz[viz >= 2]
         alvo = None
@@ -522,15 +531,15 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
     cont_reg = {v: len(ix) for v, ix in idx_reg.items() if v > 0}
     caixa_reg = {v: caixa_de(ix) for v, ix in idx_reg.items() if v > 0}
     for v, c_ in sorted(cont_reg.items(), key=lambda t: t[1]):
-        if c_ >= 150:
+        if c_ >= _area(150):
             continue
         x0, y0, x1, y1 = caixa_reg[v]
-        x0, y0, x1, y1 = max(0, x0 - 1), max(0, y0 - 1), min(W, x1 + 2), min(H, y1 + 2)
+        x0, y0, x1, y1 = max(0, x0 - _px(1)), max(0, y0 - _px(1)), min(W, x1 + _px(1) + 1), min(H, y1 + _px(1) + 1)
         sub = reg[y0:y1, x0:x1]
         m = (sub == v).astype(np.uint8)
         if not m.any():
             continue
-        anel = cv2.dilate(m, k, iterations=1).astype(bool) & (m == 0)
+        anel = cv2.dilate(m, k, iterations=_it(1)).astype(bool) & (m == 0)
         viz = sub[anel]
         tot = len(viz)
         viz = viz[(viz > 0) & (viz != v)]
@@ -573,7 +582,7 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
     miolos = []
     caixas_txt = a["caixas"]
     # linha de contorno (cinza sem saturação, longe de núcleo de letra), como na E4d
-    nucleo_m = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=1).astype(bool)
+    nucleo_m = cv2.dilate((mx <= 80).astype(np.uint8), k, iterations=_it(1)).astype(bool)
     linha_m = (sat < 20) & (mx >= 100) & (mx <= 215) & ~nucleo_m
     mar_video = dmar <= LIM_MAR
     # várias passadas: o miolo de um "B" fica cercado pelo traço da letra (que também virou região); quando o traço
@@ -593,12 +602,12 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
                 continue
             x0, y0, x1, y1 = caixa_de(ix)
             bx = [x0, y0, x1, y1]
-            x0, y0, x1, y1 = max(0, x0 - 4), max(0, y0 - 4), min(W, x1 + 5), min(H, y1 + 5)
+            x0, y0, x1, y1 = max(0, x0 - _px(4)), max(0, y0 - _px(4)), min(W, x1 + _px(4) + 1), min(H, y1 + _px(4) + 1)
             sub = reg[y0:y1, x0:x1]
             m = (sub == v).astype(np.uint8)
             if not m.any():
                 continue
-            anel = cv2.dilate(m, k, iterations=2).astype(bool) & (m == 0)
+            anel = cv2.dilate(m, k, iterations=_it(2)).astype(bool) & (m == 0)
             viz = sub[anel]
             # toca o mar (no rótulo ou na cor do vídeo: a expansão da costa pinta o mar perto da terra): ilha, fica
             # (>= 5 % do anel: a antialias de uma letra branca sobre vermelho dá, aqui e ali, um pixel cor de mar)
@@ -626,7 +635,7 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
             # volta (o "n" de Tang, o "J" de Jin, o "Y" de Yuan viravam enclave); um enclave creme/branco real
             # (o "A." em 1121 d.C.) é mais grosso
             raio = float(cv2.distanceTransform(np.pad(m, 1), cv2.DIST_L2, 3).max())
-            traco = bool(cor_letra and (fora >= 0.05 or raio <= 3.5))
+            traco = bool(cor_letra and (fora >= 0.05 or raio <= _px(3.5)))
             cx, cy = (bx[0] + bx[2]) // 2, (bx[1] + bx[3]) // 2
             na_caixa = any(x <= cx <= x + w and y <= cy <= y + h for x, y, w, h in caixas_txt)
             dt = cv2.distanceTransform(np.pad(m, 1), cv2.DIST_L2, 3)[1:-1, 1:-1]
@@ -688,12 +697,12 @@ def e4e(im, ws0, a, d, terra_mundo=None, notas=None):
         mudou = False
         for v in pequenas:
             x0, y0, x1, y1 = caixa_de(idx_reg[v])
-            x0, y0, x1, y1 = max(0, x0 - 1), max(0, y0 - 1), min(W, x1 + 2), min(H, y1 + 2)
+            x0, y0, x1, y1 = max(0, x0 - _px(1)), max(0, y0 - _px(1)), min(W, x1 + _px(1) + 1), min(H, y1 + _px(1) + 1)
             sub = reg[y0:y1, x0:x1]
             m = (sub == v).astype(np.uint8)
             if not m.any():
                 continue
-            anel = cv2.dilate(m, k, iterations=1).astype(bool) & (m == 0)
+            anel = cv2.dilate(m, k, iterations=_it(1)).astype(bool) & (m == 0)
             vizinhos = sub[anel]
             vizinhos = vizinhos[(vizinhos > 0) & (vizinhos != v)]
             if len(vizinhos):
@@ -787,15 +796,17 @@ VERSAO = {"a": 1, "b": 1, "d": 1, "e": 14}     # e2: miolos de letra; e3: passad
 
 
 def params(sub):
+    """Parâmetros de cada sub-etapa (entram na chave de cache), nas unidades finais (já na escala; escala.params()
+    acrescenta ESCALA quando não é 1, para a E4b, que não tem parâmetro próprio, também mudar de chave)."""
     if sub == "a":
         return {"LIM_BORDA": LIM_BORDA, "LIM_MAR": LIM_MAR, "AREA_SEMENTE": AREA_SEMENTE, "RAIO_TEXTO": RAIO_TEXTO,
-                "AREA_TEXTO": AREA_TEXTO, "FRACAO_VIZINHA": FRACAO_VIZINHA, "COR_UNIAO": COR_UNIAO}
+                "AREA_TEXTO": AREA_TEXTO, "FRACAO_VIZINHA": FRACAO_VIZINHA, "COR_UNIAO": COR_UNIAO, **escala.params()}
     if sub == "d":
-        return {"LIM_COR_TABELA": LIM_COR_TABELA}
+        return {"LIM_COR_TABELA": LIM_COR_TABELA, **escala.params()}
     if sub == "e":
         return {"COR_UNIAO": COR_UNIAO, "EXPANSAO_COSTA": EXPANSAO_COSTA, "AREA_MINIMA": AREA_MINIMA, "LIM_MAR": LIM_MAR,
-                "AREA_MIOLO": AREA_MIOLO}
-    return {}
+                "AREA_MIOLO": AREA_MIOLO, **escala.params()}
+    return dict(escala.params())
 
 
 def chave_sub(sub, h_png, h_a=None, h_b=None, h_d=None, cal_k=None, mundo_h=None, nota=None):
@@ -893,7 +904,7 @@ def notas_por_mapa(cal):
         return {}
     m80 = 1.25 * math.degrees(math.log(math.tan(math.pi / 4 + 0.4 * math.radians(80.0))))
 
-    def px(p, lonlat):
+    def _px(p, lonlat):
         lon, lat = lonlat
         y = 1.25 * math.degrees(math.log(math.tan(math.pi / 4 + 0.4 * math.radians(lat))))
         return [min(W - 1, max(0, int(round((lon + 180) * p["S"] - p["X0"])))),
@@ -905,9 +916,9 @@ def notas_por_mapa(cal):
             continue
         r = {"id": n["id"], "tipo": n["tipo"], "comentario": n.get("comentario", "")}
         if n["tipo"] == "problema":
-            r["px"] = px(cal[k], n["ponto"])
+            r["px"] = _px(cal[k], n["ponto"])
         else:
-            r["px_a"], r["px_b"] = px(cal[k], n["ponto_a"]), px(cal[k], n["ponto_b"])
+            r["px_a"], r["px_b"] = _px(cal[k], n["ponto_a"]), _px(cal[k], n["ponto_b"])
         out.setdefault(k, []).append(r)
     return out
 
@@ -934,7 +945,7 @@ def processar(args):
         try:
             t_mapa = {}
             arq = arquivos(k)
-            png = os.path.join(V2, "mapas", f"{k}.png")
+            png = os.path.join(V2, escala.pasta_mapas(), f"{k}.png")
             h_png = cache.hash_arquivo(png)
             im = None
             dados = {}
@@ -1027,7 +1038,7 @@ def processar(args):
 def amostra_ids(nome, mapas):
     if nome == "todos":
         return sorted(mapas, key=lambda k: mapas[k]["quadro"])
-    return json.load(open(os.path.join(AQUI, "amostras.json")))[nome]["ids"]
+    return cache.amostras()[nome]["ids"]
 
 
 def rodar(ids, forcar=False, nproc=8, lote=6, mostrar=True, variante=None):
@@ -1087,7 +1098,7 @@ def main():
         # o que seria recalculado na E4a (as seguintes dependem do conteúdo das anteriores: "depois")
         mans = cache.manifesto("e4/a")
         n = sum(1 for k in ids if cache.precisa(mans, k, chave_sub("a",
-            cache.hash_arquivo(os.path.join(V2, "mapas", f"{k}.png"))), arquivos(k)["a"]))
+            cache.hash_arquivo(os.path.join(V2, escala.pasta_mapas(), f"{k}.png"))), arquivos(k)["a"]))
         print(f"E4a recalcularia {n} de {len(ids)}; E4b/E4d/E4e dependem do conteúdo das anteriores")
         return
     variante = sys.argv[sys.argv.index("--variante") + 1] if "--variante" in sys.argv else None

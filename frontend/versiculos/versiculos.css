@@ -1,0 +1,135 @@
+/* Versículos salvos (versiculos/index.html, versiculos.js): filtros por tema, lista e modo decorar. */
+
+.versiculos {
+  border-top: 1px solid var(--line);
+}
+
+.versiculos-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 1rem 1.5rem 0;
+}
+
+.versiculos-filtros .chip[aria-pressed="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.versiculos-filtros .chip[aria-pressed="true"] .faint {
+  color: inherit;
+  opacity: 0.6;
+}
+
+.versiculos-acoes {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.versiculos-lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.versiculos-item {
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.versiculos-ref a {
+  text-decoration: none;
+}
+
+.versiculos-ref a:hover {
+  text-decoration: underline;
+}
+
+.versiculos-texto {
+  max-width: 44rem;
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.65;
+}
+
+.versiculos-texto sup,
+.versiculos-decorar-texto sup {
+  margin-right: 0.2em;
+  color: var(--faint);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.6em;
+}
+
+.versiculos-item-acoes {
+  margin: 0.7rem 0 0;
+}
+
+.versiculos-item-acoes .chip[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* modo decorar: só a referência; o texto aparece ao pedir */
+.versiculos-decorar {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+  text-align: center;
+}
+
+.versiculos-decorar-ref {
+  margin: 1.25rem 0 1rem;
+  color: var(--ink-strong);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.versiculos-decorar-texto {
+  margin: 0 0 1rem;
+  font-size: 1.35rem;
+  line-height: 1.6;
+}
+
+.versiculos-decorar-dica {
+  margin: 0 0 1rem;
+}
+
+.versiculos-decorar-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.versiculos-decorar-acoes .chip {
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .versiculos-filtros,
+  .versiculos-acoes,
+  .versiculos-item {
+    padding-right: 1.25rem;
+    padding-left: 1.25rem;
+  }
+
+  .versiculos-decorar {
+    padding: 2rem 1.25rem 3rem;
+  }
+}
+
+@media (pointer: coarse) {
+  .versiculos-filtros .chip,
+  .versiculos-item-acoes .chip,
+  .versiculos-decorar-acoes .chip {
+    min-height: 44px;
+  }
+}

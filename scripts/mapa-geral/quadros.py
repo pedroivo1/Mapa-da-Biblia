@@ -6,7 +6,11 @@
 #     passo "ler"     : OCR das caixas de ano distintas (E2.2) -> .cache/v2/anos-lidos.json
 #     passo "montar"  : sequência de anos, mapas distintos (PNG), anos.json (E2.3–E2.6)
 #     (sem passo roda os três, em ordem)
-# Lê só o vídeo `*hzWwp9JM7Hw*.webm` em vídeos/. Saídas em scripts/mapa-geral/.cache/v2/ (ignorada pelo git):
+# Lê o vídeo principal em vídeos/ (video(): prefere *hzWwp9JM7Hw*8k.mp4, 7680×3840; senão qualquer arquivo do id). Todo
+# quadro é decodificado por decodificar(), que reduz com `scale=...:flags=area` para o tamanho pedido: a varredura
+# (ano e mudança de mapa) é sempre em 1920×960, qualquer que seja a fonte. Os PNGs dos mapas distintos (1920, 4K e
+# 8K, mediana de vários quadros) são do quadros_medios.py (E2.4), chamado por montar_anos.montar().
+# Saídas em scripts/mapa-geral/.cache/v2/ (ignorada pelo git):
 #   varredura.npz   por quadro: esquerda/direita da moldura do ano, hash da caixa, mudança do mapa em relação ao anterior
 #   caixas.npz      imagens (cinza) das caixas de ano distintas, indexadas pelo hash
 #   anos-lidos.json hash da caixa -> texto lido pelo OCR
@@ -26,8 +30,7 @@ import cv2
 RAIZ = os.path.normpath(os.path.join(AQUI, "..", ".."))
 CACHE = os.environ.get("MAPA_GERAL_CACHE") or os.path.join(AQUI, ".cache")
 V2 = os.path.join(CACHE, "v2")
-VIDEO = glob.glob(os.path.join(RAIZ, "vídeos", "*hzWwp9JM7Hw*.webm"))[0]
-H, W = 960, 1920
+H, W = 960, 1920            # a varredura é sempre no quadro de referência (escala.W0 × escala.H0)
 FPS = 30000 / 1001
 N_QUADROS = 31280
 # moldura do ano: faixa vertical (y) e limites de largura; a posição horizontal muda com o enquadramento
@@ -38,6 +41,49 @@ ORN_MARGEM = 22           # px de cada lado da moldura que também são ornament
 LIMIAR_MUDANCA = 12       # alisado 5×5 da diferença máxima por canal
 MIN_PIXELS_MUDANCA = 10   # pixels acima do limiar para contar como mudança de mapa
 N_PROC = 8
+
+
+def video():
+    """Arquivo do vídeo principal: o 8K (*8k.mp4) se existir, senão o primeiro arquivo com o id."""
+    pasta = os.path.join(RAIZ, "vídeos")
+    v = sorted(glob.glob(os.path.join(pasta, "*hzWwp9JM7Hw*8k.mp4")))
+    if not v:
+        v = sorted(f for f in glob.glob(os.path.join(pasta, "*hzWwp9JM7Hw*")) if not f.endswith(".part"))
+    if not v:
+        raise SystemExit("vídeo principal (id hzWwp9JM7Hw) não encontrado em vídeos/")
+    return v[0]
+
+
+def decodificar(i0, n, largura=W, altura=H, threads=2, pix="bgr24"):
+    """Gera os quadros i0 .. i0+n-1 do vídeo, reduzidos a largura×altura (filtro area, exato para múltiplos
+    inteiros), como arrays uint8 (altura, largura, 3) ou (altura, largura) em cinza. Começa meio quadro antes do
+    instante de i0, para o corte cair no quadro certo (mesma convenção em toda a E2)."""
+    ss = max(0.0, (i0 - 0.5) / FPS)
+    cmd = ["ffmpeg", "-v", "error", "-threads", str(threads), "-ss", f"{ss:.4f}", "-i", video(), "-frames:v", str(n),
+           "-vf", f"scale={largura}:{altura}:flags=area", "-f", "rawvideo", "-pix_fmt", pix, "-"]
+    canais = 1 if pix == "gray" else 3
+    tam = altura * largura * canais
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+    try:
+        k = 0
+        while k < n:
+            b = p.stdout.read(tam)
+            if len(b) < tam:
+                break
+            f = np.frombuffer(b, np.uint8)
+            yield f.reshape(altura, largura) if canais == 1 else f.reshape(altura, largura, 3)
+            k += 1
+    finally:
+        p.stdout.close()
+        p.kill()
+        p.wait()
+
+
+def tarefas():
+    """Partição do vídeo em N_PROC trechos (i0, n), a mesma da varredura: o primeiro quadro de cada trecho é
+    marcado como mudança (mud = -1), então nenhuma corrida de mapa atravessa um limite."""
+    por = N_QUADROS // N_PROC + 1
+    return [(i, min(por, N_QUADROS - i)) for i in range(0, N_QUADROS, por)]
 
 
 def moldura(g):
@@ -79,22 +125,12 @@ def caixa_ano(g, lr):
 
 def varrer_trecho(args):
     i0, n = args
-    # começa meio quadro antes do instante do quadro i0, para o corte cair no quadro certo
-    ss = max(0.0, (i0 - 0.5) / FPS)
-    cmd = ["ffmpeg", "-v", "error", "-threads", "2", "-ss", f"{ss:.4f}", "-i", VIDEO, "-frames:v", str(n),
-           "-f", "rawvideo", "-pix_fmt", "bgr24", "-"]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
-    tam = H * W * 3
     esq = np.full(n, -1, np.int16); dir_ = np.full(n, -1, np.int16)
     hcx = np.zeros(n, "S16"); mud = np.zeros(n, np.int32); mud_ru = np.zeros(n, np.int32)
     caixas = {}
     prev = None
     k = 0
-    while k < n:
-        b = p.stdout.read(tam)
-        if len(b) < tam:
-            break
-        f = np.frombuffer(b, np.uint8).reshape(H, W, 3)
+    for f in decodificar(i0, n, W, H, threads=2):
         g = cv2.cvtColor(f, cv2.COLOR_BGR2GRAY)
         lr = moldura(g)
         if lr:
@@ -112,20 +148,18 @@ def varrer_trecho(args):
             mud_ru[k] = int((d > 0).sum())
         prev = m.astype(np.int16)
         k += 1
-    p.stdout.close(); p.wait()
     return i0, k, esq[:k], dir_[:k], hcx[:k], mud[:k], mud_ru[:k], caixas
 
 
 def varrer():
     os.makedirs(V2, exist_ok=True)
-    por = N_QUADROS // N_PROC + 1
-    tarefas = [(i, min(por, N_QUADROS - i)) for i in range(0, N_QUADROS, por)]
+    trechos = tarefas()
     esq = np.full(N_QUADROS, -1, np.int16); dir_ = esq.copy()
     hcx = np.zeros(N_QUADROS, "S16"); mud = np.zeros(N_QUADROS, np.int32); mud_ru = mud.copy()
     caixas = {}
     lidos = 0
     with ProcessPoolExecutor(N_PROC) as ex:
-        for i0, k, e, d, h, m, mr, cx in ex.map(varrer_trecho, tarefas):
+        for i0, k, e, d, h, m, mr, cx in ex.map(varrer_trecho, trechos):
             esq[i0:i0 + k], dir_[i0:i0 + k], hcx[i0:i0 + k] = e, d, h
             mud[i0:i0 + k], mud_ru[i0:i0 + k] = m, mr
             caixas.update(cx)
@@ -133,7 +167,7 @@ def varrer():
             print(f"trecho {i0}: {k} quadros", flush=True)
     # a mudança do primeiro quadro de cada trecho não tem anterior: refeita na junção (compara com o último do trecho
     # anterior só se for preciso; aqui é marcada como "sem medida" = -1 e tratada como mudança pela montagem)
-    for i0, _ in tarefas[1:]:
+    for i0, _ in trechos[1:]:
         mud[i0] = -1
     print("quadros lidos:", lidos)
     np.savez_compressed(os.path.join(V2, "varredura.npz"), esq=esq, dir=dir_, hcx=hcx, mud=mud, mud_ru=mud_ru)

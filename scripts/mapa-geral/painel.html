@@ -334,15 +334,18 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
   function miller(lat) { return 1.25 * grau(Math.log(Math.tan(Math.PI / 4 + 0.4 * rad(lat)))); }
   var M80 = miller(LAT_TOPO);
 
-  // inverso de para_lonlat (vetorizar.py): lon/lat -> pixel do quadro de 1920 px
+  // inverso de para_lonlat (vetorizar.py): lon/lat -> pixel do quadro de 1920 px. A calibração pode estar em
+  // pixels de um quadro maior (calibracao.json "escala": 2 = 3840×1920): divide pela escala para o viewBox de 1920.
   function projetar(lon, lat, cal) {
-    return [(lon + 180) * cal.S - cal.X0, (M80 - miller(lat)) * cal.S - cal.Y0];
+    var e = est.escalaCal || 1;
+    return [((lon + 180) * cal.S - cal.X0) / e, ((M80 - miller(lat)) * cal.S - cal.Y0) / e];
   }
-  // para_lonlat (vetorizar.py): pixel do quadro -> lon/lat
+  // para_lonlat (vetorizar.py): pixel do quadro (de 1920) -> lon/lat
   function paraLonLat(x, y, cal) {
-    var ym = M80 - (y + cal.Y0) / cal.S;
+    var e = est.escalaCal || 1;
+    var ym = M80 - (y * e + cal.Y0) / cal.S;
     var lat = (grau(Math.atan(Math.exp(rad(ym / 1.25)))) - 45) / 0.4;
-    return [+((x + cal.X0) / cal.S - 180).toFixed(4), +lat.toFixed(4)];
+    return [+((x * e + cal.X0) / cal.S - 180).toFixed(4), +lat.toFixed(4)];
   }
   function nomeAno(a) { return a > 0 ? a + " a.C." : (-a) + " d.C."; }
   function lerAno(t) {
@@ -388,7 +391,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       buscar(V2 + "mapas.json", "json"),
       buscar(V2 + "calibracao.json", "json"),
       buscar(V2 + "anos.json", "json").catch(nulo),
-      buscar("amostras.json", "json").catch(nulo),
+      buscar(V2 + "amostras.json", "json", true).catch(function () { return buscar("amostras.json", "json").catch(nulo); }),
       buscar("casos.json", "json").catch(nulo),
       buscar("pares.json", "json").catch(nulo),
       buscar(ARQ_NOTAS, "json", true).catch(nulo),
@@ -422,6 +425,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
       }
       est.mapas = r[0].dados;
       est.cal = r[1].dados.por_mapa;
+      est.escalaCal = r[1].dados.escala || 1;
       est.anosInfo = r[2] ? r[2].dados : {};
       if (r[3]) { est.amostras = r[3].dados; }
       est.casos = r[4] ? r[4].dados.casos : [];
@@ -742,13 +746,13 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
           h.push("<path class='marca' d='" + f.d + "' fill='rgba(0,229,255,.18)' stroke='#00e5ff' stroke-width='" + (2 / est.z) +
             "' stroke-dasharray='4 2' fill-rule='evenodd'>" + t + "</path>");
         } else if (e.ponto) {
-          h.push("<circle class='marca' cx='" + e.ponto[0] + "' cy='" + e.ponto[1] + "' r='" + r + "' fill='none' stroke='#00e5ff' stroke-width='2'>" + t + "</circle>");
+          h.push("<circle class='marca' cx='" + (e.ponto[0] / (est.escalaCal || 1)) + "' cy='" + (e.ponto[1] / (est.escalaCal || 1)) + "' r='" + r + "' fill='none' stroke='#00e5ff' stroke-width='2'>" + t + "</circle>");
         }
       });
       (ro.unioes || []).forEach(function (u) {
         if (u.tipo !== "miolo" || !u.ponto) { return; }
         var cor = u.motivo === "texto" ? "#ffd400" : "#26a69a";
-        h.push("<circle class='marca' cx='" + u.ponto[0] + "' cy='" + u.ponto[1] + "' r='" + (r * 0.55) + "' fill='" + cor +
+        h.push("<circle class='marca' cx='" + (u.ponto[0] / (est.escalaCal || 1)) + "' cy='" + (u.ponto[1] / (est.escalaCal || 1)) + "' r='" + (r * 0.55) + "' fill='" + cor +
           "' stroke='#000' stroke-width='" + (1 / est.z) + "'><title>" + esc("miolo absorvido (" + u.motivo + ") por r" + u.r + " · letra " +
           u.fracao_letra + " · linha " + u.fracao_linha + " · dif. cor " + u.dif_cor + (u.traco ? " · traço" : "") +
           (u.caixa_texto ? " · caixa de texto" : "")) + "</title></circle>");
@@ -845,7 +849,7 @@ h2.secao { font-size: 15px; margin: 18px 0 8px; }
     var info = est.anosInfo[a];
     if (info && info.quadro_mapa !== undefined) { h.push("<dt>Quadro do ano</dt><dd>" + info.quadro_mapa + "</dd>"); }
     if (cal) {
-      h.push("<dt>Calibração</dt><dd>S " + cal.S + " · p90 " + (+cal.p90_px).toFixed(2) + " px · fora " + (+cal.fora).toFixed(3) + "</dd>");
+      h.push("<dt>Calibração</dt><dd>S " + cal.S + (est.escalaCal > 1 ? " (quadro ×" + est.escalaCal + ")" : "") + " · p90 " + (+cal.p90_px).toFixed(2) + " px · fora " + (+cal.fora).toFixed(3) + "</dd>");
     } else {
       h.push("<dt>Calibração</dt><dd class='erro'>ausente</dd>");
     }

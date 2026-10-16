@@ -2,10 +2,14 @@
 // Dados (formato 2, gerados por scripts/mapa-geral/construir.py):
 //   /mapa/mundo.json (costa), dados/indice.json ({versao: 2, de, ate, bloco, estados: {id: {nome, nome_video, cor,
 //   desde, ate, nota, nomes?: [[de, ate, nome], ...]}}, fonte}) e dados/blocos/<a|d><ano>.json ({anos: [de, ate],
-//   formas: [{id, de, ate, aneis}]}), um por bloco de 25 anos, carregados sob demanda (até 20 blocos em memória).
+//   formas: [{id, de, ate, aneis, r}]}), um por bloco de 25 anos, carregados sob demanda (até 20 blocos em memória).
+//   "r" = [lon, lat] onde o nome é escrito (ponto interno da forma).
 //   Anéis em centésimos de grau, primeiro ponto absoluto e os seguintes como deltas: [x0, y0, dx1, dy1, ...].
 // Anos: a.C. positivo, d.C. negativo, sem ano 0; posição i = 0…4524 (2500 a.C. -> 2025 d.C.). ?ano=-30 abre em
 // 30 d.C. e a URL acompanha o ano. Projeção: compartilhado/js/projecao.js (Equal Earth).
+// O cartão do estado mostra também o nome original e o link da Wikipédia, se o índice trouxer os campos
+//   opcionais nome_original e wiki. (Os dados do Cliopatria, no mesmo formato, ficam fora do site, em
+//   scripts/mapa-geral/dados-cliopatria/.)
 (function () {
   "use strict";
 
@@ -14,6 +18,8 @@
   var L = P.largura;
   var A = P.altura;
   var MAX_BLOCOS = 20;
+  var DADOS = "/mapa-geral/dados/";
+  var ANO0 = 2500; // ano (a.C.) da posição 0; vem do "de" do índice
 
   var contSvg = document.getElementById("geral-svg");
   var cartao = document.getElementById("geral-cartao");
@@ -56,11 +62,11 @@
   /* ---------- anos e blocos ---------- */
 
   function anoDePos(i) {
-    return i < 2500 ? 2500 - i : -(i - 2499);
+    return i < ANO0 ? ANO0 - i : -(i - (ANO0 - 1));
   }
 
   function posDeAno(a) {
-    return a > 0 ? 2500 - a : 2499 - a;
+    return a > 0 ? ANO0 - a : ANO0 - 1 - a;
   }
 
   function rotuloAno(a) {
@@ -72,7 +78,7 @@
   }
 
   function arquivoBloco(b) {
-    return "/mapa-geral/dados/blocos/" + nomeArquivo(anoDePos(b * BLOCO)) + ".json";
+    return DADOS + "blocos/" + nomeArquivo(anoDePos(b * BLOCO)) + ".json";
   }
 
   // "586 a.C.", "586", "-586", "30 d.C." -> ano (a.C. positivo, d.C. negativo); null se não for um ano válido
@@ -159,6 +165,7 @@
       }
     }
     f._d = d;
+    if (f.r) { var qr = P.proj(f.r[0], f.r[1]); maior = { x: qr[0], y: qr[1], larg: maior ? maior.larg : 0 }; }
     f._rot = maior;
     f._area = area;
   }
@@ -302,8 +309,11 @@
     cartao.innerHTML =
       '<button type="button" class="geral-cartao-fechar" aria-label="Fechar">×</button>' +
       "<h2>" + esc(nome || "Estado sem nome lido") + "</h2>" +
+      (m.nome_original && m.nome_original !== nome ? '<p class="hud faint">' + esc(m.nome_original) + "</p>" : "") +
       (periodo ? '<p class="hud faint">' + esc(periodo) + "</p>" : "") +
-      (m.nota ? "<p>" + esc(m.nota) + "</p>" : "");
+      (m.nota ? "<p>" + esc(m.nota) + "</p>" : "") +
+      (m.wiki ? '<p><a href="https://en.wikipedia.org/wiki/' + encodeURI(m.wiki.replace(/ /g, "_")) +
+        '" target="_blank" rel="noopener">Wikipédia (em inglês)</a></p>' : "");
     cartao.hidden = false;
   }
 
@@ -493,6 +503,13 @@
       }
     });
     gEstados = el("g", {}, svgEl);
+    // rios (mundo.json, tipo "rio"): por cima dos estados, sem pegar o clique
+    var gRios = el("g", { "class": "geral-rios" }, svgEl);
+    mundo.fundo.forEach(function (f) {
+      if (f.tipo !== "rio") return;
+      var pts = f.pontos.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ");
+      el("polyline", { "class": "geral-rio", points: pts, fill: "none" }, gRios);
+    });
     gNomes = el("g", {}, svgEl);
     contSvg.textContent = "";
     contSvg.appendChild(svgEl);
@@ -506,11 +523,12 @@
 
   Promise.all([
     fetch("/mapa/mundo.json").then(function (r) { return r.json(); }),
-    fetch("/mapa-geral/dados/indice.json").then(function (r) { return r.json(); })
+    fetch(DADOS + "indice.json").then(function (r) { return r.json(); })
   ]).then(function (r) {
     var ind = r[1];
     if (ind.versao !== 2 || ind.de == null || ind.ate == null) return falha("Ainda não há dados no mapa geral.");
     meta = ind.estados || {};
+    ANO0 = ind.de;
     BLOCO = ind.bloco || 25;
     N = posDeAno(ind.ate) - posDeAno(ind.de) + 1;
     nota.textContent = ind.fonte || "";

@@ -1,5 +1,5 @@
 {
- "_ajuda": "Nomes do mapa geral v2 (E7, docs/mapa-geral-plano-2.md). 'traducoes': nome lido do vídeo (OCR votado em nomes-lidos.json) -> nome publicado em pt-BR; nomes sem tradução são publicados como lidos se parecem uma palavra, senão ficam sem rótulo (construir.py). 'entidades': correções por entidade final {id: {nome, nota}}, acima da tradução. 'trocas': toda troca de nome lida numa entidade, com a decisão do usuário ('decisao' preenchida = a troca é real e a entidade segue com o mesmo id e o nome novo). Em 2026-10-15 o usuário aprovou todas as trocas em bloco. 'entidades' aceita 'nome' (a vida toda) ou 'nomes' ([[de, ate, nome], ...]) e 'nota'.",
+ "_ajuda": "Nomes do mapa geral v2 (E7, docs/mapa-geral-plano-2.md). 'traducoes': nome lido do vídeo (OCR votado em nomes-lidos.json) -> nome publicado em pt-BR; nomes sem tradução são publicados como lidos se parecem uma palavra, senão ficam sem rótulo (construir.py). 'entidades': correções por entidade final {id: {nome, nota}}, acima da tradução. 'trocas': toda troca de nome lida numa entidade, com a decisão do usuário ('decisao' preenchida = a troca é real e a entidade segue com o mesmo id e o nome novo). Em 2026-10-15 o usuário aprovou todas as trocas em bloco. 'entidades' aceita 'nome' (a vida toda) ou 'nomes' ([[de, ate, nome], ...]) e 'nota'. Cada correção em 'entidades' traz 'onde' [ano, lon, lat]: o construir.py acha a entidade pelo ponto nesse ano (os ids da E7 mudam quando a E6 é refeita; 'id_e7' é só o id da rodada em que a correção foi feita).",
  "traducoes": {
   "Abbasid": "Califado Abássida",
   "Abbasid Caliphate": "Califado Abássida",
@@ -1079,20 +1079,41 @@
   "PS.": "Estados Papais",
   "Neu.": "Nêustria",
   "Ka.": "Caxemira",
-  "Nagas": "Nagas"
+  "Nagas": "Nagas",
+  "Loos": "Laos",
+  "Hawaa": "Havaí",
+  "Hawai": "Havaí"
  },
  "entidades": {
   "e00241": {
    "nome": "Iberos",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    374,
+    -3.98,
+    37.2
+   ],
+   "id_e7": "e00241"
   },
   "e00348": {
    "nome": "Nabateus",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    198,
+    36.17,
+    28.54
+   ],
+   "id_e7": "e00348"
   },
   "e00408": {
    "nome": "Reino Greco-Bactriano",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    211,
+    66.81,
+    36.52
+   ],
+   "id_e7": "e00408"
   },
   "e00437": {
    "nomes": [
@@ -1112,7 +1133,13 @@
      "Reino de Odoacro"
     ]
    ],
-   "nota": "Etiqueta de duas linhas do vídeo lida só em parte (\"Empire\"); nomes conferidos pelo ano e pela posição."
+   "nota": "Etiqueta de duas linhas do vídeo lida só em parte (\"Empire\"); nomes conferidos pelo ano e pela posição.",
+   "onde": [
+    -141,
+    20.29,
+    44.16
+   ],
+   "id_e7": "e00437"
   },
   "e00489": {
    "nomes": [
@@ -1127,15 +1154,33 @@
      "Vândalos"
     ]
    ],
-   "nota": "Reinos de Numídia e Mauritânia (depois província romana); o vídeo só teve a etiqueta lida no fim, como Vândalos."
+   "nota": "Reinos de Numídia e Mauritânia (depois província romana); o vídeo só teve a etiqueta lida no fim, como Vândalos.",
+   "onde": [
+    -145,
+    2.33,
+    34.98
+   ],
+   "id_e7": "e00489"
   },
   "e00558": {
    "nome": "Sátrapas Ocidentais",
-   "nota": "Noroeste da Índia, 10–119 d.C.; sem etiqueta lida."
+   "nota": "Noroeste da Índia, 10–119 d.C.; sem etiqueta lida.",
+   "onde": [
+    -64,
+    71.35,
+    26.07
+   ],
+   "id_e7": "e00558"
   },
   "e00568": {
    "nome": "Britânia",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    -226,
+    -1.17,
+    52.66
+   ],
+   "id_e7": "e00568"
   },
   "e00616": {
    "nomes": [
@@ -1150,27 +1195,63 @@
      "Wu Oriental"
     ]
    ],
-   "nota": "Três Reinos; etiqueta \"Eastern Wu\" lida só em parte."
+   "nota": "Três Reinos; etiqueta \"Eastern Wu\" lida só em parte.",
+   "onde": [
+    -236,
+    113.06,
+    26.2
+   ],
+   "id_e7": "e00616"
   },
   "e00655": {
    "nome": "Caxemira",
-   "nota": "Etiqueta abreviada no vídeo (\"Ka.\")."
+   "nota": "Etiqueta abreviada no vídeo (\"Ka.\").",
+   "onde": [
+    -727,
+    75.02,
+    33.07
+   ],
+   "id_e7": "e00655"
   },
   "e00714": {
    "nome": "Império Bizantino",
-   "nota": "Império Romano do Oriente; etiqueta lida só em parte (\"Empire\")."
+   "nota": "Império Romano do Oriente; etiqueta lida só em parte (\"Empire\").",
+   "onde": [
+    -510,
+    21.89,
+    32.64
+   ],
+   "id_e7": "e00714"
   },
   "e00804": {
    "nome": "Nêustria",
-   "nota": "Etiqueta abreviada no vídeo (\"Neu.\")."
+   "nota": "Etiqueta abreviada no vídeo (\"Neu.\").",
+   "onde": [
+    -561,
+    -0.14,
+    46.39
+   ],
+   "id_e7": "e00804"
   },
   "e01700": {
    "nome": "Estados Papais",
-   "nota": "Etiqueta abreviada no vídeo (\"PS.\")."
+   "nota": "Etiqueta abreviada no vídeo (\"PS.\").",
+   "onde": [
+    -1488,
+    13.01,
+    43.11
+   ],
+   "id_e7": "e01700"
   },
   "e02158": {
    "nome": "Jurchens",
-   "nota": "Manchúria, 1420–1572; sem etiqueta lida."
+   "nota": "Manchúria, 1420–1572; sem etiqueta lida.",
+   "onde": [
+    -1496,
+    131.36,
+    44.88
+   ],
+   "id_e7": "e02158"
   },
   "e02909": {
    "nomes": [
@@ -1185,7 +1266,13 @@
      "Japão"
     ]
    ],
-   "nota": "Hokkaido; sem etiqueta lida."
+   "nota": "Hokkaido; sem etiqueta lida.",
+   "onde": [
+    -1863,
+    143.34,
+    43.49
+   ],
+   "id_e7": "e02909"
   },
   "e03113": {
    "nomes": [
@@ -1205,27 +1292,63 @@
      "Nunavut"
     ]
    ],
-   "nota": "Ilha de Baffin e arredores; etiquetas lidas só em parte."
+   "nota": "Ilha de Baffin e arredores; etiquetas lidas só em parte.",
+   "onde": [
+    -1902,
+    -69.06,
+    67.75
+   ],
+   "id_e7": "e03113"
   },
   "e03226": {
    "nome": "Estados Unidos",
-   "nota": "Trocas de nome lidas por engano (etiquetas vizinhas) desfeitas."
+   "nota": "Trocas de nome lidas por engano (etiquetas vizinhas) desfeitas.",
+   "onde": [
+    -1913,
+    -99.42,
+    37.1
+   ],
+   "id_e7": "e03226"
   },
   "e03405": {
    "nome": "Rússia",
-   "nota": "Nova Zembla; sem etiqueta lida."
+   "nota": "Nova Zembla; sem etiqueta lida.",
+   "onde": [
+    -1928,
+    58.66,
+    75.13
+   ],
+   "id_e7": "e03405"
   },
   "e03445": {
    "nome": "Territórios do Noroeste",
-   "nota": "Ilhas do Ártico canadense; sem etiqueta lida."
+   "nota": "Ilhas do Ártico canadense; sem etiqueta lida.",
+   "onde": [
+    -1884,
+    -111.06,
+    70.84
+   ],
+   "id_e7": "e03445"
   },
   "e03457": {
    "nome": "Nova Zelândia",
-   "nota": "Ilha Sul; sem etiqueta lida."
+   "nota": "Ilha Sul; sem etiqueta lida.",
+   "onde": [
+    -1932,
+    169.42,
+    -44.78
+   ],
+   "id_e7": "e03457"
   },
   "e03513": {
    "nome": "França",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    -1899,
+    2.88,
+    44.61
+   ],
+   "id_e7": "e03513"
   },
   "e03737": {
    "nomes": [
@@ -1240,7 +1363,13 @@
      "África Equatorial Francesa"
     ]
    ],
-   "nota": "Etiqueta lida só em parte (\"Equatorial\", \"Africa\")."
+   "nota": "Etiqueta lida só em parte (\"Equatorial\", \"Africa\").",
+   "onde": [
+    -1918,
+    17.0,
+    4.88
+   ],
+   "id_e7": "e03737"
   },
   "e03895": {
    "nomes": [
@@ -1255,27 +1384,93 @@
      "Arábia Saudita"
     ]
    ],
-   "nota": "Etiqueta de duas linhas lida só em parte (\"Arabia\")."
+   "nota": "Etiqueta de duas linhas lida só em parte (\"Arabia\").",
+   "onde": [
+    -1975,
+    47.43,
+    20.7
+   ],
+   "id_e7": "e03895"
   },
   "e03899": {
    "nome": "Nunavut",
-   "nota": "Ilha Ellesmere; até 1999 Territórios do Noroeste. Sem etiqueta lida."
+   "nota": "Ilha Ellesmere; até 1999 Territórios do Noroeste. Sem etiqueta lida.",
+   "onde": [
+    -1978,
+    -80.24,
+    78.09
+   ],
+   "id_e7": "e03899"
   },
   "e03904": {
    "nome": "Territórios do Noroeste",
-   "nota": "Ilhas do Ártico canadense; sem etiqueta lida."
+   "nota": "Ilhas do Ártico canadense; sem etiqueta lida.",
+   "onde": [
+    -1978,
+    -111.04,
+    70.84
+   ],
+   "id_e7": "e03904"
   },
   "e03912": {
    "nome": "África do Sul",
-   "nota": "Etiqueta de duas linhas lida só em parte (\"Africa\")."
+   "nota": "Etiqueta de duas linhas lida só em parte (\"Africa\").",
+   "onde": [
+    -1979,
+    17.43,
+    -24.46
+   ],
+   "id_e7": "e03912"
   },
   "e04012": {
    "nome": "Noruega",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    -1985,
+    12.11,
+    64.1
+   ],
+   "id_e7": "e04012"
   },
   "e04024": {
    "nome": "Itália",
-   "nota": "Sem etiqueta lida; nome pelo ano e pela posição."
+   "nota": "Sem etiqueta lida; nome pelo ano e pela posição.",
+   "onde": [
+    -1985,
+    14.2,
+    41.69
+   ],
+   "id_e7": "e04024"
+  },
+  "espanha-2025": {
+   "nome": "Espanha",
+   "nome_video": "Spain",
+   "onde": [
+    -2025,
+    -4,
+    41
+   ],
+   "nota": "Etiqueta \"Spain\" não lida; recebia \"Morocco\" da etiqueta vizinha."
+  },
+  "ebla-2500": {
+   "nome": "Ebla",
+   "nome_video": "Ebla",
+   "onde": [
+    2500,
+    38.2,
+    36.8
+   ],
+   "nota": "Etiqueta não lida; nome pelo vídeo."
+  },
+  "uruk-2500": {
+   "nome": "Uruk",
+   "nome_video": "Uruk",
+   "onde": [
+    2500,
+    45.0,
+    31.3
+   ],
+   "nota": "Ao sul de Quis; o vídeo mostra Uruk (lido como Lagash). Quis e Uruk saem como uma região só."
   }
  },
  "trocas": [

@@ -158,3 +158,10 @@ custou uma revetorização completa (~35 min) só para voltar ao que já existia
    apagar variantes), aba Mapas (estado de cada mapa por etapa, com as mesmas funções de chave dos scripts:
    `rotular.chave_sub`, `vetorizar.chave_mapa`, `nomear.chave_mapa`), aba Rodar (fila de rodadas, log, interromper) e
    comparação A/B de duas variantes na aba Mapa.
+10. **Escala (2026-10-16).** `escala.py` concentra o fator de escala da geometria (`MAPA_GERAL_ESCALA`) e do OCR
+    (`MAPA_GERAL_ESCALA_OCR`); as constantes em pixels de `calibrar.py`, `rotular.py`, `texto.py`, `nomear.py`,
+    `revisar.py` e `testar.py` passam por `px`/`area`/`it`/`impar`. Com escala 1 nada muda (0 recálculos na amostra
+    rápida da E4 e da E5, OCR com 0 recortes lidos, `testar.py cache` OK). Com escala ≠ 1 os parâmetros das etapas
+    mudam de valor (e as chaves com eles); `texto.PARAMS` leva `ESCALA` (OCR) e `ESCALA_GEO`, e os arquivos de memória
+    por recorte (`nomear.arq_mem`) mudam de nome. Uma rodada em outra escala vai para outra cache (`MAPA_GERAL_CACHE`),
+    então nenhum artefato por id (E4a/b/d, PNGs) é sobrescrito; `amostras.json` vive na cache.
