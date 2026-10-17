@@ -1071,3 +1071,34 @@ Testes `testar.py e10` (roda tudo):
   8003 para essa cache (`translate_path` troca `.cache/` pela cache ativa). Medidas prévias: E4 em 4K 44 s/mapa e
   0,9 GB por processo (8 cabem), E5 8–11 s/mapa com `TOL_PX` 1 px de 4K (+50 % de vértices; variante `tol2`
   reproduz a tolerância de hoje), decodificar o 8K inteiro 43–55 fps.
+- **2026-10-16 (rodada 4K relançada):** a E2.4 com 4 processos (quadros medianos 8K) chegou a 3,5 GB por processo
+  (ffmpeg AV1 8K ≈ 2,5 GB + pilha de 9 quadros) e o `systemd-oomd` matou o terminal inteiro com a sessão. Agora:
+  2 processos por padrão (`MAPA_GERAL_PROCS_E2`), registro por mapa em `mapas-7k/<id>.json` (retomada sem perder o
+  trecho) e a cadeia roda num serviço `systemd-run` com `MemoryMax` (comando no topo de `cadeia-4k.sh`). `quadros.py
+  tudo` refaz varredura e OCR (~25 min) mesmo com os arquivos prontos. `rotular.py` e `vetorizar.py` passaram a
+  adotar "base" como variante numa cache nova (antes a E5 parava com "nenhuma variante aprovada").
+- **2026-10-16 (escadas nas fronteiras):** o usuário apontou degraus nas fronteiras rasas. Causa: `coverage_simplify`
+  é por área (Visvalingam), e um degrau de 1 × 4 px tem 2 px² > `TOL_PX`². Passo 2a novo na E5: `simplificar_local`
+  (Douglas–Peucker por distância) em pixels com `ESCADA_PX` = 1 antes da projeção; na amostra rápida, escadas de 4+
+  degraus 98 → 15 (0,51 e 0,75 px tiravam só um terço), vértices −7 %, T5.0–T5.6 iguais (variante `escada10` na
+  cache 1920). A conferência de cruzamentos de `simplificar_local` passou a aceitar toque só em extremos comuns.
+- **2026-10-17 (madrugada):** o KDE suspendeu o PC por inatividade às 02:00 com a E7a no lote 50/97; a cadeia só voltou
+  às 07:15. Numa rodada noturna, segurar `systemd-inhibit --what=sleep:idle` enquanto o serviço vive (comando na memória
+  do agente e a acrescentar ao topo de `cadeia-4k.sh` quando ele não estiver rodando). A E7a roda com
+  `MAPA_GERAL_PROCS=8` dentro do teto de 12 GB (0,8 GB por processo), o dobro do padrão.
+- **2026-10-17 (testes da rodada 4K, antes de aprovar):**
+  - T6.4 caiu de 365 para 2323 diferenças: o passo 2a da E5 (escadas) repolygoniza, e o anel começava onde a ordem
+    global das cadeias mandava, mudando entre mapas iguais (mesmos vértices, outra ordem; Creta em 2400 a.C.). E5
+    VERSAO 5 = `shapely.normalize` depois do passo 2a; conferido no par: idêntico. E5 refeita como variante `v5`.
+  - T4.8/T7.8 "9 uniões erradas" em 999 e 1799 d.C.: em todos os 9 pares a região 4K tem exatamente a soma das duas
+    regiões de 1920 (Cr. × B.: 113 + 279 = 392 px) e os dois pontos caem no mesmo estado, um deles sobre o texto
+    ("Sy."). Em 1920 o nome cortava o estado em dois pedaços e a anotação tomou um pedaço pelo vizinho; o 4K junta
+    certo (soltos 58 → 9 na E4). A tentativa de medir as zonas planas a 2 px (`BORDA_DIST`) só "separou" um desses
+    pedaços e foi desfeita. Pendente: reanotar os 9 pares no painel (ids 117, 166, 184, 190, 192, 203, 222, 257, 263).
+  - T7.0 testava mapas errados: os ids de `texto-amostra.json` são da cache de 1920 e coincidem com ids de outros
+    mapas na cache 4K; a amostra ganhou `anos` e o teste acha o mapa pelo ano.
+  - T7.7: as 651 trocas de nome da rodada 4K não batem por id (ids novos); 217 batem por (ano, antes, depois), 292
+    por (antes, depois) e 359 são pares novos, vários por abreviação lida no 8K ("Carthage" ↔ "Ne", "Phoenicians"
+    ↔ "Pn", "Minoa" → "Empire"). Decisão do usuário: revisar no painel ou aprovar em bloco de novo.
+  - T3.2/T3.6 falham de leve só no trecho S=21,28 (p90 6,7 px de 1920 contra 6; fora 23 % contra 20 %) com T3.7
+    (deslocamento ótimo) em 0–1 px em todos os trechos: a costa de 4K tem mais detalhe que `mundo.json`.

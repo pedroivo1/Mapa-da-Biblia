@@ -1202,10 +1202,14 @@ def e7():
     import texto
     # T7.0 detecção de texto: na amostra conferida à mão (texto-amostra.json: etiquetas visíveis em recortes de 7
     # mapas de 2500 a.C. a 1900 d.C.), >= 95 % das etiquetas têm o ponto do meio dentro de uma caixa (folga de 3 px)
-    am = json.load(open(os.path.join(AQUI, "texto-amostra.json")))["mapas"]
+    am_ = json.load(open(os.path.join(AQUI, "texto-amostra.json")))
+    am = am_["mapas"]
+    anos_ = carregar("anos.json")
     ok = n = 0
     perdidos = []
     for k, lst in am.items():
+        if "anos" in am_:                         # os ids da amostra são de uma cache; o mapa é achado pelo ano
+            k = str(anos_[str(am_["anos"][k])]["mapa"])
         cx = texto.detectar(cv2.imread(mapa_png(k)))
         for e in lst:
             n += 1

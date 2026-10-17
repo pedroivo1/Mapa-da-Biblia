@@ -40,7 +40,11 @@ for etapa in "${ETAPAS[@]}"; do
   [ "$etapa" = "$inicio" ] && ativo=1
   [ $ativo = 1 ] || continue
   case $etapa in
-    e2)   rodar e2 python3 $S/quadros.py tudo ;;                      # varredura (1920), OCR do ano, montagem, medianas 8K/4K/1920
+    e2)   if [ -f "$MAPA_GERAL_CACHE/v2/anos-lidos.json" ]; then     # varredura (1920) e OCR do ano já feitos: só montagem
+            rodar e2 python3 $S/quadros.py montar                 #   e medianas 8K/4K/1920 (retomada mapa a mapa)
+          else
+            rodar e2 python3 $S/quadros.py tudo                   # varredura, OCR do ano, montagem, medianas
+          fi ;;
     e3)   rodar e3 python3 $S/calibrar.py
           rodar e3-transicoes python3 $S/transicoes.py ;;
     amostras) rodar amostras python3 $S/amostras.py ;;

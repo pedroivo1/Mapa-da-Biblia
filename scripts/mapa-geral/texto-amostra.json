@@ -1,5 +1,5 @@
 {
- "_ajuda": "Amostra conferida à mão para o teste da detecção de texto (E7). Cada etiqueta visível num recorte de 480×300 px: texto e ponto no meio do texto (coordenadas do quadro 1920×960). Recortes: 16 (150,230); 191 (300,250); 584 (600,250); 799 (0,40) e (960,380); 1347 (380,260) e (1040,520); 1692 (1300,460) e (740,500); 2180 (820,420). Etiquetas cortadas na borda do recorte ficam de fora.",
+ "_ajuda": "Amostra conferida à mão para o teste da detecção de texto (E7). Cada etiqueta visível num recorte de 480×300 px: texto e ponto no meio do texto (coordenadas do quadro 1920×960). Recortes: 16 (150,230); 191 (300,250); 584 (600,250); 799 (0,40) e (960,380); 1347 (380,260) e (1040,520); 1692 (1300,460) e (740,500); 2180 (820,420). Etiquetas cortadas na borda do recorte ficam de fora. Os ids de 'mapas' são da cache em que a amostra foi feita; 'anos' dá o ano de cada um, para outra cache (E2 refeita) achar o mapa pelo ano.",
  "mapas": {
   "16": [
    {
@@ -1115,5 +1115,14 @@
     "y": 705
    }
   ]
+ },
+ "anos": {
+  "16": 2500,
+  "191": 700,
+  "584": -87,
+  "799": -600,
+  "1347": -1200,
+  "1692": -1500,
+  "2180": -1900
  }
 }

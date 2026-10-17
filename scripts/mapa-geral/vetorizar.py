@@ -364,6 +364,10 @@ def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
     pol = poligonos_pixel(reg)
     if ESCADA_PX > 0:
         pol = simplificar_local(pol, ESCADA_PX)      # passo 2a: só os degraus de 1 px (em pixels)
+        # forma canônica (início do anel, ordem das partes): o polygonize do passo 2a começa cada anel onde a ordem
+        # global das cadeias manda, que muda entre mapas; sem isto, a mesma região saía com os mesmos vértices em
+        # outra ordem em mapas seguidos (T6.4) e o site não reaproveitava a forma
+        pol = {r: shapely.normalize(g) for r, g in pol.items()}
     ids = sorted(pol)
     if SIMPLIFICACAO == "local":
         pl = simplificar_local(pol, TOL_PX)
@@ -426,7 +430,8 @@ def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
 # lógica antiga (mesma VERSAO e mesmos parâmetros) dá a mesma chave e reaproveita os objetos da loja.
 #   4: coverage_simplify, 5 casas, lado sem tremor quebrado em pedaços retos colineares (SIMPLIFICACAO "cobertura");
 #      a simplificação aresta por aresta é a mesma lógica com SIMPLIFICACAO = "local"
-VERSAO = 4
+#   5: passo 2a (ESCADA_PX > 0) com forma canônica (shapely.normalize) depois dele; com ESCADA_PX = 0 é igual à 4
+VERSAO = 5
 _sobrepor_params()
 
 
