@@ -60,13 +60,19 @@
    "lat": 29.85,
    "lado": "esq",
    "cor": "#d9a21e",
-   "corte": {
-    "nome": "Mênfis",
-    "lon": 31.25,
-    "lat": 29.85,
-    "incerto": true
-   },
-   "provincia": true
+   "provincia": true,
+   "rotulo": [
+    30.9,
+    27.6
+   ]
+  },
+  {
+   "id": "menfis",
+   "nome": "Mênfis",
+   "lon": 31.25,
+   "lat": 29.85,
+   "lado": "esq",
+   "incerto": true
   },
   {
    "id": "on",
@@ -79,53 +85,97 @@
    "id": "gosen",
    "nome": "Gósen",
    "lon": 31.95,
-   "lat": 30.55,
+   "lat": 30.85,
    "lado": "dir",
    "cor": "#6fa83a",
    "area": [
     [
      32.4,
-     30.2
+     30.45
     ],
     [
      32.09,
-     30.08
+     30.33
     ],
     [
      31.8,
-     30.03
+     30.28
     ],
     [
      31.5,
-     30.1
+     30.35
     ],
     [
      31.54,
-     30.39
+     30.64
     ],
     [
      31.52,
-     30.65
+     31.0
     ],
     [
-     31.4,
-     30.9
+     31.52,
+     31.46
     ],
     [
-     31.75,
-     30.81
+     31.61,
+     31.46
+    ],
+    [
+     31.89,
+     31.54
+    ],
+    [
+     32.14,
+     31.34
     ],
     [
      32.08,
-     30.84
+     31.34
     ],
     [
-     32.4,
-     30.9
+     31.89,
+     31.48
+    ],
+    [
+     31.88,
+     31.41
+    ],
+    [
+     31.77,
+     31.29
+    ],
+    [
+     32.01,
+     31.22
+    ],
+    [
+     32.1,
+     31.09
+    ],
+    [
+     32.21,
+     31.12
+    ],
+    [
+     32.28,
+     31.2
+    ],
+    [
+     32.22,
+     31.29
+    ],
+    [
+     32.25,
+     31.29
+    ],
+    [
+     32.6,
+     31.07
     ],
     [
      32.45,
-     30.42
+     30.7
     ]
    ]
   }
@@ -166,7 +216,7 @@
   },
   {
    "id": "egito",
-   "lugar": "egito",
+   "lugar": "menfis",
    "titulo": "Levado ao Egito",
    "ref": "Gn 37:28–36; 39:1",
    "cap": 37,
@@ -217,7 +267,7 @@
   },
   {
    "id": "potifar",
-   "lugar": "egito",
+   "lugar": "menfis",
    "titulo": "Na casa de Potifar e na prisão",
    "ref": "Gn 39:1–23",
    "cap": 39,
@@ -227,7 +277,7 @@
   },
   {
    "id": "palacio",
-   "lugar": "egito",
+   "lugar": "menfis",
    "titulo": "Da prisão ao palácio",
    "ref": "Gn 40:1 – 41:36",
    "cap": 41,
@@ -243,16 +293,7 @@
    "cap": 41,
    "texto": "O faraó põe José, com 30 anos, sobre toda a terra do Egito, dá-lhe o nome Zafenate-Panéia e o casa com Asenate, filha de Potífera, sacerdote de On (41:45–46). Nascem Manassés e Efraim (41:50–52). Nos anos de fartura, José enche os armazéns; quando a fome chega, vende o trigo ao Egito e a gente de todas as terras (41:56–57).",
    "incerto": false,
-   "caminho": [
-    [
-     31.25,
-     29.85
-    ],
-    [
-     31.29,
-     30.13
-    ]
-   ]
+   "caminho": []
   },
   {
    "id": "irmaos1",
