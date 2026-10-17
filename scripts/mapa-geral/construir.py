@@ -317,6 +317,69 @@ def unir_em_bloco(d, fica, some):
     return True
 
 
+def _poligono(aneis):
+    """Forma (anéis em centésimos) -> geometria do shapely, com furos pela regra par-ímpar."""
+    from shapely.geometry import Polygon
+    g = None
+    for an in aneis:
+        p = Polygon(decodificar(an)).buffer(0)
+        g = p if g is None else g.symmetric_difference(p)
+    return g
+
+
+def _aneis_de(g):
+    pols = [g] if g.geom_type == "Polygon" else [p for p in g.geoms if p.geom_type == "Polygon"]
+    out = []
+    for p in pols:
+        out.append(list(p.exterior.coords))
+        out.extend(list(r.coords) for r in p.interiors)
+    return arredondar(out)
+
+
+def absorver_em_bloco(d, quem):
+    """Dentro de um bloco, a forma `quem` some e, em cada ano, a área dela passa ao vizinho que mais divide fronteira
+    com ela (união das duas, as bordas compartilhadas são idênticas); sem vizinho, só some."""
+    fx = [f for f in d["formas"] if f["id"] == quem]
+    if not fx:
+        return False
+    outras = [f for f in d["formas"] if f["id"] != quem]
+    p0, p1 = _pos(d["anos"][0]), _pos(d["anos"][1])
+    novas = {}      # id -> {posição: aneis}
+    for i in range(p0, p1 + 1):
+        x = [f for f in fx if _pos(f["de"]) <= i <= _pos(f["ate"])]
+        if not x:
+            continue
+        gx = None
+        for f in x:
+            g = _poligono(f["aneis"])
+            gx = g if gx is None else gx.union(g)
+        melhor, comp = None, 0.0
+        for f in outras:
+            if _pos(f["de"]) <= i <= _pos(f["ate"]):
+                c = _poligono(f["aneis"]).intersection(gx.buffer(0.005)).area
+                if c > comp:
+                    melhor, comp = f, c
+        if melhor is not None:
+            novas.setdefault(melhor["id"], {})[i] = _aneis_de(_poligono(melhor["aneis"]).union(gx))
+    resto = [f for f in outras if f["id"] not in novas]
+    refeitas = []
+    for id_ in novas:
+        aberta = None
+        for i in range(p0, p1 + 1):
+            fs = [f for f in outras if f["id"] == id_ and _pos(f["de"]) <= i <= _pos(f["ate"])]
+            if not fs:
+                aberta = None
+                continue
+            aneis = novas[id_].get(i, fs[0]["aneis"])
+            if aberta is not None and aberta["aneis"] == aneis:
+                aberta["ate"] = _ano(i)
+            else:
+                aberta = {"id": id_, "de": _ano(i), "ate": _ano(i), "aneis": aneis, "r": fs[0]["r"]}
+                refeitas.append(aberta)
+    d["formas"] = sorted(resto + refeitas, key=lambda f: (_pos(f["de"]), f["id"]))
+    return True
+
+
 def id_em(ler_bloco, nomes_blocos, ano, lon, lat):
     """Id (do site) da forma que contém o ponto no ano, lendo o bloco do ano; None se nenhuma."""
     from shapely.geometry import Point, Polygon
@@ -342,7 +405,7 @@ def aplicar_edicao(ed, indice, ler_bloco, gravar_bloco, nomes_blocos):
     mais, a entidade é achada pelo ponto."""
     est = indice["estados"]
     t = ed.get("tipo")
-    if t in ("nome", "cor", "forma") and ed.get("id") not in est and ed.get("onde"):
+    if t in ("nome", "cor", "forma", "absorver") and ed.get("id") not in est and ed.get("onde"):
         novo = id_em(ler_bloco, nomes_blocos, *ed["onde"])
         if novo is None:
             return False
@@ -392,6 +455,15 @@ def aplicar_edicao(ed, indice, ler_bloco, gravar_bloco, nomes_blocos):
             a["nome"], a["nome_video"] = b["nome"], b.get("nome_video", "")
         a["nota"] = (a.get("nota", "") + " Unido a " + (b.get("nome") or some) + " no editor.").strip()
         del est[some]
+        return True
+    if t == "absorver":
+        if ed["id"] not in est:
+            return False
+        for nome in nomes_blocos:
+            d = ler_bloco(nome)
+            if absorver_em_bloco(d, ed["id"]):
+                gravar_bloco(nome, d)
+        del est[ed["id"]]
         return True
     if t == "forma":
         if ed["bloco"] not in nomes_blocos:
