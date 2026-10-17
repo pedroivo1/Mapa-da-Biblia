@@ -547,7 +547,7 @@ var gRios = null;
     ANO0 = ind.de;
     BLOCO = ind.bloco || 25;
     N = posDeAno(ind.ate) - posDeAno(ind.de) + 1;
-    nota.textContent = ind.fonte || "";
+    nota.textContent = "";
     base(r[0]);
     slider.max = String(N - 1);
     ligarControles();

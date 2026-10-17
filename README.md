@@ -26,7 +26,7 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | `versiculos/` | Versículos salvos: a lista do que a pessoa salvou no leitor, filtrada por tema, com o modo decorar (sorteia um versículo salvo, mostra só a referência e revela o texto ao pedir). No leitor, tocar num versículo abre a barra para grifar (quatro cores) ou salvar por temas. Exige conta. | `versiculos.js`, `versiculos.css` |
 | `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
 | `mapas/` | Lista de mapas, por livro. Mapa novo entra sozinho. Os com `ano` aparecem como pontos na coluna Eras da linha do tempo. | `mapas.json` |
-| `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `mundo.json` |
+| `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `geral-<ano>.json`, `mundo.json` |
 | `mapa-geral/` | O mundo todo, ano a ano (2500 a.C. a 2025 d.C.), com linha do tempo: povos e impérios lidos de um vídeo de história mundial, com nomes em português. `?ano=-30` abre em 30 d.C. Como foi feito: `docs/mapa-geral-plano-2.md` e `docs/mapa-geral.md`. | `mapa-geral.js`, `dados/indice.json`, `dados/blocos/` |
 | `leitura/` | Leitura, aberta como popup no leitor: marcar livros, capítulos e versículos lidos e ver o progresso. | `leitura.js` |
 | `conta/` | Entrar, criar conta, esqueci a senha e nova senha. | |

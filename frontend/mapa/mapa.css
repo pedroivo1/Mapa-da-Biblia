@@ -35,8 +35,8 @@
 .mapa-svg {
   display: block;
   width: 100%;
-  height: clamp(440px, calc(100vh - 17rem), 1000px);
-  height: clamp(440px, calc(100dvh - 17rem), 1000px);
+  height: clamp(440px, calc(100vh - 10.5rem), 1000px);
+  height: clamp(440px, calc(100dvh - 10.5rem), 1000px);
   cursor: grab;
   touch-action: none;
   font-family: Archivo, sans-serif;
@@ -128,7 +128,8 @@
   pointer-events: none;
 }
 
-.mapa-regiao.incerto {
+.mapa-regiao.incerto,
+.mapa-regiao.tracejada {
   stroke-dasharray: 5 4;
 }
 
@@ -147,8 +148,8 @@
 
 @media (max-width: 720px) {
   .mapa-svg {
-      height: calc(100vh - 12rem);
-      height: calc(100dvh - 12rem);
+      height: calc(100vh - 9rem);
+      height: calc(100dvh - 9rem);
       min-height: 420px;
     }
 }
@@ -324,6 +325,18 @@ html.embutido .mapa-svg {
   fill-opacity: 0.14;
   stroke: none;
   pointer-events: none;
+}
+
+.mapa-provincia.territorio {
+  stroke: var(--muted);
+  stroke-width: 0.75;
+  stroke-opacity: 0.7;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-provincia.territorio.tracejado {
+  stroke-dasharray: 5 4;
+  stroke-opacity: 1;
 }
 
 .mapa-provincia.cliente {

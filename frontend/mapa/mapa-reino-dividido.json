@@ -114,14 +114,6 @@
    "provincia": true
   },
   {
-   "id": "aram",
-   "nome": "Aram (Síria)",
-   "lon": 36.7,
-   "lat": 33.7,
-   "cor": "#3b82c4",
-   "provincia": true
-  },
-  {
    "id": "assiria",
    "nome": "Assíria",
    "lon": 43.0,
@@ -288,5 +280,5 @@
    ]
   }
  ],
- "territorios": 900
+ "geral": 900
 }

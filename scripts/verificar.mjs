@@ -18,7 +18,7 @@ const PORTA_CDP = 9765;
 
 // [caminho, expressão que deve dar um número > 0 quando a página desenhou]
 const PAGINAS = [
-  ["", 'document.querySelectorAll(".note-row").length'],
+  ["", 'document.querySelectorAll(".destaque, .secao").length'],
   ["conta/", 'document.querySelectorAll("form, button").length'],
   ["privacidade/", 'document.querySelectorAll("h2").length'],
   ["linha-do-tempo/", 'document.querySelectorAll(".marco-g, .barra").length'],

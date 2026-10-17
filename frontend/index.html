@@ -49,81 +49,61 @@
     </header>
 
     <main class="frame">
+      <div class="inicio-barra">
+        <p class="hud muted"><span class="faint">01</span><span class="sep faint">/</span>Mapa da Bíblia</p>
+        <p class="hud faint">Leitura · tempo · lugares</p>
+      </div>
+
       <section class="hero">
         <h1>
-          Mapa da<br />
-          <em>Bíblia.</em>
+          Veja a Bíblia<br />
+          no <em>mapa</em> e no tempo.
         </h1>
-        <p>Leia a Bíblia em ordem histórica, veja cada livro, rei e potência na linha do tempo e acompanhe as viagens nos mapas. Crie uma conta para marcar os livros, capítulos e versículos que já leu e acompanhar seu progresso.</p>
-        <p class="hero-acoes">
-          <a class="btn" href="/conta/" data-entrar>Entrar ou criar conta</a>
-          <a class="btn secundario" href="/linha-do-tempo/">Ver a linha do tempo</a>
-        </p>
+        <p>Leia em ordem histórica, siga os reis e as potências na linha do tempo e acompanhe cada viagem nos mapas.</p>
       </section>
 
-      <section id="colecoes">
-        <div class="eyebrow">
-          <p class="hud muted">
-            <span class="faint">01</span><span class="sep faint">/</span>Explorar
-          </p>
-        </div>
-        <ol class="note-list">
-          <li>
-            <a class="note-row" href="/biblia/">
-              <span class="hud faint" aria-hidden="true">01</span>
-              <span class="topic hud muted">Bíblia</span>
-              <span class="note-copy">
-                <span class="note-title">Ler a Bíblia</span>
-                <span class="note-summary">O texto completo em NVI, com capítulos, tamanho da letra e a última posição guardada.</span>
-              </span>
-              <span class="hud faint">Leitor</span>
-            </a>
-          </li>
-          <li>
-            <a class="note-row" href="/plano-de-leitura/">
-              <span class="hud faint" aria-hidden="true">02</span>
-              <span class="topic hud muted">Plano</span>
-              <span class="note-copy">
-                <span class="note-title">Plano de leitura</span>
-                <span class="note-summary">Todos os capítulos em ordem histórica, época por época, para ler como a história aconteceu.</span>
-              </span>
-              <span class="hud faint">Plano</span>
-            </a>
-          </li>
-          <li>
-            <a class="note-row" href="/versiculos/">
-              <span class="hud faint" aria-hidden="true">03</span>
-              <span class="topic hud muted">Versículos</span>
-              <span class="note-copy">
-                <span class="note-title">Versículos salvos</span>
-                <span class="note-summary">Grife e salve versículos por tema enquanto lê, e treine de cor no modo decorar.</span>
-              </span>
-              <span class="hud faint">Decorar</span>
-            </a>
-          </li>
-          <li>
-            <a class="note-row" href="/linha-do-tempo/">
-              <span class="hud faint" aria-hidden="true">04</span>
-              <span class="topic hud muted">Tempo</span>
-              <span class="note-copy">
-                <span class="note-title">Linha do tempo bíblica</span>
-                <span class="note-summary">Da criação ao Novo Testamento: livros, reis e potências em ordem histórica.</span>
-              </span>
-              <span class="hud faint">Linha</span>
-            </a>
-          </li>
-          <li>
-            <a class="note-row" href="/mapas/">
-              <span class="hud faint" aria-hidden="true">05</span>
-              <span class="topic hud muted">Mapas</span>
-              <span class="note-copy">
-                <span class="note-title">Mapas das viagens</span>
-                <span class="note-summary">Lugares e rotas tracejadas para ligar os pontos enquanto lê, de Abraão a Jó.</span>
-              </span>
-              <span class="hud faint">Mapas</span>
-            </a>
-          </li>
-        </ol>
+      <section class="destaques" aria-label="Mapas">
+        <a class="destaque" href="/mapas/">
+          <span class="destaque-topo hud faint"><span>Mapas</span><span>01</span></span>
+          <img class="previa-claro" src="/mapas/previas/abraao-claro.webp" alt="" width="720" height="450" />
+          <img class="previa-escuro" src="/mapas/previas/abraao-escuro.webp" alt="" width="720" height="450" />
+          <span class="destaque-texto">
+            <span class="destaque-titulo">Mapas dos versículos</span>
+            <span class="destaque-resumo">As viagens e os lugares de cada livro, com rotas.</span>
+          </span>
+        </a>
+        <a class="destaque" href="/mapa-geral/">
+          <span class="destaque-topo hud faint"><span>Mapa geral</span><span>02</span></span>
+          <img class="previa-claro" src="/inicio/previa-geral-claro.webp" alt="" width="720" height="360" />
+          <img class="previa-escuro" src="/inicio/previa-geral-escuro.webp" alt="" width="720" height="360" />
+          <span class="destaque-texto">
+            <span class="destaque-titulo">O mundo ano a ano</span>
+            <span class="destaque-resumo">Povos e impérios de 2500 a.C. a hoje.</span>
+          </span>
+        </a>
+      </section>
+
+      <section class="secoes" aria-label="Explorar">
+        <a class="secao" href="/biblia/">
+          <span class="hud faint">02</span>
+          <span class="secao-titulo">Ler a Bíblia</span>
+          <span class="secao-resumo">Texto completo em NVI.</span>
+        </a>
+        <a class="secao" href="/plano-de-leitura/">
+          <span class="hud faint">03</span>
+          <span class="secao-titulo">Plano de leitura</span>
+          <span class="secao-resumo">Capítulos em ordem histórica.</span>
+        </a>
+        <a class="secao" href="/versiculos/">
+          <span class="hud faint">04</span>
+          <span class="secao-titulo">Versículos salvos</span>
+          <span class="secao-resumo">Grife, salve e decore.</span>
+        </a>
+        <a class="secao" href="/linha-do-tempo/">
+          <span class="hud faint">05</span>
+          <span class="secao-titulo">Linha do tempo</span>
+          <span class="secao-resumo">Livros, reis e potências.</span>
+        </a>
       </section>
     </main>
 

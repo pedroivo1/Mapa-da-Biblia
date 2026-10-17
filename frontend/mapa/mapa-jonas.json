@@ -6,7 +6,7 @@
  "livro": "jonas",
  "livroNome": "Jonas",
  "aria": "Mapa-múndi com o caminho de Jonas, de Jope a Társis e a Nínive",
- "territorios": 780,
+ "geral": 780,
  "vista": [
   [
    4.0,
@@ -60,13 +60,6 @@
    "nome": "Assíria",
    "lon": 43.0,
    "lat": 36.0,
-   "provincia": true
-  },
-  {
-   "id": "aram",
-   "nome": "Aram (Síria)",
-   "lon": 37.0,
-   "lat": 34.5,
    "provincia": true
   }
  ],

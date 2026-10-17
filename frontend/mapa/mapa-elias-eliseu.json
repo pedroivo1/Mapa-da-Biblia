@@ -128,14 +128,6 @@
    "provincia": true
   },
   {
-   "id": "aram",
-   "nome": "Aram (Síria)",
-   "lon": 36.7,
-   "lat": 33.7,
-   "cor": "#3b82c4",
-   "provincia": true
-  },
-  {
    "id": "galaade",
    "nome": "Galaade",
    "lon": 35.8,
@@ -409,5 +401,5 @@
    "texto": "O rei de Aram manda um grande exército cercar Dotã para prender Eliseu. O servo se assusta; Eliseu ora, e o servo vê o monte cheio de cavalos e carros de fogo (6:17). Os arameus são feridos de cegueira e levados a Samaria, onde recebem comida e voltam para casa."
   }
  ],
- "territorios": 860
+ "geral": 860
 }

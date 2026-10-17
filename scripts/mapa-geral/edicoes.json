@@ -1,0 +1,27 @@
+{
+ "_ajuda": "Edições feitas no editor.html (painel.py), aplicadas na ordem pelo construir.py depois de cada regeneração. Tipos: nome, cor, unir, forma (ver cabeçalho de construir.py).",
+ "edicoes": [
+  {
+   "tipo": "nome",
+   "id": "e00090",
+   "nome": "Aram (Síria)",
+   "nome_video": "",
+   "onde": [
+    780,
+    36.9,
+    34.5
+   ]
+  },
+  {
+   "tipo": "nome",
+   "id": "e00091",
+   "nome": "Fenícia",
+   "nome_video": "",
+   "onde": [
+    780,
+    35.6,
+    33.5
+   ]
+  }
+ ]
+}

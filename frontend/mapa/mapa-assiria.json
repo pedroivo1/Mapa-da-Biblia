@@ -7,7 +7,7 @@
  "livroNome": "2 Reis",
  "capSomenteLivro": "2reis",
  "aria": "Mapa-múndi com a Assíria e a queda de Israel: Nínive, Damasco, Samaria, Hazor, Laquis e Jerusalém",
- "territorios": 735,
+ "geral": 735,
  "vista": [
   [
    34.0,
@@ -74,13 +74,6 @@
    "nome": "Assíria",
    "lon": 43.0,
    "lat": 36.0,
-   "provincia": true
-  },
-  {
-   "id": "aram",
-   "nome": "Aram (Síria)",
-   "lon": 37.0,
-   "lat": 34.5,
    "provincia": true
   },
   {

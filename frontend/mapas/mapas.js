@@ -29,11 +29,13 @@
       h += '<section class="mapas-livro"><header><h2>' + esc(nomes[livro] || livro) + '</h2><span class="hud faint">' +
         lista.length + (lista.length === 1 ? " mapa" : " mapas") + "</span></header><ul>";
       lista.forEach(function (m) {
-        h += '<li class="mapas-item"><p class="hud faint">' + esc(m.tipo) + " · " + esc(m.ref) + "</p>" +
-          '<h3><a href="' + esc(m.url) + '">' + esc(m.titulo) + "</a></h3>" +
-          '<p class="muted">' + esc(m.resumo) + "</p>" +
-          '<p class="mapas-acoes"><a class="chip" href="' + esc(m.url) + '">Abrir</a> ' +
-          '<a class="chip" href="/biblia/#' + esc(livro) + "/" + m.capitulos[0].de + '">Ler ' + esc(nomes[livro] || livro) + " " + m.capitulos[0].de + "</a></p></li>";
+        var q = /[?&]m=([a-z0-9-]+)/.exec(m.url);
+        var previa = "/mapas/previas/" + (q ? q[1] : "abraao");
+        h += '<li class="mapas-item"><a class="mapas-card" href="' + esc(m.url) + '">' +
+          '<img class="previa-claro" src="' + previa + '-claro.webp" alt="" loading="lazy" width="720" height="450" />' +
+          '<img class="previa-escuro" src="' + previa + '-escuro.webp" alt="" loading="lazy" width="720" height="450" />' +
+          '<span class="mapas-card-texto"><span class="mapas-card-titulo">' + esc(m.titulo) + "</span>" +
+          '<span class="hud faint">' + esc(m.ref) + "</span></span></a></li>";
       });
       h += "</ul></section>";
     });

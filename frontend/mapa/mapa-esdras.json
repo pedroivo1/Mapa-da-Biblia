@@ -7,7 +7,7 @@
  "livroNome": "Esdras",
  "capSomenteLivro": "esdras",
  "aria": "Mapa-múndi com o retorno dos exilados da Babilônia a Jerusalém, sob o domínio persa",
- "territorios": 458,
+ "geral": 458,
  "vista": [
   [
    33.0,
@@ -24,7 +24,8 @@
    "nome": "Babilônia",
    "lon": 44.42,
    "lat": 32.54,
-   "lado": "dir"
+   "lado": "dir",
+   "sempre": true
   },
   {
    "id": "susa",

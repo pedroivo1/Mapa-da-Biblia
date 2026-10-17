@@ -301,7 +301,7 @@
     aplicar();
   }
 
-  /* províncias e fronteira do Império Romano (roma.json), no ano de "imperio" */
+  /* territórios do mapa geral (geral-<ano>.json) no ano do mapa */
 
   var PALETA_PROVINCIAS = ["#d9a21e", "#6fa05a", "#3b82c4", "#a05cd0", "#c0652d", "#14a58a"];
   // cor fixa de cada território ou província (a mesma em qualquer mapa e em qualquer ano)
@@ -327,66 +327,26 @@
     return dados.lugares.some(function (lg) { return lg.provincia && (lg.provincia === true ? lg.id : lg.provincia) === pr.id; });
   }
 
-  function desenharRoma() {
-    var ano = dados.imperio;
-    var g = svg("g", { "class": "mapa-roma" }, svgEl);
-    dados.roma.provincias.forEach(function (pr, k) {
-      var cliente = !!pr.cliente || (pr.cliente_antes && ano < pr.desde);
-      if (!cliente && pr.desde > ano) return;
-      if (citada(pr)) return; // a região destacada já desenha este contorno
-      var cl = cliente ? " cliente" : "";
-      var polys = pr.aneis.map(function (a) {
-        return svg("polygon", { "class": "mapa-provincia" + cl, points: pontos(a) }, g);
-      });
-      pr.linhas.forEach(function (l) {
-        svg("polyline", { "class": "mapa-provincia-linha" + cl, points: pontos(l), fill: "none" }, g);
-      });
-      // o nome só aparece quando a província é tocada (as citadas já têm nome próprio)
-      var q = proj(pr.rotulo);
-      var t = svg("text", { "class": "mapa-provincia-nome" + cl, "text-anchor": "middle" }, svgEl);
-      t.textContent = pr.nome;
-      t.style.display = "none";
-      escalaveis.push({ el: t, x: q[0], y: q[1] });
-      provincias.push({
-        id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: corRegiao(pr.id),
-        aneis: pr.aneis.map(function (a) { return a.map(proj); }), citada: citada(pr)
-      });
-    });
-    // fronteira externa: o período mais recente que não passa de "ano"
-    var chaves = Object.keys(dados.roma.fronteiras).map(Number).filter(function (n) { return n <= ano; });
-    var chave = chaves.length ? Math.max.apply(null, chaves) : null;
-    if (chave !== null) {
-      dados.roma.fronteiras[String(chave)].forEach(function (l) {
-        svg("polyline", { "class": "mapa-fronteira", points: pontos(l), fill: "none" }, g);
-      });
-    }
-  }
-
   function listaTerritorios() {
     return dados.terr ? dados.terr.lista : null;
   }
 
-  // povos e reinos vizinhos no ano a.C. de "territorios" (territorios.json): mesma lógica das províncias
+  // estados do mapa geral no ano do mapa (geral-<ano>.json, gerado por scripts/mapa/geral.py); um caminho por estado,
+  // com os furos vazados. Os "tracejado" são regiões citadas no livro que o mapa geral não tem naquele ano.
   function desenharTerritorios() {
-    var ano = dados.territorios;
     var g = svg("g", { "class": "mapa-roma" }, svgEl);
-    // cada ano de mapa já vem com os povos sem sobreposição e com fronteiras comuns (por_ano)
-    (listaTerritorios() || []).forEach(function (pr, k) {
+    (listaTerritorios() || []).forEach(function (pr) {
       if (citada(pr)) return; // a região destacada já desenha este contorno
-      var polys = pr.aneis.map(function (a) {
-        return svg("polygon", { "class": "mapa-provincia territorio", points: pontos(a) }, g);
-      });
-      pr.linhas.forEach(function (l) {
-        svg("polyline", { "class": "mapa-provincia-linha", points: pontos(l), fill: "none" }, g);
-      });
-      var q = proj(pr.rotulo);
+      var d = pr.aneis.map(function (a) { return "M" + pontos(a).replace(/ /g, "L") + "Z"; }).join("");
+      var polys = [svg("path", { "class": "mapa-provincia territorio" + (pr.tracejado ? " tracejado" : ""), d: d, "fill-rule": "evenodd" }, g)];
+      var q = pr.rotulo ? proj(pr.rotulo) : null;
       var t = svg("text", { "class": "mapa-provincia-nome", "text-anchor": "middle" }, svgEl);
       t.textContent = pr.nome;
       t.style.display = "none";
-      escalaveis.push({ el: t, x: q[0], y: q[1] });
+      if (q) escalaveis.push({ el: t, x: q[0], y: q[1] });
       provincias.push({
         id: pr.id, nome: pr.nome, polys: polys, texto: t, cor: corRegiao(pr.id),
-        aneis: pr.aneis.map(function (a) { return a.map(proj); }), citada: citada(pr)
+        aneis: pr.aneis.map(function (a) { return a.map(proj); }), citada: false
       });
     });
   }
@@ -455,7 +415,6 @@
       }
     });
 
-    if (dados.roma) desenharRoma();
     if (dados.terr) desenharTerritorios();
 
     // base simples: sem os nomes do mundo.json ("rotulosBase": true no JSON do mapa os traz de volta);
@@ -470,13 +429,14 @@
 
     // regiões (terra, povo ou reino, não uma cidade): área colorida sobre o mapa, sob as rotas
     // região que é uma província romana usa o contorno de roma.json, para os dois desenhos baterem
-    if (dados.roma || dados.terr) {
-      var todas = (dados.roma ? dados.roma.provincias : []).concat(listaTerritorios() || []);
+    if (dados.terr) {
+      var todas = listaTerritorios() || [];
       dados.lugares.forEach(function (lg) {
         if (!lg.provincia || lg.area) return;
         var pr = todas.filter(function (x) { return x.id === (lg.provincia === true ? lg.id : lg.provincia); })[0];
         if (!pr || !pr.aneis.length) return;
         var com = pr.aneis.filter(function (a) { return dentro(lg.lon, lg.lat, a); })[0];
+        lg.tracejado = !!pr.tracejado;
         lg.area = com || pr.aneis.slice().sort(function (x, y) { return y.length - x.length; })[0];
         // as outras partes da província (ilhas) também ficam destacadas
         lg.extras = lg.soAnel ? [] : pr.aneis.filter(function (a) { return a !== lg.area; });
@@ -486,15 +446,15 @@
     dados.lugares.forEach(function (lg) {
       if (!lg.area) return;
       var cor = (lg.provincia && CORES_REGIAO[lg.provincia === true ? lg.id : lg.provincia]) || lg.cor || "#e0348c";
-      areas[lg.id] = svg("polygon", {
-        "class": "mapa-regiao" + (lg.incerto ? " incerto" : ""),
-        points: pontos(lg.area),
+      // a região e as outras partes dela (ilhas) num só caminho; os furos (lagos) ficam vazados
+      var d = [lg.area].concat(lg.extras || []).map(function (a) { return "M" + pontos(a).replace(/ /g, "L") + "Z"; }).join("");
+      areas[lg.id] = svg("path", {
+        "class": "mapa-regiao" + (lg.incerto ? " incerto" : "") + (!lg.provincia || lg.tracejado ? " tracejada" : ""),
+        d: d,
+        "fill-rule": "evenodd",
         fill: cor,
         stroke: cor
       }, svgEl);
-      (lg.extras || []).forEach(function (a) {
-        svg("polygon", { "class": "mapa-regiao" + (lg.incerto ? " incerto" : ""), points: pontos(a), fill: cor, stroke: cor }, svgEl);
-      });
     });
 
     // rotas tracejadas, com setas de direção (a quantidade acompanha o zoom)
@@ -528,7 +488,7 @@
     });
     // região sem etapa própria (só o território): ganha o nome, sem texto
     dados.lugares.forEach(function (lg) {
-      if (lg.area && !porLugar[lg.id]) porLugar[lg.id] = [];
+      if ((lg.area || lg.sempre) && !porLugar[lg.id]) porLugar[lg.id] = [];
     });
     // região com "corte": além da área, um ponto com nome (onde ficava a corte do faraó, por exemplo)
     Object.keys(porLugar).forEach(function (id) {
@@ -826,18 +786,6 @@
     raiz.innerHTML =
       '<div class="mapa-quadro"><div class="mapa-barra" id="mapa-barra"></div><div id="mapa-svg"></div></div>';
     document.getElementById("mapa-svg").appendChild(svgEl);
-    if (dados.terr) {
-      var lt = document.createElement("div");
-      lt.className = "mapa-legenda hud";
-      lt.textContent = "Povos e reinos ao redor, c. " + dados.territorios + " a.C. (toque para ver o nome)";
-      raiz.querySelector(".mapa-quadro").appendChild(lt);
-    }
-    if (dados.roma) {
-      var leg = document.createElement("div");
-      leg.className = "mapa-legenda hud";
-      leg.innerHTML = '<span class="mapa-legenda-linha"></span> Fronteira do Império Romano, c. ' + dados.imperio + " d.C.";
-      raiz.querySelector(".mapa-quadro").appendChild(leg);
-    }
     // capítulos do material; ?cap=N (o capítulo que a pessoa está lendo) abre só com ele
     dados.etapas.forEach(function (e, i) {
       if (rotas[i] && capitulos.indexOf(e.cap) < 0) capitulos.push(e.cap); // só capítulos que têm rota
@@ -877,10 +825,9 @@
       });
     })
     .then(function (d) {
-      // "imperio" (ano d.C.): províncias e fronteira de Roma; "territorios" (ano a.C.): povos e reinos ao redor
+      // "geral" (ano; a.C. positivo, d.C. negativo): territórios do mapa geral nesse ano
       var pedidos = [];
-      if (d.imperio) pedidos.push(carregar("/mapa/roma.json").then(function (r) { d.roma = r; }, function () {}));
-      if (d.territorios) pedidos.push(carregar("/mapa/territorios-" + d.territorios + ".json").then(function (r) { d.terr = { lista: r }; }, function () {}));
+      if (d.geral) pedidos.push(carregar("/mapa/geral-" + d.geral + ".json").then(function (r) { d.terr = { lista: r }; }, function () {}));
       return Promise.all(pedidos).then(function () {
         return d;
       });
@@ -890,7 +837,9 @@
       var h1 = document.getElementById("mapa-titulo");
       if (h1) h1.innerHTML = esc(d.titulo) + " <em>" + esc(d.destaque) + "</em>";
       var sub = document.getElementById("mapa-sub");
-      if (sub) sub.textContent = d.subtitulo;
+      // o ano do mapa (o dos territórios) vai ao lado da referência do livro
+      var ano = d.geral ? " · c. " + (d.geral > 0 ? d.geral + " a.C." : -d.geral + " d.C.") : "";
+      if (sub) sub.textContent = d.subtitulo + ano;
       document.title = d.titulo + " " + d.destaque.replace(/\.$/, "") + " — Mapa da Bíblia";
       iniciar();
     })

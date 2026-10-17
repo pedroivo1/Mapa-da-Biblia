@@ -749,3 +749,16 @@ a.btn {
     touch-action: manipulation;
   }
 }
+
+/* prévias de mapa em dois temas (scripts/previas.mjs): a do tema ativo aparece */
+.previa-escuro {
+  display: none !important;
+}
+
+html[data-theme="dark"] .previa-claro {
+  display: none !important;
+}
+
+html[data-theme="dark"] .previa-escuro {
+  display: block !important;
+}

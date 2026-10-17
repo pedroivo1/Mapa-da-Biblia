@@ -148,14 +148,6 @@
    ]
   },
   {
-   "id": "aram",
-   "nome": "Aram (Síria)",
-   "lon": 36.7,
-   "lat": 33.7,
-   "cor": "#3b82c4",
-   "provincia": true
-  },
-  {
    "id": "edom",
    "nome": "Edom",
    "lon": 35.6,
@@ -330,5 +322,5 @@
    "texto": "Por causa da idolatria de Salomão, o Senhor levanta adversários: Hadade, o edomita, e Rezom, que se instala em Damasco e reina sobre Aram, e depois Jeroboão, o efraimita, a quem o profeta Aías anuncia dez tribos (11:29–31)."
   }
  ],
- "territorios": 970
+ "geral": 970
 }
