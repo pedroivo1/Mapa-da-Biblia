@@ -27,7 +27,7 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
 | `mapas/` | Lista de mapas, por livro. Mapa novo entra sozinho. Os com `ano` aparecem como pontos na coluna Eras da linha do tempo. | `mapas.json` |
 | `mapa/` | Um mapa aberto (`/mapa/?m=jo`): mapa-múndi em SVG próprio, com zoom, arrastar e lista de rotas. | `mapa.js`, `mapa-<id>.json`, `geral-<ano>.json`, `mundo.json` |
-| `mapa-geral/` | O mundo todo, ano a ano (2500 a.C. a 2025 d.C.), com linha do tempo: povos e impérios lidos de um vídeo de história mundial, com nomes em português. `?ano=-30` abre em 30 d.C. Como foi feito: `docs/mapa-geral-plano-2.md` e `docs/mapa-geral.md`. | `mapa-geral.js`, `dados/indice.json`, `dados/blocos/` |
+| `mapa-geral/` | O mapa da história: o mundo todo, ano a ano (2500 a.C. a 2025 d.C.), com linha do tempo: povos e impérios lidos de um vídeo de história mundial, com nomes em português. `?ano=-30` abre em 30 d.C. Como foi feito: `docs/mapa-geral-plano-2.md` e `docs/mapa-geral.md`. | `mapa-geral.js`, `dados/indice.json`, `dados/blocos/` |
 | `leitura/` | Leitura, aberta como popup no leitor: marcar livros, capítulos e versículos lidos e ver o progresso. | `leitura.js` |
 | `conta/` | Entrar, criar conta, esqueci a senha e nova senha. | |
 | `privacidade/` | O que é guardado. | |
@@ -54,7 +54,7 @@ Adicionar um profeta: copie um objeto em `profetas`. Os reis contemporâneos sae
 - `compartilhado/js/conta.js`: login (Google e e-mail/senha), menu da conta no topo e leitura/gravação do progresso. Expõe `window.Conta`.
 - `conta/`: entrar, criar conta, esqueci a senha e nova senha. `privacidade/`: o que é guardado.
 - `supabase/migrations/0001_progresso.sql`: tabela `progresso` (uma linha por usuário: `lido` e `versiculos` em JSONB) com RLS.
-- `supabase/migrations/0002_configuracoes.sql`: tabela `configuracoes` (uma linha por usuário, `dados` em JSONB, com RLS). Chaves: `linha_do_tempo` (`desktop` e `mobile`: filtros de colunas e livros), `plano` (`padrao` e `pos`), `leitor` (livro, capítulo e tamanho da letra) e `tema`. Aplique no SQL Editor do Supabase.
+- `supabase/migrations/0002_configuracoes.sql`: tabela `configuracoes` (uma linha por usuário, `dados` em JSONB, com RLS). Chaves: `linha_do_tempo` (`desktop` e `mobile`: filtros de colunas e livros), `plano` (`padrao` e `pos`), `ritmo` (calendário de leitura: `plano`, `inicio`, `duracao`, `unidade`, `dias`), `leitor` (livro, capítulo e tamanho da letra) e `tema`. Aplique no SQL Editor do Supabase.
 - `supabase/migrations/0003_marcacoes.sql`: tabela `marcacoes` (uma linha por versículo grifado ou salvo: `livro`, `capitulo`, `versiculo`, `grifo`, `salvo`, `temas`, com RLS). O leitor grava na hora (`Conta.salvarMarcacoes`), linha a linha; sem grifo e sem salvar, a linha é apagada. Aplique no SQL Editor do Supabase.
 
 Sem login, a Leitura só consulta: nada é marcado, e não há plano de leitura padrão (escolher o plano exige conta). Com login, cada marcação é salva na conta cerca de 1 s depois, e as configurações também. No primeiro login, o progresso antigo do navegador (`biblioteca-lido` e `biblioteca-versiculos`) sobe para a conta, se ela estiver vazia, e as chaves são apagadas.

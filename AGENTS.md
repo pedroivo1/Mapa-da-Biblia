@@ -42,7 +42,7 @@ The site is about the Bible. Each feature is a folder under `frontend/` (a slice
 - `compartilhado/js/util.js` (`Util.ler/gravar/apagar/esc`): shared localStorage and HTML escaping. Do not copy these into slice scripts.
 - `compartilhado/js/conta.js` (`window.Conta`): login, progress, settings, verse markings (`carregarMarcacoes`, `marcacoesGuardadas`, `salvarMarcacoes`: one row per verse in table `marcacoes`, with `grifo`, `salvo`, `temas`; the reader `biblia/` writes them and `versiculos/` lists them), local cache. `tema.js`: theme toggle and nav menu button. `config.js`: Supabase URL and publishable key.
 - Each script starts with a header comment saying what it does and which data it reads; read it before editing.
-- Account data: `progresso` (read/mark progress) and `configuracoes` (JSON keys `linha_do_tempo` {desktop, mobile}, `plano`, `leitor`, `tema`). Slices read settings through `Conta.config()` and write with `Conta.salvarConfig(chave, valor)`; they keep a localStorage copy for logged-out use.
+- Account data: `progresso` (read/mark progress) and `configuracoes` (JSON keys `linha_do_tempo` {desktop, mobile}, `plano`, `ritmo`, `leitor`, `tema`). Slices read settings through `Conta.config()` and write with `Conta.salvarConfig(chave, valor)`; they keep a localStorage copy for logged-out use.
 
 ## Verifying
 
@@ -52,7 +52,7 @@ The site is about the Bible. Each feature is a folder under `frontend/` (a slice
 
 - All user-facing text, identifiers, comments and file names are in Portuguese (pt-BR). Keep it that way.
 - JS is ES5 inside an IIFE (`var`, `function`, no arrow functions, no `let`/`const`, no modules). Match it. Exception: `scripts/verificar.mjs` is a dev tool (Node 22), not shipped.
-- Wrap all `localStorage` access in try/catch (use `Util.ler`/`Util.gravar`/`Util.apagar` from `compartilhado/js/util.js`; the only raw uses are `compartilhado/js/tema.js`, which loads before it, and the theme string in `conta.js`). Keys: `notas-theme`, `biblia-linha-do-tempo`, `biblia-leitor`, `biblia-mapa`, `biblia-cache`; `biblioteca-colunas`, `biblioteca-lido` / `biblioteca-versiculos` are legacy, read only to import into the account on first login.
+- Wrap all `localStorage` access in try/catch (use `Util.ler`/`Util.gravar`/`Util.apagar` from `compartilhado/js/util.js`; the only raw uses are `compartilhado/js/tema.js`, which loads before it, and the theme string in `conta.js`). Keys: `notas-theme`, `biblia-linha-do-tempo`, `biblia-leitor`, `biblia-mapa`, `biblia-ritmo`, `biblia-cache`; `biblioteca-colunas`, `biblioteca-lido` / `biblioteca-versiculos` are legacy, read only to import into the account on first login.
 - Reading progress is saved only through `Conta.salvar(lido, leitura)` (`compartilhado/js/conta.js`). Marking must stay disabled when `conectado` is false in `leitura/leitura.js`, and progress must never be saved after a failed load, since the upsert replaces the whole row.
 - The `progresso` table shape (`lido`, `versiculos` JSONB) mirrors the `lido` / `leitura` objects in `leitura/leitura.js`. Schema changes go in a new file in `supabase/migrations/`, and any new table needs RLS.
 - `compartilhado/js/config.js` holds only the publishable key. Never put the secret / service_role key in the site.

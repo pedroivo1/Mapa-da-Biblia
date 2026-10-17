@@ -73,11 +73,11 @@ try {
   const enviar = (method, params = {}) => new Promise((r) => { espera[++id] = r; ws.send(JSON.stringify({ id, method, params })); });
   const avaliar = async (expressao) => (await enviar("Runtime.evaluate", { expression: expressao, returnByValue: true })).result?.value;
   await enviar("Page.enable");
-  await enviar("Emulation.setDeviceMetricsOverride", { width: 720, height: 460, deviceScaleFactor: 1, mobile: false });
+  await enviar("Emulation.setDeviceMetricsOverride", { width: 720, height: 460, deviceScaleFactor: 2, mobile: false });
 
   // abre a página no tema pedido, esconde o que não é mapa e fotografa o elemento do mapa
   async function fotografar(url, tema, seletor, esconder, saida, larg = 720, alt = 460) {
-    await enviar("Emulation.setDeviceMetricsOverride", { width: larg, height: alt, deviceScaleFactor: 1, mobile: false });
+    await enviar("Emulation.setDeviceMetricsOverride", { width: larg, height: alt, deviceScaleFactor: 2, mobile: false });
     await enviar("Page.navigate", { url: `http://127.0.0.1:${PORTA_SITE}/mapa/mapa.css` }); // mesma origem para gravar o tema
     await avaliar(`localStorage.setItem("notas-theme", "${tema}")`);
     await enviar("Page.navigate", { url: `http://127.0.0.1:${PORTA_SITE}${url}` });
@@ -88,7 +88,7 @@ try {
     const png = (await enviar("Page.captureScreenshot", { format: "png", clip: { ...r, scale: 1 } })).data;
     const tmp = join(perfil, "p.png");
     writeFileSync(tmp, Buffer.from(png, "base64"));
-    execFileSync("magick", [tmp, "-resize", "720x", "-quality", "72", saida]);
+    execFileSync("magick", [tmp, "-resize", "1440x", "-quality", "80", saida]);
     console.log("ok", saida.replace(FRONT, ""));
   }
 

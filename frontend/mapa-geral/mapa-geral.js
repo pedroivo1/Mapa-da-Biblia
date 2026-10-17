@@ -1,4 +1,4 @@
-// Mapa geral (mapa-geral/index.html): o mundo ano a ano, de 2500 a.C. a 2025 d.C., com linha do tempo.
+// Mapa geral (mapa-geral/index.html): o mapa da história, de 2500 a.C. a 2025 d.C., com linha do tempo.
 // Dados (formato 2, gerados por scripts/mapa-geral/construir.py):
 //   /mapa/mundo.json (costa), dados/indice.json ({versao: 2, de, ate, bloco, estados: {id: {nome, nome_video, cor,
 //   desde, ate, nota, nomes?: [[de, ate, nome], ...]}}, fonte}) e dados/blocos/<a|d><ano>.json ({anos: [de, ate],
@@ -24,6 +24,7 @@
   if (pedidoDados) DADOS = "/mapa-geral/dados-" + pedidoDados[1] + "/";
   var ANO0 = 2500; // ano (a.C.) da posição 0; vem do "de" do índice
 
+  var embutido = /[?&]embutido/.test(location.search);
   var contSvg = document.getElementById("geral-svg");
   var cartao = document.getElementById("geral-cartao");
   var slider = document.getElementById("geral-ano");
@@ -181,11 +182,17 @@ var gRios = null;
     return r.height / (r.width || 1);
   }
 
+  // a vista nunca passa do mundo inteiro, nem em largura nem em altura (quadro alto e estreito)
+  function maxW() {
+    return Math.min(L, A / razao());
+  }
+
   function aplicar() {
-    vb.w = limitar(vb.w, L / 160, L);
+    vb.w = limitar(vb.w, L / 160, maxW());
     vb.h = vb.w * razao();
-    vb.x = limitar(vb.x, -vb.w * 0.3, L - vb.w * 0.7);
-    vb.y = limitar(vb.y, -vb.h * 0.3, A - vb.h * 0.7);
+    // a vista não sai do mapa: o arrasto para na borda do mundo
+    vb.x = limitar(vb.x, 0, L - vb.w);
+    vb.y = limitar(vb.y, 0, A - vb.h);
     svgEl.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
     ajustarRios();
     ajustarNomes();
@@ -212,7 +219,7 @@ var gRios = null;
   }
 
   function zoomEm(f, cx, cy) {
-    var nw = limitar(vb.w * f, L / 160, L);
+    var nw = limitar(vb.w * f, L / 160, maxW());
     var r = nw / vb.w;
     vb.x = cx - (cx - vb.x) * r;
     vb.y = cy - (cy - vb.y) * r;
@@ -256,7 +263,7 @@ var gRios = null;
         var a = dedos[ids[0]], b = dedos[ids[1]];
         var d = Math.max(1, Math.hypot(a.x - b.x, a.y - b.y));
         var r = svgEl.getBoundingClientRect();
-        vb.w = limitar(pinca.w0 * (pinca.d0 / d), L / 160, L);
+        vb.w = limitar(pinca.w0 * (pinca.d0 / d), L / 160, maxW());
         var k = vb.w / r.width;
         vb.x = pinca.mx - ((a.x + b.x) / 2 - r.left) * k;
         vb.y = pinca.my - ((a.y + b.y) / 2 - r.top) * k;
@@ -427,6 +434,8 @@ var gRios = null;
     rotulo.textContent = rotuloAno(a);
     rotulo.setAttribute("data-ano", String(a));
     atualizarUrl(a);
+    // embutido na linha do tempo: avisa o ano (a.C. positivo) para a linha de foco acompanhar
+    if (embutido && window.parent !== window) window.parent.postMessage({ tipo: "mapa-geral-ano", ano: a }, location.origin);
     var b = Math.floor(atual / BLOCO);
     carregarBloco(b).then(function (formas) {
       if (Math.floor(atual / BLOCO) !== b) return;
@@ -559,6 +568,14 @@ var gRios = null;
       if (alvo) ini = posDeAno(alvo);
     }
     irPara(ini);
+    // a linha do tempo pede um ano
+    window.addEventListener("message", function (ev) {
+      var d = ev.data;
+      if (ev.origin !== location.origin || !d || d.tipo !== "mapa-geral-ir" || typeof d.ano !== "number" || !d.ano) return;
+      if (d.ano === anoDePos(atual)) return;
+      parar();
+      irPara(posDeAno(d.ano));
+    });
   }).catch(function () {
     falha("Não foi possível carregar o mapa geral. Abra por um servidor local (python -m http.server).");
   });

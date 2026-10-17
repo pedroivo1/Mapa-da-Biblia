@@ -58,6 +58,7 @@
   }
   function ajustarColunas(c) {
     if (c.eras === undefined) c.eras = true;
+    if (c.mapaGeral === undefined) c.mapaGeral = false; // mapa geral à direita da linha do tempo
     // filtro de livros por grupo; "livros" desligado (versão antiga) desliga todos
     if (!c.modo || !MODOS[c.modo]) c.modo = "almeida";
     if (!c.grupos) {

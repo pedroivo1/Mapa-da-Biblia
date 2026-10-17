@@ -675,14 +675,399 @@
     {
      "era": "sem-data",
      "nome": "Jó, à parte",
-     "periodo": "Sem data",
-     "resumo": "Fica para o fim para não interromper a história de Abraão ao Apocalipse.",
+     "periodo": "Provavelmente época dos patriarcas",
+     "resumo": "Sem data no texto; provavelmente viveu na época de Abraão (c. 2166–1876 a.C.), mas fica para o fim para não interromper a história de Abraão ao Apocalipse.",
      "trechos": [
       {
        "livro": "jo",
        "de": 1,
        "ate": 42,
-       "nota": "Data incerta; na linha do tempo, ambientado na era patriarcal."
+       "nota": "Data incerta; provavelmente na época de Abraão, como na linha do tempo."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ordem-dos-livros",
+   "nome": "Ordem dos livros",
+   "resumo": "A Bíblia do começo ao fim, na ordem simples dos livros: de Gênesis a Apocalipse.",
+   "etapas": [
+    {
+     "nome": "Pentateuco",
+     "periodo": "Gênesis a Deuteronômio",
+     "trechos": [
+      {
+       "livro": "genesis",
+       "de": 1,
+       "ate": 50
+      },
+      {
+       "livro": "exodo",
+       "de": 1,
+       "ate": 40
+      },
+      {
+       "livro": "levitico",
+       "de": 1,
+       "ate": 27
+      },
+      {
+       "livro": "numeros",
+       "de": 1,
+       "ate": 36
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 1,
+       "ate": 34
+      }
+     ]
+    },
+    {
+     "nome": "Livros históricos",
+     "periodo": "Josué a Ester",
+     "trechos": [
+      {
+       "livro": "josue",
+       "de": 1,
+       "ate": 24
+      },
+      {
+       "livro": "juizes",
+       "de": 1,
+       "ate": 21
+      },
+      {
+       "livro": "rute",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "1samuel",
+       "de": 1,
+       "ate": 31
+      },
+      {
+       "livro": "2samuel",
+       "de": 1,
+       "ate": 24
+      },
+      {
+       "livro": "1reis",
+       "de": 1,
+       "ate": 22
+      },
+      {
+       "livro": "2reis",
+       "de": 1,
+       "ate": 25
+      },
+      {
+       "livro": "1cronicas",
+       "de": 1,
+       "ate": 29
+      },
+      {
+       "livro": "2cronicas",
+       "de": 1,
+       "ate": 36
+      },
+      {
+       "livro": "esdras",
+       "de": 1,
+       "ate": 10
+      },
+      {
+       "livro": "neemias",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "ester",
+       "de": 1,
+       "ate": 10
+      }
+     ]
+    },
+    {
+     "nome": "Poesia e sabedoria",
+     "periodo": "Jó a Cantares",
+     "trechos": [
+      {
+       "livro": "jo",
+       "de": 1,
+       "ate": 42
+      },
+      {
+       "livro": "salmos",
+       "de": 1,
+       "ate": 150
+      },
+      {
+       "livro": "proverbios",
+       "de": 1,
+       "ate": 31
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 1,
+       "ate": 12
+      },
+      {
+       "livro": "cantares",
+       "de": 1,
+       "ate": 8
+      }
+     ]
+    },
+    {
+     "nome": "Profetas maiores",
+     "periodo": "Isaías a Daniel",
+     "trechos": [
+      {
+       "livro": "isaias",
+       "de": 1,
+       "ate": 66
+      },
+      {
+       "livro": "jeremias",
+       "de": 1,
+       "ate": 52
+      },
+      {
+       "livro": "lamentacoes",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "ezequiel",
+       "de": 1,
+       "ate": 48
+      },
+      {
+       "livro": "daniel",
+       "de": 1,
+       "ate": 12
+      }
+     ]
+    },
+    {
+     "nome": "Profetas menores",
+     "periodo": "Oseias a Malaquias",
+     "trechos": [
+      {
+       "livro": "oseias",
+       "de": 1,
+       "ate": 14
+      },
+      {
+       "livro": "joel",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "amos",
+       "de": 1,
+       "ate": 9
+      },
+      {
+       "livro": "obadias",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "jonas",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "miqueias",
+       "de": 1,
+       "ate": 7
+      },
+      {
+       "livro": "nau",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "habacuque",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "sofonias",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "ageu",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "zacarias",
+       "de": 1,
+       "ate": 14
+      },
+      {
+       "livro": "malaquias",
+       "de": 1,
+       "ate": 4
+      }
+     ]
+    },
+    {
+     "nome": "Evangelhos e Atos",
+     "periodo": "Mateus a Atos",
+     "trechos": [
+      {
+       "livro": "mateus",
+       "de": 1,
+       "ate": 28
+      },
+      {
+       "livro": "marcos",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "lucas",
+       "de": 1,
+       "ate": 24
+      },
+      {
+       "livro": "joao",
+       "de": 1,
+       "ate": 21
+      },
+      {
+       "livro": "atos",
+       "de": 1,
+       "ate": 28
+      }
+     ]
+    },
+    {
+     "nome": "Cartas de Paulo",
+     "periodo": "Romanos a Filemom",
+     "trechos": [
+      {
+       "livro": "romanos",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "1corintios",
+       "de": 1,
+       "ate": 16
+      },
+      {
+       "livro": "2corintios",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "galatas",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "efesios",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "filipenses",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "colossenses",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "2tessalonicenses",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "1timoteo",
+       "de": 1,
+       "ate": 6
+      },
+      {
+       "livro": "2timoteo",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "tito",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "filemom",
+       "de": 1,
+       "ate": 1
+      }
+     ]
+    },
+    {
+     "nome": "Cartas gerais e Apocalipse",
+     "periodo": "Hebreus a Apocalipse",
+     "trechos": [
+      {
+       "livro": "hebreus",
+       "de": 1,
+       "ate": 13
+      },
+      {
+       "livro": "tiago",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "1pedro",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "2pedro",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "1joao",
+       "de": 1,
+       "ate": 5
+      },
+      {
+       "livro": "2joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "3joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "judas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "apocalipse",
+       "de": 1,
+       "ate": 22
       }
      ]
     }

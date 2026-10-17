@@ -310,3 +310,8 @@
 .aviso-acoes .chip {
   text-decoration: none;
 }
+
+/* plano ao qual o progresso está associado */
+.l-plano {
+  margin: 0 0 0.75rem;
+}

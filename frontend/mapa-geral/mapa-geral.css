@@ -229,3 +229,40 @@
 .geral-nota:empty {
   display: none;
 }
+
+/* embutido na linha do tempo (?embutido): sem topo, nav, nota nem velocidade; o mapa ocupa a janela */
+html.embutido .nav,
+html.embutido .biblia-topo,
+html.embutido .geral-nota,
+html.embutido .geral-vel,
+html.embutido .geral-ir-form {
+  display: none;
+}
+
+html.embutido body,
+html.embutido .geral-pagina {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+}
+
+html.embutido .geral {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  border-top: 0;
+}
+
+html.embutido .geral-quadro {
+  min-height: 0;
+  flex: 1;
+}
+
+html.embutido .geral-svg,
+html.embutido .geral-svg svg {
+  height: 100%;
+}

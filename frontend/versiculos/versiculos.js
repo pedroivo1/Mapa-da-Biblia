@@ -85,7 +85,7 @@
   function render() {
     if (!Conta || !Conta.usuario()) {
       raiz.innerHTML = '<p class="vazio">Entre na sua conta para salvar versículos e decorá-los. ' +
-        '<a class="chip" href="' + esc(urlEntrar()) + '">Entrar</a></p>';
+        '<a class="btn" href="' + esc(urlEntrar()) + '">Entrar</a></p>';
       return;
     }
     if (decorar) return renderDecorar();

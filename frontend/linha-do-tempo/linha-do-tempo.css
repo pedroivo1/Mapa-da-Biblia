@@ -205,6 +205,8 @@
 
 .amostra.c-potencia { background: var(--tl-potencia); }
 
+.amostra.c-mapa { background: var(--regua-centro); }
+
 .amostra.c-era { background: var(--tl-era-cab); }
 
 .amostra.c-evento { background: var(--c-evento); }
@@ -518,6 +520,56 @@ body.linha-tempo .lt-cab {
   padding-right: 72px;
 }
 
+/* mapa geral à direita: a página ocupa a largura toda e a linha do tempo divide o espaço com o mapa */
+body.linha-tempo.lt-com-mapa > .frame {
+  max-width: none;
+  flex-direction: row;
+}
+
+body.linha-tempo.lt-com-mapa #vista {
+  min-width: 0;
+}
+
+.lt-mapa-geral {
+  display: flex;
+  width: clamp(360px, 42%, 720px);
+  flex: none;
+  border-right: 1px solid var(--line);
+}
+
+.lt-mapa-geral[hidden] {
+  display: none;
+}
+
+.lt-mapa-geral iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg);
+}
+
+/* linha de foco: o ano do mapa geral, atravessando a linha do tempo */
+.lt-foco {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 0;
+  border-top: 2px solid var(--regua-centro);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.lt-foco span {
+  position: absolute;
+  top: -9px;
+  right: 0;
+  padding: 1px 6px;
+  background: var(--regua-centro);
+  color: #fff;
+  font: 500 10px/14px "IBM Plex Mono", ui-monospace, monospace;
+  white-space: nowrap;
+}
+
 .lt-vista {
   position: relative;
   display: flex;
@@ -662,6 +714,22 @@ body.linha-tempo .detalhe {
 }
 
 @media (max-width: 720px) {
+  body.linha-tempo.lt-com-mapa > .frame {
+      flex-direction: column;
+    }
+
+  body.linha-tempo.lt-com-mapa #vista {
+      flex: 1 1 55%;
+    }
+
+  .lt-mapa-geral {
+      width: auto;
+      height: 42dvh;
+      order: 2;
+      border-top: 1px solid var(--line);
+      border-right: 0;
+    }
+
   body.linha-tempo .regua-y {
       display: none;
     }

@@ -247,6 +247,8 @@
     function levar(ev) {
       var q = aPartirDoPonteiro(ev);
       rolagem.scrollTop = q.doc - rolagem.clientHeight / 2;
+      // segurando e arrastando: o ano sob o cursor vai junto para o mapa geral e a linha de foco
+      if (LT.aoEscolherAno) LT.aoEscolherAno(anoDeY(q.doc));
     }
     regua.addEventListener("pointerenter", function () {
       visaoGeral(true);

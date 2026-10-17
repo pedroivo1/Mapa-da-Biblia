@@ -40,7 +40,71 @@
   var trocarPerfil = LT.trocarPerfil;
 
   var raiz = document.getElementById("vista");
+  var lateral = document.getElementById("lt-mapa-geral");
   var painel = null;
+  var anoFoco = null; // ano do mapa geral e da linha de foco (a.C. positivo)
+  var quadroMapa = null; // iframe do mapa geral, criado na primeira vez e mantido
+
+  // mapa geral embutido (/mapa-geral/?embutido) à direita: liga e desliga pelo filtro "Mapa geral"
+  function aplicarMapaGeral() {
+    var ligado = !!colunas.mapaGeral;
+    document.body.classList.toggle("lt-com-mapa", ligado);
+    lateral.hidden = !ligado;
+    if (!ligado || quadroMapa) return;
+    var rolagem = raiz.querySelector(".lt-scroll");
+    var inicial = anoFoco;
+    if (inicial === null && rolagem) inicial = anoParaMapa(LT.anoDeY(rolagem.scrollTop + rolagem.clientHeight / 2));
+    quadroMapa = document.createElement("iframe");
+    quadroMapa.title = "Mapa geral";
+    quadroMapa.src = "/mapa-geral/?embutido&v=4" + (inicial ? "&ano=" + inicial : "");
+    lateral.appendChild(quadroMapa);
+  }
+  function anoParaMapa(a) {
+    if (a === null || a === undefined) return null;
+    a = Math.round(a);
+    return a === 0 ? -1 : a; // não há ano 0
+  }
+  // a linha de foco cruza a linha do tempo no ano do mapa
+  function pintarFoco() {
+    var corpoEl = raiz.querySelector(".lt-corpo");
+    if (!corpoEl) return;
+    var linha = corpoEl.querySelector(".lt-foco");
+    if (!colunas.mapaGeral || anoFoco === null) {
+      if (linha) linha.parentNode.removeChild(linha);
+      return;
+    }
+    if (!linha) {
+      linha = document.createElement("div");
+      linha.className = "lt-foco";
+      linha.appendChild(document.createElement("span"));
+      corpoEl.appendChild(linha);
+    }
+    linha.style.top = Y(anoFoco) + "px";
+    linha.firstChild.textContent = ano(anoFoco);
+  }
+  // muda o ano de foco: move a linha e, vindo do mapa (rolar), leva a linha do tempo até lá
+  function definirFoco(a, rolar) {
+    a = anoParaMapa(a);
+    if (a === null) return;
+    var mudou = a !== anoFoco;
+    anoFoco = a;
+    pintarFoco();
+    var rolagem = raiz.querySelector(".lt-scroll");
+    if (rolar && mudou && rolagem) rolagem.scrollTop = Y(a) - rolagem.clientHeight / 2;
+  }
+  // clique na régua: o ano sob o cursor vira o ano do mapa e o foco da linha do tempo
+  LT.aoEscolherAno = function (a) {
+    if (!colunas.mapaGeral) return;
+    a = anoParaMapa(a);
+    if (a === null) return;
+    definirFoco(a, false);
+    if (quadroMapa && quadroMapa.contentWindow) quadroMapa.contentWindow.postMessage({ tipo: "mapa-geral-ir", ano: a }, location.origin);
+  };
+  window.addEventListener("message", function (ev) {
+    var d = ev.data;
+    if (ev.origin !== location.origin || !quadroMapa || ev.source !== quadroMapa.contentWindow) return;
+    if (d && d.tipo === "mapa-geral-ano" && typeof d.ano === "number") definirFoco(d.ano, true);
+  });
 
   function vistaFaixas() {
     var RULER = 0; // sem coluna de anos à esquerda: a régua de rolagem, à direita, mostra as datas
@@ -530,6 +594,8 @@
       tog += '<label><input type="checkbox" data-coluna="' + c.id + '"' + (colunas[c.id] ? " checked" : "") +
         '><span class="amostra c-' + c.cor + '"></span>' + c.nome + "</label>";
     });
+    tog += '<label><input type="checkbox" data-mapa-geral' + (colunas.mapaGeral ? " checked" : "") +
+      '><span class="amostra c-mapa"></span>Mapa geral</label>';
     tog += "</div>";
     cont.innerHTML = tog;
     cont.appendChild(cab);
@@ -553,10 +619,12 @@
     var esq = antigo ? antigo.scrollLeft : 0;
     // refazer a vista zera a rolagem: guarda a posição e devolve depois
     var topo = antigo ? antigo.scrollTop : 0;
+    aplicarMapaGeral(); // antes de medir: o mapa tira largura da linha do tempo
     larguraAnterior = raiz.clientWidth;
     reguaAnterior = reguaAtiva();
     raiz.innerHTML = "";
     raiz.appendChild(vistaFaixas());
+    pintarFoco();
     var novo = raiz.querySelector(".lt-scroll");
     if (novo) {
       if (esq) novo.scrollLeft = esq;
@@ -657,7 +725,13 @@
 
   document.addEventListener("change", function (ev) {
     var t = ev.target;
-    if (t.hasAttribute("data-grupo")) {
+    if (t.hasAttribute("data-mapa-geral")) {
+      colunas.mapaGeral = t.checked;
+      guardarColunas();
+      var abertoMapa = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      if (abertoMapa) abrir(abertoMapa);
+    } else if (t.hasAttribute("data-grupo")) {
       colunas.grupos[t.getAttribute("data-grupo")] = t.checked;
       colunas.livros = livrosAtivos();
       guardarColunas();

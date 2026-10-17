@@ -122,3 +122,237 @@
       min-height: 44px;
     }
 }
+
+/* ritmo de leitura: duração, dias da semana e o calendário */
+.plano-ritmo {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.plano-ritmo .l-secao {
+  margin-top: 0;
+}
+
+.plano-ritmo-linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.plano-campo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.plano-data-bt {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.plano-data-bt:focus-visible {
+  outline: 2px solid var(--ink-strong);
+  outline-offset: 1px;
+}
+
+/* calendário */
+.plano-data {
+  position: relative;
+  display: inline-block;
+}
+
+.plano-data-bt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.plano-data-bt[aria-expanded="true"] {
+  border-color: var(--ink-strong);
+}
+
+.plano-pop {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  margin: 0;
+  background: var(--bg);
+  border: 1px solid var(--ink-strong);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.plano-pop[hidden] {
+  display: none;
+}
+
+.plano-cal {
+  width: 17rem;
+  padding: 0.75rem;
+}
+
+.plano-cal-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
+
+.plano-cal-topo button,
+.plano-cal-pe button {
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  padding: 0.2rem 0.6rem;
+}
+
+.plano-cal-topo button:hover,
+.plano-cal-pe button:hover {
+  background: var(--bg-sunken);
+  color: var(--ink-strong);
+}
+
+.plano-cal-grade {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  text-align: center;
+}
+
+.plano-cal-sem {
+  font-size: 0.7rem;
+  color: var(--faint);
+  padding: 0.2rem 0;
+}
+
+.plano-cal-grade button {
+  aspect-ratio: 1;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.plano-cal-grade button:hover {
+  background: var(--bg-sunken);
+}
+
+.plano-cal-grade button.hoje {
+  border-color: var(--line);
+  color: var(--ink-strong);
+  font-weight: 700;
+}
+
+.plano-cal-grade button[aria-pressed="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.plano-cal-pe {
+  margin-top: 0.5rem;
+  text-align: right;
+}
+
+.plano-ritmo-dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.plano-dia input {
+  position: absolute;
+  opacity: 0;
+}
+
+.plano-dia span {
+  display: inline-block;
+  min-width: 3rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.plano-dia input:checked + span {
+  border-color: var(--ink-strong);
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.plano-dia input:focus-visible + span {
+  outline: 2px solid var(--ink-strong);
+  outline-offset: 2px;
+}
+
+.plano-ritmo-erro {
+  color: var(--ink-strong);
+}
+
+.plano-hoje {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--ink-strong);
+  font-size: 1.1rem;
+}
+
+.plano-cal summary {
+  cursor: pointer;
+}
+
+.plano-cal-lista {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.plano-cal-lista li {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.plano-cal-lista li.feito a {
+  opacity: 0.55;
+}
+
+.plano-cal-lista li.hoje {
+  border-left: 3px solid var(--ink-strong);
+  padding-left: 0.5rem;
+}
+
+.plano-cal-lista li.atrasado > span:first-child {
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .plano-cal-lista li {
+    grid-template-columns: 6rem minmax(0, 1fr);
+  }
+
+  .plano-cal-lista li > span:last-child:not(:first-child) {
+    grid-column: 2;
+  }
+}
+
+.plano-campo:last-child .plano-cal {
+  left: auto;
+  right: 0;
+}

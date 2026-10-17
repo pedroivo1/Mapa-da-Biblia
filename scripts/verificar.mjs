@@ -24,6 +24,8 @@ const PAGINAS = [
   ["linha-do-tempo/", 'document.querySelectorAll(".marco-g, .barra").length'],
   ["biblia/", 'document.getElementById("leitor").innerText.length > 200 ? 1 : 0'],
   ["plano-de-leitura/", 'document.querySelectorAll(".plano-card").length'],
+  ["plano-de-leitura/#historico", 'document.querySelectorAll(".plano-ritmo form").length'],
+  ["leitura/?embutido", 'document.querySelectorAll(".l-livro").length'],
   ["versiculos/", 'document.querySelectorAll(".vazio, .versiculos-item").length'],
   ["mapas/", 'document.querySelectorAll(".mapas-livro li").length'],
   ["mapa/?m=jo", 'document.querySelectorAll(".mapa-lugar").length'],
@@ -32,7 +34,16 @@ const PAGINAS = [
   ["mapa-geral/?ano=2500", 'document.querySelectorAll(".geral-estado").length'],
   ["mapa-geral/?ano=586", 'document.querySelectorAll(".geral-estado").length'],
   ["mapa-geral/?ano=-1000", 'document.querySelectorAll(".geral-estado").length'],
-  ["mapa-geral/?ano=-2025", 'document.querySelectorAll(".geral-estado").length']
+  ["mapa-geral/?ano=-2025", 'document.querySelectorAll(".geral-estado").length'],
+  ["mapa-geral/?embutido&ano=586", 'document.querySelectorAll(".geral-estado").length'],
+  // liga o filtro "Mapa geral" e confere a sincronia nos dois sentidos (linha do tempo -> mapa e mapa -> linha de foco); depois desliga
+  ["linha-do-tempo/", `(async function(){var esp=function(ms){return new Promise(function(r){setTimeout(r,ms)})};` +
+    `document.querySelector("[data-mapa-geral]").click();await esp(2500);` +
+    `var f=document.querySelector("iframe"),d=f&&f.contentDocument,ok=!!(d&&document.querySelector(".lt-foco")&&document.body.classList.contains("lt-com-mapa"));` +
+    `if(ok){window.LT.aoEscolherAno(-34);await esp(1200);ok=d.getElementById("geral-rotulo").textContent.trim()==="34 d.C.";` +
+    `var sl=d.getElementById("geral-ano");sl.value=String(Number(sl.value)-1000);sl.dispatchEvent(new Event("input"));await esp(1200);` +
+    `ok=ok&&document.querySelector(".lt-foco span").textContent===d.getElementById("geral-rotulo").textContent.trim().replace("a.C.","a.C.")&&document.querySelector(".lt-foco span").textContent.indexOf("34")<0;}` +
+    `document.querySelector("[data-mapa-geral]").click();return ok?1:0;})()`]
 ];
 const TELAS = [
   { nome: "1280", w: 1280, h: 800 },
@@ -113,8 +124,9 @@ try {
       await enviar("Page.navigate", { url: `http://127.0.0.1:${PORTA_SITE}/${caminho}` });
       await dorme(2500);
       const r = await enviar("Runtime.evaluate", {
-        expression: `JSON.stringify({ n: ${expr}, doc: document.documentElement.scrollWidth, vp: innerWidth })`,
-        returnByValue: true
+        expression: `(async function(){ var n = await (${expr}); return JSON.stringify({ n: n, doc: document.documentElement.scrollWidth, vp: innerWidth }); })()`,
+        returnByValue: true,
+        awaitPromise: true
       });
       const v = JSON.parse(r.result?.value || "{}");
       // erros de rede de CDN/Supabase (offline) não são do site

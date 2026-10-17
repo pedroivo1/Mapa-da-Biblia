@@ -20,6 +20,8 @@
   var canonPorId = {};
   var raiz = document.getElementById("leitura");
   var nav = { nivel: "livros", livro: null, cap: null };
+  var planos = [];
+  var eras = {};
 
   function urlEntrar() {
     return Conta ? Conta.urlEntrar() : "/conta/";
@@ -128,6 +130,64 @@
     });
   }
 
+  // o progresso é sempre mostrado na ordem de um plano: o padrão da conta, ou o histórico
+  function planoAtual() {
+    var c = Conta && Conta.usuario() && Conta.config().plano;
+    var id = (c && c.padrao) || "historico";
+    var achado = null;
+    planos.forEach(function (m) { if (m.id === id) achado = m; });
+    return achado || planos[0] || null;
+  }
+  function capsEm(b, de, ate) {
+    var n = 0;
+    for (var c = de; c <= ate; c++) if (lidosCap(b, c) === b.v[c - 1]) n++;
+    return n;
+  }
+  function versosEm(b, de, ate) {
+    var n = 0, t = 0;
+    for (var c = de; c <= ate; c++) {
+      n += lidosCap(b, c);
+      t += b.v[c - 1];
+    }
+    return [n, t];
+  }
+  function nomeTrecho(b, tr) {
+    if (tr.de === 1 && tr.ate === b.v.length) return b.nome;
+    return b.nome + " " + tr.de + (tr.ate > tr.de ? "–" + tr.ate : "");
+  }
+  function trechoCompleto(b, tr) {
+    return capsEm(b, tr.de, tr.ate) === tr.ate - tr.de + 1;
+  }
+  function htmlPlano(plano, off) {
+    var h = '<p class="hud muted l-plano">Plano: ' + esc(plano.nome) + ' · <a href="/plano-de-leitura/" target="_top">trocar</a></p>';
+    plano.etapas.forEach(function (et) {
+      var era = eras[et.era] || { nome: et.nome || et.era, periodo: et.periodo };
+      var feitos = 0, total = 0;
+      et.trechos.forEach(function (tr) {
+        var b = canonPorId[tr.livro];
+        feitos += capsEm(b, tr.de, tr.ate);
+        total += tr.ate - tr.de + 1;
+      });
+      h += '<p class="l-secao hud">' + esc(era.nome) + (era.periodo ? ' <span class="faint">' + esc(era.periodo) + "</span>" : "") +
+        '<span class="faint">' + feitos + "/" + total + " cap.</span></p>";
+      h += '<div class="l-livros">';
+      et.trechos.forEach(function (tr) {
+        var b = canonPorId[tr.livro];
+        var n = tr.ate - tr.de + 1;
+        var c = capsEm(b, tr.de, tr.ate);
+        var vs = versosEm(b, tr.de, tr.ate);
+        var st = c === n ? "feito" : vs[0] ? "parcial" : "";
+        h += '<div class="l-livro ' + st + '">' +
+          '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(vs[0], vs[1]) + '%" data-l-trecho-tog="' + b.id + ":" + tr.de + ":" + tr.ate + '"' + off + ' aria-label="Marcar ' + esc(nomeTrecho(b, tr)) + '" title="Marcar este trecho inteiro"></button>' +
+          '<button type="button" class="l-nome" data-l-abrir="' + b.id + '">' + esc(nomeTrecho(b, tr)) + "</button>" +
+          '<span class="hud faint">' + c + "/" + n + " cap.</span>" +
+          '<progress value="' + c + '" max="' + n + '"></progress></div>';
+      });
+      h += "</div>";
+    });
+    return h;
+  }
+
   function render() {
     var corpoAnt = raiz.querySelector(".leitura-corpo");
     var rolagem = corpoAnt ? corpoAnt.scrollTop : 0;
@@ -140,7 +200,10 @@
     h += '<div class="leitura-corpo">';
     var off = "";
 
-    if (nav.nivel === "livros") {
+    var plano = nav.nivel === "livros" ? planoAtual() : null;
+    if (plano) {
+      h += htmlPlano(plano, off);
+    } else if (nav.nivel === "livros") {
       [["AT", "Antigo Testamento"], ["NT", "Novo Testamento"]].forEach(function (ta) {
         var lista = canon.filter(function (x) { return x.ta === ta[0]; });
         var feitos = lista.filter(livroCompleto).length;
@@ -210,7 +273,7 @@
   raiz.addEventListener("click", function (ev) {
     var t = ev.target.closest && ev.target.closest("button");
     if (!t || t.disabled) return;
-    var muda = t.hasAttribute("data-l-livro-tog") || t.hasAttribute("data-l-livro-set") ||
+    var muda = t.hasAttribute("data-l-livro-tog") || t.hasAttribute("data-l-trecho-tog") || t.hasAttribute("data-l-livro-set") ||
       t.hasAttribute("data-l-cap-tog") || t.hasAttribute("data-l-cap-set") || t.hasAttribute("data-l-verso");
     // com a cópia guardada na tela, o servidor ainda não confirmou: aguarda, sem pedir login
     if (muda && !conectado) return Conta && Conta.usuario() ? undefined : avisarLogin();
@@ -225,6 +288,13 @@
       var x = canonPorId[t.getAttribute("data-l-livro-tog")];
       setLivro(x, !livroCompleto(x));
       sincronizar(x);
+    } else if (t.hasAttribute("data-l-trecho-tog")) {
+      var tt = t.getAttribute("data-l-trecho-tog").split(":");
+      var bt = canonPorId[tt[0]];
+      var de = Number(tt[1]), ate = Number(tt[2]);
+      var ligar = capsEm(bt, de, ate) !== ate - de + 1;
+      for (var k = de; k <= ate; k++) setCap(bt, k, ligar);
+      sincronizar(bt);
     } else if (t.hasAttribute("data-l-livro-set")) {
       setLivro(b, t.getAttribute("data-l-livro-set") === "1");
       sincronizar(b);
@@ -332,7 +402,18 @@
     recarregarProgresso();
   });
 
-  fetch("/compartilhado/dados/canon.json")
+  // a ordem do progresso vem dos planos (dado de outra fatia); sem eles, cai na lista AT/NT
+  var carregarPlanos = Promise.all([
+    fetch("/plano-de-leitura/planos.json").then(function (r) { return r.json(); }),
+    fetch("/compartilhado/dados/eras.json").then(function (r) { return r.json(); })
+  ]).then(function (r) {
+    planos = r[0].planos;
+    r[1].eras.forEach(function (e) { eras[e.id] = e; });
+  }, function () {});
+
+  if (Conta) Conta.aoConfig(function () { if (canon.length) render(); });
+
+  carregarPlanos.then(function () { return fetch("/compartilhado/dados/canon.json"); })
     .then(function (r) { return r.json(); })
     .then(function (lista) {
       canon = lista;
