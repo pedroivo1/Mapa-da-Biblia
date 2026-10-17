@@ -116,6 +116,15 @@
   margin-top: 2rem;
 }
 
+.leitor-dlg-topo .leitor-dlg-livros {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  color: var(--ink);
+}
+
 .leitor-dlg-lista {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

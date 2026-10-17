@@ -1102,3 +1102,10 @@ Testes `testar.py e10` (roda tudo):
     ↔ "Pn", "Minoa" → "Empire"). Decisão do usuário: revisar no painel ou aprovar em bloco de novo.
   - T3.2/T3.6 falham de leve só no trecho S=21,28 (p90 6,7 px de 1920 contra 6; fora 23 % contra 20 %) com T3.7
     (deslocamento ótimo) em 0–1 px em todos os trechos: a costa de 4K tem mais detalhe que `mundo.json`.
+- **2026-10-17 (curvas):** o usuário viu a serra na ponta dos medos (escada de 1 px da rodada de 1920) e pediu para
+  aceitar curvas e comparar. Regra do AGENTS.md mudou: dois estilos, reto (tremor) e curvo. E5 ganhou `CURVAS`
+  (N cortes de canto de Chaikin por aresta da cobertura, nós fixos, sem tremor; `transformar_arestas` é o mesmo
+  mecanismo do passo 2a); no mapa de 600 a.C., com N = 2, +32 % de vértices e cobertura válida. A página aceita
+  `?dados=<nome>` para ler `dados-<nome>/`; as duas versões ficam em `frontend/mapa-geral/dados-reta/` e
+  `dados-curva/` (geradas por `curva.sh`, no scratchpad da sessão: E5 variante `curva` aprovada temporariamente,
+  E7u/E6/E7 `curva`, E8 com `MAPA_GERAL_EXP=curva`; a aprovada da E5 volta a `v5`). O usuário escolhe.

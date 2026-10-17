@@ -521,7 +521,7 @@
         h += "</div>";
       });
     } else {
-      h += '<div class="leitor-dlg-topo"><button type="button" data-voltar aria-label="Voltar para os livros">' + ICONE_SETA_ESQ + '</button><span class="hud muted">' + esc(canon[livro].nome) + '</span><button type="button" data-fechar>Fechar</button></div>';
+      h += '<div class="leitor-dlg-topo"><button type="button" class="leitor-dlg-livros" data-voltar aria-label="Voltar para os livros">' + ICONE_SETA_ESQ + ' Livros</button><span class="hud muted">' + esc(canon[livro].nome) + '</span><button type="button" data-fechar>Fechar</button></div>';
       h += '<div class="l-grade">';
       for (var c = 1; c <= texto[livro].chapters.length; c++) {
         h += '<button type="button" data-i="' + livro + '" data-cap="' + c + '"' + (livro === pos.i && c === pos.c ? ' aria-current="true"' : "") + ">" + c + "</button>";

@@ -134,7 +134,11 @@ def main():
         FONTE = sys.argv[sys.argv.index("--fonte") + 1]
     variante_ = sys.argv[sys.argv.index("--variante") + 1] if "--variante" in sys.argv else None
     et = cache.Etapa("e6")
-    variante = variante_ or cache.exp_atual() or et.m["aprovada"] or "base"
+    # sem --variante: a aprovada, se foi feita com estes parâmetros (mesma fonte); senão "base" (a aprovada pode ser a
+    # da E7, com FONTE e7u, e uma rodada nova da E5 recomeça pela base)
+    aprovada = et.m["aprovada"]
+    mesma = aprovada is not None and et.m["variantes"].get(aprovada, {}).get("params") == params()
+    variante = variante_ or cache.exp_atual() or (aprovada if mesma else "base")
     et.garantir(variante, params())
     e5 = cache.Etapa(FONTE)
     anos = json.load(open(os.path.join(V2, "anos.json")))

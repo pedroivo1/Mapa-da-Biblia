@@ -19,6 +19,9 @@
   var A = P.altura;
   var MAX_BLOCOS = 20;
   var DADOS = "/mapa-geral/dados/";
+  // ?dados=curva (ou outro nome) lê /mapa-geral/dados-<nome>/: comparação de versões dos dados (reta × curva)
+  var pedidoDados = /[?&]dados=([a-z0-9-]+)/.exec(location.search);
+  if (pedidoDados) DADOS = "/mapa-geral/dados-" + pedidoDados[1] + "/";
   var ANO0 = 2500; // ano (a.C.) da posição 0; vem do "de" do índice
 
   var contSvg = document.getElementById("geral-svg");

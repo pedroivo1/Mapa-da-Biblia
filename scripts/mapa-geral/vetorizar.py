@@ -36,6 +36,10 @@
 #     ficou como opção experimental: SIMPLIFICACAO = "local"; ver §11 do plano.)
 #  4. tremer() de scripts/mapa/tremor.py em cada anel, com passo de 0,25° (amplitude padrão 0,045°): o tremor
 #     depende só do lado (não do sentido), então a borda comum continua com os mesmos pontos nos dois vizinhos.
+#     Com CURVAS > 0 (variante "curva", 2026-10-17), em vez do tremor cada aresta da cobertura (cadeia entre nós)
+#     é suavizada por cortes de canto de Chaikin, CURVAS vezes, com os nós fixos: a mesma cadeia nos dois vizinhos
+#     dá a mesma curva, e o polygonize refaz a cobertura (transformar_arestas). Cadeias que se cruzariam voltam ao
+#     original. A costa continua exata (o corte do passo 5 vem depois).
 #  5. Corte pela terra de mundo.json (anéis de terra em par-ímpar menos todos os lagos, como no site): a costa é a
 #     de mundo.json. O mar (rótulo 0) sai. Terra de mundo.json que nenhuma região cobre (o vídeo a deixa como mar a
 #     mais de 8 px da costa) vai para a região com a maior fronteira comum, ou vira região sem-dono se não tocar
@@ -64,6 +68,7 @@ V2 = os.path.join(CACHE, "v2")
 MUNDO = os.path.join(RAIZ, "frontend", "mapa", "mundo.json")
 TOL_PX = 1.0            # tolerância do coverage_simplify, em pixels do quadro (0,6 deixava a escada dos pixels nas diagonais)
 ESCADA_PX = 1.0         # passo 2a: Douglas–Peucker por distância, em pixels, que tira os degraus de 1 px (0 desliga)
+CURVAS = 0              # passo 4: 0 = tremor (só retas); N > 0 = N cortes de canto de Chaikin por aresta, sem tremor
 CASAS = 5               # casas decimais do vetor da E5 (~1 m); o arredondamento do site (2 casas) é feito na E8
 RAIO_SEM_TREMOR = 0.15  # graus: em volta de um cruzamento causado pelo tremor, os lados ficam retos
 # "cobertura" = shapely.coverage_simplify (padrão: cobertura sempre válida); "local" = simplificar_local (experimental:
@@ -300,19 +305,53 @@ def _canonica(c):
     return c
 
 
+def chaikin(c, n, fechada):
+    """Cortes de canto de Chaikin (n vezes) numa cadeia de pontos (k, 2). Aberta: extremos fixos (os nós da
+    cobertura). Fechada (c[0] == c[-1]): cíclica, sem ponto fixo. Cada passo troca cada lado pelos pontos a 1/4 e 3/4."""
+    for _ in range(n):
+        if fechada:
+            a = c[:-1]
+            b = np.roll(a, -1, axis=0)
+            q = np.empty((2 * len(a), 2))
+            q[0::2] = 0.75 * a + 0.25 * b
+            q[1::2] = 0.25 * a + 0.75 * b
+            c = np.vstack([q, q[:1]])
+        else:
+            if len(c) < 3:
+                return c
+            a, b = c[:-1], c[1:]
+            q = np.empty((2 * len(a), 2))
+            q[0::2] = 0.75 * a + 0.25 * b
+            q[1::2] = 0.25 * a + 0.75 * b
+            c = np.vstack([c[:1], q[1:-1], c[-1:]])
+    return c
+
+
 def simplificar_local(pol, tol):
     """Simplificação da cobertura aresta por aresta (Douglas–Peucker em cada cadeia entre nós, extremos fixos), em
     pixels. Cada aresta depende só dos próprios pontos: uma região cujos pixels e vizinhança não mudam entre dois
     mapas sai com a mesma geometria (T6.4), o que o coverage_simplify do GEOS não garante (ele olha arestas vizinhas
     num raio maior). Arestas simplificadas que se cruzam voltam ao traçado original. Devolve {rótulo: geometria}."""
+    return transformar_arestas(pol, lambda ln, c, fechada: shapely.simplify(ln, tol, preserve_topology=False))
+
+
+def curvar_local(pol, n):
+    """Curvas: Chaikin n vezes em cada aresta da cobertura (nós fixos); ver chaikin(). Devolve {rótulo: geometria}."""
+    return transformar_arestas(pol, lambda ln, c, fechada: shapely.linestrings(chaikin(c, n, fechada)))
+
+
+def transformar_arestas(pol, func):
+    """Aplica func(linha, coords, fechada) -> linha a cada aresta da cobertura {rótulo: geometria} (cadeia entre nós,
+    em forma canônica, extremos fixos) e refaz a cobertura com polygonize; arestas transformadas que se cruzam (ou
+    que passam por um extremo alheio) voltam ao traçado original, até não sobrar cruzamento."""
     ids = sorted(pol)
     bordas = shapely.union_all([pol[r].boundary for r in ids])
     cadeias = [_canonica(shapely.get_coordinates(g)) for g in shapely.get_parts(shapely.line_merge(bordas))]
     originais = [shapely.linestrings(c) for c in cadeias]
     simples = []
     for c, ln in zip(cadeias, originais):
-        q = shapely.simplify(ln, tol, preserve_topology=False)
         fechada = np.array_equal(c[0], c[-1])
+        q = func(ln, c, fechada)
         if q.is_empty or (fechada and len(shapely.get_coordinates(q)) < 4):
             q = ln
         simples.append(q)
@@ -376,7 +415,11 @@ def vetorizar_mapa(reg, info, cal, terra, terra_prep_idx):
         geoms = [para_lonlat(pol[r], cal) for r in ids]
         simp = list(shapely.coverage_simplify(np.array(geoms, dtype=object), TOL_PX / cal["S"]))
     # tremor (inclui o mar, para a fronteira terra/mar do vídeo ficar igual dos dois lados antes do corte)
-    tremidos, n_retos = tremer_cobertura(list(simp))
+    if CURVAS > 0:
+        cur = curvar_local(dict(zip(ids, simp)), CURVAS)
+        tremidos, n_retos = [shapely.normalize(cur.get(r, Polygon())) for r in ids], 0
+    else:
+        tremidos, n_retos = tremer_cobertura(list(simp))
     metricas = {"cobertura_simplificada": bool(shapely.coverage_is_valid(np.array(list(simp), dtype=object))),
                 "cobertura_tremida": bool(shapely.coverage_is_valid(np.array(tremidos, dtype=object))),
                 "lados_sem_tremor": n_retos}
@@ -437,7 +480,8 @@ _sobrepor_params()
 
 def params():
     return {"versao": VERSAO, "TOL_PX": TOL_PX, "PASSO_TREMOR": PASSO_TREMOR, "CASAS": CASAS,
-            "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR, "SIMPLIFICACAO": SIMPLIFICACAO, "ESCADA_PX": ESCADA_PX}
+            "RAIO_SEM_TREMOR": RAIO_SEM_TREMOR, "SIMPLIFICACAO": SIMPLIFICACAO, "ESCADA_PX": ESCADA_PX,
+            **({"CURVAS": CURVAS} if CURVAS else {})}       # só entra na chave quando ligado (a reta não muda)
 
 
 E4E = None
