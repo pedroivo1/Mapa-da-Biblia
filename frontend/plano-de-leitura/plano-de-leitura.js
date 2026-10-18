@@ -11,6 +11,7 @@
   var DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
   var KEY_PLANO = "biblia-mapa"; // { padrao: id do plano escolhido, pos: { id do plano: "livro/cap" } }
   var Conta = window.Conta;
+  var ICONE_VOLTAR = Util.seta("esq", 18);
   var raiz = document.getElementById("plano");
   var planos = [];
   var eras = {};
@@ -177,8 +178,8 @@
     var sel = dataDe(campo.value), hoje = txtData(new Date());
     box.setAttribute("data-ano", ano);
     box.setAttribute("data-mes", mes);
-    var h = '<div class="plano-cal-topo"><button type="button" data-cal-mes="-1" aria-label="Mês anterior">‹</button>' +
-      "<strong>" + MESES[mes] + " de " + ano + '</strong><button type="button" data-cal-mes="1" aria-label="Próximo mês">›</button></div>' +
+    var h = '<div class="plano-cal-topo"><button type="button" data-cal-mes="-1" aria-label="Mês anterior">' + Util.seta("esq", 14) + "</button>" +
+      "<strong>" + MESES[mes] + " de " + ano + '</strong><button type="button" data-cal-mes="1" aria-label="Próximo mês">' + Util.seta("dir", 14) + "</button></div>" +
       '<div class="plano-cal-grade">';
     DIAS.forEach(function (n) { h += '<span class="plano-cal-sem">' + n.charAt(0).toUpperCase() + "</span>"; });
     var vazios = new Date(ano, mes, 1).getDay(), total = new Date(ano, mes + 1, 0).getDate(), i;
@@ -287,7 +288,7 @@
     });
     var aberto = null;
     planos.forEach(function (m) { if (location.hash === "#" + m.id) aberto = m; });
-    var h = aberto ? '<p class="plano-voltar hud"><a href="#">← Planos</a></p>' : "";
+    var h = aberto ? '<p class="plano-voltar hud"><a href="#">'+ICONE_VOLTAR+' Planos</a></p>' : "";
     lista.forEach(function (m) {
       if (aberto && m !== aberto) return;
       var escolhido = m.id === padrao;

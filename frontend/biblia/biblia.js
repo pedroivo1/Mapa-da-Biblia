@@ -1,4 +1,4 @@
-// Leitor da Bíblia (biblia/index.html): texto NVI, livros, capítulos, tamanho da letra, voz.
+// Leitor da Bíblia (biblia/index.html): texto na versão escolhida (compartilhado/js/versao.js), livros, capítulos, tamanho da letra, voz.
 // Aberto com ?plano=id segue a ordem do plano de leitura (plano-de-leitura/planos.json); sem ele, a dos livros.
 // Posição e letra: navegador (biblia-leitor) e conta ("leitor"); posição por plano: "plano".
 // Botões Leitura (popup leitura/index.html) e Mapas (popup com os mapas do capítulo, mapas/mapas.json).
@@ -193,20 +193,6 @@
     return h + "</p>";
   }
 
-  function bannerPlano() {
-    var n = indice[pos.i + ":" + pos.c];
-    var p = n == null ? null : ordem[n];
-    if (!p) return "";
-    var etapa = plano.etapas[p.e];
-    var era = eras[etapa.era] || { nome: etapa.nome, periodo: etapa.periodo };
-    var tr = etapa.trechos[p.t];
-    var sai = "/biblia/" + location.hash;
-    return '<div class="leitor-plano"><p class="hud muted"><strong>' + esc(plano.nome) + "</strong> · " + esc(era.nome || "") +
-      (era.periodo ? " (" + esc(era.periodo) + ")" : "") + " · " + (n + 1) + "/" + ordem.length + "</p>" +
-      (tr.nota ? '<p class="hud faint">' + esc(tr.nota) + "</p>" : "") +
-      '<p class="hud"><a href="/plano-de-leitura/">Ver o plano</a> · <a href="' + esc(sai) + '">Sair do plano (ordem dos livros)</a></p></div>';
-  }
-
   // mapas de apoio ligados ao capítulo que está na tela
   function mapasDoCapitulo() {
     var b = canon[pos.i];
@@ -221,9 +207,8 @@
   var ICONE_MAPA = ICONE_SVG + '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>';
   var ICONE_CALENDARIO = ICONE_SVG + '<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
 
-  var ICONE_SETA = '<svg class="leitor-seta" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';
-  var ICONE_SETA_ESQ = ICONE_SETA + '<path d="M19 12H5M11 6l-6 6 6 6"/></svg>';
-  var ICONE_SETA_DIR = ICONE_SETA + '<path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  var ICONE_SETA_ESQ = Util.seta("esq", 26, "leitor-seta");
+  var ICONE_SETA_DIR = Util.seta("dir", 26, "leitor-seta");
 
   function render() {
     var b = canon[pos.i];
@@ -232,14 +217,15 @@
     var ant = anterior();
     var prox = proximo();
     var h = '<div class="leitor-barra">' +
-      '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> ▾</button>" +
+      '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> " + Util.seta("baixo", 12) + "</button>" +
+      (plano ? '<a class="leitor-plano-link hud" href="/plano-de-leitura/#' + esc(plano.id) + '">' + esc(plano.nome) + "</a>" : "") +
       '<span class="leitor-fonte">' +
+      '<button type="button" data-versao aria-haspopup="dialog" title="' + esc(Versao.achar(Versao.atual()).nome) + '">' + Versao.achar(Versao.atual()).sigla + " " + Util.seta("baixo", 12) + "</button>" +
       (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog" aria-label="Mapas (' + doCapitulo.length + ')">' + ICONE_MAPA + '<span class="leitor-bt-txt">Mapas</span> (' + doCapitulo.length + ")</button>" : "") +
       '<button type="button" data-leitura aria-haspopup="dialog" aria-label="Leitura">' + ICONE_CALENDARIO + '<span class="leitor-bt-txt">Leitura</span></button>' +
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
       '<button type="button" data-fonte="1" aria-label="Aumentar letra"' + (tam >= TAM_MAX ? " disabled" : "") + ">A+</button>" +
       "</span></div>";
-    if (plano) h += bannerPlano();
     h += '<p class="leitor-aviso hud muted" role="status" hidden></p>';
     h += '<article class="leitor-texto"><h1>' + esc(b.nome) + " " + pos.c + "</h1>";
     h += paragrafos(versos) + "</article>";
@@ -248,7 +234,7 @@
       '<button type="button" data-nav="prox"' + (prox ? "" : " disabled") + ' aria-label="Próximo capítulo">' + ICONE_SETA_DIR + "</button></div>";
     raiz.innerHTML = h;
     raiz.style.setProperty("--leitor-fonte", tam + "rem");
-    document.title = b.nome + " " + pos.c + " — Bíblia NVI — Mapa da Bíblia";
+    document.title = b.nome + " " + pos.c + " — Bíblia " + Versao.achar(Versao.atual()).sigla + " — Mapa da Bíblia";
     pintar();
   }
 
@@ -625,11 +611,22 @@
     if (!dlgMapas.open) dlgMapas.showModal();
   }
 
+  // troca o texto da versão; se não carregar, volta à anterior
+  function trocarVersao(id, anterior) {
+    Versao.carregar(id).then(function (biblia) {
+      texto = biblia;
+      render();
+    }, function () {
+      Versao.definir(anterior);
+    });
+  }
+
   raiz.addEventListener("click", function (ev) {
     var verso = ev.target.closest && ev.target.closest(".leitor-v");
     if (verso) return alternarVerso(Number(verso.getAttribute("data-v")));
     var t = ev.target.closest && ev.target.closest("button");
     if (!t || t.disabled) return;
+    if (t.hasAttribute("data-versao")) return Versao.popup(trocarVersao);
     if (t.hasAttribute("data-mapas")) return abrirMapas();
     if (t.hasAttribute("data-leitura")) return abrirLeitura();
     if (t.hasAttribute("data-ouvir")) return falando ? parar() : ouvir();
@@ -737,15 +734,16 @@
   var comPlano = /[?&](?:plano|mapa)=/.test(location.search);
   Promise.all([
     fetch("/compartilhado/dados/canon.json").then(function (r) { return r.json(); }),
-    fetch("/biblia/nvi.json").then(function (r) { return r.json(); }),
     comPlano ? fetch("/plano-de-leitura/planos.json").then(function (r) { return r.json(); }) : null,
     comPlano ? fetch("/compartilhado/dados/eras.json").then(function (r) { return r.json(); }) : null,
     fetch("/mapas/mapas.json").then(function (r) { return r.json(); }).catch(function () { return { mapas: [] }; })
   ]).then(function (r) {
-    mapas = r[4].mapas || [];
-    // a sessão vem do navegador (rápido): com ela, as configurações guardadas já valem
+    mapas = r[3].mapas || [];
+    // a sessão vem do navegador (rápido): com ela, as configurações guardadas já valem (a versão escolhida também)
     return (Conta ? Conta.pronto() : Promise.resolve()).then(function () {
-      iniciar(r[0], r[1], r[2], r[3]);
+      return Versao.carregar(Versao.atual());
+    }).then(function (biblia) {
+      iniciar(r[0], biblia, r[1], r[2]);
     });
   }).catch(function () {
     raiz.innerHTML = '<p class="vazio">Não consegui carregar o texto. Abra por um servidor local (<code>python -m http.server</code>).</p>';

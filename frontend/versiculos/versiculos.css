@@ -1,7 +1,7 @@
 /* Versículos salvos (versiculos/index.html, versiculos.js): filtros por tema, lista e modo decorar. */
 
-.versiculos {
-  border-top: 1px solid var(--line);
+.biblia-topo.versiculos-topo {
+  padding-bottom: 0.25rem;
 }
 
 .versiculos-filtros {
@@ -11,14 +11,80 @@
   padding: 1rem 1.5rem 0;
 }
 
-.versiculos-filtros .chip[aria-pressed="true"] {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
-}
-
-.versiculos-filtros .chip[aria-pressed="true"] .faint {
+.versiculos-filtros .btn[aria-pressed="true"] .faint {
   color: inherit;
   opacity: 0.6;
+}
+
+.versiculos-filtros .btn {
+  padding: 0.5rem 0.9rem;
+}
+
+.versiculos-filtros .btn.secundario {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.versiculos-filtros .btn[aria-pressed="false"] {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+}
+
+.versiculos-temas {
+  position: relative;
+}
+
+.versiculos-menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 10;
+  display: flex;
+  min-width: 16rem;
+  max-height: 22rem;
+  flex-direction: column;
+  overflow-y: auto;
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+}
+
+.versiculos-tema-novo {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.6rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.versiculos-tema-novo input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.versiculos-tema-novo .btn {
+  padding: 0.4rem 0.7rem;
+}
+
+.versiculos-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.versiculos-menu-item span:nth-of-type(1) {
+  flex: 1;
+}
+
+.versiculos-menu-item:hover {
+  background: var(--bg-sunken);
 }
 
 .versiculos-acoes {

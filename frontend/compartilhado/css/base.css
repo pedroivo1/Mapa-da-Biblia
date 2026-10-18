@@ -399,7 +399,7 @@ body > .frame {
 @supports not selector(::-webkit-scrollbar) {
   * {
     scrollbar-width: thin;
-    scrollbar-color: var(--faint) transparent;
+    scrollbar-color: var(--ink-strong) var(--bg);
   }
 }
 
@@ -415,7 +415,7 @@ body > .frame {
 
 ::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
-  background: var(--faint);
+  background: var(--ink-strong); /* preta no tema claro, branca no escuro */
   background-clip: padding-box;
 }
 
@@ -762,3 +762,16 @@ html[data-theme="dark"] .previa-claro {
 html[data-theme="dark"] .previa-escuro {
   display: block !important;
 }
+
+.plano-voltar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* a seta do projeto (a do leitor) para pseudo-elementos: o mesmo desenho de Util.seta, pintado com a cor do texto */
+:root {
+  --seta-cima: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12%2019V5M6%2011l6-6%206%206'/%3E%3C/svg%3E");
+  --seta-baixo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12%205v14M6%2013l6%206%206-6'/%3E%3C/svg%3E");
+}
+

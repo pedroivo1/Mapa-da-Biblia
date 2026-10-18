@@ -87,6 +87,8 @@
     vb.x = limitar(vb.x, 0, L - vb.w);
     vb.y = limitar(vb.y, 0, A - h);
     svgEl.setAttribute("viewBox", vb.x.toFixed(1) + " " + vb.y.toFixed(1) + " " + vb.w.toFixed(1) + " " + h.toFixed(1));
+    clearTimeout(vistaTimer);
+    vistaTimer = setTimeout(gravarVista, 600);
     var k = vb.w / (svgEl.clientWidth || L);
     redesenharRotas(k);
     escalaveis.forEach(function (e) {
@@ -803,7 +805,40 @@
     aplicar();
     marcar();
     vistaInicial();
+    restaurarVista();
   }
+
+  // o zoom e a posição em que a pessoa deixou este mapa (por mapa; só quando abre com todos os capítulos)
+  var vistaPronta = false;
+  var vistaTimer = null;
+  function chaveVista() {
+    var q = /[?&]m=([a-z0-9-]+)/.exec(location.search);
+    return q ? q[1] : "abraao";
+  }
+  function restaurarVista() {
+    var embutidoNoLeitor = /[?&]cap=/.test(location.search);
+    (window.Conta ? window.Conta.pronto() : Promise.resolve()).then(function () {
+      var todas = window.Conta && window.Conta.lerVista("mapas_vista");
+      var v = todas && todas[chaveVista()];
+      if (!embutidoNoLeitor && v && v.length === 3 && v[2] > 0) {
+        vb.x = v[0];
+        vb.y = v[1];
+        vb.w = v[2];
+        aplicar();
+      }
+      vistaPronta = true;
+    });
+  }
+  function gravarVista() {
+    if (!vistaPronta || !window.Conta || /[?&]cap=/.test(location.search)) return;
+    var todas = Object.assign({}, window.Conta.lerVista("mapas_vista") || {});
+    todas[chaveVista()] = [Math.round(vb.x), Math.round(vb.y), Math.round(vb.w)];
+    window.Conta.guardarVista("mapas_vista", todas);
+  }
+  window.addEventListener("pagehide", gravarVista);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") gravarVista();
+  });
 
   // ?m=jo abre mapa-jo.json; sem parâmetro, mapa-abraao.json (viagem de Abrão)
   function carregar(url) {

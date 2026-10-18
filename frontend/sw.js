@@ -1,13 +1,13 @@
 // Service Worker: abre as páginas e os dados na hora, a partir do cache, e atualiza em segundo plano
-// (stale-while-revalidate). O nvi.json (3,8 MB) fica guardado e o leitor funciona sem rede.
+// (stale-while-revalidate). Os textos em biblia/versoes/ (3,8 MB cada) são guardados ao abrir e o leitor funciona sem rede.
 // Nunca toca em chamadas ao Supabase (login e progresso). Troque VERSAO para descartar o cache antigo.
-var VERSAO = "v5";
+var VERSAO = "v8";
 var CACHE = "biblia-" + VERSAO;
 var CDNS = ["cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"];
 
 self.addEventListener("install", function (ev) {
   // o que é preciso para abrir o leitor sem rede; falha de um item não impede a instalação
-  var essenciais = ["/", "/biblia/", "/biblia/nvi.json", "/compartilhado/dados/canon.json", "/compartilhado/css/base.css", "/compartilhado/css/componentes.css"];
+  var essenciais = ["/", "/biblia/", "/biblia/versoes/nvi.json", "/compartilhado/dados/canon.json", "/compartilhado/css/base.css", "/compartilhado/css/componentes.css", "/manifest.webmanifest", "/icones/icone-192.png"];
   ev.waitUntil(
     caches.open(CACHE).then(function (c) {
       return Promise.all(essenciais.map(function (u) { return c.add(u).catch(function () {}); }));

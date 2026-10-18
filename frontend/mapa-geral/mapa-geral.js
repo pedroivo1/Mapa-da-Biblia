@@ -6,7 +6,7 @@
 //   "r" = [lon, lat] onde o nome é escrito (ponto interno da forma).
 //   Anéis em centésimos de grau, primeiro ponto absoluto e os seguintes como deltas: [x0, y0, dx1, dy1, ...].
 // Anos: a.C. positivo, d.C. negativo, sem ano 0; posição i = 0…4524 (2500 a.C. -> 2025 d.C.). ?ano=-30 abre em
-// 30 d.C. e a URL acompanha o ano. Projeção: compartilhado/js/projecao.js (Equal Earth).
+// 30 d.C. e a URL acompanha o ano. Sem ?ano, abre no último ano visto (navegador e conta, chave "mapa_geral"; fora do popup embutido). Projeção: compartilhado/js/projecao.js (Equal Earth).
 // O cartão do estado mostra também o nome original e o link da Wikipédia, se o índice trouxer os campos
 //   opcionais nome_original e wiki. (Os dados do Cliopatria, no mesmo formato, ficam fora do site, em
 //   scripts/mapa-geral/dados-cliopatria/.)
@@ -194,6 +194,7 @@ var gRios = null;
     vb.x = limitar(vb.x, 0, L - vb.w);
     vb.y = limitar(vb.y, 0, A - vb.h);
     svgEl.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+    agendarVista();
     ajustarRios();
     ajustarNomes();
   }
@@ -417,6 +418,35 @@ var gRios = null;
     }
   }
 
+  // o último ano visto fica no navegador e, com login, na conta; o embutido (linha do tempo) não grava
+  var KEY_ANO = "biblia-mapa-geral";
+  var vistaPronta = false; // só grava depois de aplicar o que estava guardado
+  var vistaTimer = null;
+  function estadoVista() {
+    return { ano: anoDePos(atual), vb: [Math.round(vb.x), Math.round(vb.y), Math.round(vb.w)] };
+  }
+  function gravarVista() {
+    if (embutido || !vistaPronta || !svgEl) return;
+    var v = estadoVista();
+    Util.gravar(KEY_ANO, v);
+    if (window.Conta) window.Conta.guardarVista("mapa_geral", v);
+  }
+  function guardarAno() {
+    gravarVista();
+  }
+  function agendarVista() {
+    clearTimeout(vistaTimer);
+    vistaTimer = setTimeout(gravarVista, 600);
+  }
+  window.addEventListener("pagehide", gravarVista);
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") gravarVista();
+  });
+  function anoGuardado() {
+    var c = (window.Conta && window.Conta.lerVista("mapa_geral")) || Util.ler(KEY_ANO, null) || {};
+    return typeof c.ano === "number" && c.ano ? c.ano : null;
+  }
+
   function atualizarUrl(a) {
     if (urlTimer) clearTimeout(urlTimer);
     urlTimer = setTimeout(function () {
@@ -424,6 +454,7 @@ var gRios = null;
       try {
         if (history.replaceState) history.replaceState(null, "", "?ano=" + a);
       } catch (e) {}
+      guardarAno(a);
     }, 300);
   }
 
@@ -480,6 +511,8 @@ var gRios = null;
 
   function ligarControles() {
     slider.addEventListener("input", function () { parar(); irPara(parseInt(slider.value, 10)); });
+    document.getElementById("geral-ant").innerHTML = Util.seta("esq", 18);
+    document.getElementById("geral-prox").innerHTML = Util.seta("dir", 18);
     document.getElementById("geral-ant").addEventListener("click", function () { parar(); irPara(atual - 1); });
     document.getElementById("geral-prox").addEventListener("click", function () { parar(); irPara(atual + 1); });
     botaoPlay.addEventListener("click", alternarPlay);
@@ -560,14 +593,24 @@ var gRios = null;
     base(r[0]);
     slider.max = String(N - 1);
     ligarControles();
-    // abre no ano pedido (?ano=-30 = 30 d.C.) ou em 1010 a.C.
-    var ini = posDeAno(1010);
+    // abre no ano pedido (?ano=-30 = 30 d.C.), senão no último visto, senão em 1010 a.C.
     var pedido = /[?&]ano=(-?\d+)/.exec(location.search);
-    if (pedido) {
-      var alvo = parseInt(pedido[1], 10);
+    var espera = embutido || !window.Conta ? Promise.resolve() : window.Conta.pronto();
+    espera.then(function () {
+      // o zoom e a posição em que a pessoa deixou o mapa
+      var salvo = !embutido && window.Conta && window.Conta.lerVista("mapa_geral");
+      if (salvo && salvo.vb && salvo.vb.length === 3 && salvo.vb[2] > 0) {
+        vb.x = salvo.vb[0];
+        vb.y = salvo.vb[1];
+        vb.w = salvo.vb[2];
+        aplicar();
+      }
+      vistaPronta = true;
+      var ini = posDeAno(1010);
+      var alvo = pedido ? parseInt(pedido[1], 10) : embutido ? null : anoGuardado();
       if (alvo) ini = posDeAno(alvo);
-    }
-    irPara(ini);
+      irPara(ini);
+    });
     // a linha do tempo pede um ano
     window.addEventListener("message", function (ev) {
       var d = ev.data;

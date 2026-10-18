@@ -71,6 +71,17 @@
     }
     return c;
   }
+  // ordem das colunas na tela (a pessoa arrasta os títulos); ids que faltam entram no fim
+  var ORDEM_PADRAO = ["era", "livros", "terra", "potencias"];
+  function ordemColunas() {
+    var o = (colunas.ordem || []).filter(function (id) {
+      return ORDEM_PADRAO.indexOf(id) >= 0;
+    });
+    ORDEM_PADRAO.forEach(function (id) {
+      if (o.indexOf(id) < 0) o.push(id);
+    });
+    return o;
+  }
   var perfis = perfisGuardados();
   var perfilAtual = perfil();
   var colunas = ajustarColunas(copia(perfis[perfilAtual] || padraoColunas(perfilAtual)));
@@ -121,6 +132,7 @@
   LT.guardarColunas = guardarColunas;
   LT.guardarPerfisLocal = guardarPerfisLocal;
   LT.livrosAtivos = livrosAtivos;
+  LT.ordemColunas = ordemColunas;
   LT.mexeu = mexeu;
   LT.recarregarFiltros = recarregarFiltros;
   LT.telaMudou = telaMudou;

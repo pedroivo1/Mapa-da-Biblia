@@ -13,9 +13,27 @@
   color: var(--muted);
 }
 
-.item-aval.mau::before { content: "▼ "; }
+.item-aval.mau::before {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
+  mask: var(--seta-baixo) center / contain no-repeat;
+  margin-right: 0.35em;
+}
 
-.item-aval.bom::before { content: "▲ "; }
+.item-aval.bom::before {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+  -webkit-mask: var(--seta-cima) center / contain no-repeat;
+  mask: var(--seta-cima) center / contain no-repeat;
+  margin-right: 0.35em;
+}
 
 .item-aval.misto::before { content: "◆ "; }
 
@@ -77,12 +95,19 @@
 }
 
 .filtro summary::after {
-  content: "▾";
-  margin-left: 0.15rem;
+  margin-left: 0.25rem;
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
+  mask: var(--seta-baixo) center / contain no-repeat;
 }
 
 .filtro[open] summary::after {
-  content: "▴";
+  -webkit-mask-image: var(--seta-cima);
+  mask-image: var(--seta-cima);
 }
 
 .filtro-menu {
@@ -239,6 +264,19 @@
   background-repeat: no-repeat;
   background-size: 100% 3px;
   color: var(--ink-strong);
+}
+
+.lt-cab-in [data-col] {
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.lt-cab-in [data-col].arrastando {
+  z-index: 3;
+  cursor: grabbing;
+  opacity: 0.85;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 .lt-cab-in .c-era { background-image: linear-gradient(var(--tl-era-cab), var(--tl-era-cab)); }
@@ -570,6 +608,52 @@ body.linha-tempo.lt-com-mapa #vista {
   white-space: nowrap;
 }
 
+.lt-foco.previa span {
+  display: none;
+}
+
+/* divisor arrastável entre o mapa e a linha do tempo */
+.lt-divisor {
+  position: relative;
+  z-index: 30;
+  width: 7px;
+  margin-left: -4px;
+  flex: none;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.lt-divisor::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 3px;
+  width: 1px;
+  background: transparent;
+  transition: background 0.15s;
+}
+
+.lt-divisor:hover::after,
+body.lt-redimensionando .lt-divisor::after {
+  width: 3px;
+  left: 2px;
+  background: var(--regua-centro);
+}
+
+.lt-divisor[hidden] {
+  display: none;
+}
+
+body.lt-redimensionando {
+  cursor: col-resize;
+  user-select: none;
+}
+
+body.lt-redimensionando iframe {
+  pointer-events: none;
+}
+
 .lt-vista {
   position: relative;
   display: flex;
@@ -667,8 +751,9 @@ body.linha-tempo .detalhe {
   pointer-events: none;
 }
 
-/* o ano do centro da tela */
+/* o ano do centro da tela: a linha de foco (lt-foco) já o mostra, então este não aparece */
 .regua-centro {
+  display: none;
   position: absolute;
   right: 0;
   left: 0;
@@ -694,7 +779,7 @@ body.linha-tempo .detalhe {
   right: 0;
   left: 0;
   height: 0;
-  border-top: 1px solid var(--ink-strong);
+  border-top: 1px solid var(--regua-centro);
   pointer-events: none;
 }
 
@@ -703,8 +788,8 @@ body.linha-tempo .detalhe {
   top: -7px;
   right: 100%;
   padding: 1px 5px;
-  background: var(--invert-bg);
-  color: var(--invert-fg);
+  background: var(--regua-centro);
+  color: #fff;
   font: 500 9px/12px "IBM Plex Mono", ui-monospace, monospace;
   white-space: nowrap;
 }
@@ -714,6 +799,10 @@ body.linha-tempo .detalhe {
 }
 
 @media (max-width: 720px) {
+  .lt-divisor {
+      display: none;
+    }
+
   body.linha-tempo.lt-com-mapa > .frame {
       flex-direction: column;
     }

@@ -21,7 +21,7 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | Pasta | O que é | Contém |
 |---|---|---|
 | `frontend/` (`index.html`, `inicio/`) | Página inicial | `inicio/inicio.css` |
-| `biblia/` | Bíblia: leitor do texto (NVI), com livros, capítulos, tamanho da letra, voz e última posição. `?plano=id` segue a ordem de um plano; sem ele, a dos livros. Mostra os botões Leitura e Mapas do capítulo. | `biblia.js`, `biblia.css`, `nvi.json` |
+| `biblia/` | Bíblia: leitor do texto (11 versões em português, à escolha: NVI, ARA, ARC, NAA, NTLH, NVT, NBV, ACF, AA, TB, KJF; a versão fica no navegador e na conta, chave `versao`), com livros, capítulos, tamanho da letra, voz e última posição. `?plano=id` segue a ordem de um plano; sem ele, a dos livros. Mostra os botões Leitura e Mapas do capítulo. | `biblia.js`, `biblia.css`, `versoes/<sigla>.json` |
 | `plano-de-leitura/` | Planos de leitura (o primeiro é o Plano histórico): lista, ordem de cada um e plano padrão (exige conta). | `planos.json` |
 | `versiculos/` | Versículos salvos: a lista do que a pessoa salvou no leitor, filtrada por tema, com o modo decorar (sorteia um versículo salvo, mostra só a referência e revela o texto ao pedir). No leitor, tocar num versículo abre a barra para grifar (quatro cores) ou salvar por temas. Exige conta. | `versiculos.js`, `versiculos.css` |
 | `linha-do-tempo/` | Colunas paralelas, com o tempo na vertical: eras, livros, reis e potências. | `lt-config.js`, `lt-filtros.js`, `lt-dados.js`, `lt-eixo.js`, `linha-do-tempo.js`, `reis.json`, `livros.json` |
@@ -31,7 +31,7 @@ O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 | `leitura/` | Leitura, aberta como popup no leitor: marcar livros, capítulos e versículos lidos e ver o progresso. | `leitura.js` |
 | `conta/` | Entrar, criar conta, esqueci a senha e nova senha. | |
 | `privacidade/` | O que é guardado. | |
-| `compartilhado/` | Base de todas: `css/base.css` (tokens, nav, rodapé), `css/componentes.css` (cabeçalho, chips, popups), `js/` (`tema.js`, `config.js`, `util.js`, `conta.js`, `projecao.js`: Equal Earth) e `dados/` (`canon.json`: 66 livros com os versículos de cada capítulo; `eras.json`). | |
+| `compartilhado/` | Base de todas: `css/base.css` (tokens, nav, rodapé), `css/componentes.css` (cabeçalho, chips, popups), `js/` (`tema.js`, `config.js`, `util.js`, `conta.js`, `versao.js`: versão da Bíblia escolhida, `projecao.js`: Equal Earth) e `dados/` (`canon.json`: 66 livros com os versículos de cada capítulo; `eras.json`). | |
 
 Uma funcionalidade pode ler os arquivos de dados de outra (por exemplo, a linha do tempo lê `mapas/mapas.json`), mas não importa o JS dela.
 

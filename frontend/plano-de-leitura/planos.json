@@ -1072,6 +1072,2786 @@
      ]
     }
    ]
+  },
+  {
+   "id": "antigo-e-novo",
+   "nome": "Antigo e Novo Testamento",
+   "resumo": "Um pouco do Antigo e do Novo Testamento a cada leitura: o Antigo, de Gênesis a Malaquias, avança junto com o Novo, de Mateus a Apocalipse, e os dois terminam juntos.",
+   "etapas": [
+    {
+     "nome": "Mateus",
+     "periodo": "Gênesis 1 a Levítico 10",
+     "trechos": [
+      {
+       "livro": "genesis",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "mateus",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "genesis",
+       "de": 5,
+       "ate": 7
+      },
+      {
+       "livro": "mateus",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "genesis",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "mateus",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "genesis",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "mateus",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "genesis",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "mateus",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "genesis",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "mateus",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "genesis",
+       "de": 22,
+       "ate": 25
+      },
+      {
+       "livro": "mateus",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "genesis",
+       "de": 26,
+       "ate": 29
+      },
+      {
+       "livro": "mateus",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "genesis",
+       "de": 30,
+       "ate": 32
+      },
+      {
+       "livro": "mateus",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "genesis",
+       "de": 33,
+       "ate": 36
+      },
+      {
+       "livro": "mateus",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "genesis",
+       "de": 37,
+       "ate": 39
+      },
+      {
+       "livro": "mateus",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "genesis",
+       "de": 40,
+       "ate": 43
+      },
+      {
+       "livro": "mateus",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "genesis",
+       "de": 44,
+       "ate": 46
+      },
+      {
+       "livro": "mateus",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "genesis",
+       "de": 47,
+       "ate": 50
+      },
+      {
+       "livro": "mateus",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "exodo",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "mateus",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "exodo",
+       "de": 5,
+       "ate": 7
+      },
+      {
+       "livro": "mateus",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "exodo",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "mateus",
+       "de": 17,
+       "ate": 17
+      },
+      {
+       "livro": "exodo",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "mateus",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "exodo",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "mateus",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "exodo",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "mateus",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "exodo",
+       "de": 22,
+       "ate": 25
+      },
+      {
+       "livro": "mateus",
+       "de": 21,
+       "ate": 21
+      },
+      {
+       "livro": "exodo",
+       "de": 26,
+       "ate": 29
+      },
+      {
+       "livro": "mateus",
+       "de": 22,
+       "ate": 22
+      },
+      {
+       "livro": "exodo",
+       "de": 30,
+       "ate": 32
+      },
+      {
+       "livro": "mateus",
+       "de": 23,
+       "ate": 23
+      },
+      {
+       "livro": "exodo",
+       "de": 33,
+       "ate": 36
+      },
+      {
+       "livro": "mateus",
+       "de": 24,
+       "ate": 24
+      },
+      {
+       "livro": "exodo",
+       "de": 37,
+       "ate": 39
+      },
+      {
+       "livro": "mateus",
+       "de": 25,
+       "ate": 25
+      },
+      {
+       "livro": "exodo",
+       "de": 40,
+       "ate": 40
+      },
+      {
+       "livro": "levitico",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "mateus",
+       "de": 26,
+       "ate": 26
+      },
+      {
+       "livro": "levitico",
+       "de": 4,
+       "ate": 6
+      },
+      {
+       "livro": "mateus",
+       "de": 27,
+       "ate": 27
+      },
+      {
+       "livro": "levitico",
+       "de": 7,
+       "ate": 10
+      },
+      {
+       "livro": "mateus",
+       "de": 28,
+       "ate": 28
+      }
+     ]
+    },
+    {
+     "nome": "Marcos a Lucas",
+     "periodo": "Levítico 11 a 1 Samuel 7",
+     "trechos": [
+      {
+       "livro": "levitico",
+       "de": 11,
+       "ate": 14
+      },
+      {
+       "livro": "marcos",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "levitico",
+       "de": 15,
+       "ate": 17
+      },
+      {
+       "livro": "marcos",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "levitico",
+       "de": 18,
+       "ate": 21
+      },
+      {
+       "livro": "marcos",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "levitico",
+       "de": 22,
+       "ate": 24
+      },
+      {
+       "livro": "marcos",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "levitico",
+       "de": 25,
+       "ate": 27
+      },
+      {
+       "livro": "numeros",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "marcos",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "numeros",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "marcos",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "numeros",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "marcos",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "numeros",
+       "de": 9,
+       "ate": 12
+      },
+      {
+       "livro": "marcos",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "numeros",
+       "de": 13,
+       "ate": 15
+      },
+      {
+       "livro": "marcos",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "numeros",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "marcos",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "numeros",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "marcos",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "numeros",
+       "de": 23,
+       "ate": 26
+      },
+      {
+       "livro": "marcos",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "numeros",
+       "de": 27,
+       "ate": 29
+      },
+      {
+       "livro": "marcos",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "numeros",
+       "de": 30,
+       "ate": 33
+      },
+      {
+       "livro": "marcos",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "numeros",
+       "de": 34,
+       "ate": 36
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "marcos",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "marcos",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "lucas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 9,
+       "ate": 11
+      },
+      {
+       "livro": "lucas",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 12,
+       "ate": 15
+      },
+      {
+       "livro": "lucas",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "lucas",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "lucas",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 23,
+       "ate": 26
+      },
+      {
+       "livro": "lucas",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 27,
+       "ate": 29
+      },
+      {
+       "livro": "lucas",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 30,
+       "ate": 33
+      },
+      {
+       "livro": "lucas",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "deuteronomio",
+       "de": 34,
+       "ate": 34
+      },
+      {
+       "livro": "josue",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "lucas",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "josue",
+       "de": 3,
+       "ate": 6
+      },
+      {
+       "livro": "lucas",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "josue",
+       "de": 7,
+       "ate": 10
+      },
+      {
+       "livro": "lucas",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "josue",
+       "de": 11,
+       "ate": 13
+      },
+      {
+       "livro": "lucas",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "josue",
+       "de": 14,
+       "ate": 17
+      },
+      {
+       "livro": "lucas",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "josue",
+       "de": 18,
+       "ate": 20
+      },
+      {
+       "livro": "lucas",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "josue",
+       "de": 21,
+       "ate": 24
+      },
+      {
+       "livro": "lucas",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "juizes",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "lucas",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "juizes",
+       "de": 4,
+       "ate": 7
+      },
+      {
+       "livro": "lucas",
+       "de": 17,
+       "ate": 17
+      },
+      {
+       "livro": "juizes",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "lucas",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "juizes",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "lucas",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "juizes",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "lucas",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "juizes",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "lucas",
+       "de": 21,
+       "ate": 21
+      },
+      {
+       "livro": "rute",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "lucas",
+       "de": 22,
+       "ate": 22
+      },
+      {
+       "livro": "1samuel",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "lucas",
+       "de": 23,
+       "ate": 23
+      },
+      {
+       "livro": "1samuel",
+       "de": 4,
+       "ate": 7
+      },
+      {
+       "livro": "lucas",
+       "de": 24,
+       "ate": 24
+      }
+     ]
+    },
+    {
+     "nome": "João a Atos",
+     "periodo": "1 Samuel 8 a Neemias 5",
+     "trechos": [
+      {
+       "livro": "1samuel",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "1samuel",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "joao",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "1samuel",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "joao",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "1samuel",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "joao",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "1samuel",
+       "de": 22,
+       "ate": 25
+      },
+      {
+       "livro": "joao",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "1samuel",
+       "de": 26,
+       "ate": 28
+      },
+      {
+       "livro": "joao",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "1samuel",
+       "de": 29,
+       "ate": 31
+      },
+      {
+       "livro": "2samuel",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "joao",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "2samuel",
+       "de": 2,
+       "ate": 5
+      },
+      {
+       "livro": "joao",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "2samuel",
+       "de": 6,
+       "ate": 8
+      },
+      {
+       "livro": "joao",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "2samuel",
+       "de": 9,
+       "ate": 12
+      },
+      {
+       "livro": "joao",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "2samuel",
+       "de": 13,
+       "ate": 15
+      },
+      {
+       "livro": "joao",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "2samuel",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "joao",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "2samuel",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "joao",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "2samuel",
+       "de": 23,
+       "ate": 24
+      },
+      {
+       "livro": "1reis",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "joao",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "1reis",
+       "de": 3,
+       "ate": 6
+      },
+      {
+       "livro": "joao",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "1reis",
+       "de": 7,
+       "ate": 9
+      },
+      {
+       "livro": "joao",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "1reis",
+       "de": 10,
+       "ate": 13
+      },
+      {
+       "livro": "joao",
+       "de": 17,
+       "ate": 17
+      },
+      {
+       "livro": "1reis",
+       "de": 14,
+       "ate": 16
+      },
+      {
+       "livro": "joao",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "1reis",
+       "de": 17,
+       "ate": 20
+      },
+      {
+       "livro": "joao",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "1reis",
+       "de": 21,
+       "ate": 22
+      },
+      {
+       "livro": "2reis",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "joao",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "2reis",
+       "de": 2,
+       "ate": 5
+      },
+      {
+       "livro": "joao",
+       "de": 21,
+       "ate": 21
+      },
+      {
+       "livro": "2reis",
+       "de": 6,
+       "ate": 9
+      },
+      {
+       "livro": "atos",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "2reis",
+       "de": 10,
+       "ate": 12
+      },
+      {
+       "livro": "atos",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "2reis",
+       "de": 13,
+       "ate": 16
+      },
+      {
+       "livro": "atos",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "2reis",
+       "de": 17,
+       "ate": 19
+      },
+      {
+       "livro": "atos",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "2reis",
+       "de": 20,
+       "ate": 23
+      },
+      {
+       "livro": "atos",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "2reis",
+       "de": 24,
+       "ate": 25
+      },
+      {
+       "livro": "1cronicas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "atos",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "1cronicas",
+       "de": 2,
+       "ate": 5
+      },
+      {
+       "livro": "atos",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "1cronicas",
+       "de": 6,
+       "ate": 9
+      },
+      {
+       "livro": "atos",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "1cronicas",
+       "de": 10,
+       "ate": 12
+      },
+      {
+       "livro": "atos",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "1cronicas",
+       "de": 13,
+       "ate": 16
+      },
+      {
+       "livro": "atos",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "1cronicas",
+       "de": 17,
+       "ate": 19
+      },
+      {
+       "livro": "atos",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "1cronicas",
+       "de": 20,
+       "ate": 23
+      },
+      {
+       "livro": "atos",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "1cronicas",
+       "de": 24,
+       "ate": 26
+      },
+      {
+       "livro": "atos",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "1cronicas",
+       "de": 27,
+       "ate": 29
+      },
+      {
+       "livro": "2cronicas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "atos",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "2cronicas",
+       "de": 2,
+       "ate": 5
+      },
+      {
+       "livro": "atos",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "2cronicas",
+       "de": 6,
+       "ate": 8
+      },
+      {
+       "livro": "atos",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "2cronicas",
+       "de": 9,
+       "ate": 12
+      },
+      {
+       "livro": "atos",
+       "de": 17,
+       "ate": 17
+      },
+      {
+       "livro": "2cronicas",
+       "de": 13,
+       "ate": 15
+      },
+      {
+       "livro": "atos",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "2cronicas",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "atos",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "2cronicas",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "atos",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "2cronicas",
+       "de": 23,
+       "ate": 26
+      },
+      {
+       "livro": "atos",
+       "de": 21,
+       "ate": 21
+      },
+      {
+       "livro": "2cronicas",
+       "de": 27,
+       "ate": 30
+      },
+      {
+       "livro": "atos",
+       "de": 22,
+       "ate": 22
+      },
+      {
+       "livro": "2cronicas",
+       "de": 31,
+       "ate": 33
+      },
+      {
+       "livro": "atos",
+       "de": 23,
+       "ate": 23
+      },
+      {
+       "livro": "2cronicas",
+       "de": 34,
+       "ate": 36
+      },
+      {
+       "livro": "esdras",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "atos",
+       "de": 24,
+       "ate": 24
+      },
+      {
+       "livro": "esdras",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "atos",
+       "de": 25,
+       "ate": 25
+      },
+      {
+       "livro": "esdras",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "atos",
+       "de": 26,
+       "ate": 26
+      },
+      {
+       "livro": "esdras",
+       "de": 9,
+       "ate": 10
+      },
+      {
+       "livro": "neemias",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "atos",
+       "de": 27,
+       "ate": 27
+      },
+      {
+       "livro": "neemias",
+       "de": 2,
+       "ate": 5
+      },
+      {
+       "livro": "atos",
+       "de": 28,
+       "ate": 28
+      }
+     ]
+    },
+    {
+     "nome": "Romanos a 1 Coríntios",
+     "periodo": "Neemias 6 a Salmos 54",
+     "trechos": [
+      {
+       "livro": "neemias",
+       "de": 6,
+       "ate": 9
+      },
+      {
+       "livro": "romanos",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "neemias",
+       "de": 10,
+       "ate": 12
+      },
+      {
+       "livro": "romanos",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "neemias",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "ester",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "romanos",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "ester",
+       "de": 4,
+       "ate": 6
+      },
+      {
+       "livro": "romanos",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "ester",
+       "de": 7,
+       "ate": 10
+      },
+      {
+       "livro": "romanos",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "jo",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "romanos",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "jo",
+       "de": 4,
+       "ate": 7
+      },
+      {
+       "livro": "romanos",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "jo",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "romanos",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "jo",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "romanos",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "jo",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "romanos",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "jo",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "romanos",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "jo",
+       "de": 22,
+       "ate": 25
+      },
+      {
+       "livro": "romanos",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "jo",
+       "de": 26,
+       "ate": 28
+      },
+      {
+       "livro": "romanos",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "jo",
+       "de": 29,
+       "ate": 32
+      },
+      {
+       "livro": "romanos",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "jo",
+       "de": 33,
+       "ate": 36
+      },
+      {
+       "livro": "romanos",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "jo",
+       "de": 37,
+       "ate": 39
+      },
+      {
+       "livro": "romanos",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "jo",
+       "de": 40,
+       "ate": 42
+      },
+      {
+       "livro": "salmos",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "1corintios",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "salmos",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "1corintios",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "salmos",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "1corintios",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "salmos",
+       "de": 9,
+       "ate": 12
+      },
+      {
+       "livro": "1corintios",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "salmos",
+       "de": 13,
+       "ate": 15
+      },
+      {
+       "livro": "1corintios",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "salmos",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "1corintios",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "salmos",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "1corintios",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "salmos",
+       "de": 23,
+       "ate": 26
+      },
+      {
+       "livro": "1corintios",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "salmos",
+       "de": 27,
+       "ate": 29
+      },
+      {
+       "livro": "1corintios",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "salmos",
+       "de": 30,
+       "ate": 33
+      },
+      {
+       "livro": "1corintios",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "salmos",
+       "de": 34,
+       "ate": 37
+      },
+      {
+       "livro": "1corintios",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "salmos",
+       "de": 38,
+       "ate": 40
+      },
+      {
+       "livro": "1corintios",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "salmos",
+       "de": 41,
+       "ate": 44
+      },
+      {
+       "livro": "1corintios",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "salmos",
+       "de": 45,
+       "ate": 47
+      },
+      {
+       "livro": "1corintios",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "salmos",
+       "de": 48,
+       "ate": 51
+      },
+      {
+       "livro": "1corintios",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "salmos",
+       "de": 52,
+       "ate": 54
+      },
+      {
+       "livro": "1corintios",
+       "de": 16,
+       "ate": 16
+      }
+     ]
+    },
+    {
+     "nome": "2 Coríntios a Efésios",
+     "periodo": "Salmos 55 a Salmos 144",
+     "trechos": [
+      {
+       "livro": "salmos",
+       "de": 55,
+       "ate": 58
+      },
+      {
+       "livro": "2corintios",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "salmos",
+       "de": 59,
+       "ate": 62
+      },
+      {
+       "livro": "2corintios",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "salmos",
+       "de": 63,
+       "ate": 65
+      },
+      {
+       "livro": "2corintios",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "salmos",
+       "de": 66,
+       "ate": 69
+      },
+      {
+       "livro": "2corintios",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "salmos",
+       "de": 70,
+       "ate": 72
+      },
+      {
+       "livro": "2corintios",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "salmos",
+       "de": 73,
+       "ate": 76
+      },
+      {
+       "livro": "2corintios",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "salmos",
+       "de": 77,
+       "ate": 79
+      },
+      {
+       "livro": "2corintios",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "salmos",
+       "de": 80,
+       "ate": 83
+      },
+      {
+       "livro": "2corintios",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "salmos",
+       "de": 84,
+       "ate": 87
+      },
+      {
+       "livro": "2corintios",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "salmos",
+       "de": 88,
+       "ate": 90
+      },
+      {
+       "livro": "2corintios",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "salmos",
+       "de": 91,
+       "ate": 94
+      },
+      {
+       "livro": "2corintios",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "salmos",
+       "de": 95,
+       "ate": 97
+      },
+      {
+       "livro": "2corintios",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "salmos",
+       "de": 98,
+       "ate": 101
+      },
+      {
+       "livro": "2corintios",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "salmos",
+       "de": 102,
+       "ate": 104
+      },
+      {
+       "livro": "galatas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "salmos",
+       "de": 105,
+       "ate": 108
+      },
+      {
+       "livro": "galatas",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "salmos",
+       "de": 109,
+       "ate": 112
+      },
+      {
+       "livro": "galatas",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "salmos",
+       "de": 113,
+       "ate": 115
+      },
+      {
+       "livro": "galatas",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "salmos",
+       "de": 116,
+       "ate": 119
+      },
+      {
+       "livro": "galatas",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "salmos",
+       "de": 120,
+       "ate": 122
+      },
+      {
+       "livro": "galatas",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "salmos",
+       "de": 123,
+       "ate": 126
+      },
+      {
+       "livro": "efesios",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "salmos",
+       "de": 127,
+       "ate": 129
+      },
+      {
+       "livro": "efesios",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "salmos",
+       "de": 130,
+       "ate": 133
+      },
+      {
+       "livro": "efesios",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "salmos",
+       "de": 134,
+       "ate": 137
+      },
+      {
+       "livro": "efesios",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "salmos",
+       "de": 138,
+       "ate": 140
+      },
+      {
+       "livro": "efesios",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "salmos",
+       "de": 141,
+       "ate": 144
+      },
+      {
+       "livro": "efesios",
+       "de": 6,
+       "ate": 6
+      }
+     ]
+    },
+    {
+     "nome": "Filipenses a 2 Timóteo",
+     "periodo": "Salmos 145 a Isaías 36",
+     "trechos": [
+      {
+       "livro": "salmos",
+       "de": 145,
+       "ate": 147
+      },
+      {
+       "livro": "filipenses",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "salmos",
+       "de": 148,
+       "ate": 150
+      },
+      {
+       "livro": "proverbios",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "filipenses",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "proverbios",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "filipenses",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "proverbios",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "filipenses",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "proverbios",
+       "de": 9,
+       "ate": 12
+      },
+      {
+       "livro": "colossenses",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "proverbios",
+       "de": 13,
+       "ate": 15
+      },
+      {
+       "livro": "colossenses",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "proverbios",
+       "de": 16,
+       "ate": 19
+      },
+      {
+       "livro": "colossenses",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "proverbios",
+       "de": 20,
+       "ate": 22
+      },
+      {
+       "livro": "colossenses",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "proverbios",
+       "de": 23,
+       "ate": 26
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "proverbios",
+       "de": 27,
+       "ate": 29
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "proverbios",
+       "de": 30,
+       "ate": 31
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 3,
+       "ate": 6
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 7,
+       "ate": 9
+      },
+      {
+       "livro": "1tessalonicenses",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "eclesiastes",
+       "de": 10,
+       "ate": 12
+      },
+      {
+       "livro": "cantares",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "2tessalonicenses",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "cantares",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "2tessalonicenses",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "cantares",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "2tessalonicenses",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "isaias",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "1timoteo",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "isaias",
+       "de": 4,
+       "ate": 7
+      },
+      {
+       "livro": "1timoteo",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "isaias",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "1timoteo",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "isaias",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "1timoteo",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "isaias",
+       "de": 15,
+       "ate": 18
+      },
+      {
+       "livro": "1timoteo",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "isaias",
+       "de": 19,
+       "ate": 21
+      },
+      {
+       "livro": "1timoteo",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "isaias",
+       "de": 22,
+       "ate": 25
+      },
+      {
+       "livro": "2timoteo",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "isaias",
+       "de": 26,
+       "ate": 28
+      },
+      {
+       "livro": "2timoteo",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "isaias",
+       "de": 29,
+       "ate": 32
+      },
+      {
+       "livro": "2timoteo",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "isaias",
+       "de": 33,
+       "ate": 36
+      },
+      {
+       "livro": "2timoteo",
+       "de": 4,
+       "ate": 4
+      }
+     ]
+    },
+    {
+     "nome": "Tito a 1 Pedro",
+     "periodo": "Isaías 37 a Ezequiel 9",
+     "trechos": [
+      {
+       "livro": "isaias",
+       "de": 37,
+       "ate": 39
+      },
+      {
+       "livro": "tito",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "isaias",
+       "de": 40,
+       "ate": 43
+      },
+      {
+       "livro": "tito",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "isaias",
+       "de": 44,
+       "ate": 46
+      },
+      {
+       "livro": "tito",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "isaias",
+       "de": 47,
+       "ate": 50
+      },
+      {
+       "livro": "filemom",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "isaias",
+       "de": 51,
+       "ate": 53
+      },
+      {
+       "livro": "hebreus",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "isaias",
+       "de": 54,
+       "ate": 57
+      },
+      {
+       "livro": "hebreus",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "isaias",
+       "de": 58,
+       "ate": 61
+      },
+      {
+       "livro": "hebreus",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "isaias",
+       "de": 62,
+       "ate": 64
+      },
+      {
+       "livro": "hebreus",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "isaias",
+       "de": 65,
+       "ate": 66
+      },
+      {
+       "livro": "jeremias",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "hebreus",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "jeremias",
+       "de": 3,
+       "ate": 5
+      },
+      {
+       "livro": "hebreus",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "jeremias",
+       "de": 6,
+       "ate": 9
+      },
+      {
+       "livro": "hebreus",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "jeremias",
+       "de": 10,
+       "ate": 12
+      },
+      {
+       "livro": "hebreus",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "jeremias",
+       "de": 13,
+       "ate": 16
+      },
+      {
+       "livro": "hebreus",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "jeremias",
+       "de": 17,
+       "ate": 20
+      },
+      {
+       "livro": "hebreus",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "jeremias",
+       "de": 21,
+       "ate": 23
+      },
+      {
+       "livro": "hebreus",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "jeremias",
+       "de": 24,
+       "ate": 27
+      },
+      {
+       "livro": "hebreus",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "jeremias",
+       "de": 28,
+       "ate": 30
+      },
+      {
+       "livro": "hebreus",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "jeremias",
+       "de": 31,
+       "ate": 34
+      },
+      {
+       "livro": "tiago",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "jeremias",
+       "de": 35,
+       "ate": 38
+      },
+      {
+       "livro": "tiago",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "jeremias",
+       "de": 39,
+       "ate": 41
+      },
+      {
+       "livro": "tiago",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "jeremias",
+       "de": 42,
+       "ate": 45
+      },
+      {
+       "livro": "tiago",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "jeremias",
+       "de": 46,
+       "ate": 48
+      },
+      {
+       "livro": "tiago",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "jeremias",
+       "de": 49,
+       "ate": 52
+      },
+      {
+       "livro": "1pedro",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "lamentacoes",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "1pedro",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "lamentacoes",
+       "de": 4,
+       "ate": 5
+      },
+      {
+       "livro": "ezequiel",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "1pedro",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "ezequiel",
+       "de": 3,
+       "ate": 6
+      },
+      {
+       "livro": "1pedro",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "ezequiel",
+       "de": 7,
+       "ate": 9
+      },
+      {
+       "livro": "1pedro",
+       "de": 5,
+       "ate": 5
+      }
+     ]
+    },
+    {
+     "nome": "2 Pedro a Apocalipse",
+     "periodo": "Ezequiel 10 a Malaquias 4",
+     "trechos": [
+      {
+       "livro": "ezequiel",
+       "de": 10,
+       "ate": 13
+      },
+      {
+       "livro": "2pedro",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "ezequiel",
+       "de": 14,
+       "ate": 16
+      },
+      {
+       "livro": "2pedro",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "ezequiel",
+       "de": 17,
+       "ate": 20
+      },
+      {
+       "livro": "2pedro",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "ezequiel",
+       "de": 21,
+       "ate": 23
+      },
+      {
+       "livro": "1joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "ezequiel",
+       "de": 24,
+       "ate": 27
+      },
+      {
+       "livro": "1joao",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "ezequiel",
+       "de": 28,
+       "ate": 31
+      },
+      {
+       "livro": "1joao",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "ezequiel",
+       "de": 32,
+       "ate": 34
+      },
+      {
+       "livro": "1joao",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "ezequiel",
+       "de": 35,
+       "ate": 38
+      },
+      {
+       "livro": "1joao",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "ezequiel",
+       "de": 39,
+       "ate": 41
+      },
+      {
+       "livro": "2joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "ezequiel",
+       "de": 42,
+       "ate": 45
+      },
+      {
+       "livro": "3joao",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "ezequiel",
+       "de": 46,
+       "ate": 48
+      },
+      {
+       "livro": "judas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "daniel",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "daniel",
+       "de": 5,
+       "ate": 8
+      },
+      {
+       "livro": "apocalipse",
+       "de": 2,
+       "ate": 2
+      },
+      {
+       "livro": "daniel",
+       "de": 9,
+       "ate": 11
+      },
+      {
+       "livro": "apocalipse",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "daniel",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "oseias",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "apocalipse",
+       "de": 4,
+       "ate": 4
+      },
+      {
+       "livro": "oseias",
+       "de": 4,
+       "ate": 6
+      },
+      {
+       "livro": "apocalipse",
+       "de": 5,
+       "ate": 5
+      },
+      {
+       "livro": "oseias",
+       "de": 7,
+       "ate": 10
+      },
+      {
+       "livro": "apocalipse",
+       "de": 6,
+       "ate": 6
+      },
+      {
+       "livro": "oseias",
+       "de": 11,
+       "ate": 13
+      },
+      {
+       "livro": "apocalipse",
+       "de": 7,
+       "ate": 7
+      },
+      {
+       "livro": "oseias",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "joel",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "apocalipse",
+       "de": 8,
+       "ate": 8
+      },
+      {
+       "livro": "amos",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 9,
+       "ate": 9
+      },
+      {
+       "livro": "amos",
+       "de": 5,
+       "ate": 7
+      },
+      {
+       "livro": "apocalipse",
+       "de": 10,
+       "ate": 10
+      },
+      {
+       "livro": "amos",
+       "de": 8,
+       "ate": 9
+      },
+      {
+       "livro": "obadias",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "jonas",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "apocalipse",
+       "de": 11,
+       "ate": 11
+      },
+      {
+       "livro": "jonas",
+       "de": 2,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 12,
+       "ate": 12
+      },
+      {
+       "livro": "miqueias",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 13,
+       "ate": 13
+      },
+      {
+       "livro": "miqueias",
+       "de": 5,
+       "ate": 7
+      },
+      {
+       "livro": "apocalipse",
+       "de": 14,
+       "ate": 14
+      },
+      {
+       "livro": "nau",
+       "de": 1,
+       "ate": 3
+      },
+      {
+       "livro": "habacuque",
+       "de": 1,
+       "ate": 1
+      },
+      {
+       "livro": "apocalipse",
+       "de": 15,
+       "ate": 15
+      },
+      {
+       "livro": "habacuque",
+       "de": 2,
+       "ate": 3
+      },
+      {
+       "livro": "sofonias",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "apocalipse",
+       "de": 16,
+       "ate": 16
+      },
+      {
+       "livro": "sofonias",
+       "de": 3,
+       "ate": 3
+      },
+      {
+       "livro": "ageu",
+       "de": 1,
+       "ate": 2
+      },
+      {
+       "livro": "apocalipse",
+       "de": 17,
+       "ate": 17
+      },
+      {
+       "livro": "zacarias",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 18,
+       "ate": 18
+      },
+      {
+       "livro": "zacarias",
+       "de": 5,
+       "ate": 7
+      },
+      {
+       "livro": "apocalipse",
+       "de": 19,
+       "ate": 19
+      },
+      {
+       "livro": "zacarias",
+       "de": 8,
+       "ate": 11
+      },
+      {
+       "livro": "apocalipse",
+       "de": 20,
+       "ate": 20
+      },
+      {
+       "livro": "zacarias",
+       "de": 12,
+       "ate": 14
+      },
+      {
+       "livro": "apocalipse",
+       "de": 21,
+       "ate": 21
+      },
+      {
+       "livro": "malaquias",
+       "de": 1,
+       "ate": 4
+      },
+      {
+       "livro": "apocalipse",
+       "de": 22,
+       "ate": 22
+      }
+     ]
+    }
+   ]
   }
  ]
 }

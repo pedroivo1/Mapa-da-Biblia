@@ -194,8 +194,8 @@
     var b = nav.livro ? canonPorId[nav.livro] : null;
     var h = '<header class="leitura-topo"><nav class="trilha" aria-label="Onde estou">';
     h += '<button type="button" data-l-ir="livros"' + (nav.nivel === "livros" ? ' aria-current="true"' : "") + ">Livros</button>";
-    if (b) h += "<span>›</span><button type=\"button\" data-l-ir=\"caps\"" + (nav.nivel === "caps" ? ' aria-current="true"' : "") + ">" + esc(b.nome) + "</button>";
-    if (b && nav.nivel === "versos") h += '<span>›</span><button type="button" aria-current="true">Capítulo ' + nav.cap + "</button>";
+    if (b) h += "<span>" + Util.seta("dir", 12) + "</span><button type=\"button\" data-l-ir=\"caps\"" + (nav.nivel === "caps" ? ' aria-current="true"' : "") + ">" + esc(b.nome) + "</button>";
+    if (b && nav.nivel === "versos") h += '<span>' + Util.seta("dir", 12) + '</span><button type="button" aria-current="true">Capítulo ' + nav.cap + "</button>";
     h += "</nav></header>";
     h += '<div class="leitura-corpo">';
     var off = "";

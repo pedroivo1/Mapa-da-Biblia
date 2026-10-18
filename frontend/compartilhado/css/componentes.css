@@ -220,3 +220,154 @@ html.embutido .biblia-topo {
       border: 0;
     }
 }
+
+/* versão da Bíblia: botão (leitor e plano de leitura) e popup de escolha */
+.leitor-barra button[data-versao] {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.versao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.5rem 1rem 1rem;
+}
+
+.versao-lista button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.versao-lista button strong {
+  min-width: 3.2rem;
+  font-weight: 600;
+}
+
+.versao-lista button span {
+  color: var(--muted);
+}
+
+.versao-lista button:hover,
+.versao-lista button[aria-current="true"] {
+  border-color: var(--ink);
+}
+
+.versao-busca {
+  padding: 0.75rem 1rem 0;
+}
+
+.versao-busca input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+.versao-busca input:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.versao-lista button[hidden] {
+  display: none;
+}
+
+.versao-vazio {
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+/* temas do versículo (popup Salvar do leitor e popup Editar dos versículos salvos) */
+.leitor-temas {
+  padding: 1rem;
+}
+
+.leitor-temas-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.5rem 0 1rem;
+}
+
+.leitor-temas-lista .chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+}
+
+.leitor-temas-lista .chip input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+}
+
+.leitor-temas-lista .chip:has(:checked) {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-temas-lista .chip:focus-within {
+  outline: 1.5px dashed var(--ink-strong);
+  outline-offset: 2px;
+}
+
+.leitor-tema-novo {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.leitor-tema-novo input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+}
+
+.leitor-tema-novo input:focus {
+  border-color: var(--ink-strong);
+  outline: 0;
+}
+
+.leitor-tema-novo button {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.leitor-tema-novo button:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+.leitor-temas-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}

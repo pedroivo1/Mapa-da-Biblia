@@ -56,7 +56,7 @@
       ]
     },
     {
-      "source": "/biblia/nvi.json",
+      "source": "/biblia/versoes/(.*)\\.json",
       "headers": [
         {
           "key": "Cache-Control",

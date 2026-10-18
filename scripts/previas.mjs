@@ -1,8 +1,8 @@
 // Gera as prévias (WebP, tema claro e escuro) dos mapas: frontend/mapas/previas/<id>-<claro|escuro>.webp, uma por mapa
-// de mapas/mapas.json, e frontend/inicio/previa-geral-<claro|escuro>.webp (o mapa geral num ano). Usadas na página
+// de mapas/mapas.json, e frontend/inicio/previa-<linha|geral>-<claro|escuro>.webp (a linha do tempo; o mapa geral num ano). Usadas na página
 // inicial e na lista de Mapas. Rode de novo quando um mapa, os territórios ou as cores mudarem.
 //
-//   node scripts/previas.mjs [id ... | geral]      (Node 22+, Chrome ou Chromium e ImageMagick (magick); sem dependências npm)
+//   node scripts/previas.mjs [id ... | geral | linha]      (Node 22+, Chrome ou Chromium e ImageMagick (magick); sem dependências npm)
 //   CHROME=/caminho/do/chrome node scripts/previas.mjs
 import { spawn, execFileSync } from "node:child_process";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync, readFileSync } from "node:fs";
@@ -33,7 +33,8 @@ const lista = JSON.parse(readFileSync(join(FRONT, "mapas", "mapas.json"), "utf8"
 });
 const pedidos = process.argv.slice(2);
 const soGeral = pedidos.includes("geral"); // só a prévia do mapa geral
-const ids = soGeral ? [] : pedidos.length ? lista.filter((i) => pedidos.includes(i)) : lista;
+const soLinha = pedidos.includes("linha"); // só a prévia da linha do tempo (a da página inicial)
+const ids = soGeral || soLinha ? [] : pedidos.length ? lista.filter((i) => pedidos.includes(i)) : lista;
 
 const perfil = mkdtempSync(join(tmpdir(), "mapa-previas-"));
 mkdirSync(join(FRONT, "mapas", "previas"), { recursive: true });
@@ -76,14 +77,14 @@ try {
   await enviar("Emulation.setDeviceMetricsOverride", { width: 720, height: 460, deviceScaleFactor: 2, mobile: false });
 
   // abre a página no tema pedido, esconde o que não é mapa e fotografa o elemento do mapa
-  async function fotografar(url, tema, seletor, esconder, saida, larg = 720, alt = 460) {
+  async function fotografar(url, tema, seletor, esconder, saida, larg = 720, alt = 460, antes = "") {
     await enviar("Emulation.setDeviceMetricsOverride", { width: larg, height: alt, deviceScaleFactor: 2, mobile: false });
     await enviar("Page.navigate", { url: `http://127.0.0.1:${PORTA_SITE}/mapa/mapa.css` }); // mesma origem para gravar o tema
     await avaliar(`localStorage.setItem("notas-theme", "${tema}")`);
     await enviar("Page.navigate", { url: `http://127.0.0.1:${PORTA_SITE}${url}` });
     await dorme(3500);
     await avaliar(`(function(){var s=document.createElement("style");s.textContent=${JSON.stringify(esconder + "{display:none !important}")};document.head.appendChild(s);})()`);
-    await dorme(400);
+    if (antes) { await avaliar(antes); await dorme(600); }
     const r = JSON.parse(await avaliar(`JSON.stringify((function(){var b=document.querySelector(${JSON.stringify(seletor)}).getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height};})())`));
     const png = (await enviar("Page.captureScreenshot", { format: "png", clip: { ...r, scale: 1 } })).data;
     const tmp = join(perfil, "p.png");
@@ -97,7 +98,11 @@ try {
     for (const m of ids) {
       await fotografar(`/mapa/?m=${m}&embutido`, t, "#mapa-svg", ".mapa-barra, .mapa-legenda", join(FRONT, "mapas", "previas", `${m}-${tema}.webp`));
     }
-    if (!pedidos.length || soGeral) {
+    if (!pedidos.length || soLinha) {
+      await fotografar("/linha-do-tempo/", t, "main.frame", ".nav, footer, .lt-mapa-geral", join(FRONT, "inicio", `previa-linha-${tema}.webp`), 1280, 960,
+        "var r=document.querySelector('.lt-scroll');r.scrollTop=LT.Y(931)-r.clientHeight*0.4;");
+    }
+    if (soGeral) {
       await fotografar(`/mapa-geral/?ano=${ANO_GERAL}`, t, "#geral-svg", ".nav, .biblia-topo, .geral-controle, .geral-cartao, .geral-nota, footer", join(FRONT, "inicio", `previa-geral-${tema}.webp`), 1000, 1000);
     }
   }

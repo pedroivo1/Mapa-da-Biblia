@@ -31,6 +31,7 @@
   var mexeu = LT.mexeu;
   var periodo = LT.periodo;
   var recarregarFiltros = LT.recarregarFiltros;
+  var ordemColunas = LT.ordemColunas;
   var reguaAtiva = LT.reguaAtiva;
   var reguaDeRolagem = LT.reguaDeRolagem;
   var rolarSuave = LT.rolarSuave;
@@ -42,34 +43,118 @@
   var raiz = document.getElementById("vista");
   var lateral = document.getElementById("lt-mapa-geral");
   var painel = null;
-  var anoFoco = null; // ano do mapa geral e da linha de foco (a.C. positivo)
+  var anoFoco = null; // ano do mapa geral (a.C. positivo)
+  var anoPrevia = null; // ano sob o cursor na régua: a linha de foco acompanha
   var quadroMapa = null; // iframe do mapa geral, criado na primeira vez e mantido
+  var inicialMapa = null; // ano com que o iframe foi aberto
+  var mapaAvisou = false; // o iframe já avisou o ano inicial dele
 
   // mapa geral embutido (/mapa-geral/?embutido) à direita: liga e desliga pelo filtro "Mapa geral"
   function aplicarMapaGeral() {
     var ligado = !!colunas.mapaGeral;
     document.body.classList.toggle("lt-com-mapa", ligado);
     lateral.hidden = !ligado;
+    criarDivisor();
+    divisor.hidden = !ligado;
+    if (ligado) lateral.style.width = larguraMapa() ? larguraMapa() + "px" : "";
     if (!ligado || quadroMapa) return;
     var rolagem = raiz.querySelector(".lt-scroll");
     var inicial = anoFoco;
     if (inicial === null && rolagem) inicial = anoParaMapa(LT.anoDeY(rolagem.scrollTop + rolagem.clientHeight / 2));
+    inicialMapa = inicial || 1010; // sempre um ano: o mapa nunca abre sozinho no padrão dele e leva a linha do tempo junto
+    inicial = inicialMapa;
     quadroMapa = document.createElement("iframe");
     quadroMapa.title = "Mapa geral";
     quadroMapa.src = "/mapa-geral/?embutido&v=4" + (inicial ? "&ano=" + inicial : "");
     lateral.appendChild(quadroMapa);
+  }
+  // divisor arrastável entre o mapa e a linha do tempo: a pessoa escolhe quanto espaço cada um ocupa
+  // como a pessoa deixou a vista (largura do mapa e ano no centro) fica no navegador e na conta ("linha_do_tempo_vista")
+  var KEY_LARGURA = "biblia-lt-mapa";
+  var divisor = null;
+  function vistaGuardada() {
+    var c = Conta && Conta.usuario() && Conta.config().linha_do_tempo_vista;
+    return c || Util.ler(KEY_LARGURA, null) || {};
+  }
+  function guardarVista(parte) {
+    var v = Object.assign({}, vistaGuardada());
+    Object.keys(parte).forEach(function (k) {
+      if (parte[k] === null) delete v[k];
+      else v[k] = parte[k];
+    });
+    Util.gravar(KEY_LARGURA, v);
+    if (Conta) Conta.salvarConfig("linha_do_tempo_vista", v);
+  }
+  function larguraMapa() {
+    var v = vistaGuardada();
+    return typeof v.largura === "number" ? v.largura : 0;
+  }
+  function criarDivisor() {
+    if (divisor) return;
+    divisor = document.createElement("div");
+    divisor.className = "lt-divisor";
+    divisor.setAttribute("role", "separator");
+    divisor.setAttribute("aria-orientation", "vertical");
+    divisor.setAttribute("aria-label", "Arraste para mudar a largura do mapa");
+    divisor.hidden = true;
+    lateral.parentNode.insertBefore(divisor, lateral.nextSibling);
+    var arrastando = false;
+    var espera = null;
+    function largura(ev) {
+      var r = lateral.getBoundingClientRect();
+      return Math.round(Math.min(Math.max(ev.clientX - r.left, 280), window.innerWidth - 420));
+    }
+    function refazer() {
+      var aberto = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      if (aberto) abrir(aberto);
+    }
+    divisor.addEventListener("pointerdown", function (ev) {
+      arrastando = true;
+      divisor.setPointerCapture(ev.pointerId);
+      document.body.classList.add("lt-redimensionando");
+      ev.preventDefault();
+    });
+    divisor.addEventListener("pointermove", function (ev) {
+      if (!arrastando) return;
+      lateral.style.width = largura(ev) + "px";
+      clearTimeout(espera);
+      espera = setTimeout(refazer, 120);
+    });
+    function soltar(ev) {
+      if (!arrastando) return;
+      arrastando = false;
+      document.body.classList.remove("lt-redimensionando");
+      clearTimeout(espera);
+      guardarVista({ largura: largura(ev) });
+      refazer();
+    }
+    divisor.addEventListener("pointerup", soltar);
+    divisor.addEventListener("pointercancel", soltar);
+    divisor.addEventListener("dblclick", function () {
+      guardarVista({ largura: null });
+      lateral.style.width = "";
+      refazer();
+    });
   }
   function anoParaMapa(a) {
     if (a === null || a === undefined) return null;
     a = Math.round(a);
     return a === 0 ? -1 : a; // não há ano 0
   }
-  // a linha de foco cruza a linha do tempo no ano do mapa
+  // a linha de foco cruza a linha do tempo: no ano sob o cursor da régua, senão no do mapa geral (se ligado),
+  // senão no ano do centro da tela. É a única linha: a régua não tem mais uma linha à parte
   function pintarFoco() {
     var corpoEl = raiz.querySelector(".lt-corpo");
     if (!corpoEl) return;
     var linha = corpoEl.querySelector(".lt-foco");
-    if (!colunas.mapaGeral || anoFoco === null) {
+    var a = anoPrevia;
+    if (a === null && colunas.mapaGeral && anoFoco !== null) a = anoFoco;
+    if (a === null) {
+      var rolagem = raiz.querySelector(".lt-scroll");
+      if (rolagem) a = anoParaMapa(LT.anoDeY(rolagem.scrollTop + rolagem.clientHeight / 2));
+    }
+    if (a === null || a === undefined) {
       if (linha) linha.parentNode.removeChild(linha);
       return;
     }
@@ -79,9 +164,14 @@
       linha.appendChild(document.createElement("span"));
       corpoEl.appendChild(linha);
     }
-    linha.style.top = Y(anoFoco) + "px";
-    linha.firstChild.textContent = ano(anoFoco);
+    linha.classList.toggle("previa", anoPrevia !== null);
+    linha.style.top = Y(a) + "px";
+    linha.firstChild.textContent = ano(a);
   }
+  LT.previaAno = function (a) {
+    anoPrevia = a === null ? null : anoParaMapa(a);
+    pintarFoco();
+  };
   // muda o ano de foco: move a linha e, vindo do mapa (rolar), leva a linha do tempo até lá
   function definirFoco(a, rolar) {
     a = anoParaMapa(a);
@@ -94,7 +184,6 @@
   }
   // clique na régua: o ano sob o cursor vira o ano do mapa e o foco da linha do tempo
   LT.aoEscolherAno = function (a) {
-    if (!colunas.mapaGeral) return;
     a = anoParaMapa(a);
     if (a === null) return;
     definirFoco(a, false);
@@ -103,8 +192,77 @@
   window.addEventListener("message", function (ev) {
     var d = ev.data;
     if (ev.origin !== location.origin || !quadroMapa || ev.source !== quadroMapa.contentWindow) return;
-    if (d && d.tipo === "mapa-geral-ano" && typeof d.ano === "number") definirFoco(d.ano, true);
+    if (!d || d.tipo !== "mapa-geral-ano" || typeof d.ano !== "number") return;
+    // o primeiro aviso é só o mapa abrindo: não pode arrastar a linha do tempo para outro ano
+    if (!mapaAvisou) {
+      mapaAvisou = true;
+      if (inicialMapa && d.ano !== inicialMapa) {
+        quadroMapa.contentWindow.postMessage({ tipo: "mapa-geral-ir", ano: inicialMapa }, location.origin);
+        return;
+      }
+    }
+    definirFoco(d.ano, true);
   });
+
+  // arrastar o título de uma coluna a muda de lugar; a ordem fica guardada com os filtros
+  function arrastarColunas(cabIn) {
+    var cel = null;
+    var x0 = 0;
+    var moveu = false;
+    function celulas() {
+      return Array.prototype.slice.call(cabIn.children);
+    }
+    cabIn.addEventListener("pointerdown", function (ev) {
+      var d = ev.target.closest("[data-col]");
+      if (!d || ev.button > 0) return;
+      cel = d;
+      x0 = ev.clientX;
+      moveu = false;
+      d.setPointerCapture(ev.pointerId);
+    });
+    cabIn.addEventListener("pointermove", function (ev) {
+      if (!cel) return;
+      var dx = ev.clientX - x0;
+      if (!moveu && Math.abs(dx) < 5) return;
+      moveu = true;
+      cel.classList.add("arrastando");
+      cel.style.transform = "translateX(" + dx + "px)";
+    });
+    function soltar(ev) {
+      if (!cel) return;
+      var d = cel;
+      cel = null;
+      d.classList.remove("arrastando");
+      d.style.transform = "";
+      if (!moveu) return;
+      // a coluna cujo meio está mais perto do cursor é o destino
+      var alvo = null;
+      var melhor = Infinity;
+      celulas().forEach(function (o) {
+        if (o === d) return;
+        var r = o.getBoundingClientRect();
+        var dist = Math.abs(ev.clientX - (r.left + r.width / 2));
+        if (dist < melhor) {
+          melhor = dist;
+          alvo = o;
+        }
+      });
+      if (!alvo) return;
+      var ordem = ordemColunas();
+      var de = d.getAttribute("data-col");
+      var para = alvo.getAttribute("data-col");
+      var depois = ordem.indexOf(de) < ordem.indexOf(para);
+      ordem.splice(ordem.indexOf(de), 1);
+      ordem.splice(ordem.indexOf(para) + (depois ? 1 : 0), 0, de);
+      colunas.ordem = ordem;
+      guardarColunas();
+      var aberto = painel && !painel.hidden && painel.dataset.key;
+      renderizar();
+      if (aberto) abrir(aberto);
+    }
+    cabIn.addEventListener("pointerup", soltar);
+    cabIn.addEventListener("pointercancel", soltar);
+  }
 
   function vistaFaixas() {
     var RULER = 0; // sem coluna de anos à esquerda: a régua de rolagem, à direita, mostra as datas
@@ -217,14 +375,28 @@
       x += w;
       return c;
     }
-    var cEra = colunas.eras ? col("era", "Eras", larguraEra) : null;
-    var cLiv = livrosAtivos() ? col("livros", "Livros", n.livros * SUB.livros) : null;
-    // Judá e Israel dividem uma só coluna, a Terra prometida, em duas faixas lado a lado
-    var cTerra = colunas.reis ? col("terra", "Terra prometida", 2 * (BAR + GUT)) : null;
+    var cEra = null, cLiv = null, cTerra = null, cPot = null;
+    var criar = {
+      era: function () {
+        if (colunas.eras) cEra = col("era", "Eras", larguraEra);
+      },
+      livros: function () {
+        if (livrosAtivos()) cLiv = col("livros", "Livros", n.livros * SUB.livros);
+      },
+      // Judá e Israel dividem uma só coluna, a Terra prometida, em duas faixas lado a lado
+      terra: function () {
+        if (colunas.reis) cTerra = col("terra", "Terra prometida", 2 * (BAR + GUT));
+      },
+      potencias: function () {
+        if (colunas.potencias) cPot = col("potencias", "Potências", n.potencias * SUB.potencias);
+      }
+    };
+    ordemColunas().forEach(function (id) {
+      criar[id]();
+    });
     var cJuda = cTerra ? { x: cTerra.x } : null;
-    // Israel encosta na coluna das potências: o vão inteiro (2 * GUT) fica no meio, entre as duas faixas
+    // Israel encosta na coluna vizinha: o vão inteiro (2 * GUT) fica no meio, entre as duas faixas
     var cIsrael = cTerra ? { x: cTerra.x + BAR + 2 * GUT } : null;
-    var cPot = colunas.potencias ? col("potencias", "Potências", n.potencias * SUB.potencias) : null;
     var W = x + MARGEM;
 
     var s = svg("svg", {
@@ -477,8 +649,11 @@
       d.style.left = c.x + "px";
       d.style.width = c.w + "px";
       d.textContent = c.nome;
+      d.setAttribute("data-col", c.id);
+      d.title = "Arraste para mudar a ordem das colunas";
       cabIn.appendChild(d);
     });
+    arrastarColunas(cabIn);
     cab.appendChild(cabIn);
 
     var scroll = document.createElement("div");
@@ -626,12 +801,44 @@
     raiz.appendChild(vistaFaixas());
     pintarFoco();
     var novo = raiz.querySelector(".lt-scroll");
+    if (novo) novo.addEventListener("scroll", pintarFoco);
+    if (novo) novo.addEventListener("scroll", guardarPosicao);
     if (novo) {
       if (esq) novo.scrollLeft = esq;
       if (topo) novo.scrollTop = topo;
     }
     var leg = raiz.querySelector(".colunas");
     if (leg) document.documentElement.style.setProperty("--colunas-h", leg.offsetHeight + "px");
+  }
+
+  // o ano no centro da tela fica guardado (devagar, depois que a rolagem para) e a linha do tempo reabre nele
+  var temporizadorPosicao = null;
+  function guardarPosicao() {
+    clearTimeout(temporizadorPosicao);
+    temporizadorPosicao = setTimeout(function () {
+      var r = raiz.querySelector(".lt-scroll");
+      var a = r ? LT.anoDeY(r.scrollTop + r.clientHeight / 2) : null;
+      if (a !== null && a !== undefined && !restaurando) guardarVista({ ano: Math.round(a) });
+    }, 800);
+  }
+  var restaurando = false;
+  function guardarPosicaoAgora() {
+    clearTimeout(temporizadorPosicao);
+    var r = raiz.querySelector(".lt-scroll");
+    var a = r ? LT.anoDeY(r.scrollTop + r.clientHeight / 2) : null;
+    if (a !== null && a !== undefined && !restaurando) guardarVista({ ano: Math.round(a) });
+  }
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") guardarPosicaoAgora();
+  });
+  window.addEventListener("pagehide", guardarPosicaoAgora);
+  function restaurarPosicao() {
+    var r = raiz.querySelector(".lt-scroll");
+    var a = vistaGuardada().ano;
+    if (!r || typeof a !== "number") return;
+    restaurando = true;
+    r.scrollTop = Y(a) - r.clientHeight / 2;
+    setTimeout(function () { restaurando = false; }, 1000);
   }
 
   function abrir(key) {
@@ -799,7 +1006,10 @@
       // com a sessão (rápida) já valem os filtros guardados da conta; o servidor confirma depois
       return (Conta ? Conta.pronto() : Promise.resolve()).then(function () {
         if (!mexeu()) recarregarFiltros();
+        var salvo = vistaGuardada().ano;
+        if (typeof salvo === "number") anoFoco = anoParaMapa(salvo);
         renderizar();
+        restaurarPosicao();
         if (!Conta) return;
         Conta.aoConfig(function (cfg) {
           if (mexeu() || !cfg.linha_do_tempo) return;

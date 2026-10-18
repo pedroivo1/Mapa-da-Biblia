@@ -8,14 +8,16 @@
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icones/icone-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/compartilhado/css/base.css" />
-    <link rel="stylesheet" href="/compartilhado/css/componentes.css?v=1" />
+    <link rel="stylesheet" href="/compartilhado/css/base.css?v=10" />
+    <link rel="stylesheet" href="/compartilhado/css/componentes.css?v=7" />
     <link rel="stylesheet" href="/mapa-geral/mapa-geral.css?v=3" />
     <script src="/compartilhado/js/tema.js"></script>
     <script>
@@ -27,7 +29,7 @@
     <script src="/compartilhado/js/util.js"></script>
     <script src="/compartilhado/js/conta.js"></script>
     <script src="/compartilhado/js/projecao.js"></script>
-    <script src="/mapa-geral/mapa-geral.js?v=4" defer></script>
+    <script src="/mapa-geral/mapa-geral.js?v=6" defer></script>
   </head>
   <body>
     <header class="nav">
@@ -40,8 +42,8 @@
           <a class="nav-link hud" href="/biblia/"><span>Bíblia</span></a>
           <a class="nav-link hud" href="/plano-de-leitura/"><span>Plano de leitura</span></a>
           <a class="nav-link hud" href="/versiculos/"><span>Versículos</span></a>
-          <a class="nav-link hud" href="/linha-do-tempo/"><span>Linha do tempo</span></a>
           <a class="nav-link hud" href="/mapas/" aria-current="page"><span>Mapas</span></a>
+          <a class="nav-link hud" href="/linha-do-tempo/"><span>Linha do tempo</span></a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
@@ -66,9 +68,9 @@
           <div id="geral-cartao" class="geral-cartao" role="status" hidden></div>
         </div>
         <div class="geral-controle">
-          <button type="button" id="geral-ant" aria-label="Ano anterior">&larr;</button>
+          <button type="button" id="geral-ant" aria-label="Ano anterior"></button>
           <button type="button" id="geral-play" aria-label="Reproduzir">&#9654;</button>
-          <button type="button" id="geral-prox" aria-label="Próximo ano">&rarr;</button>
+          <button type="button" id="geral-prox" aria-label="Próximo ano"></button>
           <input type="range" id="geral-ano" min="0" max="0" value="0" step="1" aria-label="Ano" />
           <output id="geral-rotulo" class="hud">&nbsp;</output>
           <label class="geral-vel hud faint"><span class="geral-vel-txt">Velocidade</span>

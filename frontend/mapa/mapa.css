@@ -211,8 +211,14 @@ html.embutido .mapa-svg {
 }
 
 .mapa-grupo summary::after {
-  content: "▾";
   color: var(--muted);
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
+  mask: var(--seta-baixo) center / contain no-repeat;
 }
 
 .mapa-grupo[open] summary {
@@ -221,7 +227,8 @@ html.embutido .mapa-svg {
 }
 
 .mapa-grupo[open] summary::after {
-  content: "▴";
+  -webkit-mask-image: var(--seta-cima);
+  mask-image: var(--seta-cima);
 }
 
 .mapa-grupo-nome {

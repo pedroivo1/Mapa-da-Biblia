@@ -228,7 +228,10 @@
       var novo = sim ? 1 : 0;
       if (alvo === novo) return;
       alvo = novo;
-      if (!sim) guia.hidden = true;
+      if (!sim) {
+        guia.hidden = true;
+        if (LT.previaAno) LT.previaAno(null);
+      }
       if (window.requestAnimationFrame) animar();
       else {
         p = alvo;
@@ -265,6 +268,8 @@
       guia.hidden = alvo === 0;
       guia.style.top = q.y + "px";
       guiaAno.textContent = rotuloAno(anoDeY(q.doc));
+      // a linha de foco da linha do tempo acompanha o cursor (é a mesma linha)
+      if (LT.previaAno && !guia.hidden) LT.previaAno(anoDeY(q.doc));
       if (arrastando) levar(ev);
     });
     function soltar() {

@@ -44,7 +44,7 @@
     "profeta-maior": "Profeta maior",
     "profeta-menor": "Profeta menor"
   };
-  // grupos de livros do filtro (Livros ▾)
+  // grupos de livros do filtro (Livros)
   var AT = "Antigo Testamento", NT = "Novo Testamento";
   var MODOS = {
     almeida: {
@@ -85,7 +85,6 @@
     { ano: 722, nome: "Samaria", texto: "A Assíria conquista Samaria e termina o reino do norte.", ref: "2Rs 17" },
     { ano: 586, nome: "Jerusalém", texto: "A Babilônia destrói Jerusalém e o templo; começa o exílio de Judá.", ref: "2Rs 25" },
     { ano: 538, nome: "Ciro", texto: "Decreto de Ciro: os exilados podem voltar a Jerusalém.", ref: "Ed 1" },
-    { ano: 167, nome: "Macabeus", texto: "Antíoco IV profana o templo e começa a revolta macabeia.", ref: "Dn 11:31; 1Mc 1–4" },
     { ano: 5, nome: "Jesus", texto: "Nascimento de Jesus (data aproximada, entre 6 e 4 a.C.).", ref: "Mt 1–2; Lc 2" },
     { ano: -30, nome: "Cruz", texto: "Morte e ressurreição de Jesus e Pentecostes (c. 30 d.C.).", ref: "Mt 27–28; At 2" },
     { ano: -70, nome: "Templo", texto: "Tito destrói Jerusalém e o templo.", ref: "Mt 24:1-2" }

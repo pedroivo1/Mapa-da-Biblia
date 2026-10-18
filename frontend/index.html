@@ -8,13 +8,15 @@
     <meta name="theme-color" content="#f2f1ee" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="apple-touch-icon" href="/icones/icone-192.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@1&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/compartilhado/css/base.css" />
+    <link rel="stylesheet" href="/compartilhado/css/base.css?v=10" />
     <link rel="stylesheet" href="/inicio/inicio.css" />
     <script src="/compartilhado/js/tema.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
@@ -33,8 +35,8 @@
           <a class="nav-link hud" href="/biblia/"><span>Bíblia</span></a>
           <a class="nav-link hud" href="/plano-de-leitura/"><span>Plano de leitura</span></a>
           <a class="nav-link hud" href="/versiculos/"><span>Versículos</span></a>
-          <a class="nav-link hud" href="/linha-do-tempo/"><span>Linha do tempo</span></a>
           <a class="nav-link hud" href="/mapas/"><span>Mapas</span></a>
+          <a class="nav-link hud" href="/linha-do-tempo/"><span>Linha do tempo</span></a>
         </nav>
         <button class="theme-toggle" type="button" data-theme-toggle aria-label="Alternar tema">
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
@@ -49,11 +51,6 @@
     </header>
 
     <main class="frame">
-      <div class="inicio-barra">
-        <p class="hud muted"><span class="faint">01</span><span class="sep faint">/</span>Mapa da Bíblia</p>
-        <p class="hud faint">Leitura · tempo · lugares</p>
-      </div>
-
       <section class="hero">
         <h1>
           Veja a Bíblia<br />
@@ -63,53 +60,53 @@
       </section>
 
       <section class="destaques" aria-label="Mapas">
-        <a class="destaque" href="/mapas/">
-          <span class="destaque-topo hud faint"><span>Mapas</span><span>01</span></span>
+        <a class="destaque destaque-mapas" href="/mapas/">
+          <span class="destaque-topo hud faint"><span class="destaque-num">01</span><span>Mapas</span></span>
           <img class="previa-claro" src="/mapas/previas/abraao-claro.webp" alt="" width="720" height="450" />
           <img class="previa-escuro" src="/mapas/previas/abraao-escuro.webp" alt="" width="720" height="450" />
           <span class="destaque-texto">
-            <span class="destaque-titulo">Mapas dos versículos</span>
-            <span class="destaque-resumo">As viagens e os lugares de cada livro, com rotas.</span>
+            <span class="destaque-titulo">Mapas dos <em>versículos</em></span>
+            <span class="destaque-resumo">As viagens e os lugares de cada livro.</span>
           </span>
         </a>
-        <a class="destaque" href="/mapa-geral/">
-          <span class="destaque-topo hud faint"><span>Mapa geral</span><span>02</span></span>
-          <img class="previa-claro" src="/inicio/previa-geral-claro.webp" alt="" width="720" height="360" />
-          <img class="previa-escuro" src="/inicio/previa-geral-escuro.webp" alt="" width="720" height="360" />
+        <a class="destaque destaque-linha" href="/linha-do-tempo/">
+          <span class="destaque-topo hud faint"><span class="destaque-num">02</span><span>Linha do tempo</span></span>
+          <img class="previa-claro" src="/inicio/previa-linha-claro.webp" alt="" width="720" height="360" />
+          <img class="previa-escuro" src="/inicio/previa-linha-escuro.webp" alt="" width="720" height="360" />
           <span class="destaque-texto">
-            <span class="destaque-titulo">O mapa da história</span>
-            <span class="destaque-resumo">Povos e impérios de 2500 a.C. a hoje.</span>
+            <span class="destaque-titulo">A linha do <em>tempo</em></span>
+            <span class="destaque-resumo">Livros, reis e potências lado a lado.</span>
           </span>
-        </a>
-      </section>
-
-      <section class="secoes" aria-label="Explorar">
-        <a class="secao" href="/biblia/">
-          <span class="hud faint">02</span>
-          <span class="secao-titulo">Ler a Bíblia</span>
-          <span class="secao-resumo">Texto completo em NVI.</span>
-        </a>
-        <a class="secao" href="/plano-de-leitura/">
-          <span class="hud faint">03</span>
-          <span class="secao-titulo">Plano de leitura</span>
-          <span class="secao-resumo">Capítulos em ordem histórica.</span>
-        </a>
-        <a class="secao" href="/versiculos/">
-          <span class="hud faint">04</span>
-          <span class="secao-titulo">Versículos salvos</span>
-          <span class="secao-resumo">Grife, salve e decore.</span>
-        </a>
-        <a class="secao" href="/linha-do-tempo/">
-          <span class="hud faint">05</span>
-          <span class="secao-titulo">Linha do tempo</span>
-          <span class="secao-resumo">Livros, reis e potências.</span>
         </a>
       </section>
     </main>
 
-    <footer>
-      <div class="footer-inner frame">
-        <p class="hud faint">Mapa da Bíblia · <a href="/privacidade/">Privacidade</a></p>
+    <footer class="rodape">
+      <div class="rodape-corpo frame">
+        <div class="rodape-marca">
+          <a class="wordmark" href="/">
+            <span class="mark" aria-hidden="true">B</span>
+            Mapa da Bíblia
+          </a>
+          <p>Leia a Bíblia em ordem histórica, siga os reis e as potências na linha do tempo e acompanhe cada viagem nos mapas.</p>
+        </div>
+        <nav class="rodape-col" aria-label="Explorar">
+          <p class="hud faint">Explorar</p>
+          <a href="/biblia/">Bíblia</a>
+          <a href="/plano-de-leitura/">Plano de leitura</a>
+          <a href="/versiculos/">Versículos</a>
+          <a href="/mapas/">Mapas</a>
+          <a href="/linha-do-tempo/">Linha do tempo</a>
+          <a href="/mapa-geral/">Mapa geral</a>
+        </nav>
+        <nav class="rodape-col" aria-label="Conta e privacidade">
+          <p class="hud faint">Conta</p>
+          <a href="/conta/">Entrar ou criar conta</a>
+          <a href="/privacidade/">Privacidade</a>
+        </nav>
+      </div>
+      <div class="rodape-base frame">
+        <p class="hud faint">© 2026 Mapa da Bíblia</p>
       </div>
     </footer>
   </body>

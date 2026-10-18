@@ -171,11 +171,21 @@
     if (!sb || !usuario || buscaDe === usuario.id) return;
     buscaDe = usuario.id;
     progressoLido = false;
+    // o que a pessoa mexeu e a página fechou antes de subir: volta para a fila (vale mais que o servidor)
+    var guardado = cacheLer();
+    if (guardado && guardado.pend && Object.keys(guardado.pend).length) {
+      Object.keys(guardado.pend).forEach(function (k) {
+        if (!(k in alteradas)) alteradas[k] = guardado.pend[k];
+      });
+      clearTimeout(temporizadorConfig);
+      temporizadorConfig = setTimeout(function () { enviarConfig().catch(function () {}); }, 1500);
+    }
     // cópia recém-confirmada: usa direto, sem ir ao banco (uma página nova a cada clique não custa consulta)
     var c = cacheLer();
     var agora = Date.now();
     if (c && c.progresso && c.config && !pendente && !enviando && agora - (c.tp || 0) < TTL_CACHE && agora - (c.tc || 0) < TTL_CACHE) {
       config = c.config;
+      Object.keys(alteradas).forEach(function (k) { config[k] = alteradas[k]; });
       buscaProgresso = Promise.resolve({ lido: c.progresso.lido || {}, versiculos: c.progresso.versiculos || {}, vazio: false });
       buscaConfig = Promise.resolve({ servidor: copia(c.config), config: c.config });
       return;
@@ -278,7 +288,7 @@
         Object.keys(alteradas).forEach(function (k) { nova[k] = alteradas[k]; });
         var mudouPlano = JSON.stringify(nova.plano) !== JSON.stringify((config || {}).plano);
         config = nova;
-        cacheGravar({ config: nova, tc: Date.now() });
+        cacheGravar({ config: nova, tc: Date.now(), pend: alteradas });
         buscaConfig = Promise.resolve({ servidor: copia(dados), config: nova });
         if (mudouPlano) ouvintesConfig.forEach(function (cb) { cb(nova); });
       })
@@ -296,11 +306,22 @@
     if (!usuario) return;
     configAtual()[chave] = valor;
     alteradas[chave] = valor;
-    cacheGravar({ config: config });
+    cacheGravar({ config: config, pend: alteradas }); // o que ainda não subiu sobrevive a recarregar a página
     clearTimeout(temporizadorConfig);
     temporizadorConfig = setTimeout(function () {
       enviarConfig().catch(function () {});
     }, 800);
+  }
+
+  // onde a pessoa parou em cada tela (zoom do mapa, filtros, posição…): a conta quando há login, senão o navegador.
+  // Chave própria por tela, valor inteiro; vale em qualquer aparelho depois que o servidor confirma.
+  function lerVista(chave) {
+    var c = usuario ? configAtual()[chave] : null;
+    return c || Util.ler("biblia-vista-" + chave, null);
+  }
+  function guardarVista(chave, valor) {
+    Util.gravar("biblia-vista-" + chave, valor);
+    salvarConfig(chave, valor);
   }
 
   function enviar() {
@@ -557,6 +578,8 @@
     carregarConfig: carregarConfig,
     aoConfig: aoConfig,
     salvarConfig: salvarConfig,
+    lerVista: lerVista,
+    guardarVista: guardarVista,
     salvar: salvar,
     salvarAgora: salvarAgora,
     temPendente: temPendente,
