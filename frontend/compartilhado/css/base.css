@@ -173,6 +173,7 @@ body > .frame {
 
 .nav-inner,
 .footer-inner {
+  position: relative;
   display: flex;
   align-items: stretch;
   height: 100%;
@@ -253,9 +254,44 @@ body > .frame {
   height: 15px;
 }
 
-[data-theme="light"] .icon-sun,
-[data-theme="dark"] .icon-moon {
+.tema-opcoes {
+  position: absolute;
+  z-index: 60;
+  min-width: 9.5rem;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.tema-opcoes[hidden] {
   display: none;
+}
+
+.tema-opcoes button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  text-align: left;
+}
+
+.tema-opcoes button + button {
+  border-top: 1px solid var(--line);
+}
+
+.tema-opcoes button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.tema-opcoes button:hover,
+.tema-opcoes button[aria-checked="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
 }
 
 .article-kicker {

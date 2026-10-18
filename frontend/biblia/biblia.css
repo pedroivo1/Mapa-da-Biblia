@@ -181,12 +181,28 @@
 /* popup de material de apoio no leitor */
 .leitor-mapas-abas {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 0.4rem;
   padding: 0.6rem 1rem 0;
 }
 
+/* as abas rolam de lado em vez de quebrar de linha; as setas ficam sempre à direita */
+.leitor-mapas-lista {
+  display: flex;
+  flex: 1;
+  gap: 0.4rem;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.leitor-mapas-lista::-webkit-scrollbar {
+  display: none;
+}
+
 .leitor-mapas-abas button {
+  flex: none;
+  white-space: nowrap;
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--line);
   background: transparent;
@@ -231,6 +247,7 @@
 
 .leitor-mapas-passos {
   display: flex;
+  flex: none;
   gap: 0.4rem;
   margin-left: auto;
 }

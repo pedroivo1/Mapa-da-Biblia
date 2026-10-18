@@ -549,8 +549,10 @@
     var m = lista[k];
     var abas = dlgMapas.querySelectorAll("[data-aba]");
     for (var j = 0; j < abas.length; j++) {
-      if (j === k) abas[j].setAttribute("aria-current", "true");
-      else abas[j].removeAttribute("aria-current");
+      if (j === k) {
+        abas[j].setAttribute("aria-current", "true");
+        if (abas[j].scrollIntoView) abas[j].scrollIntoView({ block: "nearest", inline: "nearest" });
+      } else abas[j].removeAttribute("aria-current");
     }
     dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
     quadro.setAttribute("title", m.titulo);
@@ -587,11 +589,11 @@
       document.body.appendChild(dlgMapas);
     }
     var h = '<div class="leitor-dlg-topo"><span class="hud muted">Mapas</span><button type="button" data-fechar>Fechar</button></div>' +
-      '<div class="leitor-mapas-abas" role="tablist">';
+      '<div class="leitor-mapas-abas"><div class="leitor-mapas-lista" role="tablist">';
     lista.forEach(function (m, k) {
       h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";
     });
-    h += '<span class="leitor-mapas-passos">' +
+    h += '</div><span class="leitor-mapas-passos">' +
       '<button type="button" data-mapas-passo="-1" aria-label="Mapa anterior">' + ICONE_SETA_ESQ + '</button>' +
       '<button type="button" data-mapas-passo="1" aria-label="Próximo mapa">' + ICONE_SETA_DIR + '</button></span>';
     h += '</div><div class="leitor-mapas-balao" role="status" hidden></div><iframe></iframe>';

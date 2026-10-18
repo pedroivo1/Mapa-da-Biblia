@@ -65,12 +65,8 @@
   // o tema escolhido na conta vale em qualquer navegador
   function aplicarTema(c) {
     var t = c && c.tema;
-    if (t !== "light" && t !== "dark") return;
-    if (document.documentElement.getAttribute("data-theme") === t) return;
-    document.documentElement.setAttribute("data-theme", t);
-    try {
-      localStorage.setItem("notas-theme", t);
-    } catch (e) {}
+    if (t !== "light" && t !== "dark" && t !== "system") return;
+    if (window.TemaPref && window.TemaPref.ler() !== t) window.TemaPref.definir(t);
   }
 
   function pronto() {
@@ -493,25 +489,6 @@
 
   var esc = Util.esc;
 
-  // PWA: o Chrome avisa que o site é instalável; guardamos o aviso para o botão "Instalar app"
-  var instalador = null;
-  window.addEventListener("beforeinstallprompt", function (ev) {
-    ev.preventDefault();
-    instalador = ev;
-    if (document.querySelector(".nav-conta")) montarNav();
-  });
-  window.addEventListener("appinstalled", function () {
-    instalador = null;
-    if (document.querySelector(".nav-conta")) montarNav();
-  });
-  function instalar() {
-    if (!instalador) return;
-    var aviso = instalador;
-    instalador = null;
-    aviso.prompt();
-    aviso.userChoice.then(function () { montarNav(); });
-  }
-
   // sem js/config.js preenchido o botão Entrar aparece mesmo assim; a página de login explica o que falta
   function montarNav() {
     Array.prototype.forEach.call(document.querySelectorAll("[data-entrar]"), function (el) {
@@ -525,7 +502,6 @@
       caixa.className = "nav-conta";
       nav.insertBefore(caixa, nav.querySelector(".theme-toggle"));
       caixa.addEventListener("click", function (ev) {
-        if (ev.target.closest("[data-instalar]")) return instalar();
         if (!ev.target.closest("[data-sair]")) return;
         sair();
       });
@@ -538,7 +514,6 @@
     } else {
       caixa.innerHTML = naPaginaEntrar ? "" : '<a class="nav-link hud" href="' + esc(urlEntrar()) + '"><span>Entrar</span></a>';
     }
-    if (instalador) caixa.insertAdjacentHTML("afterbegin", '<button type="button" class="nav-link hud" data-instalar><span>Instalar app</span></button>');
   }
 
   /* ---------- login ---------- */
