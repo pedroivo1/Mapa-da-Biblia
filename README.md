@@ -15,7 +15,7 @@ e acesse `http://localhost:8000/`. No VS Code, o Live Server já está configura
 
 ## Organização
 
-O repositório tem `frontend/` (o site publicado), `supabase/` (migrações) e `scripts/` (ferramentas). Dentro de `frontend/`, cada funcionalidade é uma pasta com tudo o que é dela: página (`index.html`), scripts, CSS e dados.
+O repositório tem `frontend/` (o site publicado), `supabase/` (migrações) e `scripts/` (ferramentas do site; o pipeline dos mapas fica em `../Mapa-da-Biblia-Mapas`). Dentro de `frontend/`, cada funcionalidade é uma pasta com tudo o que é dela: página (`index.html`), scripts, CSS e dados.
 O que serve a mais de uma funcionalidade fica em `compartilhado/`.
 
 | Pasta | O que é | Contém |

@@ -195,6 +195,7 @@
 @media (max-width: 720px) {
   .leitor { padding: 0 1rem 6.5rem; }
   .leitor-barra { margin: 0 -1rem; }
+  .leitor-fonte { gap: 0; }
   .leitor-rodape-in { padding: 0.6rem 1rem; }
 }
 
@@ -203,10 +204,14 @@
 }
 
 /* leitor em modo mapa: onde estou na ordem (sublinhado só ao passar o mouse, base.css) */
+/* nome do plano, centralizado (sublinhado só ao passar o mouse, base.css) */
 .leitor-plano-link {
   flex: 1 1 0;
   min-width: 0;
   overflow: hidden;
+  padding: 0 0.5rem 0 0.25rem;
+  color: var(--ink);
+  font-weight: 700;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;

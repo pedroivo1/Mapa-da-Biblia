@@ -231,7 +231,7 @@
     var prox = proximo();
     var h = '<div class="leitor-barra">' +
       '<span class="leitor-nav-topo">' + passos(b, ant, prox) + "</span>" +
-      (plano ? '<a class="leitor-plano-link hud" href="/plano-de-leitura/#' + esc(plano.id) + '">' + esc(plano.nome) + "</a>" : "") +
+      (plano ? '<a class="leitor-plano-link hud" href="/plano-de-leitura/#' + esc(plano.id) + '"><span>' + esc(plano.nome) + "</span></a>" : "") +
       '<span class="leitor-fonte">' +
       (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog" aria-label="Mapas (' + doCapitulo.length + ')" title="Mapas">' + ICONE_MAPA + '<span class="leitor-bt-n">' + doCapitulo.length + "</span></button>" : "") +
       '<button type="button" data-leitura aria-haspopup="dialog" aria-label="Leitura" title="Leitura">' + ICONE_CALENDARIO + "</button>" +
