@@ -13,25 +13,9 @@
   color: var(--muted);
 }
 
-.item-aval.mau::before {
-  content: "";
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  background: currentColor;
-  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
-  mask: var(--seta-baixo) center / contain no-repeat;
-  margin-right: 0.35em;
-}
-
+/* seta para baixo (mau) ou para cima (bom): componentes.css */
+.item-aval.mau::before,
 .item-aval.bom::before {
-  content: "";
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  background: currentColor;
-  -webkit-mask: var(--seta-cima) center / contain no-repeat;
-  mask: var(--seta-cima) center / contain no-repeat;
   margin-right: 0.35em;
 }
 
@@ -47,7 +31,7 @@
 
 .refs dt {
   color: var(--faint);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--mono);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -76,7 +60,7 @@
   font-size: 0.9rem;
 }
 
-/* filtro de livros por grupo */
+/* filtro de livros por grupo (seta do details, traço do menu e linhas: componentes.css) */
 .filtro {
   position: relative;
 }
@@ -86,28 +70,10 @@
   align-items: center;
   gap: 0.35rem;
   color: var(--muted);
-  cursor: pointer;
-  list-style: none;
-}
-
-.filtro summary::-webkit-details-marker {
-  display: none;
 }
 
 .filtro summary::after {
   margin-left: 0.25rem;
-  content: "";
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  background: currentColor;
-  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
-  mask: var(--seta-baixo) center / contain no-repeat;
-}
-
-.filtro[open] summary::after {
-  -webkit-mask-image: var(--seta-cima);
-  mask-image: var(--seta-cima);
 }
 
 .filtro-menu {
@@ -117,8 +83,6 @@
   z-index: 80;
   min-width: 16rem;
   padding: 0.4rem 0;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
 }
 
 .filtro-ta {
@@ -129,13 +93,8 @@
 }
 
 .colunas .filtro-menu label {
-  display: flex;
   width: 100%;
   padding: 0.4rem 0.9rem;
-}
-
-.colunas .filtro-menu label:hover {
-  background: var(--bg-sunken);
 }
 
 .filtro-modos {
@@ -165,24 +124,14 @@
   color: var(--invert-fg);
 }
 
-/* marcar ou desmarcar todos os grupos de livros */
+/* marcar ou desmarcar todos os grupos de livros: botão de contorno (componentes.css) */
 .filtro-todos {
   display: block;
   width: calc(100% - 1.8rem);
   margin: 0 0.9rem 0.2rem;
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
   letter-spacing: inherit;
   text-transform: inherit;
-  cursor: pointer;
-}
-
-.filtro-todos:hover {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 /* faixas */
@@ -196,7 +145,7 @@
   align-items: center;
   gap: 0.5rem 1.1rem;
   margin: 0;
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
@@ -312,7 +261,7 @@
   top: 0;
   overflow: hidden;
   padding: 3px 3px 0;
-  color: #0b0b0c;
+  color: var(--texto-na-cor);
   font: 500 11px/14px Archivo, sans-serif;
   text-align: center;
   text-overflow: ellipsis;
@@ -342,7 +291,6 @@
   white-space: normal;
 }
 
-.mapa svg,
 .lt-scroll svg {
   display: block;
   font-family: Archivo, sans-serif;
@@ -359,7 +307,7 @@
 
 .col-sep.sub { stroke-dasharray: 2 4; opacity: 0.45; }
 
-.regua { fill: var(--faint); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; }
+.regua { fill: var(--faint); font-family: var(--mono); font-size: 10px; }
 
 .marco-linha { stroke: var(--c-evento); stroke-width: 2; stroke-dasharray: 5 3; pointer-events: none; }
 
@@ -374,7 +322,7 @@
 
 .marco-g:focus-visible { outline: none; }
 
-.marco-rot { fill: var(--ink-strong); font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px; font-weight: 500; }
+.marco-rot { fill: var(--ink-strong); font-family: var(--mono); font-size: 10px; font-weight: 500; }
 
 .barra { cursor: pointer; }
 
@@ -386,7 +334,7 @@
 
 .contorno-linha { stroke: var(--ink-strong); stroke-width: 1; pointer-events: none; }
 
-.barra .rot { fill: #0b0b0c; pointer-events: none; font-weight: 500; }
+.barra .rot { fill: var(--texto-na-cor); pointer-events: none; font-weight: 500; }
 
 .barra .rot.fora { fill: var(--ink); pointer-events: all; cursor: pointer; }
 
@@ -471,7 +419,7 @@
   background: var(--ink-strong);
 }
 
-/* dica instantânea (a do navegador demora) */
+/* dica instantânea (a do navegador demora); traço e sombra em componentes.css */
 .era-mapa::before {
   content: attr(data-dica);
   position: absolute;
@@ -479,11 +427,8 @@
   left: calc(100% + 10px);
   z-index: 5;
   padding: 5px 9px;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  box-shadow: 3px 3px 0 var(--ink-strong);
   color: var(--ink-strong);
-  font: 500 11px/1.3 "IBM Plex Mono", monospace;
+  font: 500 11px/1.3 var(--mono);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -513,13 +458,9 @@
   z-index: 20;
   max-height: 45vh;
   overflow-y: auto;
-  padding: 1rem 1.5rem 1.25rem;
+  padding: 1rem var(--gutter) 1.25rem;
   border-top: 1px solid var(--ink-strong);
   background: var(--bg);
-}
-
-@media (max-width: 720px) {
-  .progresso, .colunas, .detalhe { padding-right: 1.25rem; padding-left: 1.25rem; }
 }
 
 /* linha do tempo: só o mapa rola; nav, colunas e cabeçalhos ficam fixos, e a rolagem é uma régua de tempo */
@@ -604,7 +545,7 @@ body.linha-tempo.lt-com-mapa #vista {
   padding: 1px 6px;
   background: var(--regua-centro);
   color: #fff;
-  font: 500 10px/14px "IBM Plex Mono", ui-monospace, monospace;
+  font: 500 10px/14px var(--mono);
   white-space: nowrap;
 }
 
@@ -731,7 +672,7 @@ body.linha-tempo .detalhe {
   top: -6px;
   right: 20px;
   color: var(--faint);
-  font: 400 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  font: 400 9px/12px var(--mono);
   white-space: nowrap;
 }
 
@@ -769,7 +710,7 @@ body.linha-tempo .detalhe {
   padding: 0 3px;
   background: var(--bg);
   color: var(--regua-centro);
-  font: 500 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  font: 500 9px/12px var(--mono);
   white-space: nowrap;
 }
 
@@ -790,7 +731,7 @@ body.linha-tempo .detalhe {
   padding: 1px 5px;
   background: var(--regua-centro);
   color: #fff;
-  font: 500 9px/12px "IBM Plex Mono", ui-monospace, monospace;
+  font: 500 9px/12px var(--mono);
   white-space: nowrap;
 }
 

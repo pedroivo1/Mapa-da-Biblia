@@ -1,7 +1,6 @@
 /* Mapa aberto (mapa/index.html, mapa.js): mapa-múndi em SVG, rotas e lista de rotas. */
 
-.mapa svg,
-.lt-scroll svg {
+.mapa svg {
   display: block;
   font-family: Archivo, sans-serif;
   font-size: 11px;
@@ -28,34 +27,14 @@
   min-width: 0;
 }
 
-#mapa-svg {
-  line-height: 0;
-}
-
+/* base do SVG, terra, água, nomes, cartão e modo embutido: componentes.css (iguais aos do mapa geral) */
 .mapa-svg {
-  display: block;
-  width: 100%;
   height: clamp(440px, calc(100vh - 10.5rem), 1000px);
   height: clamp(440px, calc(100dvh - 10.5rem), 1000px);
-  cursor: grab;
-  touch-action: none;
-  font-family: Archivo, sans-serif;
-  user-select: none;
 }
 
-.mapa-svg.arrastando {
-  cursor: grabbing;
-}
-
-.mapa-terra {
-  fill: var(--bg-sunken);
-}
-
-.mapa-agua {
-  fill: var(--bg);
-  stroke: var(--faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
+.mapa-agua.fundo {
+  stroke: none;
 }
 
 .mapa-rio {
@@ -110,13 +89,7 @@
 }
 
 .mapa-nome {
-  fill: var(--ink-strong);
   font-size: 13px;
-  font-weight: 600;
-  paint-order: stroke;
-  stroke: var(--bg-sunken);
-  stroke-width: 3px;
-  pointer-events: none;
 }
 
 /* região (terra ou povo): área translúcida, com o contorno na mesma cor */
@@ -154,42 +127,17 @@
     }
 }
 
-/* no popup do leitor o quadro é a própria janela */
-html.embutido .mapa {
-  display: flex;
-  height: 100vh;
-  height: 100dvh;
-  flex-direction: column;
-  border: 0;
-}
-
-html.embutido .mapa-quadro {
-  flex: 1;
-  min-height: 0;
-}
-
+/* no popup do leitor o quadro é a própria janela (o resto em componentes.css) */
 html.embutido #mapa-svg,
 html.embutido .mapa-svg {
-  height: 100%;
   min-height: 0;
-}
-
-/* mapa grande: costa em linha fina */
-.mapa-terra {
-  stroke: var(--faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-.mapa-agua.fundo {
-  stroke: none;
 }
 
 .mapa-barra[hidden] {
   display: none;
 }
 
-/* rotas: grupo recolhível, com uma caixa por item */
+/* rotas: grupo recolhível, com uma caixa por item (seta do details, traço do menu e linhas: componentes.css) */
 .mapa-grupo {
   position: relative;
 }
@@ -201,34 +149,16 @@ html.embutido .mapa-svg {
   padding: 0.4rem 0.75rem;
   border: 1px solid var(--line);
   background: var(--bg);
-  list-style: none;
-  cursor: pointer;
   user-select: none;
-}
-
-.mapa-grupo summary::-webkit-details-marker {
-  display: none;
 }
 
 .mapa-grupo summary::after {
   color: var(--muted);
-  content: "";
-  display: inline-block;
-  width: 0.8em;
-  height: 0.8em;
-  background: currentColor;
-  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
-  mask: var(--seta-baixo) center / contain no-repeat;
 }
 
 .mapa-grupo[open] summary {
   border-color: var(--ink-strong);
   background: var(--bg-sunken);
-}
-
-.mapa-grupo[open] summary::after {
-  -webkit-mask-image: var(--seta-cima);
-  mask-image: var(--seta-cima);
 }
 
 .mapa-grupo-nome {
@@ -246,20 +176,12 @@ html.embutido .mapa-svg {
   max-height: min(60vh, 28rem);
   padding: 0.25rem 0;
   overflow: auto;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
 }
 
 .mapa-item {
-  display: flex;
   align-items: baseline;
   gap: 0.55rem;
   padding: 0.35rem 0.75rem;
-  cursor: pointer;
-}
-
-.mapa-item:hover {
-  background: var(--bg-sunken);
 }
 
 .mapa-grupo input[type="checkbox"] {
@@ -275,32 +197,18 @@ html.embutido .mapa-svg {
   accent-color: var(--c-era);
 }
 
-/* texto do lugar ou da região, ao tocar nele (mesmo traço do balão da linha do tempo) */
+/* texto do lugar ou da região, ao tocar nele (mesmo traço do balão da linha do tempo, componentes.css) */
 .mapa-cartao {
-  position: absolute;
-  left: 0.6rem;
   right: 0.6rem;
-  bottom: 0.6rem;
   z-index: 7;
   max-width: 30rem;
   max-height: 45%;
   overflow-y: auto;
   padding: 0.8rem 2.4rem 0.9rem 1rem;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  box-shadow: 3px 3px 0 var(--ink-strong);
-  color: var(--ink);
-}
-
-.mapa-cartao[hidden] {
-  display: none;
 }
 
 .mapa-cartao h2 {
   margin: 0 0 0.35rem;
-  color: var(--ink-strong);
-  font-size: 1rem;
-  font-weight: 600;
 }
 
 .mapa-cartao h2 + p {
@@ -314,16 +222,9 @@ html.embutido .mapa-svg {
 }
 
 .mapa-cartao-fechar {
-  position: absolute;
   top: 0.3rem;
   right: 0.4rem;
-  padding: 0.1rem 0.5rem;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
   font-size: 1.4rem;
-  line-height: 1;
-  cursor: pointer;
 }
 
 /* Império Romano: províncias, reinos clientes e fronteira externa */
@@ -334,24 +235,8 @@ html.embutido .mapa-svg {
   pointer-events: none;
 }
 
-.mapa-provincia.territorio {
-  stroke: var(--muted);
-  stroke-width: 0.75;
-  stroke-opacity: 0.7;
-  vector-effect: non-scaling-stroke;
-}
-
-.mapa-provincia.territorio.tracejado {
-  stroke-dasharray: 5 4;
-  stroke-opacity: 1;
-}
-
 .mapa-provincia.cliente {
   fill-opacity: 0.06;
-}
-
-.mapa-provincia.ativa {
-  fill-opacity: 0.4;
 }
 
 .mapa-provincia-linha {
@@ -377,15 +262,9 @@ html.embutido .mapa-svg {
 }
 
 .mapa-provincia-nome {
-  fill: var(--ink-strong);
   font-size: 12px;
-  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  paint-order: stroke;
-  stroke: var(--bg-sunken);
-  stroke-width: 3px;
-  pointer-events: none;
 }
 
 .mapa-provincia-nome.cliente {
@@ -413,12 +292,21 @@ html.embutido .mapa-svg {
   vertical-align: middle;
 }
 
-/* povos e reinos ao redor (territorios.json) */
+/* povos e reinos ao redor (territorios.json); vem depois de .cliente para valer sobre ele */
 .mapa-provincia.territorio {
   fill: var(--c-potencia);
   fill-opacity: 0.16;
+  stroke: var(--muted);
+  stroke-width: 0.75;
+  stroke-opacity: 0.7;
+  vector-effect: non-scaling-stroke;
 }
 
-.mapa-provincia.territorio.ativa {
+.mapa-provincia.territorio.tracejado {
+  stroke-dasharray: 5 4;
+  stroke-opacity: 1;
+}
+
+.mapa-provincia.ativa {
   fill-opacity: 0.4;
 }

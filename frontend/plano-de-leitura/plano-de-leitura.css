@@ -7,7 +7,7 @@
 }
 
 .plano-card {
-  padding: 1.25rem 1.5rem;
+  padding: 1.25rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
@@ -29,17 +29,10 @@
 .plano-acoes .chip {
   padding: 0.45rem 0.8rem;
   font-size: 0.95rem;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.plano-acoes .chip:hover {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 .plano-era {
-  padding: 1rem 1.5rem;
+  padding: 1rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
@@ -77,50 +70,12 @@
   padding: 0.25rem 0;
 }
 
-.plano-trechos a {
-  color: var(--link);
-}
-
-@media (max-width: 720px) {
-  .plano-card,
-    .plano-era { padding-right: 1.25rem; padding-left: 1.25rem; }
-}
-
 .plano-card.abrivel {
   cursor: pointer;
 }
 
 .plano-card.abrivel:hover {
   background: var(--bg-sunken);
-}
-
-.plano-voltar {
-  margin: 0;
-  padding: 0.7rem 1.5rem;
-  border-bottom: 1px solid var(--line);
-}
-
-/* links do plano: azuis (base.css), sublinhado só ao passar o mouse */
-.plano-voltar a,
-.leitor-plano a {
-  text-decoration: none;
-}
-
-.plano-voltar a:hover,
-.leitor-plano a:hover,
-.plano-trechos a:hover {
-  text-decoration: underline;
-}
-
-@media (pointer: coarse) {
-  .chip,
-    .leitor-mapas-abas button,
-    .leitor-barra button,
-    .leitor-fim button,
-    .mapas-acoes .chip,
-    .plano-acoes .chip {
-      min-height: 44px;
-    }
 }
 
 /* ritmo de leitura: duração, dias da semana e o calendário */
@@ -146,12 +101,12 @@
   gap: 0.6rem;
 }
 
+/* botão do calendário: contorno em componentes.css, sem inverter ao passar o mouse */
 .plano-data-bt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.4rem 0.5rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
 }
 
 .plano-data-bt:focus-visible {
@@ -165,13 +120,6 @@
   display: inline-block;
 }
 
-.plano-data-bt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  cursor: pointer;
-}
-
 .plano-data-bt[aria-expanded="true"] {
   border-color: var(--ink-strong);
 }
@@ -182,8 +130,6 @@
   top: calc(100% + 4px);
   left: 0;
   margin: 0;
-  background: var(--bg);
-  border: 1px solid var(--ink-strong);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 

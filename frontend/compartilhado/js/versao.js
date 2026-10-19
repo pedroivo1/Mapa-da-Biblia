@@ -51,10 +51,7 @@
   function popup(aoEscolher) {
     retorno = aoEscolher;
     if (!dlg) {
-      dlg = document.createElement("dialog");
-      dlg.className = "leitor-dlg versao-dlg";
-      dlg.addEventListener("click", function (ev) {
-        if (ev.target === dlg || ev.target.closest("[data-fechar]")) return dlg.close();
+      dlg = Util.dialogo("leitor-dlg versao-dlg", function (ev) {
         var b = ev.target.closest("[data-versao-id]");
         if (!b) return;
         var anterior = atual();
@@ -64,10 +61,9 @@
         definir(id);
         if (retorno) retorno(id, anterior);
       });
-      document.body.appendChild(dlg);
     }
     var ativa = atual();
-    dlg.innerHTML = '<div class="leitor-dlg-topo"><span class="hud muted">Versão da Bíblia</span><button type="button" data-fechar>Fechar</button></div>' +
+    dlg.innerHTML = '<div class="leitor-dlg-topo"><span class="hud muted">Versão da Bíblia</span>' + Util.botaoFechar() + '</div>' +
       '<div class="versao-busca"><input type="search" placeholder="Pesquisar versão" aria-label="Pesquisar versão" autocomplete="off" /></div>' +
       '<div class="versao-lista">' + LISTA.map(function (v) {
         return '<button type="button" data-versao-id="' + v.id + '" data-busca="' + Util.esc((v.sigla + " " + v.nome).toLowerCase()) + '"' + (v.id === ativa ? ' aria-current="true"' : "") + "><strong>" + v.sigla + "</strong><span>" + Util.esc(v.nome) + "</span></button>";
@@ -83,7 +79,7 @@
       });
       dlg.querySelector(".versao-vazio").hidden = achou > 0;
     });
-    if (!dlg.open) dlg.showModal();
+    Util.mostrar(dlg);
     dlg.querySelector("input").focus();
   }
 

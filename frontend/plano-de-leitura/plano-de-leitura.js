@@ -11,7 +11,6 @@
   var DIAS = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
   var KEY_PLANO = "biblia-mapa"; // { padrao: id do plano escolhido, pos: { id do plano: "livro/cap" } }
   var Conta = window.Conta;
-  var ICONE_VOLTAR = Util.seta("esq", 18);
   var raiz = document.getElementById("plano");
   var planos = [];
   var eras = {};
@@ -20,7 +19,7 @@
 
   // o plano padrão é da conta: sem login não há plano padrão
   function logado() {
-    return !!(Conta && Conta.usuario());
+    return !!Conta.usuario();
   }
   function estadoPlano() {
     return (logado() && Conta.config().plano) || ler(KEY_PLANO, {});
@@ -156,10 +155,25 @@
         partes.push(atual);
       }
     });
-    return partes.map(function (p) {
-      var b = nomes[p.livro];
-      return p.de === 1 && p.ate === b.n ? b.nome : b.nome + " " + p.de + (p.ate > p.de ? "–" + p.ate : "");
-    }).join("; ");
+    return partes.map(referencia).join("; ");
+  }
+
+  // nome do trecho {livro, de, ate}: "Gênesis" se for o livro todo, senão "Gênesis 3–5"
+  function referencia(tr) {
+    var b = nomes[tr.livro];
+    return Util.trecho(b.nome, tr.de, tr.ate, b.n);
+  }
+
+  // link do leitor seguindo o plano `id`, já escapado; com livro, abre nesse capítulo
+  function linkBiblia(id, livro, cap) {
+    return esc("/biblia/?plano=" + id + (livro ? "#" + livro + "/" + cap : ""));
+  }
+
+  // o plano aberto pelo #id da URL, ou null na lista
+  function planoAberto() {
+    var achado = null;
+    planos.forEach(function (m) { if (location.hash === "#" + m.id) achado = m; });
+    return achado;
   }
 
   // calendário próprio (no lugar do seletor de data nativo do navegador), usado no início e no fim do ritmo
@@ -190,20 +204,20 @@
     }
     box.innerHTML = h + '</div><div class="plano-cal-pe"><button type="button" data-cal-dia="' + hoje + '">Hoje</button></div>';
   }
-  function fecharPops(exceto) {
+  function marcarPop(p, aberto) {
+    p.hidden = !aberto;
+    var bt = p.parentNode.querySelector("[aria-expanded]");
+    if (bt) bt.setAttribute("aria-expanded", aberto ? "true" : "false");
+  }
+  function fecharPops() {
     Array.prototype.forEach.call(raiz.querySelectorAll(".plano-pop"), function (p) {
-      if (p === exceto || p.hidden) return;
-      p.hidden = true;
-      var bt = p.parentNode.querySelector("[aria-expanded]");
-      if (bt) bt.setAttribute("aria-expanded", "false");
+      if (!p.hidden) marcarPop(p, false);
     });
   }
   function alternarPop(pop) {
     var abrir = pop.hidden;
-    fecharPops(abrir ? pop : null);
-    pop.hidden = !abrir;
-    pop.parentNode.querySelector("[aria-expanded]").setAttribute("aria-expanded", abrir ? "true" : "false");
-    return abrir;
+    fecharPops();
+    if (abrir) marcarPop(pop, true);
   }
   function htmlRitmo(plano) {
     var r = ritmoAtual();
@@ -253,23 +267,17 @@
       (atrasados ? " · " + atrasados + (atrasados > 1 ? " dias atrasados" : " dia atrasado") : "") + "</p>";
     if (foco) {
       h += '<p class="plano-hoje"><span class="hud faint">' + (foco.txt === hoje ? "Hoje" : foco.txt < hoje ? "Em atraso" : "Próxima leitura") + " · " + esc(rotuloData(foco.d)) + "</span>" +
-        '<a href="/biblia/?plano=' + esc(plano.id) + "#" + foco.caps[0].livro + "/" + foco.caps[0].cap + '">' + esc(refDia(foco.caps)) + "</a></p>";
+        '<a href="' + linkBiblia(plano.id, foco.caps[0].livro, foco.caps[0].cap) + '">' + esc(refDia(foco.caps)) + "</a></p>";
     } else {
       h += '<p class="plano-hoje"><span class="hud faint">Calendário concluído</span></p>';
     }
     h += '<details class="plano-cal"><summary class="hud">Ver o calendário inteiro</summary><ol class="plano-cal-lista">';
     itens.forEach(function (it) {
       h += '<li class="' + (it.feito ? "feito" : it.txt < hoje ? "atrasado" : "") + (it === foco ? " hoje" : "") + '"><span class="hud faint">' + esc(rotuloData(it.d)) + "</span>" +
-        '<a href="/biblia/?plano=' + esc(plano.id) + "#" + it.caps[0].livro + "/" + it.caps[0].cap + '">' + esc(refDia(it.caps)) + "</a>" +
+        '<a href="' + linkBiblia(plano.id, it.caps[0].livro, it.caps[0].cap) + '">' + esc(refDia(it.caps)) + "</a>" +
         (it.feito ? '<span class="hud faint">✓ lido</span>' : "") + "</li>";
     });
     return h + "</ol></details>";
-  }
-
-  function referencia(tr) {
-    var b = nomes[tr.livro];
-    if (tr.de === 1 && tr.ate === b.n) return b.nome;
-    return b.nome + " " + tr.de + (tr.ate > tr.de ? "–" + tr.ate : "");
   }
 
   function totalCaps(m) {
@@ -286,9 +294,8 @@
     var lista = planos.slice().sort(function (a, b) {
       return (a.id === padrao ? 0 : 1) - (b.id === padrao ? 0 : 1);
     });
-    var aberto = null;
-    planos.forEach(function (m) { if (location.hash === "#" + m.id) aberto = m; });
-    var h = aberto ? '<p class="plano-voltar hud"><a href="#">'+ICONE_VOLTAR+' Planos</a></p>' : "";
+    var aberto = planoAberto();
+    var h = "";
     lista.forEach(function (m) {
       if (aberto && m !== aberto) return;
       var escolhido = m.id === padrao;
@@ -301,14 +308,14 @@
         '<p class="muted">' + esc(m.resumo) + "</p>" +
         '<p class="hud faint">' + m.etapas.length + " épocas · " + totalCaps(m) + " capítulos</p>" +
         '<p class="plano-acoes">' +
-        '<a class="chip" href="/biblia/?plano=' + esc(m.id) + (g && nomes[g[1]] ? "" : "#" + primeiro.livro + "/" + primeiro.de) + '">' +
+        '<a class="chip" href="' + (g && nomes[g[1]] ? linkBiblia(m.id) : linkBiblia(m.id, primeiro.livro, primeiro.de)) + '">' +
         (g && nomes[g[1]] ? "Continuar a Bíblia · " + esc(nomes[g[1]].nome) + " " + g[2] : "Ler a Bíblia") + "</a> " +
-        (g ? '<a class="chip" href="/biblia/?plano=' + esc(m.id) + "#" + primeiro.livro + "/" + primeiro.de + '">Do início</a> ' : "") +
+        (g ? '<a class="chip" href="' + linkBiblia(m.id, primeiro.livro, primeiro.de) + '">Do início</a> ' : "") +
         (aberto ? "" : '<a class="chip" href="#' + esc(m.id) + '">Calendário de leitura</a> ') +
         (logado()
           ? '<button type="button" class="chip" data-padrao="' + esc(m.id) + '" aria-pressed="' + escolhido + '">' +
             (escolhido ? "✓ Meu plano padrão" : "Definir como meu plano") + "</button>"
-          : '<a class="chip" href="' + esc(Conta ? Conta.urlEntrar() : "/conta/") + '">Entre para definir como seu plano</a>') +
+          : '<a class="chip" href="' + esc(Conta.urlEntrar()) + '">Entre para definir como seu plano</a>') +
         "</p></article>";
     });
 
@@ -326,7 +333,7 @@
       if (!et.trechos.length) h += '<p class="hud faint plano-vazio">Sem livros do cânon protestante neste período.</p>';
       h += '<ol class="plano-trechos">';
       et.trechos.forEach(function (tr) {
-        h += '<li><a href="/biblia/?plano=' + esc(ativo.id) + "#" + tr.livro + "/" + tr.de + '">' + esc(referencia(tr)) + "</a>" +
+        h += '<li><a href="' + linkBiblia(ativo.id, tr.livro, tr.de) + '">' + esc(referencia(tr)) + "</a>" +
           (tr.nota ? '<span class="hud faint">' + esc(tr.nota) + "</span>" : "") + "</li>";
       });
       h += "</ol></section>";
@@ -368,7 +375,7 @@
       var dd = dataDe(b.getAttribute("data-cal-dia"));
       campo.querySelector('input[type="hidden"]').value = b.getAttribute("data-cal-dia");
       campo.querySelector(".plano-data-bt span").textContent = dd.toLocaleDateString("pt-BR");
-      fecharPops(null);
+      fecharPops();
       campo.querySelector(".plano-data-bt").focus();
       return true;
     }
@@ -376,7 +383,7 @@
   }
 
   document.addEventListener("click", function (ev) {
-    if (!ev.target.closest || !ev.target.closest(".plano-data")) fecharPops(null);
+    if (!ev.target.closest || !ev.target.closest(".plano-data")) fecharPops();
   });
 
   raiz.addEventListener("click", function (ev) {
@@ -407,9 +414,8 @@
     ev.preventDefault();
     var dias = [];
     Array.prototype.forEach.call(f.querySelectorAll('input[name="dia"]:checked'), function (c) { dias.push(Number(c.value)); });
-    var plano = null;
-    planos.forEach(function (m) { if (location.hash === "#" + m.id) plano = m; });
-    var r = { plano: plano && plano.id, inicio: f.inicio.value, fim: f.fim.value, dias: dias };
+    var plano = planoAberto();
+    var r ={ plano: plano && plano.id, inicio: f.inicio.value, fim: f.fim.value, dias: dias };
     var erro = f.querySelector("[data-ritmo-erro]");
     var msg = !plano ? "Abra um plano primeiro." : !dias.length ? "Marque pelo menos um dia da semana." :
       !dataDe(r.inicio) || !dataDe(r.fim) ? "Escolha a data de início e a data final." :
@@ -426,7 +432,7 @@
     var pop = ev.target.closest && ev.target.closest(".plano-pop");
     if (ev.key === "Escape" && pop) {
       var dono = pop.parentNode.querySelector("[aria-expanded]");
-      fecharPops(null);
+      fecharPops();
       dono.focus();
       return;
     }
@@ -442,22 +448,20 @@
   });
 
   Promise.all([
-    fetch("/plano-de-leitura/planos.json").then(function (r) { return r.json(); }),
-    fetch("/compartilhado/dados/eras.json").then(function (r) { return r.json(); }),
-    fetch("/compartilhado/dados/canon.json").then(function (r) { return r.json(); })
+    Util.json("/plano-de-leitura/planos.json"),
+    Util.json("/compartilhado/dados/eras.json"),
+    Util.json("/compartilhado/dados/canon.json")
   ]).then(function (r) {
     planos = r[0].planos;
     r[1].eras.forEach(function (e) { eras[e.id] = e; });
     r[2].forEach(function (b) { nomes[b.id] = { nome: b.nome, n: b.v.length, v: b.v }; });
     // com a sessão (rápida) a cópia guardada da conta já aparece; o servidor atualiza depois
-    return (Conta ? Conta.pronto() : Promise.resolve()).then(function () {
+    return Conta.pronto().then(function () {
       render();
-      if (Conta) {
-        Conta.aoConfig(function () { render(); });
-        Conta.aoMudar(function (ev, u, mudou) { if (mudou) render(); });
-      }
+      Conta.aoConfig(function () { render(); });
+      Conta.aoMudar(function (ev, u, mudou) { if (mudou) render(); });
     });
   }).catch(function () {
-    raiz.innerHTML = '<p class="vazio">Não consegui carregar o plano. Abra por um servidor local (<code>python -m http.server</code>).</p>';
+    Util.falha(raiz, "o plano");
   });
 })();

@@ -77,6 +77,20 @@
   color-scheme: dark;
 }
 
+/* valores que não mudam com o tema */
+:root {
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --texto-na-cor: #0b0b0c; /* texto sobre as barras coloridas: preto também no tema escuro */
+  --fundo-popup: rgba(11, 11, 12, 0.55); /* atrás dos popups (::backdrop) */
+  --gutter: 1.5rem; /* margem lateral do conteúdo */
+}
+
+@media (max-width: 720px) {
+  :root {
+    --gutter: 1.25rem;
+  }
+}
+
 html {
   background: var(--bg);
 }
@@ -122,10 +136,6 @@ body > .frame {
 .vazio a:not(.chip):not(.btn):visited,
 .geral-nota a,
 .geral-nota a:visited,
-.leitor-plano a,
-.leitor-plano a:visited,
-.plano-voltar a,
-.plano-voltar a:visited,
 .plano-trechos a,
 .plano-trechos a:visited,
 .versiculos-ref a,
@@ -135,9 +145,20 @@ body > .frame {
   color: var(--link);
 }
 
+/* links que só sublinham ao passar o mouse */
+.leitor-plano-link,
+.versiculos-ref a {
+  text-decoration: none;
+}
+
+.leitor-plano-link:hover,
+.versiculos-ref a:hover {
+  text-decoration: underline;
+}
+
 .hud {
   margin: 0;
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--mono);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -159,8 +180,7 @@ body > .frame {
   z-index: 50;
   height: 48px;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--bg);
 }
 
 .frame {
@@ -300,14 +320,14 @@ body > .frame {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem 1rem;
-  padding: 0.85rem 1.5rem;
+  padding: 0.85rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
 .article-title {
   max-width: 12em;
   margin: 0;
-  padding: 2.75rem 1.5rem 0.5rem;
+  padding: 2.75rem var(--gutter) 0.5rem;
   color: var(--ink-strong);
   font-size: clamp(2.4rem, 5vw, 3.6rem);
   font-weight: 500;
@@ -317,7 +337,7 @@ body > .frame {
 
 .prose {
   max-width: 68ch;
-  padding: 1.25rem 1.5rem 5rem;
+  padding: 1.25rem var(--gutter) 5rem;
   font-size: 1.0625rem;
   line-height: 1.7;
 }
@@ -369,7 +389,7 @@ body > .frame {
   padding: 0.1em 0.35em;
   border: 1px solid var(--line);
   background: var(--bg-sunken);
-  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-family: var(--mono);
   font-size: 0.88em;
 }
 
@@ -404,16 +424,6 @@ body > .frame {
   align-items: center;
   padding: 0.95rem 1.5rem 1.35rem;
   border-top: 1px solid var(--line);
-}
-
-@media (max-width: 720px) {
-
-  .article-title,
-  .article-kicker,
-  .prose {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
-  }
 }
 
 /* cores de apoio (palette dos ícones) */
@@ -493,10 +503,6 @@ body > .frame {
   white-space: nowrap;
 }
 
-.footer-inner a {
-  color: var(--link);
-}
-
 .conta-aviso {
   position: fixed;
   right: 1rem;
@@ -514,7 +520,7 @@ body > .frame {
   max-width: 26rem;
   flex-direction: column;
   gap: 0.9rem;
-  padding: 1.5rem 1.5rem 4rem;
+  padding: 1.5rem var(--gutter) 4rem;
 }
 
 .form-conta[hidden] {
@@ -633,11 +639,6 @@ body > .frame {
 @media (max-width: 720px) {
   .nav-email {
     display: none;
-  }
-
-  .form-conta {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
   }
 }
 
@@ -799,10 +800,49 @@ html[data-theme="dark"] .previa-escuro {
   display: block !important;
 }
 
-.plano-voltar a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
+/* cartões com imagem: destaques da página inicial e lista de mapas */
+.destaque,
+.mapas-geral,
+.mapas-card {
+  color: inherit;
+  text-decoration: none;
+}
+
+.destaque img,
+.mapas-geral img,
+.mapas-card img {
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  background: var(--bg-sunken);
+}
+
+.destaque-texto,
+.mapas-geral-texto,
+.mapas-card-texto {
+  display: flex;
+  flex-direction: column;
+}
+
+.destaque-titulo,
+.mapas-geral-titulo,
+.mapas-card-titulo {
+  color: var(--ink-strong);
+  font-weight: 500;
+}
+
+.destaque-resumo,
+.mapas-geral-resumo {
+  color: var(--muted);
+}
+
+.destaque:hover,
+.destaque:focus-visible,
+.mapas-geral:hover .mapas-geral-texto,
+.mapas-geral:focus-visible .mapas-geral-texto,
+.mapas-card:hover .mapas-card-texto,
+.mapas-card:focus-visible .mapas-card-texto {
+  background: var(--bg-sunken);
 }
 
 /* a seta do projeto (a do leitor) para pseudo-elementos: o mesmo desenho de Util.seta, pintado com a cor do texto */

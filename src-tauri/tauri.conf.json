@@ -4,7 +4,9 @@
   "version": "0.1.0",
   "identifier": "org.mscpai.mapadabiblia",
   "build": {
-    "frontendDist": "../frontend"
+    "frontendDist": "./dist",
+    "beforeDevCommand": "node scripts/preparar-tauri.mjs",
+    "beforeBuildCommand": "node scripts/preparar-tauri.mjs"
   },
   "app": {
     "windows": [

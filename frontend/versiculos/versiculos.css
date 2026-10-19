@@ -7,8 +7,10 @@
 .versiculos-filtros {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  padding: 1rem 1.5rem 0;
+  align-items: center;
+  gap: 0.6rem 1rem;
+  padding: 1rem var(--gutter);
+  border-bottom: 1px solid var(--line);
 }
 
 .versiculos-filtros .btn[aria-pressed="true"] .faint {
@@ -46,25 +48,17 @@
   max-height: 22rem;
   flex-direction: column;
   overflow-y: auto;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
 }
 
+/* campo de tema novo e linhas do menu: base em componentes.css */
 .versiculos-tema-novo {
-  display: flex;
-  gap: 0.4rem;
   padding: 0.6rem;
   border-bottom: 1px solid var(--line);
 }
 
 .versiculos-tema-novo input {
-  flex: 1;
-  min-width: 0;
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--line);
   background: transparent;
-  color: var(--ink);
-  font: inherit;
 }
 
 .versiculos-tema-novo .btn {
@@ -72,27 +66,13 @@
 }
 
 .versiculos-menu-item {
-  display: flex;
   align-items: center;
   gap: 0.6rem;
   padding: 0.55rem 0.8rem;
-  cursor: pointer;
 }
 
 .versiculos-menu-item span:nth-of-type(1) {
   flex: 1;
-}
-
-.versiculos-menu-item:hover {
-  background: var(--bg-sunken);
-}
-
-.versiculos-acoes {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--line);
 }
 
 .versiculos-lista {
@@ -102,20 +82,11 @@
 }
 
 .versiculos-item {
-  padding: 1.1rem 1.5rem;
+  padding: 1.1rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
-.versiculos-ref a {
-  text-decoration: none;
-}
-
-.versiculos-ref a:hover {
-  text-decoration: underline;
-}
-
 .versiculos-texto {
-  max-width: 44rem;
   margin: 0.5rem 0 0;
   font-size: 1.1rem;
   line-height: 1.65;
@@ -124,18 +95,10 @@
 .versiculos-texto sup,
 .versiculos-decorar-texto sup {
   margin-right: 0.2em;
-  color: var(--faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.6em;
 }
 
 .versiculos-item-acoes {
   margin: 0.7rem 0 0;
-}
-
-.versiculos-item-acoes .chip[disabled] {
-  opacity: 0.5;
-  cursor: default;
 }
 
 /* modo decorar: só a referência; o texto aparece ao pedir */
@@ -176,26 +139,70 @@
 
 .versiculos-decorar-acoes .chip {
   padding: 0.55rem 0.9rem;
-  cursor: pointer;
 }
 
 @media (max-width: 720px) {
-  .versiculos-filtros,
-  .versiculos-acoes,
-  .versiculos-item {
-    padding-right: 1.25rem;
-    padding-left: 1.25rem;
-  }
-
   .versiculos-decorar {
     padding: 2rem 1.25rem 3rem;
   }
 }
 
-@media (pointer: coarse) {
-  .versiculos-filtros .chip,
-  .versiculos-item-acoes .chip,
-  .versiculos-decorar-acoes .chip {
-    min-height: 44px;
+.versiculos-menu-marcar {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--line);
+}
+
+/* editar: números dos versículos do capítulo, para pôr ou tirar do grupo */
+.versiculos-editar-versos {
+  padding: 1rem 1.25rem 0;
+}
+
+.versiculos-versos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  max-height: 8rem;
+  margin-top: 0.5rem;
+  overflow-y: auto;
+}
+
+.versiculos-versos .chip[aria-pressed="true"] {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
+/* decorar no popup: tamanho fixo, para não pular ao mostrar o texto;
+   a referência fica no alto, os botões no pé e o texto (rolando, se for longo) no meio */
+.versiculos-dlg-decorar[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 721px) {
+  .versiculos-dlg-decorar {
+    width: min(760px, 94vw);
+    height: min(600px, 85vh);
   }
+}
+
+.versiculos-dlg-decorar .versiculos-decorar {
+  display: flex;
+  min-height: 0;
+  max-width: none;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 2rem 1.5rem 1.5rem;
+}
+
+.versiculos-dlg-decorar .versiculos-decorar-texto {
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.versiculos-dlg-decorar .versiculos-decorar-acoes {
+  margin-top: auto;
+  padding-top: 1.5rem;
 }

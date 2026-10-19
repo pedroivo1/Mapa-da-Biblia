@@ -8,7 +8,6 @@
   var ler = Util.ler, gravar = Util.gravar;
   var Conta = window.Conta;
   var JUNTA = LT.JUNTA;
-  var JUNTA = LT.JUNTA;
   var MODOS = LT.MODOS;
 
   var KEY_COL = "biblioteca-colunas"; // antigo: um só conjunto de filtros
@@ -82,9 +81,13 @@
     });
     return o;
   }
+  // os filtros do tipo de tela atual: os guardados ou, sem eles, os padrões
+  function colunasDoPerfil() {
+    return ajustarColunas(copia(perfis[perfilAtual] || padraoColunas(perfilAtual)));
+  }
   var perfis = perfisGuardados();
   var perfilAtual = perfil();
-  var colunas = ajustarColunas(copia(perfis[perfilAtual] || padraoColunas(perfilAtual)));
+  var colunas = colunasDoPerfil();
   var mexeuNosFiltros = false;
   function guardarColunas() {
     mexeuNosFiltros = true;
@@ -95,7 +98,7 @@
   // a tela mudou de tipo (girou, redimensionou) ou chegou a cópia da conta: usa os filtros do tipo atual
   function trocarPerfil() {
     perfilAtual = perfil();
-    var novo = ajustarColunas(copia(perfis[perfilAtual] || padraoColunas(perfilAtual)));
+    var novo = colunasDoPerfil();
     // o objeto é o mesmo para todos os arquivos: troca o conteúdo, não a referência
     Object.keys(colunas).forEach(function (k) {
       delete colunas[k];

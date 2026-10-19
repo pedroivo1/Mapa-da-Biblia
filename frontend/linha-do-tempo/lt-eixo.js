@@ -6,21 +6,13 @@
   var LT = (window.LT = window.LT || {});
   var AXIS_FIM = LT.AXIS_FIM;
   var AXIS_INICIO = LT.AXIS_INICIO;
-  var NS = LT.NS;
   var SEGMENTOS = LT.SEGMENTOS;
   var TOP = LT.TOP;
-  var ano = LT.ano;
 
   /* ---------- mapa vertical (SVG) ---------- */
 
-  function svg(tag, attrs) {
-    var n = document.createElementNS(NS, tag);
-    for (var k in attrs) n.setAttribute(k, attrs[k]);
-    return n;
-  }
-
   function Y(a) {
-    a = Math.min(Math.max(a, AXIS_FIM), AXIS_INICIO);
+    a = Util.limitar(a, AXIS_FIM, AXIS_INICIO);
     for (var i = 0; i < SEGMENTOS.length; i++) {
       var s = SEGMENTOS[i];
       if (a <= s.de && a >= s.ate) return TOP + s.off + (s.de - a) * s.px;
@@ -37,7 +29,7 @@
   var rolagemQuadro = null;
   function rolarSuave(el, delta) {
     if (rolagemQuadro === null) rolagemAlvo = el.scrollTop;
-    rolagemAlvo = Math.max(0, Math.min(el.scrollHeight - el.clientHeight, rolagemAlvo + delta));
+    rolagemAlvo = Util.limitar(rolagemAlvo + delta, 0, el.scrollHeight - el.clientHeight);
     if (rolagemQuadro !== null) return;
     function passo() {
       var d = rolagemAlvo - el.scrollTop;
@@ -50,6 +42,12 @@
       rolagemQuadro = requestAnimationFrame(passo);
     }
     rolagemQuadro = requestAnimationFrame(passo);
+  }
+  // para a rolagem suave (a rolagem nativa do mapa assumiu)
+  function pararRolagem() {
+    if (rolagemQuadro === null) return;
+    cancelAnimationFrame(rolagemQuadro);
+    rolagemQuadro = null;
   }
 
   // inverso de Y: o ano que está numa altura do mapa (null no trecho sem data)
@@ -74,7 +72,7 @@
   function rotuloAno(a) {
     if (a === null) return "sem data";
     a = Math.round(a);
-    return a > 0 ? a + " a.C." : a === 0 ? "0" : -a + " d.C.";
+    return a === 0 ? "0" : Util.ano(a);
   }
 
   // a barra de rolagem vira uma régua de tempo, dinâmica como a do Artcraft:
@@ -242,7 +240,7 @@
     function aPartirDoPonteiro(ev) {
       var r = regua.getBoundingClientRect();
       var t = trilha();
-      var y = Math.min(Math.max(ev.clientY - r.top, 0), r.height);
+      var y = Util.limitar(ev.clientY - r.top, 0, r.height);
       return { y: y, doc: (y / r.height) * t.total };
     }
 
@@ -304,9 +302,9 @@
   LT.SEM_DATA_ATE = SEM_DATA_ATE;
   LT.Y = Y;
   LT.anoDeY = anoDeY;
+  LT.pararRolagem = pararRolagem;
   LT.reguaAtiva = reguaAtiva;
   LT.reguaDeRolagem = reguaDeRolagem;
   LT.rolarSuave = rolarSuave;
   LT.rotuloAno = rotuloAno;
-  LT.svg = svg;
 })();

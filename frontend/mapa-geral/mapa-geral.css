@@ -12,39 +12,15 @@
   position: relative;
 }
 
-.geral-svg {
-  line-height: 0;
-}
-
+/* base do SVG, terra, água, nomes, cartão e modo embutido: componentes.css (iguais aos do mapa aberto) */
 .geral-svg svg {
-  display: block;
-  width: 100%;
   height: clamp(380px, calc(100vh - 16rem), 900px);
   height: clamp(380px, calc(100dvh - 16rem), 900px);
   background: var(--bg);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-  font-family: Archivo, sans-serif;
-}
-
-.geral-svg svg.arrastando {
-  cursor: grabbing;
 }
 
 .geral-terra {
-  fill: var(--bg-sunken);
-  stroke: var(--faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
   fill-rule: evenodd;
-}
-
-.geral-agua {
-  fill: var(--bg);
-  stroke: var(--faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
 }
 
 .geral-rios {
@@ -74,39 +50,20 @@
 }
 
 .geral-nome {
-  fill: var(--ink-strong);
   font-size: 11px;
-  font-weight: 600;
   letter-spacing: 0.04em;
   text-anchor: middle;
-  paint-order: stroke;
   stroke: var(--bg);
-  stroke-width: 3px;
-  pointer-events: none;
 }
 
 .geral-cartao {
-  position: absolute;
-  left: 0.6rem;
-  bottom: 0.6rem;
   z-index: 6;
   max-width: 26rem;
   padding: 0.7rem 2rem 0.8rem 0.9rem;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  box-shadow: 3px 3px 0 var(--ink-strong);
-  color: var(--ink);
-}
-
-.geral-cartao[hidden] {
-  display: none;
 }
 
 .geral-cartao h2 {
   margin: 0 0 0.25rem;
-  color: var(--ink-strong);
-  font-size: 1rem;
-  font-weight: 600;
 }
 
 .geral-cartao p {
@@ -116,16 +73,9 @@
 }
 
 .geral-cartao-fechar {
-  position: absolute;
   top: 0.2rem;
   right: 0.35rem;
-  padding: 0.1rem 0.5rem;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
   font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
 }
 
 .geral-controle {
@@ -135,18 +85,9 @@
   padding: 0.6rem 0.75rem;
 }
 
+/* botão de contorno (componentes.css) */
 .geral-controle button {
   padding: 0.4rem 0.7rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-}
-
-.geral-controle button:hover {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 .geral-controle input[type="range"] {
@@ -220,33 +161,25 @@
   margin: 0;
 }
 
-@media (pointer: coarse) {
-  .geral-controle button {
-    min-height: 44px;
-  }
-}
-
 .geral-nota:empty {
   display: none;
 }
 
-/* embutido na linha do tempo (?embutido): sem topo, nav, nota nem velocidade; o mapa ocupa a janela */
-html.embutido .nav,
-html.embutido .biblia-topo,
+/* embutido na linha do tempo (?embutido): sem nota nem velocidade (topo e nav somem em componentes.css,
+   onde está também o resto do mapa ocupando a janela) */
 html.embutido .geral-nota,
 html.embutido .geral-vel,
 html.embutido .geral-ir-form {
   display: none;
 }
 
-html.embutido body,
-html.embutido .geral-pagina {
-  display: flex;
+html.embutido body {
   height: 100vh;
   height: 100dvh;
-  flex-direction: column;
+}
+
+html.embutido .geral-pagina {
   padding: 0;
-  border: 0;
 }
 
 html.embutido .geral {
@@ -257,12 +190,3 @@ html.embutido .geral {
   border-top: 0;
 }
 
-html.embutido .geral-quadro {
-  min-height: 0;
-  flex: 1;
-}
-
-html.embutido .geral-svg,
-html.embutido .geral-svg svg {
-  height: 100%;
-}

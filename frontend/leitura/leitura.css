@@ -5,7 +5,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem 1.5rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem var(--gutter);
   border-bottom: 1px solid var(--line);
 }
 
@@ -19,10 +19,6 @@
   width: 5rem;
   height: 4px;
   accent-color: var(--ink-strong);
-}
-
-@media (max-width: 720px) {
-  .progresso, .colunas, .detalhe { padding-right: 1.25rem; padding-left: 1.25rem; }
 }
 
 /* página Leitura: livros, capítulos e versículos */
@@ -112,10 +108,6 @@
   background: linear-gradient(to top, color-mix(in srgb, var(--c-livro) 55%, transparent) var(--pct, 0%), transparent var(--pct, 0%));
 }
 
-.l-livro .l-check.feito::after {
-  font-size: 16px;
-}
-
 .l-livro progress {
   width: 100%;
   height: 4px;
@@ -151,7 +143,7 @@
 
 .l-check.feito::after {
   content: "✓";
-  color: #0b0b0c;
+  color: var(--texto-na-cor);
   font-size: 12px;
   line-height: 1;
 }
@@ -174,34 +166,16 @@
   margin: 0;
 }
 
-.l-acoes .chip[disabled] {
-  opacity: 0.4;
-  cursor: default;
-}
-
-.l-acoes .chip {
-  cursor: pointer;
-}
-
-.l-acoes .chip:not([disabled]):hover {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
-}
-
 .l-cap {
   position: relative;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
+/* base das células em componentes.css */
 .l-cap-num,
 .l-verso {
   width: 100%;
-  border: 0;
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
 }
 
 .l-cap-num {
@@ -215,7 +189,7 @@
 
 .l-cap.feito .l-cap-num {
   background: var(--c-livro);
-  color: #0b0b0c;
+  color: var(--texto-na-cor);
 }
 
 .l-cap.parcial .l-cap-num {
@@ -232,8 +206,8 @@
 }
 
 .l-cap.feito .l-check {
-  border-color: #0b0b0c;
-  background: #0b0b0c;
+  border-color: var(--texto-na-cor);
+  background: var(--texto-na-cor);
 }
 
 .l-cap.feito .l-check::after {
@@ -256,19 +230,17 @@
 
 .l-livro .l-check.feito::after {
   grid-area: 1 / 1;
-  color: #0b0b0c;
+  color: var(--texto-na-cor);
   font-size: 16px;
 }
 
 .l-verso {
   padding: 0.8rem 0;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
 }
 
 .l-verso.feito {
   background: var(--c-livro);
-  color: #0b0b0c;
+  color: var(--texto-na-cor);
 }
 
 @media (max-width: 720px) {
@@ -277,17 +249,10 @@
   .l-livro progress { display: none; }
 }
 
-/* sem login: aviso em popup ao tentar marcar */
+/* sem login: aviso em popup ao tentar marcar (traço e fundo em componentes.css) */
 .aviso-dlg {
   width: min(420px, 92vw);
   padding: 1.25rem 1.5rem;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  color: var(--ink);
-}
-
-.aviso-dlg::backdrop {
-  background: rgba(11, 11, 12, 0.55);
 }
 
 .aviso-dlg h2 {
@@ -305,10 +270,6 @@
   display: flex;
   gap: 0.5rem;
   margin: 0;
-}
-
-.aviso-acoes .chip {
-  text-decoration: none;
 }
 
 /* plano ao qual o progresso está associado */

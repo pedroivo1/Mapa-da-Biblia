@@ -20,8 +20,10 @@
   var pos = { i: 0, c: 1 };
   var tam = 1.2;
   var dlg = null;
+  var grupos = {}; // id do livro -> grupo (cor), de linha-do-tempo/livros.json
   var dlgLeitura = null;
   var dlgMapas = null;
+  var listaMapas = []; // os mapas do capítulo mostrados no popup Mapas
   var mapas = [];
   var voz = window.speechSynthesis || null;
   var falando = false;
@@ -121,7 +123,9 @@
 
   function atualizarOuvir() {
     var bt = raiz.querySelector("[data-ouvir]");
-    if (bt) bt.textContent = falando ? "Parar" : "Ouvir";
+    if (!bt) return;
+    bt.innerHTML = falando ? ICONE_PAUSA : ICONE_PLAY;
+    bt.setAttribute("aria-label", falando ? "Parar" : "Ouvir");
   }
 
   // um trecho por versículo: o Chrome corta falas muito longas
@@ -207,8 +211,17 @@
   var ICONE_MAPA = ICONE_SVG + '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>';
   var ICONE_CALENDARIO = ICONE_SVG + '<rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>';
 
-  var ICONE_SETA_ESQ = Util.seta("esq", 26, "leitor-seta");
-  var ICONE_SETA_DIR = Util.seta("dir", 26, "leitor-seta");
+  var ICONE_SETA_ESQ = Util.seta("esq", 20, "leitor-seta");
+  var ICONE_SETA_DIR = Util.seta("dir", 20, "leitor-seta");
+  var ICONE_PLAY = '<svg class="leitor-icone" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.9l10.5-6.5a1 1 0 0 0 0-1.8L9.5 4.6A1 1 0 0 0 8 5.5z"/></svg>';
+  var ICONE_PAUSA = '<svg class="leitor-icone" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4.5" height="14" rx="1"/><rect x="13.5" y="5" width="4.5" height="14" rx="1"/></svg>';
+
+  // capítulo anterior, livro e capítulo (abre a escolha), próximo: no topo e na barra de baixo
+  function passos(b, ant, prox) {
+    return '<button type="button" data-nav="ant"' + (ant ? "" : " disabled") + ' aria-label="Capítulo anterior">' + ICONE_SETA_ESQ + "</button>" +
+      '<button type="button" class="leitor-passo-ref" data-escolher aria-haspopup="dialog">' + esc(b.nome) + " " + pos.c + "</button>" +
+      '<button type="button" data-nav="prox"' + (prox ? "" : " disabled") + ' aria-label="Próximo capítulo">' + ICONE_SETA_DIR + "</button>";
+  }
 
   function render() {
     var b = canon[pos.i];
@@ -217,36 +230,40 @@
     var ant = anterior();
     var prox = proximo();
     var h = '<div class="leitor-barra">' +
-      '<button type="button" data-escolher aria-haspopup="dialog"><span class="leitor-ref">' + esc(b.nome) + " " + pos.c + "</span> " + Util.seta("baixo", 12) + "</button>" +
+      '<span class="leitor-nav-topo">' + passos(b, ant, prox) + "</span>" +
       (plano ? '<a class="leitor-plano-link hud" href="/plano-de-leitura/#' + esc(plano.id) + '">' + esc(plano.nome) + "</a>" : "") +
       '<span class="leitor-fonte">' +
-      '<button type="button" data-versao aria-haspopup="dialog" title="' + esc(Versao.achar(Versao.atual()).nome) + '">' + Versao.achar(Versao.atual()).sigla + " " + Util.seta("baixo", 12) + "</button>" +
-      (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog" aria-label="Mapas (' + doCapitulo.length + ')">' + ICONE_MAPA + '<span class="leitor-bt-txt">Mapas</span> (' + doCapitulo.length + ")</button>" : "") +
-      '<button type="button" data-leitura aria-haspopup="dialog" aria-label="Leitura">' + ICONE_CALENDARIO + '<span class="leitor-bt-txt">Leitura</span></button>' +
+      (doCapitulo.length ? '<button type="button" data-mapas aria-haspopup="dialog" aria-label="Mapas (' + doCapitulo.length + ')" title="Mapas">' + ICONE_MAPA + '<span class="leitor-bt-n">' + doCapitulo.length + "</span></button>" : "") +
+      '<button type="button" data-leitura aria-haspopup="dialog" aria-label="Leitura" title="Leitura">' + ICONE_CALENDARIO + "</button>" +
       '<button type="button" data-fonte="-1" aria-label="Diminuir letra"' + (tam <= TAM_MIN ? " disabled" : "") + ">A−</button>" +
       '<button type="button" data-fonte="1" aria-label="Aumentar letra"' + (tam >= TAM_MAX ? " disabled" : "") + ">A+</button>" +
+      '<button type="button" data-versao aria-haspopup="dialog" title="' + esc(Versao.achar(Versao.atual()).nome) + '">' + Versao.achar(Versao.atual()).sigla + "</button>" +
       "</span></div>";
     h += '<p class="leitor-aviso hud muted" role="status" hidden></p>';
     h += '<article class="leitor-texto"><h1>' + esc(b.nome) + " " + pos.c + "</h1>";
     h += paragrafos(versos) + "</article>";
-    h += '<div class="leitor-fim">' +
-      '<button type="button" data-nav="ant"' + (ant ? "" : " disabled") + ' aria-label="Capítulo anterior">' + ICONE_SETA_ESQ + "</button>" +
-      '<button type="button" data-nav="prox"' + (prox ? "" : " disabled") + ' aria-label="Próximo capítulo">' + ICONE_SETA_DIR + "</button></div>";
+    // barra de baixo, como nos apps de leitura: capítulo anterior, livro e capítulo, próximo
+    h += '<div class="leitor-rodape"><div class="leitor-rodape-in">' +
+      '<div class="leitor-passo">' + passos(b, ant, prox) + "</div></div></div>";
     raiz.innerHTML = h;
     raiz.style.setProperty("--leitor-fonte", tam + "rem");
     document.title = b.nome + " " + pos.c + " — Bíblia " + Versao.achar(Versao.atual()).sigla + " — Mapa da Bíblia";
+    atualizarOuvir();
     pintar();
   }
 
   /* ---------- grifar e salvar ---------- */
 
+  function chave(livro, cap, v) {
+    return livro + "/" + cap + "/" + v;
+  }
   function chaveDe(v) {
-    return canon[pos.i].id + "/" + pos.c + "/" + v;
+    return chave(canon[pos.i].id, pos.c, v);
   }
   function aplicarMarcacoes(lista) {
     marc = {};
     (lista || []).forEach(function (m) {
-      marc[m.livro + "/" + m.capitulo + "/" + m.versiculo] = m;
+      marc[chave(m.livro, m.capitulo, m.versiculo)] = m;
     });
   }
   function marcacaoDe(v) {
@@ -260,7 +277,7 @@
     Object.keys(marc).forEach(function (k) {
       (marc[k].temas || []).forEach(function (x) { t[x] = true; });
     });
-    return Object.keys(t).sort(function (a, b) { return a.localeCompare(b, "pt-BR"); });
+    return Temas.ordenar(Object.keys(t));
   }
 
   // põe grifo, salvo e seleção nos versículos já desenhados, sem redesenhar o capítulo
@@ -288,13 +305,7 @@
 
   // "João 3:16-18" ou "João 3:1, 5-6"
   function refSelecao() {
-    var partes = [];
-    for (var k = 0; k < selecao.length; k++) {
-      var ini = selecao[k], fim = ini;
-      while (k + 1 < selecao.length && selecao[k + 1] === fim + 1) fim = selecao[++k];
-      partes.push(ini === fim ? String(ini) : ini + "-" + fim);
-    }
-    return canon[pos.i].nome + " " + pos.c + ":" + partes.join(", ");
+    return Temas.ref(canon[pos.i].nome, pos.c, selecao);
   }
 
   var ICONE_SALVAR = ICONE_SVG + '<path d="M6 3h12v18l-6-4-6 4z"/></svg>';
@@ -316,7 +327,7 @@
     var h = '<span class="leitor-acoes-ref hud">' + esc(refSelecao()) + "</span>";
     h += '<button type="button" data-cancelar aria-label="Desmarcar">×</button>';
     if (!Conta || !Conta.usuario()) {
-      h += '<a class="leitor-acoes-entrar hud" href="' + esc(Conta ? Conta.urlEntrar() : "/conta/") + '">Entre para grifar e salvar</a>';
+      h += '<a class="leitor-acoes-entrar hud" href="' + esc(Conta.urlEntrar()) + '">Entre para grifar e salvar</a>';
     } else if (!marcPronto) {
       h += '<span class="leitor-acoes-fazer hud faint">Carregando…</span>';
     } else {
@@ -353,29 +364,25 @@
   // aplica na hora e manda para a conta; se falhar, avisa e volta ao que está no servidor
   function gravarMarcacoes(lista) {
     lista.forEach(function (m) {
-      var k = m.livro + "/" + m.capitulo + "/" + m.versiculo;
+      var k = chave(m.livro, m.capitulo, m.versiculo);
       if (m.grifo || m.salvo) marc[k] = m;
       else delete marc[k];
     });
     selecao = [];
     pintar();
     avisarVoz("");
-    Conta.salvarMarcacoes(lista).catch(function () {
+    Temas.salvar(lista, function () {
       avisarVoz("Não consegui salvar a marcação. Confira a conexão e tente de novo.");
-      Conta.carregarMarcacoes().then(function (l) {
-        aplicarMarcacoes(l);
-        pintar();
-      }, function () {});
+    }, function (l) {
+      aplicarMarcacoes(l);
+      pintar();
     });
   }
 
   // popup Salvar: escolhe os temas (ou cria um) e confirma; ou tira dos salvos
   function abrirSalvar() {
     if (!dlgSalvar) {
-      dlgSalvar = document.createElement("dialog");
-      dlgSalvar.className = "leitor-dlg leitor-dlg-salvar";
-      dlgSalvar.addEventListener("click", function (ev) {
-        if (ev.target === dlgSalvar || ev.target.closest("[data-fechar]")) return dlgSalvar.close();
+      dlgSalvar = Util.dialogo("leitor-dlg leitor-dlg-salvar", function (ev) {
         var t = ev.target.closest("button");
         if (!t) return;
         if (t.hasAttribute("data-confirmar")) return confirmarSalvar(true);
@@ -386,7 +393,6 @@
         ev.preventDefault();
         adicionarTema();
       });
-      document.body.appendChild(dlgSalvar);
     }
     var temas = temasTodos();
     // já vêm marcados os temas de qualquer versículo selecionado que já esteja salvo
@@ -394,12 +400,10 @@
       return selecao.some(function (v) { return marcacaoDe(v).temas.indexOf(t) >= 0; });
     });
     var algumSalvo = selecao.some(function (v) { return marcacaoDe(v).salvo; });
-    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Salvar · ' + esc(refSelecao()) + '</span><button type="button" data-fechar>Fechar</button></div>';
+    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Salvar · ' + esc(refSelecao()) + '</span>' + Util.botaoFechar() + '</div>';
     h += '<div class="leitor-temas"><p class="hud faint">Temas</p><div class="leitor-temas-lista">';
     if (temas.length) {
-      temas.forEach(function (t) {
-        h += '<label class="chip"><input type="checkbox" value="' + esc(t) + '"' + (comuns.indexOf(t) >= 0 ? " checked" : "") + "><span>" + esc(t) + "</span></label>";
-      });
+      h += Temas.chips(temas, function (t) { return comuns.indexOf(t) >= 0; });
     } else {
       h += '<span class="leitor-temas-vazio hud faint">Nenhum tema ainda. Crie o primeiro abaixo ou salve sem tema.</span>';
     }
@@ -408,46 +412,16 @@
     h += '<div class="leitor-temas-acoes"><button type="button" class="btn" data-confirmar>Salvar</button>' +
       (algumSalvo ? '<button type="button" class="btn secundario" data-remover>Remover dos salvos</button>' : "") + "</div></div>";
     dlgSalvar.innerHTML = h;
-    if (!dlgSalvar.open) dlgSalvar.showModal();
+    Util.mostrar(dlgSalvar);
   }
 
   function adicionarTema() {
-    var campo = dlgSalvar.querySelector('input[name="tema"]');
-    var nome = campo.value.replace(/\s+/g, " ").trim();
-    if (!nome) return;
-    var lista = dlgSalvar.querySelector(".leitor-temas-lista");
-    var caixas = lista.querySelectorAll("input");
-    var existe = false;
-    for (var k = 0; k < caixas.length; k++) {
-      if (caixas[k].value.toLowerCase() === nome.toLowerCase()) {
-        caixas[k].checked = true;
-        existe = true;
-      }
-    }
-    if (!existe) {
-      var vazio = lista.querySelector(".leitor-temas-vazio");
-      if (vazio) lista.removeChild(vazio);
-      var rotulo = document.createElement("label");
-      rotulo.className = "chip";
-      var caixa = document.createElement("input");
-      caixa.type = "checkbox";
-      caixa.value = nome;
-      caixa.checked = true;
-      var txt = document.createElement("span");
-      txt.textContent = nome;
-      rotulo.appendChild(caixa);
-      rotulo.appendChild(txt);
-      lista.appendChild(rotulo);
-    }
-    campo.value = "";
-    campo.focus();
+    Temas.adicionarNoPopup(dlgSalvar, true);
   }
 
   function confirmarSalvar(salvo) {
     adicionarTema(); // o que ficou digitado também conta
-    var marcados = [];
-    var caixas = dlgSalvar.querySelectorAll(".leitor-temas-lista input");
-    for (var k = 0; k < caixas.length; k++) if (caixas[k].checked) marcados.push(caixas[k].value);
+    var marcados = Temas.marcadosNoPopup(dlgSalvar);
     dlgSalvar.close();
     gravarMarcacoes(selecao.map(function (v) {
       var m = copiaMarcacao(marcacaoDe(v));
@@ -459,33 +433,47 @@
 
   // a cópia guardada aparece na hora; grifar e salvar só depois que o servidor confirmar
   function carregarMarcacoes() {
-    marcPronto = false;
     selecao = [];
-    if (!Conta || !Conta.usuario()) {
-      aplicarMarcacoes([]);
-      return pintar();
-    }
-    aplicarMarcacoes(Conta.marcacoesGuardadas() || []);
-    pintar();
-    var u = Conta.usuario().id;
-    Conta.carregarMarcacoes().then(function (lista) {
-      if (!Conta.usuario() || Conta.usuario().id !== u) return;
+    Temas.carregar(function (lista, confirmada) {
       aplicarMarcacoes(lista);
-      marcPronto = true;
+      marcPronto = confirmada;
       pintar();
     }, function () {
       avisarVoz("Não consegui carregar seus grifos e versículos salvos. Recarregue a página para tentar de novo.");
     });
   }
 
+  // um botão por capítulo do livro, marcando o que está aberto
+  function botoesCapitulos(livro) {
+    var h = "";
+    for (var c = 1; c <= texto[livro].chapters.length; c++) {
+      h += '<button type="button" data-i="' + livro + '" data-cap="' + c + '"' + (livro === pos.i && c === pos.c ? ' aria-current="true"' : "") + ">" + c + "</button>";
+    }
+    return h;
+  }
+
+  // abre os capítulos do livro numa seção logo abaixo da linha dele; só uma seção por vez
+  function alternarCapitulos(bt) {
+    var antiga = dlg.querySelector(".l-secao-caps");
+    var mesmo = antiga && antiga.getAttribute("data-do-livro") === bt.getAttribute("data-livro");
+    if (antiga) antiga.parentNode.removeChild(antiga);
+    if (mesmo) return;
+    var livro = Number(bt.getAttribute("data-livro"));
+    var sec = document.createElement("div");
+    sec.className = "l-grade l-secao-caps";
+    sec.setAttribute("data-do-livro", String(livro));
+    sec.innerHTML = botoesCapitulos(livro);
+    var fim = bt;
+    while (fim.nextElementSibling && fim.nextElementSibling.hasAttribute("data-livro") && fim.nextElementSibling.offsetTop === bt.offsetTop) fim = fim.nextElementSibling;
+    fim.parentNode.insertBefore(sec, fim.nextSibling);
+    sec.scrollIntoView({ block: "nearest" });
+  }
+
   function abrirEscolha(livro) {
     if (!dlg) {
-      dlg = document.createElement("dialog");
-      dlg.className = "leitor-dlg";
-      dlg.addEventListener("click", function (ev) {
-        if (ev.target === dlg || ev.target.closest("[data-fechar]")) return dlg.close();
+      dlg = Util.dialogo("leitor-dlg", function (ev) {
         var l = ev.target.closest("[data-livro]");
-        if (l) return abrirEscolha(Number(l.getAttribute("data-livro")));
+        if (l) return alternarCapitulos(l);
         var c = ev.target.closest("[data-cap]");
         if (c) {
           dlg.close();
@@ -493,29 +481,24 @@
         }
         if (ev.target.closest("[data-voltar]")) abrirEscolha(null);
       });
-      document.body.appendChild(dlg);
     }
     var h = "";
     if (livro == null) {
-      h += '<div class="leitor-dlg-topo"><span class="hud muted">Livros</span><button type="button" data-fechar>Fechar</button></div>';
+      h += '<div class="leitor-dlg-topo"><span class="hud muted">Livros</span>' + Util.botaoFechar() + '</div>';
       [["AT", "Antigo Testamento"], ["NT", "Novo Testamento"]].forEach(function (ta) {
-        h += '<p class="l-secao hud">' + ta[1] + '</p><div class="leitor-dlg-lista">';
+        h += '<p class="l-secao l-testamento hud">' + ta[1] + '</p><div class="leitor-dlg-lista">';
         canon.forEach(function (b, i) {
           if (b.ta !== ta[0]) return;
-          h += '<button type="button" data-livro="' + i + '"' + (i === pos.i ? ' aria-current="true"' : "") + ">" + esc(b.nome) + "</button>";
+          h += '<button type="button"' + (grupos[b.id] ? ' class="g-' + grupos[b.id] + '"' : "") + ' data-livro="' + i + '"' + (i === pos.i ? ' aria-current="true"' : "") + ">" + esc(b.nome) + "</button>";
         });
         h += "</div>";
       });
     } else {
-      h += '<div class="leitor-dlg-topo"><button type="button" class="leitor-dlg-livros" data-voltar aria-label="Voltar para os livros">' + ICONE_SETA_ESQ + ' Livros</button><span class="hud muted">' + esc(canon[livro].nome) + '</span><button type="button" data-fechar>Fechar</button></div>';
-      h += '<div class="l-grade">';
-      for (var c = 1; c <= texto[livro].chapters.length; c++) {
-        h += '<button type="button" data-i="' + livro + '" data-cap="' + c + '"' + (livro === pos.i && c === pos.c ? ' aria-current="true"' : "") + ">" + c + "</button>";
-      }
-      h += "</div>";
+      h += '<div class="leitor-dlg-topo"><button type="button" class="leitor-dlg-livros" data-voltar aria-label="Voltar para os livros">' + ICONE_SETA_ESQ + ' Livros</button><span class="hud muted">' + esc(canon[livro].nome) + '</span>' + Util.botaoFechar() + '</div>';
+      h += '<div class="l-grade">' + botoesCapitulos(livro) + "</div>";
     }
     dlg.innerHTML = h;
-    if (!dlg.open) dlg.showModal();
+    Util.mostrar(dlg);
   }
 
   // a página Leitura inteira, dentro de um popup (mesma conta, mesmo progresso)
@@ -523,19 +506,14 @@
     // a cada abertura recarrega, para cair no livro que está sendo lido
     var url = "/leitura/?embutido&_=" + Date.now() + "#" + canon[pos.i].id + "/" + pos.c;
     if (!dlgLeitura) {
-      dlgLeitura = document.createElement("dialog");
-      dlgLeitura.className = "leitor-dlg leitor-dlg-leitura";
+      dlgLeitura = Util.dialogo("leitor-dlg leitor-dlg-leitura");
       dlgLeitura.innerHTML =
-        '<div class="leitor-dlg-topo"><span class="hud muted">Leitura</span><button type="button" data-fechar>Fechar</button></div>' +
+        '<div class="leitor-dlg-topo"><span class="hud muted">Leitura</span>' + Util.botaoFechar() + '</div>' +
         '<iframe title="Leitura"></iframe>';
-      dlgLeitura.addEventListener("click", function (ev) {
-        if (ev.target === dlgLeitura || ev.target.closest("[data-fechar]")) dlgLeitura.close();
-      });
-      document.body.appendChild(dlgLeitura);
     }
     var quadro = dlgLeitura.querySelector("iframe");
     quadro.setAttribute("src", url);
-    if (!dlgLeitura.open) dlgLeitura.showModal();
+    Util.mostrar(dlgLeitura);
   }
 
   // popup com os mapas do capítulo: troca de um para outro sem fechar
@@ -556,7 +534,7 @@
     }
     dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
     quadro.setAttribute("title", m.titulo);
-    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido&cap=" + pos.c + "&livro=" + canon[pos.i].id);
+    quadro.setAttribute("src", Util.comParam(m.url, "embutido&cap=" + pos.c + "&livro=" + canon[pos.i].id));
   }
 
   // clicar no nome do mapa abre esse mapa e mostra, num balão, o que ele cobre; clicar de novo fecha
@@ -583,12 +561,20 @@
   function abrirMapas() {
     var lista = mapasDoCapitulo();
     if (!lista.length) return;
+    listaMapas = lista;
     if (!dlgMapas) {
-      dlgMapas = document.createElement("dialog");
-      dlgMapas.className = "leitor-dlg leitor-dlg-leitura leitor-dlg-mapas";
-      document.body.appendChild(dlgMapas);
+      dlgMapas = Util.dialogo("leitor-dlg leitor-dlg-leitura leitor-dlg-mapas", function (ev) {
+        var aba = ev.target.closest("[data-aba]");
+        if (aba) return clicarAba(listaMapas, aba);
+        dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
+        var passo = ev.target.closest("[data-mapas-passo]");
+        if (passo && !passo.disabled) {
+          var k = Number(dlgMapas.getAttribute("data-k")) + Number(passo.getAttribute("data-mapas-passo"));
+          if (k >= 0 && k < listaMapas.length) mostrarApoio(listaMapas, k);
+        }
+      });
     }
-    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Mapas</span><button type="button" data-fechar>Fechar</button></div>' +
+    var h = '<div class="leitor-dlg-topo"><span class="hud muted">Mapas</span>' + Util.botaoFechar() + '</div>' +
       '<div class="leitor-mapas-abas"><div class="leitor-mapas-lista" role="tablist">';
     lista.forEach(function (m, k) {
       h += '<button type="button" data-aba="' + k + '">' + esc(m.titulo) + "</button>";
@@ -598,19 +584,8 @@
       '<button type="button" data-mapas-passo="1" aria-label="Próximo mapa">' + ICONE_SETA_DIR + '</button></span>';
     h += '</div><div class="leitor-mapas-balao" role="status" hidden></div><iframe></iframe>';
     dlgMapas.innerHTML = h;
-    dlgMapas.onclick = function (ev) {
-      if (ev.target === dlgMapas || ev.target.closest("[data-fechar]")) return dlgMapas.close();
-      var aba = ev.target.closest("[data-aba]");
-      if (aba) return clicarAba(lista, aba);
-      dlgMapas.querySelector(".leitor-mapas-balao").hidden = true;
-      var passo = ev.target.closest("[data-mapas-passo]");
-      if (passo && !passo.disabled) {
-        var k = Number(dlgMapas.getAttribute("data-k")) + Number(passo.getAttribute("data-mapas-passo"));
-        if (k >= 0 && k < lista.length) mostrarApoio(lista, k);
-      }
-    };
     mostrarApoio(lista, 0);
-    if (!dlgMapas.open) dlgMapas.showModal();
+    Util.mostrar(dlgMapas);
   }
 
   // troca o texto da versão; se não carregar, volta à anterior
@@ -632,7 +607,7 @@
     if (t.hasAttribute("data-mapas")) return abrirMapas();
     if (t.hasAttribute("data-leitura")) return abrirLeitura();
     if (t.hasAttribute("data-ouvir")) return falando ? parar() : ouvir();
-    if (t.hasAttribute("data-escolher")) return abrirEscolha(pos.i);
+    if (t.hasAttribute("data-escolher")) return abrirEscolha(null);
     if (t.hasAttribute("data-fonte")) {
       tam = Math.min(TAM_MAX, Math.max(TAM_MIN, Math.round((tam + Number(t.getAttribute("data-fonte")) * 0.1) * 10) / 10));
       guardarLeitor({ livro: canon[pos.i].id, cap: pos.c, tam: tam });
@@ -669,6 +644,15 @@
     if (alvo) ir(alvo.i, alvo.c);
   });
 
+  // as duas barras somem ao descer o texto e voltam ao subir
+  var ultimoY = window.pageYOffset || 0;
+  window.addEventListener("scroll", function () {
+    var y = window.pageYOffset || 0;
+    if (Math.abs(y - ultimoY) < 6) return;
+    document.body.classList.toggle("leitor-rolou", y > ultimoY && y > 80);
+    ultimoY = y;
+  }, { passive: true });
+
   window.addEventListener("hashchange", function () {
     var p = doHash();
     if (p && (p.i !== pos.i || p.c !== pos.c)) {
@@ -684,12 +668,14 @@
     if (voz) voz.cancel();
   });
 
+  // id do plano da URL (?plano=id; ?mapa=id é o nome antigo), ou "" sem plano
+  var idPlano = Util.param("plano") || Util.param("mapa") || "";
+
   function montarPlano(lista, listaEras) {
-    var id = (/[?&](?:plano|mapa)=([a-z0-9-]+)/.exec(location.search) || [])[1];
-    if (!id || !lista) return;
+    if (!idPlano || !lista) return;
     var porId = {};
     canon.forEach(function (b, i) { porId[b.id] = i; });
-    (lista.planos || []).forEach(function (m) { if (m.id === id) plano = m; });
+    (lista.planos || []).forEach(function (m) { if (m.id === idPlano) plano = m; });
     if (!plano) return;
     (listaEras.eras || []).forEach(function (e) { eras[e.id] = e; });
     plano.etapas.forEach(function (et, e) {
@@ -733,14 +719,15 @@
     }
   }
 
-  var comPlano = /[?&](?:plano|mapa)=/.test(location.search);
   Promise.all([
-    fetch("/compartilhado/dados/canon.json").then(function (r) { return r.json(); }),
-    comPlano ? fetch("/plano-de-leitura/planos.json").then(function (r) { return r.json(); }) : null,
-    comPlano ? fetch("/compartilhado/dados/eras.json").then(function (r) { return r.json(); }) : null,
-    fetch("/mapas/mapas.json").then(function (r) { return r.json(); }).catch(function () { return { mapas: [] }; })
+    Util.json("/compartilhado/dados/canon.json"),
+    idPlano ? Util.json("/plano-de-leitura/planos.json") : null,
+    idPlano ? Util.json("/compartilhado/dados/eras.json") : null,
+    Util.json("/mapas/mapas.json").catch(function () { return { mapas: [] }; }),
+    Util.json("/linha-do-tempo/livros.json").catch(function () { return { livros: [] }; })
   ]).then(function (r) {
     mapas = r[3].mapas || [];
+    (r[4].livros || []).forEach(function (l) { grupos[l.id] = l.grupo; });
     // a sessão vem do navegador (rápido): com ela, as configurações guardadas já valem (a versão escolhida também)
     return (Conta ? Conta.pronto() : Promise.resolve()).then(function () {
       return Versao.carregar(Versao.atual());
@@ -748,6 +735,6 @@
       iniciar(r[0], biblia, r[1], r[2]);
     });
   }).catch(function () {
-    raiz.innerHTML = '<p class="vazio">Não consegui carregar o texto. Abra por um servidor local (<code>python -m http.server</code>).</p>';
+    Util.falha(raiz, "o texto");
   });
 })();

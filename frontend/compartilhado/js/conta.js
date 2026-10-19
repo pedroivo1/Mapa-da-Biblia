@@ -26,6 +26,13 @@
       })
     : null;
 
+  // app Tauri: guarda uma cópia local de toda a conta e funciona sem internet; o que é salvo offline
+  // fica numa fila no biblia-cache e sobe quando a rede volta. No site comum nada disso vale.
+  var TAURI = !!window.__TAURI_INTERNALS__;
+  var KEY_USUARIO = "biblia-usuario";
+  var sincronizando = null;
+  var avisouOffline = false;
+
   var usuario = null;
   var iniciado = null;
   var ouvintes = [];
@@ -72,8 +79,14 @@
   function pronto() {
     if (!sb) return Promise.resolve(null);
     if (!iniciado) {
-      iniciado = sb.auth.getSession().then(function (r) {
+      var sessao = sb.auth.getSession();
+      if (TAURI) sessao = sessao.catch(function () { return { data: { session: null } }; });
+      iniciado = sessao.then(function (r) {
         usuario = r.data.session ? r.data.session.user : null;
+        if (TAURI) {
+          if (usuario) Util.gravar(KEY_USUARIO, { id: usuario.id, email: usuario.email });
+          else if (!navigator.onLine) usuario = Util.ler(KEY_USUARIO, null); // sem rede a sessão não renova: abre com quem entrou
+        }
         iniciarBusca();
         if (usuario) aplicarTema(configAtual());
         return usuario;
@@ -85,6 +98,8 @@
   if (sb) {
     sb.auth.onAuthStateChange(function (evento, sessao) {
       var novo = sessao ? sessao.user : null;
+      if (TAURI && !novo && usuario && !navigator.onLine) return; // sem rede a sessão não vale como saída
+      if (TAURI && novo) Util.gravar(KEY_USUARIO, { id: novo.id, email: novo.email });
       var mudou = (novo && novo.id) !== (usuario && usuario.id);
       usuario = novo;
       // não chamar o Supabase dentro deste callback: adia para depois
@@ -95,7 +110,7 @@
           config = null;
           buscaDe = null;
           buscaMarcacoes = null;
-          if (!usuario) cacheLimpar();
+          if (!usuario) { cacheLimpar(); Util.apagar(KEY_USUARIO); }
           iniciarBusca();
           montarNav();
         }
@@ -117,18 +132,74 @@
   /* ---------- progresso ---------- */
 
   function lerProgresso() {
-    return sb
-      .from("progresso")
-      .select("lido, versiculos")
-      .maybeSingle()
+    // Tauri: o que ficou na fila offline sobe (mesclado) antes de reler, para o servidor não esconder o que foi marcado
+    var antes = TAURI ? enviar().catch(function () {}) : Promise.resolve();
+    return antes
+      .then(function () {
+        return sb.from("progresso").select("lido, versiculos").maybeSingle();
+      })
       .then(function (r) {
         if (r.error) throw r.error;
         var p = r.data
           ? { lido: r.data.lido || {}, versiculos: r.data.versiculos || {}, vazio: false }
           : { lido: {}, versiculos: {}, vazio: true };
-        if (!pendente && !enviando) cacheGravar({ progresso: { lido: p.lido, versiculos: p.versiculos }, tp: Date.now() });
+        if (TAURI && temProgressoNaFila()) return progressoGuardado() || p;
+        if (!pendente && !enviando) cacheGravar({ progresso: { lido: p.lido, versiculos: p.versiculos }, progBase: { lido: p.lido, versiculos: p.versiculos }, tp: Date.now() });
         return p;
+      })
+      .catch(function (e) {
+        var g = TAURI ? progressoGuardado() : null; // sem rede: a cópia local
+        if (g) return g;
+        throw e;
       });
+  }
+
+  function temProgressoNaFila() {
+    var c = cacheLer();
+    return !!(pendente || enviando || (c && c.pendProgresso));
+  }
+
+  // une dois objetos aninhados (progresso de dois lugares): o valor de b vale quando os dois têm a mesma chave
+  function unir(a, b) {
+    if (b === undefined) return a;
+    if (a && b && typeof a === "object" && typeof b === "object" && Array.isArray(a) && Array.isArray(b)) {
+      var vistos = {};
+      return a.concat(b).filter(function (v) {
+        var k = JSON.stringify(v);
+        if (vistos[k]) return false;
+        vistos[k] = true;
+        return true;
+      });
+    }
+    if (a && b && typeof a === "object" && typeof b === "object" && !Array.isArray(a) && !Array.isArray(b)) {
+      var r = {};
+      Object.keys(a).forEach(function (k) { r[k] = a[k]; });
+      Object.keys(b).forEach(function (k) { r[k] = unir(a[k], b[k]); });
+      return r;
+    }
+    return b;
+  }
+
+  // Tauri: o envio substitui a linha inteira; se o servidor mudou desde a última cópia confirmada
+  // (outro aparelho), junta os dois em vez de apagar o que o outro marcou
+  function enviarMesclando(linha) {
+    return sb.from("progresso").select("lido, versiculos").maybeSingle().then(function (r) {
+      if (r.error) return r;
+      var c = cacheLer() || {};
+      var srv = r.data ? { lido: r.data.lido || {}, versiculos: r.data.versiculos || {} } : null;
+      if (srv && (!c.progBase || JSON.stringify(srv) !== JSON.stringify(c.progBase))) {
+        linha.lido = unir(srv.lido, linha.lido);
+        linha.versiculos = unir(srv.versiculos, linha.versiculos);
+      }
+      return sb.from("progresso").upsert(linha).then(function (g) {
+        if (!g.error) {
+          var parte = { progBase: { lido: linha.lido, versiculos: linha.versiculos } };
+          if (!pendente) parte.progresso = parte.progBase;
+          cacheGravar(parte);
+        }
+        return g;
+      });
+    });
   }
 
   // a página altera config.plano no lugar; a base da mescla precisa ser uma cópia independente
@@ -159,6 +230,14 @@
           cb(nova);
         });
         return { servidor: copia(servidor), config: nova };
+      })
+      .catch(function (e) {
+        var c = TAURI ? cacheLer() : null; // sem rede: a cópia local
+        if (!c || !c.config) throw e;
+        var nova = copia(c.config);
+        Object.keys(alteradas).forEach(function (k) { nova[k] = alteradas[k]; });
+        config = nova;
+        return { servidor: copia(c.config), config: nova };
       });
   }
 
@@ -176,10 +255,21 @@
       clearTimeout(temporizadorConfig);
       temporizadorConfig = setTimeout(function () { enviarConfig().catch(function () {}); }, 1500);
     }
+    // Tauri: progresso salvo offline e ainda não enviado volta para a fila
+    if (TAURI && guardado && guardado.pendProgresso && !pendente) {
+      pendente = {
+        user_id: usuario.id,
+        lido: guardado.pendProgresso.lido,
+        versiculos: guardado.pendProgresso.versiculos,
+        atualizado_em: new Date().toISOString()
+      };
+    }
     // cópia recém-confirmada: usa direto, sem ir ao banco (uma página nova a cada clique não custa consulta)
+    // Tauri: online sempre relê (mantém a cópia local em dia); offline usa a cópia sem tentar a rede
     var c = cacheLer();
     var agora = Date.now();
-    if (c && c.progresso && c.config && !pendente && !enviando && agora - (c.tp || 0) < TTL_CACHE && agora - (c.tc || 0) < TTL_CACHE) {
+    var copiaServe = TAURI ? !navigator.onLine : agora - (c && c.tp || 0) < TTL_CACHE && agora - (c && c.tc || 0) < TTL_CACHE;
+    if (c && c.progresso && c.config && !pendente && !enviando && copiaServe) {
       config = c.config;
       Object.keys(alteradas).forEach(function (k) { config[k] = alteradas[k]; });
       buscaProgresso = Promise.resolve({ lido: c.progresso.lido || {}, versiculos: c.progresso.versiculos || {}, vazio: false });
@@ -190,6 +280,10 @@
     buscaConfig = lerConfig();
     buscaProgresso.catch(function () {});
     buscaConfig.catch(function () {});
+    if (TAURI) {
+      carregarMarcacoes().catch(function () {}); // a cópia local inclui os versículos grifados e salvos
+      agendarSincronia();
+    }
   }
 
   function carregar() {
@@ -293,6 +387,7 @@
           if (!(k in alteradas)) alteradas[k] = envio[k];
         });
         temporizadorConfig = setTimeout(enviarConfig, 8000);
+        if (TAURI && !navigator.onLine) avisarOffline();
         throw e;
       });
   }
@@ -326,27 +421,33 @@
     if (enviando) return enviando;
     var linha = pendente;
     pendente = null;
-    enviando = sb
-      .from("progresso")
-      .upsert(linha)
+    enviando = (TAURI ? enviarMesclando(linha) : sb.from("progresso").upsert(linha))
       .then(function (r) {
         enviando = null;
         if (r.error) throw r.error;
-        aviso("");
+        if (TAURI) {
+          if (!pendente) cacheGravar({ pendProgresso: null });
+          if (!temFila()) concluirSincronia();
+        } else {
+          aviso("");
+        }
       })
       .catch(function (e) {
         enviando = null;
         // devolve para a fila, a não ser que algo mais novo já tenha chegado
         if (!pendente) pendente = linha;
-        aviso("Não consegui salvar sua leitura. Tentando de novo…");
-        temporizador = setTimeout(enviar, 5000);
+        if (TAURI && !navigator.onLine) avisarOffline();
+        else aviso("Não consegui salvar sua leitura. Tentando de novo…");
+        temporizador = setTimeout(enviar, TAURI ? 15000 : 5000);
         throw e;
       });
     return enviando;
   }
 
   function linhaDe(lido, versiculos) {
-    cacheGravar({ progresso: { lido: lido, versiculos: versiculos } });
+    var parte = { progresso: { lido: lido, versiculos: versiculos } };
+    if (TAURI) parte.pendProgresso = { lido: lido, versiculos: versiculos }; // sobrevive a fechar o app sem rede
+    cacheGravar(parte);
     return {
       user_id: usuario.id,
       lido: lido,
@@ -420,8 +521,15 @@
         var lista = (r.data || []).map(function (m) {
           return { livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] };
         });
+        var pend = TAURI ? (cacheLer() || {}).pendMarcacoes : null;
+        if (pend && pend.length) lista = aplicarMarcacoes(lista, pend); // o que ficou na fila vale mais que o servidor
         cacheGravar({ marcacoes: lista, tm: Date.now() });
         return lista;
+      })
+      .catch(function (e) {
+        var g = TAURI ? marcacoesGuardadas() : null; // sem rede: a cópia local
+        if (g) return g;
+        throw e;
       });
   }
 
@@ -430,7 +538,7 @@
     if (!sb || !usuario) return Promise.resolve([]);
     if (buscaMarcacoes) return buscaMarcacoes;
     var c = cacheLer();
-    if (c && c.marcacoes && Date.now() - (c.tm || 0) < TTL_CACHE) {
+    if (c && c.marcacoes && (TAURI ? !navigator.onLine : Date.now() - (c.tm || 0) < TTL_CACHE)) {
       buscaMarcacoes = Promise.resolve(c.marcacoes);
     } else {
       buscaMarcacoes = lerMarcacoes().catch(function (e) {
@@ -451,9 +559,59 @@
     return a.livro === b.livro && a.capitulo === b.capitulo && a.versiculo === b.versiculo;
   }
 
-  // grava várias de uma vez (os versículos selecionados): sem grifo e sem salvar, a linha some
-  function salvarMarcacoes(lista) {
-    if (!sb || !usuario) return Promise.reject(new Error("sem usuário"));
+  // aplica uma lista de marcações sobre outra: sem grifo e sem salvar, a marcação some
+  function aplicarMarcacoes(base, lista) {
+    var nova = base.filter(function (a) {
+      return !lista.some(function (m) { return mesmaMarcacao(a, m); });
+    });
+    lista.forEach(function (m) {
+      if (m.grifo || m.salvo) nova.push({ livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] });
+    });
+    return nova;
+  }
+
+  // Tauri: grava na cópia local e na fila; sobe na hora se houver rede, senão fica para quando ela voltar
+  function salvarMarcacoesLocal(lista) {
+    var c = cacheLer() || {};
+    var nova = aplicarMarcacoes(c.marcacoes || [], lista);
+    var fila = (c.pendMarcacoes || []).filter(function (p) {
+      return !lista.some(function (m) { return mesmaMarcacao(p, m); });
+    }).concat(lista.map(function (m) {
+      return { livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] };
+    }));
+    cacheGravar({ marcacoes: nova, pendMarcacoes: fila, tm: Date.now() });
+    buscaMarcacoes = Promise.resolve(nova);
+    if (!navigator.onLine) {
+      avisarOffline();
+      return Promise.resolve(nova);
+    }
+    return enviarMarcacoesFila().then(function () { return nova; }, function () {
+      avisarOffline();
+      return nova;
+    });
+  }
+
+  var enviandoMarcacoes = null;
+  function enviarMarcacoesFila() {
+    var c = cacheLer();
+    var fila = (c && c.pendMarcacoes) || [];
+    if (!fila.length || !sb || !usuario) return Promise.resolve();
+    if (enviandoMarcacoes) return enviandoMarcacoes;
+    enviandoMarcacoes = gravarMarcacoesNoServidor(fila).then(function () {
+      enviandoMarcacoes = null;
+      var resto = ((cacheLer() || {}).pendMarcacoes || []).filter(function (m) {
+        return !fila.some(function (p) { return JSON.stringify(p) === JSON.stringify(m); });
+      });
+      cacheGravar({ pendMarcacoes: resto });
+      if (!temFila()) concluirSincronia();
+    }, function (e) {
+      enviandoMarcacoes = null;
+      throw e;
+    });
+    return enviandoMarcacoes;
+  }
+
+  function gravarMarcacoesNoServidor(lista) {
     var agora = new Date().toISOString();
     var envia = [];
     var apaga = [];
@@ -470,19 +628,61 @@
       rs.forEach(function (r) {
         if (r.error) throw r.error;
       });
+    });
+  }
+
+  // grava várias de uma vez (os versículos selecionados): sem grifo e sem salvar, a linha some
+  function salvarMarcacoes(lista) {
+    if (!sb || !usuario) return Promise.reject(new Error("sem usuário"));
+    if (TAURI) return salvarMarcacoesLocal(lista);
+    return gravarMarcacoesNoServidor(lista).then(function () {
       // a cópia local passa a refletir o que ficou no servidor
       var c = cacheLer();
-      var atual = (c && c.marcacoes) || [];
-      var nova = atual.filter(function (a) {
-        return !lista.some(function (m) { return mesmaMarcacao(a, m); });
-      });
-      lista.forEach(function (m) {
-        if (m.grifo || m.salvo) nova.push({ livro: m.livro, capitulo: m.capitulo, versiculo: m.versiculo, grifo: m.grifo || null, salvo: !!m.salvo, temas: m.temas || [] });
-      });
+      var nova = aplicarMarcacoes((c && c.marcacoes) || [], lista);
       cacheGravar({ marcacoes: nova, tm: Date.now() });
       buscaMarcacoes = Promise.resolve(nova);
       return nova;
     });
+  }
+
+  /* ---------- Tauri: fila offline e sincronização ---------- */
+
+  function temFila() {
+    var c = cacheLer() || {};
+    return !!(pendente || enviando || Object.keys(alteradas).length || c.pendProgresso || (c.pendMarcacoes && c.pendMarcacoes.length));
+  }
+
+  function avisarOffline() {
+    avisouOffline = true;
+    aviso("Sem internet, salvo localmente");
+  }
+
+  // a fila esvaziou: some o aviso de "salvo localmente" e, se ele tinha aparecido, confirma o envio
+  function concluirSincronia() {
+    if (!avisouOffline) return;
+    avisouOffline = false;
+    aviso("Dados sincronizados");
+    setTimeout(function () { if (!avisouOffline) aviso(""); }, 3000);
+  }
+
+  function sincronizar() {
+    if (!TAURI || !sb || !usuario || !navigator.onLine) return Promise.resolve();
+    if (sincronizando) return sincronizando;
+    function ignora() {}
+    sincronizando = Promise.all([enviar().catch(ignora), enviarConfig().catch(ignora), enviarMarcacoesFila().catch(ignora)]).then(function () {
+      sincronizando = null;
+      if (!temFila()) concluirSincronia();
+    });
+    return sincronizando;
+  }
+
+  var sincroniaAgendada = false;
+  function agendarSincronia() {
+    if (sincroniaAgendada) return;
+    sincroniaAgendada = true;
+    window.addEventListener("online", function () { sincronizar(); });
+    setInterval(function () { if (temFila()) sincronizar(); }, 15000);
+    sincronizar();
   }
 
   /* ---------- menu da conta na barra do topo ---------- */
@@ -556,6 +756,7 @@
     // tenta mandar o que falta antes de perder a sessão
     return Promise.all([enviar().catch(function () {}), enviarConfig().catch(function () {})]).then(function () {
       cacheLimpar();
+      Util.apagar(KEY_USUARIO);
       return sb.auth.signOut();
     });
   }
@@ -591,7 +792,7 @@
   };
 
   // Service Worker (sw.js na raiz): páginas e dados abrem do cache, o leitor funciona sem rede
-  if ("serviceWorker" in navigator && location.protocol !== "file:") {
+  if ("serviceWorker" in navigator && location.protocol !== "file:" && !TAURI) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("/sw.js").catch(function () {});
     });

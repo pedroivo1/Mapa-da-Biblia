@@ -1,6 +1,6 @@
-/* Componentes comuns às páginas da Bíblia: cabeçalho, chips, popups e avisos. Carregado por todas. */
-
-/* Linha do tempo bíblica — usa as variáveis de global.css */
+/* Componentes comuns às páginas da Bíblia: cabeçalho, chips, popups e avisos. Carregado por todas
+   menos a inicial, conta e privacidade (o que elas precisam fica em base.css).
+   O que se repete em duas ou mais páginas fica aqui num grupo de seletores; o que muda fica no CSS da página. */
 
 .biblia-topo {
   padding: 3.5rem 1.5rem 2rem;
@@ -41,22 +41,61 @@
   letter-spacing: -0.02em;
 }
 
-.chip {
-  padding: 0.2rem 0.6rem;
+/* botão de contorno (chip e parecidos): linha fina, fundo transparente, inverte ao passar o mouse */
+.chip,
+.leitor-tema-novo button,
+.leitor-mapas-abas button,
+.leitor-acoes button[data-salvar],
+.geral-controle button,
+.filtro-todos,
+.plano-data-bt {
   border: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 0.85rem;
 }
 
-button.chip {
+button.chip,
+a.chip,
+.leitor-tema-novo button,
+.leitor-mapas-abas button,
+.leitor-acoes button[data-salvar],
+.geral-controle button,
+.filtro-todos,
+.plano-data-bt {
   cursor: pointer;
 }
 
-button.chip:hover {
+button.chip:hover,
+a.chip:hover,
+.leitor-tema-novo button:hover,
+.leitor-mapas-abas button:hover,
+.leitor-mapas-abas button[aria-current="true"],
+.leitor-acoes button[data-salvar]:hover,
+.leitor-acoes button[data-salvar][aria-pressed="true"],
+.geral-controle button:hover,
+.filtro-todos:hover {
   background: var(--invert-bg);
   color: var(--invert-fg);
+}
+
+.chip {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+a.chip {
+  text-decoration: none;
+}
+
+.chip[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+button.chip[disabled]:hover {
+  background: transparent;
+  color: var(--ink);
 }
 
 .fechar {
@@ -84,13 +123,18 @@ button.chip:hover {
   .biblia-topo { padding: 2.5rem 1.25rem 1.5rem; }
 }
 
-.l-secao {
+/* faixa de título de seção (Leitura, plano, lista de mapas) */
+.l-secao,
+.mapas-livro header {
   display: flex;
   justify-content: space-between;
-  margin: 0;
-  padding: 0.6rem 1rem;
   border-bottom: 1px solid var(--line);
   background: var(--bg-sunken);
+}
+
+.l-secao {
+  margin: 0;
+  padding: 0.6rem 1rem;
 }
 
 .l-grade {
@@ -102,29 +146,54 @@ button.chip:hover {
   grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
 }
 
+/* caixa de traço forte: popups, menus, balões e cartões */
+.leitor-dlg,
+.aviso-dlg,
+.versiculos-menu,
+.filtro-menu,
+.mapa-itens,
+.plano-pop,
+.leitor-mapas-balao,
+.leitor-acoes,
+.era-mapa::before,
+.mapa-cartao,
+.geral-cartao {
+  border: 1px solid var(--ink-strong);
+  background: var(--bg);
+}
+
+/* ... e com a sombra deslocada (a dica da linha do tempo) */
+.leitor-mapas-balao,
+.leitor-acoes,
+.era-mapa::before,
+.mapa-cartao,
+.geral-cartao {
+  box-shadow: 3px 3px 0 var(--ink-strong);
+}
+
+.leitor-dlg,
+.aviso-dlg {
+  color: var(--ink);
+}
+
+.leitor-dlg::backdrop,
+.aviso-dlg::backdrop {
+  background: var(--fundo-popup);
+}
+
 .leitor-dlg {
   width: min(560px, 94vw);
   max-height: 85vh;
   padding: 0;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  color: var(--ink);
-}
-
-.leitor-dlg::backdrop {
-  background: rgba(11, 11, 12, 0.55);
 }
 
 .leitor-dlg-topo {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   padding: 0.6rem 1rem;
   border-bottom: 1px solid var(--line);
-}
-
-.leitor-dlg-topo {
-  gap: 0.75rem;
 }
 
 .leitor-dlg-topo span {
@@ -143,23 +212,52 @@ button.chip:hover {
   cursor: pointer;
 }
 
+.leitor-dlg-topo button[data-fechar] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  line-height: 0;
+}
+
+.leitor-dlg-topo button[data-fechar]:hover {
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+}
+
 .leitor-dlg .l-grade {
   grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
 }
 
-.leitor-dlg .l-grade button {
-  padding: 0.9rem 0;
+/* células das grades: capítulos e livros dos popups, capítulos e versículos da Leitura */
+.leitor-dlg .l-grade button,
+.leitor-dlg-lista button,
+.l-cap-num,
+.l-verso {
   border: 0;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
   background: transparent;
   color: var(--ink);
   font: inherit;
   cursor: pointer;
 }
 
+.leitor-dlg .l-grade button,
+.leitor-dlg-lista button,
+.l-verso {
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.leitor-dlg .l-grade button {
+  padding: 0.9rem 0;
+}
+
 .leitor-dlg .l-grade button:hover,
-.leitor-dlg .l-grade button[aria-current="true"] {
+.leitor-dlg .l-grade button[aria-current="true"],
+.leitor-dlg-lista button:hover,
+.leitor-dlg-lista button[aria-current="true"] {
   background: var(--invert-bg);
   color: var(--invert-fg);
 }
@@ -221,16 +319,7 @@ html.embutido .biblia-topo {
     }
 }
 
-/* versão da Bíblia: botão (leitor e plano de leitura) e popup de escolha */
-.leitor-barra button[data-versao] {
-  padding: 0.45rem 0.8rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-}
-
+/* versão da Bíblia: popup de escolha */
 .versao-lista {
   display: flex;
   flex-direction: column;
@@ -331,19 +420,25 @@ html.embutido .biblia-topo {
   outline-offset: 2px;
 }
 
-.leitor-tema-novo {
+/* campo de tema novo (popups de temas e menu de temas dos versículos salvos) */
+.leitor-tema-novo,
+.versiculos-tema-novo {
   display: flex;
   gap: 0.4rem;
 }
 
-.leitor-tema-novo input {
+.leitor-tema-novo input,
+.versiculos-tema-novo input {
   flex: 1;
   min-width: 0;
-  padding: 0.5rem 0.7rem;
   border: 1px solid var(--line);
-  background: var(--bg);
   color: var(--ink);
   font: inherit;
+}
+
+.leitor-tema-novo input {
+  padding: 0.5rem 0.7rem;
+  background: var(--bg);
 }
 
 .leitor-tema-novo input:focus {
@@ -353,16 +448,6 @@ html.embutido .biblia-topo {
 
 .leitor-tema-novo button {
   padding: 0.5rem 0.8rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
-  cursor: pointer;
-}
-
-.leitor-tema-novo button:hover {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 .leitor-temas-acoes {
@@ -370,4 +455,202 @@ html.embutido .biblia-topo {
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1.25rem;
+}
+
+/* menus suspensos: linhas que escurecem ao passar o mouse */
+.versiculos-menu-item,
+.colunas .filtro-menu label,
+.mapa-item {
+  display: flex;
+  cursor: pointer;
+}
+
+.versiculos-menu-item:hover,
+.colunas .filtro-menu label:hover,
+.mapa-item:hover {
+  background: var(--bg-sunken);
+}
+
+/* details recolhível: sem o marcador do navegador e com a seta do projeto (para baixo; para cima quando aberto) */
+.filtro summary,
+.mapa-grupo summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.filtro summary::-webkit-details-marker,
+.mapa-grupo summary::-webkit-details-marker {
+  display: none;
+}
+
+.item-aval.mau::before,
+.item-aval.bom::before,
+.filtro summary::after,
+.mapa-grupo summary::after {
+  content: "";
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  background: currentColor;
+  -webkit-mask: var(--seta-baixo) center / contain no-repeat;
+  mask: var(--seta-baixo) center / contain no-repeat;
+}
+
+.item-aval.bom::before,
+.filtro[open] summary::after,
+.mapa-grupo[open] summary::after {
+  -webkit-mask-image: var(--seta-cima);
+  mask-image: var(--seta-cima);
+}
+
+/* número do versículo no texto */
+.leitor-texto sup,
+.versiculos-texto sup,
+.versiculos-decorar-texto sup {
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 0.6em;
+}
+
+/* mapas em SVG (mapa aberto e mapa geral): base, terra, água, nomes e cartão do lugar */
+#mapa-svg,
+.geral-svg {
+  line-height: 0;
+}
+
+.mapa-svg,
+.geral-svg svg {
+  display: block;
+  width: 100%;
+  cursor: grab;
+  touch-action: none;
+  font-family: Archivo, sans-serif;
+  user-select: none;
+}
+
+.mapa-svg.arrastando,
+.geral-svg svg.arrastando {
+  cursor: grabbing;
+}
+
+.mapa-terra,
+.geral-terra {
+  fill: var(--bg-sunken);
+}
+
+.mapa-agua,
+.geral-agua {
+  fill: var(--bg);
+}
+
+/* costa em linha fina */
+.mapa-terra,
+.geral-terra,
+.mapa-agua,
+.geral-agua {
+  stroke: var(--faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* nome sobre o mapa, com um halo da cor do fundo */
+.mapa-nome,
+.mapa-provincia-nome,
+.geral-nome {
+  fill: var(--ink-strong);
+  font-weight: 600;
+  paint-order: stroke;
+  stroke: var(--bg-sunken);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+.mapa-cartao,
+.geral-cartao {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 0.6rem;
+  color: var(--ink);
+}
+
+.mapa-cartao[hidden],
+.geral-cartao[hidden] {
+  display: none;
+}
+
+.mapa-cartao h2,
+.geral-cartao h2 {
+  color: var(--ink-strong);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.mapa-cartao-fechar,
+.geral-cartao-fechar {
+  position: absolute;
+  padding: 0.1rem 0.5rem;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* embutido (?embutido: popup do leitor, linha do tempo): o mapa ocupa a janela */
+html.embutido .mapa,
+html.embutido .geral-pagina {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  flex-direction: column;
+  border: 0;
+}
+
+html.embutido .mapa-quadro,
+html.embutido .geral-quadro {
+  min-height: 0;
+  flex: 1;
+}
+
+html.embutido #mapa-svg,
+html.embutido .mapa-svg,
+html.embutido .geral-svg,
+html.embutido .geral-svg svg {
+  height: 100%;
+}
+
+/* telas de toque: alvos de pelo menos 44px */
+@media (pointer: coarse) {
+  .chip,
+  .leitor-mapas-abas button,
+  .leitor-barra button,
+  .geral-controle button {
+    min-height: 44px;
+  }
+
+  .leitor-dlg-lista button,
+  .leitor-dlg .l-grade button {
+    min-height: 48px;
+  }
+}
+
+/* pergunta de confirmação (Util.confirmar) */
+.dlg-confirmar {
+  width: min(420px, 92vw);
+}
+
+.dlg-confirmar-corpo {
+  padding: 1.25rem;
+}
+
+.dlg-confirmar-corpo p {
+  margin: 0 0 1.25rem;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.dlg-confirmar-acoes {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
 }

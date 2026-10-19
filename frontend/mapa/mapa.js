@@ -5,8 +5,16 @@
   "use strict";
 
   var esc = Util.esc;
+  var svg = Util.svg;
+  var limitar = Util.limitar;
 
-  var NS = "http://www.w3.org/2000/svg";
+  // ?m=jo abre mapa-jo.json; sem parâmetro (ou com um id inválido), mapa-abraao.json (viagem de Abrão)
+  var idMapa = (function () {
+    var m = Util.param("m");
+    return m && /^[a-z0-9-]+$/.test(m) ? m : "abraao";
+  })();
+  // ?cap=N: aberto pelo leitor, no capítulo N (null sem ?cap=)
+  var capPedido = Util.param("cap");
   var raiz = document.getElementById("mapa");
   var dados = null;
   var lugares = {};
@@ -22,13 +30,6 @@
   var etapasLigadas = []; // por etapa: a rota aparece no mapa? (vem do capítulo ligado)
   var capitulos = []; // capítulos das etapas, em ordem
   var capLigado = {}; // capítulo -> aparece no mapa? (sem ?cap=, todos ligados)
-
-  function svg(tag, attrs, pai) {
-    var el = document.createElementNS(NS, tag);
-    for (var k in attrs) if (attrs.hasOwnProperty(k)) el.setAttribute(k, attrs[k]);
-    if (pai) pai.appendChild(el);
-    return el;
-  }
 
   // projeções: "mercator" ou "equal-earth" (Equal Earth está em compartilhado/js/projecao.js)
   function merc(lat) {
@@ -60,17 +61,9 @@
     return (merc(m.lat[1]) - merc(m.lat[0])) * m.largura / (2 * Math.PI);
   }
 
-  function pontos(lista) {
-    return lista
-      .map(function (p) {
-        var q = proj(p);
-        return q[0].toFixed(1) + "," + q[1].toFixed(1);
-      })
-      .join(" ");
-  }
-
-  function limitar(v, a, b) {
-    return Math.max(a, Math.min(b, v));
+  // "x,y x,y ..." no SVG; sep "L" para o "d" de um path
+  function pontos(lista, sep) {
+    return Projecao.pontos(proj, lista, sep);
   }
 
   /* janela do mapa (zoom e arrastar) */
@@ -339,7 +332,7 @@
     var g = svg("g", { "class": "mapa-roma" }, svgEl);
     (listaTerritorios() || []).forEach(function (pr) {
       if (citada(pr)) return; // a região destacada já desenha este contorno
-      var d = pr.aneis.map(function (a) { return "M" + pontos(a).replace(/ /g, "L") + "Z"; }).join("");
+      var d = pr.aneis.map(function (a) { return "M" + pontos(a, "L") + "Z"; }).join("");
       var polys = [svg("path", { "class": "mapa-provincia territorio" + (pr.tracejado ? " tracejado" : ""), d: d, "fill-rule": "evenodd" }, g)];
       var q = pr.rotulo ? proj(pr.rotulo) : null;
       var t = svg("text", { "class": "mapa-provincia-nome", "text-anchor": "middle" }, svgEl);
@@ -408,8 +401,8 @@
     dados.fundo.forEach(function (f) {
       if (f.tipo === "terra") {
         // vários anéis num só caminho: os de dentro (mares interiores) ficam vazados
-        var d = f.aneis.map(function (a) { return "M" + pontos(a) + "Z"; }).join("");
-        svg("path", { "class": "mapa-terra", d: d.replace(/ /g, "L"), "fill-rule": "evenodd" }, base);
+        var d = f.aneis.map(function (a) { return "M" + pontos(a, "L") + "Z"; }).join("");
+        svg("path", { "class": "mapa-terra", d: d, "fill-rule": "evenodd" }, base);
       } else if (f.tipo === "mar") {
         svg("polygon", { "class": "mapa-agua", points: pontos(f.pontos) }, base);
       } else {
@@ -449,7 +442,7 @@
       if (!lg.area) return;
       var cor = (lg.provincia && CORES_REGIAO[lg.provincia === true ? lg.id : lg.provincia]) || lg.cor || "#e0348c";
       // a região e as outras partes dela (ilhas) num só caminho; os furos (lagos) ficam vazados
-      var d = [lg.area].concat(lg.extras || []).map(function (a) { return "M" + pontos(a).replace(/ /g, "L") + "Z"; }).join("");
+      var d = [lg.area].concat(lg.extras || []).map(function (a) { return "M" + pontos(a, "L") + "Z"; }).join("");
       areas[lg.id] = svg("path", {
         "class": "mapa-regiao" + (lg.incerto ? " incerto" : "") + (!lg.provincia || lg.tracejado ? " tracejada" : ""),
         d: d,
@@ -648,15 +641,16 @@
     });
 
     // a lista se sobrepõe ao mapa: fecha ao tocar fora ou com Esc
+    function fecharListas() {
+      var abertas = document.querySelectorAll("#mapa-barra .mapa-grupo[open]");
+      for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
+    }
     document.addEventListener("click", function (ev) {
       if (ev.target.closest && ev.target.closest(".mapa-grupo")) return;
-      var abertas = document.querySelectorAll("#mapa-barra .mapa-grupo[open]");
-      for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
+      fecharListas();
     });
     document.addEventListener("keydown", function (ev) {
-      if (ev.key !== "Escape") return;
-      var abertas = document.querySelectorAll("#mapa-barra .mapa-grupo[open]");
-      for (var i = 0; i < abertas.length; i++) abertas[i].open = false;
+      if (ev.key === "Escape") fecharListas();
     });
 
 
@@ -793,11 +787,11 @@
       if (rotas[i] && capitulos.indexOf(e.cap) < 0) capitulos.push(e.cap); // só capítulos que têm rota
     });
     capitulos.sort(function (a, b) { return a - b; });
-    var pedido = /[?&]cap=(\d+)/.exec(location.search);
+    var pedido = capPedido ? parseInt(capPedido, 10) : NaN;
     // material cujos capítulos são de um livro só (ex.: Lucas) ignora ?cap= vindo de outro livro
-    var deLivro = /[?&]livro=([a-z0-9]+)/.exec(location.search);
-    if (pedido && dados.capSomenteLivro && deLivro && deLivro[1] !== dados.capSomenteLivro) pedido = null;
-    var so = pedido && capitulos.indexOf(Number(pedido[1])) >= 0 ? Number(pedido[1]) : null;
+    var deLivro = Util.param("livro");
+    if (dados.capSomenteLivro && deLivro && deLivro !== dados.capSomenteLivro) pedido = NaN;
+    var so = capitulos.indexOf(pedido) >= 0 ? pedido : null;
     capitulos.forEach(function (c) { capLigado[c] = so === null || c === so; });
     aplicarCapitulos();
     construirBarra();
@@ -811,16 +805,11 @@
   // o zoom e a posição em que a pessoa deixou este mapa (por mapa; só quando abre com todos os capítulos)
   var vistaPronta = false;
   var vistaTimer = null;
-  function chaveVista() {
-    var q = /[?&]m=([a-z0-9-]+)/.exec(location.search);
-    return q ? q[1] : "abraao";
-  }
   function restaurarVista() {
-    var embutidoNoLeitor = /[?&]cap=/.test(location.search);
     (window.Conta ? window.Conta.pronto() : Promise.resolve()).then(function () {
       var todas = window.Conta && window.Conta.lerVista("mapas_vista");
-      var v = todas && todas[chaveVista()];
-      if (!embutidoNoLeitor && v && v.length === 3 && v[2] > 0) {
+      var v = todas && todas[idMapa];
+      if (capPedido === null && v && v.length === 3 && v[2] > 0) {
         vb.x = v[0];
         vb.y = v[1];
         vb.w = v[2];
@@ -830,29 +819,17 @@
     });
   }
   function gravarVista() {
-    if (!vistaPronta || !window.Conta || /[?&]cap=/.test(location.search)) return;
+    if (!vistaPronta || !window.Conta || capPedido !== null) return;
     var todas = Object.assign({}, window.Conta.lerVista("mapas_vista") || {});
-    todas[chaveVista()] = [Math.round(vb.x), Math.round(vb.y), Math.round(vb.w)];
+    todas[idMapa] = [Math.round(vb.x), Math.round(vb.y), Math.round(vb.w)];
     window.Conta.guardarVista("mapas_vista", todas);
   }
-  window.addEventListener("pagehide", gravarVista);
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") gravarVista();
-  });
+  Util.aoSair(gravarVista);
 
-  // ?m=jo abre mapa-jo.json; sem parâmetro, mapa-abraao.json (viagem de Abrão)
-  function carregar(url) {
-    return fetch(url).then(function (r) {
-      if (!r.ok) throw new Error("http " + r.status);
-      return r.json();
-    });
-  }
-
-  var qual = /[?&]m=([a-z0-9-]+)/.exec(location.search);
-  carregar(qual ? "/mapa/mapa-" + qual[1] + ".json" : "/mapa/mapa-abraao.json")
+  Util.json("/mapa/mapa-" + idMapa + ".json")
     .then(function (d) {
       // a base do mundo (costas, rios e nomes) é comum a todos os materiais
-      return carregar("/mapa/" + (d.mundo || "mundo.json")).then(function (w) {
+      return Util.json("/mapa/" + (d.mundo || "mundo.json")).then(function (w) {
         d.mapa = w.mapa;
         d.fundo = w.fundo;
         d.rotulos = w.rotulos;
@@ -862,7 +839,7 @@
     .then(function (d) {
       // "geral" (ano; a.C. positivo, d.C. negativo): territórios do mapa geral nesse ano
       var pedidos = [];
-      if (d.geral) pedidos.push(carregar("/mapa/geral-" + d.geral + ".json").then(function (r) { d.terr = { lista: r }; }, function () {}));
+      if (d.geral) pedidos.push(Util.json("/mapa/geral-" + d.geral + ".json").then(function (r) { d.terr = { lista: r }; }, function () {}));
       return Promise.all(pedidos).then(function () {
         return d;
       });
@@ -873,13 +850,12 @@
       if (h1) h1.innerHTML = esc(d.titulo) + " <em>" + esc(d.destaque) + "</em>";
       var sub = document.getElementById("mapa-sub");
       // o ano do mapa (o dos territórios) vai ao lado da referência do livro
-      var ano = d.geral ? " · c. " + (d.geral > 0 ? d.geral + " a.C." : -d.geral + " d.C.") : "";
+      var ano = d.geral ? " · c. " + Util.ano(d.geral) : "";
       if (sub) sub.textContent = d.subtitulo + ano;
       document.title = d.titulo + " " + d.destaque.replace(/\.$/, "") + " — Mapa da Bíblia";
       iniciar();
     })
     .catch(function () {
-      raiz.innerHTML =
-        '<p class="vazio hud faint">Não foi possível carregar o mapa. Abra por um servidor local (python -m http.server).</p>';
+      Util.falha(raiz, "o mapa", "hud faint");
     });
 })();

@@ -5,11 +5,6 @@
   "use strict";
 
   var LT = (window.LT = window.LT || {});
-  var ano = LT.ano;
-  var colunas = LT.colunas;
-  var svg = LT.svg;
-
-  var NS = "http://www.w3.org/2000/svg";
 
   // Anos: a.C. positivo, d.C. negativo. Cada trecho tem a sua escala (px por ano).
   var AXIS_INICIO = 2400;
@@ -108,7 +103,6 @@
   LT.JUNTA = JUNTA;
   LT.MARCOS = MARCOS;
   LT.MODOS = MODOS;
-  LT.NS = NS;
   LT.NT = NT;
   LT.REINO = REINO;
   LT.SEGMENTOS = SEGMENTOS;

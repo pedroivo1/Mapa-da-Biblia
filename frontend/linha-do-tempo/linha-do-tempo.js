@@ -16,7 +16,7 @@
   var REGUA_Y = LT.REGUA_Y;
   var REINO = LT.REINO;
   var Y = LT.Y;
-  var ano = LT.ano;
+  var ano = Util.ano;
   var carregarDados = LT.carregarDados;
   var colunas = LT.colunas;
   var corpo = LT.corpo;
@@ -34,9 +34,10 @@
   var ordemColunas = LT.ordemColunas;
   var reguaAtiva = LT.reguaAtiva;
   var reguaDeRolagem = LT.reguaDeRolagem;
+  var pararRolagem = LT.pararRolagem;
   var rolarSuave = LT.rolarSuave;
   var rotuloPeriodo = LT.rotuloPeriodo;
-  var svg = LT.svg;
+  var svg = Util.svg;
   var telaMudou = LT.telaMudou;
   var trocarPerfil = LT.trocarPerfil;
 
@@ -49,6 +50,22 @@
   var inicialMapa = null; // ano com que o iframe foi aberto
   var mapaAvisou = false; // o iframe já avisou o ano inicial dele
 
+  // o ano no centro da tela (null sem a vista ou no trecho sem data)
+  function anoNoCentro() {
+    var r = raiz.querySelector(".lt-scroll");
+    return r ? LT.anoDeY(r.scrollTop + r.clientHeight / 2) : null;
+  }
+  // refaz a vista sem fechar o painel de detalhe aberto; com abrirFiltro, reabre o menu de livros
+  function refazer(abrirFiltro) {
+    var aberto = painel && !painel.hidden && painel.dataset.key;
+    renderizar();
+    if (abrirFiltro) {
+      var f = document.querySelector(".filtro");
+      if (f) f.open = true;
+    }
+    if (aberto) abrir(aberto);
+  }
+
   // mapa geral embutido (/mapa-geral/?embutido) à direita: liga e desliga pelo filtro "Mapa geral"
   function aplicarMapaGeral() {
     var ligado = !!colunas.mapaGeral;
@@ -58,14 +75,13 @@
     divisor.hidden = !ligado;
     if (ligado) lateral.style.width = larguraMapa() ? larguraMapa() + "px" : "";
     if (!ligado || quadroMapa) return;
-    var rolagem = raiz.querySelector(".lt-scroll");
     var inicial = anoFoco;
-    if (inicial === null && rolagem) inicial = anoParaMapa(LT.anoDeY(rolagem.scrollTop + rolagem.clientHeight / 2));
+    if (inicial === null) inicial = anoParaMapa(anoNoCentro());
     inicialMapa = inicial || 1010; // sempre um ano: o mapa nunca abre sozinho no padrão dele e leva a linha do tempo junto
     inicial = inicialMapa;
     quadroMapa = document.createElement("iframe");
     quadroMapa.title = "Mapa geral";
-    quadroMapa.src = "/mapa-geral/?embutido&v=4" + (inicial ? "&ano=" + inicial : "");
+    quadroMapa.src = "/mapa-geral/?embutido&v=5&de=" + LT.AXIS_INICIO + "&ate=" + LT.AXIS_FIM + (inicial ? "&ano=" + inicial : "");
     lateral.appendChild(quadroMapa);
   }
   // divisor arrastável entre o mapa e a linha do tempo: a pessoa escolhe quanto espaço cada um ocupa
@@ -103,11 +119,6 @@
     function largura(ev) {
       var r = lateral.getBoundingClientRect();
       return Math.round(Math.min(Math.max(ev.clientX - r.left, 280), window.innerWidth - 420));
-    }
-    function refazer() {
-      var aberto = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      if (aberto) abrir(aberto);
     }
     divisor.addEventListener("pointerdown", function (ev) {
       arrastando = true;
@@ -150,10 +161,7 @@
     var linha = corpoEl.querySelector(".lt-foco");
     var a = anoPrevia;
     if (a === null && colunas.mapaGeral && anoFoco !== null) a = anoFoco;
-    if (a === null) {
-      var rolagem = raiz.querySelector(".lt-scroll");
-      if (rolagem) a = anoParaMapa(LT.anoDeY(rolagem.scrollTop + rolagem.clientHeight / 2));
-    }
+    if (a === null) a = anoParaMapa(anoNoCentro());
     if (a === null || a === undefined) {
       if (linha) linha.parentNode.removeChild(linha);
       return;
@@ -256,9 +264,7 @@
       ordem.splice(ordem.indexOf(para) + (depois ? 1 : 0), 0, de);
       colunas.ordem = ordem;
       guardarColunas();
-      var aberto = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      if (aberto) abrir(aberto);
+      refazer();
     }
     cabIn.addEventListener("pointerup", soltar);
     cabIn.addEventListener("pointercancel", soltar);
@@ -316,15 +322,15 @@
     // a régua de rolagem fica ao lado do mapa e tira a sua largura do espaço
     var disponivel = (raiz.clientWidth || 1100) - 2 - (reguaAtiva() ? REGUA_Y : 0);
     // a margem dos rótulos de marcos encolhe aos poucos abaixo de 1200px, até sumir em 700px
-    MARGEM = Math.floor(108 * Math.max(0, Math.min(1, (disponivel - 626) / 500)));
-    var f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM) / flex));
+    MARGEM = Math.floor(108 * Util.limitar((disponivel - 626) / 500, 0, 1));
+    var f = Util.limitar((disponivel - RULER - MARGEM) / flex, 0.3, 3);
     // a coluna das eras não precisa crescer com a tela: passa de ERA_MAX, o resto vai para as outras
     var ERA_MAX = 150;
     var eraFixa = false;
     function ajustarEra() {
       var so = colunas.eras ? larguraEra : 0;
       eraFixa = so > 0 && flex > so && so * f > ERA_MAX;
-      if (eraFixa) f = Math.min(3, Math.max(0.3, (disponivel - RULER - MARGEM - ERA_MAX) / (flex - so)));
+      if (eraFixa) f = Util.limitar((disponivel - RULER - MARGEM - ERA_MAX) / (flex - so), 0.3, 3);
     }
     ajustarEra();
     // faixas largas o bastante para o nome inteiro dos livros, se o resto das colunas aguentar o aperto
@@ -813,25 +819,17 @@
 
   // o ano no centro da tela fica guardado (devagar, depois que a rolagem para) e a linha do tempo reabre nele
   var temporizadorPosicao = null;
-  function guardarPosicao() {
-    clearTimeout(temporizadorPosicao);
-    temporizadorPosicao = setTimeout(function () {
-      var r = raiz.querySelector(".lt-scroll");
-      var a = r ? LT.anoDeY(r.scrollTop + r.clientHeight / 2) : null;
-      if (a !== null && a !== undefined && !restaurando) guardarVista({ ano: Math.round(a) });
-    }, 800);
-  }
   var restaurando = false;
   function guardarPosicaoAgora() {
     clearTimeout(temporizadorPosicao);
-    var r = raiz.querySelector(".lt-scroll");
-    var a = r ? LT.anoDeY(r.scrollTop + r.clientHeight / 2) : null;
+    var a = anoNoCentro();
     if (a !== null && a !== undefined && !restaurando) guardarVista({ ano: Math.round(a) });
   }
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") guardarPosicaoAgora();
-  });
-  window.addEventListener("pagehide", guardarPosicaoAgora);
+  function guardarPosicao() {
+    clearTimeout(temporizadorPosicao);
+    temporizadorPosicao = setTimeout(guardarPosicaoAgora, 800);
+  }
+  Util.aoSair(guardarPosicaoAgora);
   function restaurarPosicao() {
     var r = raiz.querySelector(".lt-scroll");
     var a = vistaGuardada().ano;
@@ -860,22 +858,17 @@
     });
     if (!m) return;
     if (!dlgMapa) {
-      dlgMapa = document.createElement("dialog");
-      dlgMapa.className = "leitor-dlg leitor-dlg-leitura leitor-dlg-mapas";
-      dlgMapa.innerHTML = '<div class="leitor-dlg-topo"><span class="hud muted" data-mapa-info></span><button type="button" data-fechar-mapa>Fechar</button></div><iframe></iframe>';
-      dlgMapa.onclick = function (ev) {
-        if (ev.target === dlgMapa || ev.target.closest("[data-fechar-mapa]")) dlgMapa.close();
-      };
+      dlgMapa = Util.dialogo("leitor-dlg leitor-dlg-leitura leitor-dlg-mapas");
+      dlgMapa.innerHTML = '<div class="leitor-dlg-topo"><span class="hud muted" data-mapa-info></span>' + Util.botaoFechar() + "</div><iframe></iframe>";
       dlgMapa.addEventListener("close", function () {
         dlgMapa.querySelector("iframe").removeAttribute("src");
       });
-      document.body.appendChild(dlgMapa);
     }
     dlgMapa.querySelector("[data-mapa-info]").textContent = m.titulo + " · " + ano(m.ano) + " · " + m.ref;
     var quadro = dlgMapa.querySelector("iframe");
     quadro.setAttribute("title", m.titulo);
-    quadro.setAttribute("src", m.url + (m.url.indexOf("?") < 0 ? "?" : "&") + "embutido");
-    if (!dlgMapa.open) dlgMapa.showModal();
+    quadro.setAttribute("src", Util.comParam(m.url, "embutido"));
+    Util.mostrar(dlgMapa);
   }
 
   function fechar() {
@@ -893,22 +886,14 @@
       });
       colunas.livros = livrosAtivos();
       guardarColunas();
-      var abertoTodos = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      var ft = document.querySelector(".filtro");
-      if (ft) ft.open = true;
-      if (abertoTodos) abrir(abertoTodos);
+      refazer(true);
       return;
     }
     var modo = ev.target.closest && ev.target.closest("[data-modo]");
     if (modo) {
       colunas.modo = modo.getAttribute("data-modo");
       guardarColunas();
-      var painelAberto = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      var fm = document.querySelector(".filtro");
-      if (fm) fm.open = true;
-      if (painelAberto) abrir(painelAberto);
+      refazer(true);
       return;
     }
     var filtro = document.querySelector(".filtro");
@@ -917,7 +902,7 @@
     if (pm) return abrirMapa(pm.getAttribute("data-mapa"));
     var alvo = ev.target.closest && ev.target.closest("[data-abrir]");
     if (alvo) abrir(alvo.getAttribute("data-abrir"));
-    else if (ev.target.closest && ev.target.closest("[data-fechar]")) fechar();
+    else if (ev.target.closest && ev.target.closest(".detalhe [data-fechar]")) fechar();
   });
 
   document.addEventListener("keydown", function (ev) {
@@ -935,24 +920,16 @@
     if (t.hasAttribute("data-mapa-geral")) {
       colunas.mapaGeral = t.checked;
       guardarColunas();
-      var abertoMapa = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      if (abertoMapa) abrir(abertoMapa);
+      refazer();
     } else if (t.hasAttribute("data-grupo")) {
       colunas.grupos[t.getAttribute("data-grupo")] = t.checked;
       colunas.livros = livrosAtivos();
       guardarColunas();
-      var abertoPainel = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      var f = document.querySelector(".filtro");
-      if (f) f.open = true;
-      if (abertoPainel) abrir(abertoPainel);
+      refazer(true);
     } else if (t.hasAttribute("data-coluna")) {
       colunas[t.getAttribute("data-coluna")] = t.checked;
       guardarColunas();
-      var aberto = painel && painel.dataset.key;
-      renderizar();
-      if (aberto) abrir(aberto);
+      refazer();
     }
   });
 
@@ -966,10 +943,7 @@
       if (!rolagem) return;
       if (rolagem.contains(ev.target)) {
         // rolagem nativa do mapa: para a animação para os dois não brigarem
-        if (rolagemQuadro !== null) {
-          cancelAnimationFrame(rolagemQuadro);
-          rolagemQuadro = null;
-        }
+        pararRolagem();
         return;
       }
       if (ev.target.closest && ev.target.closest(".detalhe, .filtro-menu, dialog, .regua-y")) return;
@@ -988,18 +962,12 @@
     temporizador = setTimeout(function () {
       if (telaMudou()) trocarPerfil();
       if (!dados.reis || (raiz.clientWidth === larguraAnterior && reguaAtiva() === reguaAnterior)) return;
-      var aberto = painel && !painel.hidden && painel.dataset.key;
-      renderizar();
-      if (aberto) abrir(aberto);
+      refazer();
     }, 150);
   });
 
   Promise.all(
-    ["/linha-do-tempo/reis.json", "/linha-do-tempo/livros.json", "/compartilhado/dados/eras.json", "/mapas/mapas.json"].map(function (url) {
-      return fetch(url).then(function (r) {
-        return r.json();
-      });
-    })
+    ["/linha-do-tempo/reis.json", "/linha-do-tempo/livros.json", "/compartilhado/dados/eras.json", "/mapas/mapas.json"].map(Util.json)
   ).then(
     function (res) {
       carregarDados(res[0], res[1], res[2], res[3]);
@@ -1017,15 +985,12 @@
           recarregarFiltros();
           guardarPerfisLocal();
           if (JSON.stringify(colunas) === antes) return;
-          var aberto = painel && !painel.hidden && painel.dataset.key;
-          renderizar();
-          if (aberto) abrir(aberto);
+          refazer();
         });
       });
     },
     function () {
-      raiz.innerHTML =
-        '<p class="vazio">Não consegui carregar os dados. Abra por um servidor local (<code>python -m http.server</code>); o navegador bloqueia JSON via <code>file://</code>.</p>';
+      Util.falha(raiz, "os dados");
     }
   );
 })();

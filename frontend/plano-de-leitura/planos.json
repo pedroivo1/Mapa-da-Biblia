@@ -34,6 +34,12 @@
        "ate": 50
       },
       {
+       "livro": "jo",
+       "de": 1,
+       "ate": 42,
+       "nota": "Sem data no texto; encaixado aqui, nos séculos de silêncio entre José e Moisés, época provável de Jó."
+      },
+      {
        "livro": "exodo",
        "de": 1,
        "ate": 12
@@ -669,20 +675,6 @@
        "livro": "apocalipse",
        "de": 1,
        "ate": 22
-      }
-     ]
-    },
-    {
-     "era": "sem-data",
-     "nome": "Jó, à parte",
-     "periodo": "Provavelmente época dos patriarcas",
-     "resumo": "Sem data no texto; provavelmente viveu na época de Abraão (c. 2166–1876 a.C.), mas fica para o fim para não interromper a história de Abraão ao Apocalipse.",
-     "trechos": [
-      {
-       "livro": "jo",
-       "de": 1,
-       "ate": 42,
-       "nota": "Data incerta; provavelmente na época de Abraão, como na linha do tempo."
       }
      ]
     }

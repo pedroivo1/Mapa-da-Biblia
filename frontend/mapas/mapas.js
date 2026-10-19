@@ -43,11 +43,11 @@
   }
 
   Promise.all([
-    fetch("/mapas/mapas.json").then(function (r) { return r.json(); }),
-    fetch("/compartilhado/dados/canon.json").then(function (r) { return r.json(); })
+    Util.json("/mapas/mapas.json"),
+    Util.json("/compartilhado/dados/canon.json")
   ]).then(function (r) {
     render(r[0].mapas, r[1]);
   }, function () {
-    raiz.innerHTML = '<p class="vazio hud faint">Não foi possível carregar os mapas. Abra por um servidor local (python -m http.server).</p>';
+    Util.falha(raiz, "os mapas", "hud faint");
   });
 })();

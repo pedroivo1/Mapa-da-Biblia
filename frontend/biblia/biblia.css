@@ -3,80 +3,156 @@
 /* leitor: texto da Bíblia, como nos apps */
 .leitor {
   --leitor-fonte: 1.2rem;
-  max-width: 60rem;
-  margin: 0 auto;
-  padding: 0 1.25rem 3rem;
+  max-width: none;
+  margin: 0;
+  padding: 0 1.5rem 6.5rem; /* espaço para a barra de baixo */
 }
 
+/* barra de cima: só ícones, sem bordas e juntos, alinhados à direita */
 .leitor-barra {
-  flex-wrap: wrap;
   position: sticky;
+  margin: 0 -1.5rem;
   top: 47px; /* logo abaixo do .nav (48px, translúcido): a barra não aparece por trás dele */
   z-index: 5;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--line);
+  justify-content: flex-end;
+  gap: 0;
+  padding: 0;
   background: var(--bg);
+  transition: transform 0.2s;
 }
 
 .leitor-barra button,
-.leitor-fim button {
-  padding: 0.45rem 0.8rem;
-  border: 1px solid var(--line);
+.leitor-passo button,
+.leitor-play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  padding: 0.5rem;
+  border: 0;
+  border-radius: 0;
   background: transparent;
   color: var(--ink);
   font: inherit;
+  white-space: nowrap;
   cursor: pointer;
 }
 
 .leitor-barra button:hover:not([disabled]),
-.leitor-fim button:hover:not([disabled]) {
+.leitor-passo button:hover:not([disabled]) {
   background: var(--invert-bg);
   color: var(--invert-fg);
 }
 
 .leitor-barra button[disabled],
-.leitor-fim button[disabled] {
+.leitor-passo button[disabled] {
   opacity: 0.35;
   cursor: default;
 }
 
+/* sem linhas entre os botões (a borda zera na regra de cima) */
 .leitor-barra button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  white-space: nowrap;
+  min-width: 2.6rem;
+  height: 2.6rem;
+}
+
+.leitor-barra::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.leitor-barra .leitor-icone {
+  width: 22px;
+  height: 22px;
+}
+
+.leitor-bt-n {
+  font-size: 0.8rem;
+}
+
+/* versão: pílula com a sigla, como no app de referência */
+.leitor-barra button[data-versao] {
+  padding: 0 0.9rem;
+  font-weight: 600;
 }
 
 .leitor-icone {
   flex: none;
 }
 
-@media (max-width: 640px) {
-  .leitor-barra {
-    flex-wrap: nowrap;
-    gap: 0.35rem;
-  }
+.leitor-fonte {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* os botões da direita com espaço */
+}
 
-  .leitor-barra button {
-    padding: 0.45rem 0.55rem;
-  }
+/* barra de baixo: ouvir + capítulo anterior / livro e capítulo / próximo */
+.leitor-rodape {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+  padding-bottom: env(safe-area-inset-bottom);
+  transition: transform 0.2s;
+}
 
-  .leitor-bt-txt {
-    display: none;
-  }
+.leitor-rolou .leitor-rodape { transform: translateY(100%); }
+.leitor-rolou .leitor-barra { transform: translateY(-120%); }
+
+.leitor-rodape-in {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.leitor-play {
+  flex: none;
+  width: 3.1rem;
+  height: 3.1rem;
+  padding: 0;
+  background: var(--bg-sunken);
+}
+
+.leitor-passo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  height: 3.1rem;
+  padding: 0;
+  border-radius: 0;
+}
+
+.leitor-passo-ref {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+}
+
+.leitor-seta {
+  flex: none;
 }
 
 .leitor-ref {
   font-weight: 500;
-}
-
-.leitor-fonte {
-  display: flex;
-  gap: 0.35rem;
 }
 
 .leitor-texto h1 {
@@ -93,27 +169,6 @@
 
 .leitor-texto sup {
   margin-right: 0.25em;
-  color: var(--faint);
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.6em;
-}
-
-.leitor-fim button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 4rem;
-  padding: 0.55rem 1.1rem;
-}
-
-.leitor-seta {
-  flex: none;
-}
-
-.leitor-fim {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 2rem;
 }
 
 .leitor-dlg-topo .leitor-dlg-livros {
@@ -130,39 +185,24 @@
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
 }
 
+/* base e hover das células em componentes.css; a faixa da esquerda tem a cor do grupo do livro */
 .leitor-dlg-lista button {
   padding: 0.8rem 1rem;
-  border: 0;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
+  border-left: 4px solid transparent;
   text-align: left;
-  cursor: pointer;
-}
-
-.leitor-dlg-lista button:hover,
-.leitor-dlg-lista button[aria-current="true"] {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 @media (max-width: 720px) {
-  .leitor { padding: 0 1rem 2.5rem; }
+  .leitor { padding: 0 1rem 6.5rem; }
+  .leitor-barra { margin: 0 -1rem; }
+  .leitor-rodape-in { padding: 0.6rem 1rem; }
 }
 
 .leitor-aviso {
   margin: 0.75rem 0 0;
 }
 
-/* leitor em modo mapa: onde estou na ordem */
-/* links do plano: azuis (base.css), sublinhado só ao passar o mouse */
-.plano-voltar a,
-.leitor-plano-link {
-  text-decoration: none;
-}
-
+/* leitor em modo mapa: onde estou na ordem (sublinhado só ao passar o mouse, base.css) */
 .leitor-plano-link {
   flex: 1 1 0;
   min-width: 0;
@@ -172,18 +212,13 @@
   white-space: nowrap;
 }
 
-.plano-voltar a:hover,
-.leitor-plano-link:hover,
-.plano-trechos a:hover {
-  text-decoration: underline;
-}
-
 /* popup de material de apoio no leitor */
 .leitor-mapas-abas {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.6rem 1rem 0;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--line);
 }
 
 /* as abas rolam de lado em vez de quebrar de linha; as setas ficam sempre à direita */
@@ -200,41 +235,23 @@
   display: none;
 }
 
+/* abas: botão de contorno (componentes.css) */
 .leitor-mapas-abas button {
   flex: none;
   white-space: nowrap;
   padding: 0.35rem 0.7rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
   font-size: 0.9rem;
-  cursor: pointer;
 }
 
-.leitor-mapas-abas button:hover,
-.leitor-mapas-abas button[aria-current="true"] {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
-}
-
-.leitor-mapas-abas {
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid var(--line);
-}
-
-/* balão com o resumo do mapa (mesmo traço da dica da linha do tempo) */
+/* balão com o resumo do mapa (mesmo traço da dica da linha do tempo, componentes.css) */
 .leitor-mapas-balao {
   position: absolute;
   z-index: 10;
   width: max-content;
   max-width: min(22rem, calc(100% - 16px));
   padding: 8px 12px;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  box-shadow: 3px 3px 0 var(--ink-strong);
   color: var(--ink-strong);
-  font: 500 12px/1.5 "IBM Plex Mono", monospace;
+  font: 500 12px/1.5 var(--mono);
   letter-spacing: 0.03em;
   pointer-events: none;
 }
@@ -273,22 +290,6 @@
   color: var(--ink);
 }
 
-@media (pointer: coarse) {
-  .chip,
-    .leitor-mapas-abas button,
-    .leitor-barra button,
-    .leitor-fim button,
-    .mapas-acoes .chip,
-    .plano-acoes .chip {
-      min-height: 44px;
-    }
-
-  .leitor-dlg-lista button,
-    .leitor-dlg .l-grade button {
-      min-height: 48px;
-    }
-}
-
 /* versículos: tocar seleciona; grifo e "salvo" vêm da conta (biblia.js, pintar) */
 .leitor-v {
   cursor: pointer;
@@ -320,7 +321,7 @@
 /* barra de ações: fixa embaixo enquanto há versículo selecionado */
 .leitor-acoes {
   position: fixed;
-  bottom: max(0.9rem, env(safe-area-inset-bottom));
+  bottom: calc(5.4rem + env(safe-area-inset-bottom)); /* acima da barra de baixo */
   left: 50%;
   z-index: 40;
   display: flex;
@@ -328,9 +329,6 @@
   gap: 0.6rem;
   max-width: calc(100vw - 1.5rem);
   padding: 0.5rem 0.6rem 0.5rem 0.9rem;
-  border: 1px solid var(--ink-strong);
-  background: var(--bg);
-  box-shadow: 3px 3px 0 var(--ink-strong);
   transform: translateX(-50%);
 }
 
@@ -391,24 +389,14 @@
   transform: rotate(-45deg);
 }
 
+/* Salvar: botão de contorno (componentes.css) */
 .leitor-acoes button[data-salvar] {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.4rem 0.7rem;
-  border: 1px solid var(--line);
-  background: transparent;
-  color: var(--ink);
-  font: inherit;
   font-size: 0.9rem;
   white-space: nowrap;
-  cursor: pointer;
-}
-
-.leitor-acoes button[data-salvar]:hover,
-.leitor-acoes button[data-salvar][aria-pressed="true"] {
-  background: var(--invert-bg);
-  color: var(--invert-fg);
 }
 
 .leitor-acoes button[data-cancelar] {
@@ -456,3 +444,101 @@
 }
 
 /* popup Salvar: temas em chips marcáveis e um campo para criar outro */
+
+/* computador: capítulo anterior / livro / próximo ficam na barra de cima, sem barra de baixo */
+.leitor-nav-topo { display: none; }
+
+@media (min-width: 721px) {
+  .leitor-rodape { display: none; }
+  .leitor { padding-bottom: 3rem; }
+  .leitor-nav-topo {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+  }
+  .leitor-nav-topo .leitor-passo-ref {
+    flex: none;
+    padding: 0 1rem;
+  }
+}
+
+/* popup aberto: a página de trás não rola */
+html { scrollbar-gutter: stable; }
+html:has(dialog[open]) { overflow: hidden; }
+
+/* seção de capítulos dentro da lista de livros: linha inteira */
+.leitor-dlg-lista .l-secao-caps {
+  grid-column: 1 / -1;
+  border-bottom: 1px solid var(--line);
+}
+
+/* computador: lateral 20% maior (coluna mais estreita); texto e botões junto das linhas laterais */
+@media (min-width: 721px) {
+  .frame { max-width: 1152px; }
+  .leitor { padding-right: 3rem; padding-left: 3rem; }
+  .leitor-barra { margin-right: -3rem; margin-left: -3rem; }
+}
+
+/* barra de baixo: botões com área de toque maior */
+.leitor-passo button { height: 100%; min-width: 4rem; }
+.leitor-passo .leitor-passo-ref { min-width: 0; } /* também é botão: sem a largura mínima de cima */
+
+/* números dos capítulos centralizados */
+.leitor-dlg .l-grade button { text-align: center; }
+
+/* livros do popup: faixa na cor do grupo, a mesma da linha do tempo */
+.leitor-dlg-lista .g-lei, .leitor-dlg-lista .g-evangelho { border-left-color: var(--tl-lei); }
+.leitor-dlg-lista .g-historia, .leitor-dlg-lista .g-atos { border-left-color: var(--tl-hist); }
+.leitor-dlg-lista .g-poesia, .leitor-dlg-lista .g-carta { border-left-color: var(--tl-poesia); }
+.leitor-dlg-lista .g-profeta-maior, .leitor-dlg-lista .g-apocalipse { border-left-color: var(--tl-pmaior); }
+.leitor-dlg-lista .g-profeta-menor { border-left-color: var(--tl-pmenor); }
+
+/* separação entre Antigo e Novo Testamento no popup de livros */
+.l-testamento {
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.1rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+}
+
+.l-testamento::before,
+.l-testamento::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* destaque: faixa invertida (preto no tema claro, branco no escuro) */
+.l-testamento {
+  padding: 1.3rem 1rem;
+  border-top: 0;
+  background: var(--invert-bg);
+  color: var(--invert-fg);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.l-testamento::before,
+.l-testamento::after { background: currentColor; opacity: 0.35; }
+
+/* sem faixa preta: destaque só pelo texto maior e em negrito */
+.l-testamento {
+  background: var(--bg);
+  color: var(--ink);
+  border-top: 1px solid var(--line);
+}
+
+.l-testamento::before,
+.l-testamento::after { opacity: 1; background: var(--line); }
+
+/* capítulos: barrinha cinza à esquerda, alinhada com as faixas coloridas dos livros */
+.leitor-dlg-lista .l-secao-caps {
+  border-left: 4px solid var(--line);
+  background: linear-gradient(var(--line), var(--line)) right / 1px 100% no-repeat; /* a linha da direita é uma só, como nos livros */
+}

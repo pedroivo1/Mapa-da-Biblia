@@ -17,6 +17,8 @@
     root.setAttribute("data-theme-pref", pref);
   }
   aplicar();
+  // ?embutido (popup do leitor, mapa na linha do tempo): sem topo, nav nem rodapé; antes do primeiro desenho
+  if (/[?&]embutido/.test(location.search)) root.classList.add("embutido");
   escuro.addEventListener("change", function () {
     if (pref === "system") aplicar();
   });
@@ -41,8 +43,8 @@
   var ICONES = {
     light: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"></path></svg>',
     dark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"></path></svg>',
-    // sol na metade de cima à esquerda, lua na de baixo à direita, cortados pela diagonal
-    system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><defs><clipPath id="tema-sol"><path d="M0 0H24L0 24Z"></path></clipPath><clipPath id="tema-lua"><path d="M24 0V24H0Z"></path></clipPath></defs><g clip-path="url(#tema-sol)"><circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5 5l1.6 1.6M17.4 17.4 19 19M19 5l-1.6 1.6M6.6 17.4 5 19"></path></g><g clip-path="url(#tema-lua)"><path d="M21 14.5A8.5 8.5 0 1 1 9.5 3 7 7 0 0 0 21 14.5z"></path></g></svg>'
+    // sistema: um monitor (desktop)
+    system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1"></rect><path d="M8 20h8M12 16v4"></path></svg>'
   };
   var NOMES = { light: "Claro", dark: "Escuro", system: "Sistema" };
 

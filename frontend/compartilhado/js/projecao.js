@@ -4,6 +4,7 @@
 //   p.proj(lon, lat)       -> [x, y] em unidades do SVG (x de -180° a 180°, y do topo à base)
 //   p.inversa(x, y)        -> [lon, lat]
 //   p.largura, p.altura    -> tamanho do mapa inteiro
+//   Projecao.pontos(f, lista, sep) -> "x,y x,y ..." (uma casa decimal) com f([lon, lat]) -> [x, y]; sep padrão " "
 (function () {
   "use strict";
 
@@ -58,5 +59,15 @@
     };
   }
 
-  window.Projecao = { equalEarth: equalEarth, inversa: inversa, criar: criar, XMAX: XMAX };
+  // pontos [lon, lat] em texto para o SVG: "points" de polygon/polyline, ou sep "L" para o "d" de um path
+  function pontos(f, lista, sep) {
+    return lista
+      .map(function (p) {
+        var q = f(p);
+        return q[0].toFixed(1) + "," + q[1].toFixed(1);
+      })
+      .join(sep || " ");
+  }
+
+  window.Projecao = { equalEarth: equalEarth, inversa: inversa, criar: criar, XMAX: XMAX, pontos: pontos };
 })();

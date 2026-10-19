@@ -13,18 +13,20 @@
 (function () {
   "use strict";
 
-  var NS = "http://www.w3.org/2000/svg";
+  var el = Util.svg;
+  var esc = Util.esc;
+  var limitar = Util.limitar;
   var P = Projecao.criar(3600, 80, -58);
   var L = P.largura;
   var A = P.altura;
   var MAX_BLOCOS = 20;
   var DADOS = "/mapa-geral/dados/";
   // ?dados=curva (ou outro nome) lê /mapa-geral/dados-<nome>/: comparação de versões dos dados (reta × curva)
-  var pedidoDados = /[?&]dados=([a-z0-9-]+)/.exec(location.search);
-  if (pedidoDados) DADOS = "/mapa-geral/dados-" + pedidoDados[1] + "/";
+  var pedidoDados = Util.param("dados");
+  if (pedidoDados && /^[a-z0-9-]+$/.test(pedidoDados)) DADOS = "/mapa-geral/dados-" + pedidoDados + "/";
   var ANO0 = 2500; // ano (a.C.) da posição 0; vem do "de" do índice
 
-  var embutido = /[?&]embutido/.test(location.search);
+  var embutido = Util.param("embutido") !== null;
   var contSvg = document.getElementById("geral-svg");
   var cartao = document.getElementById("geral-cartao");
   var slider = document.getElementById("geral-ano");
@@ -42,6 +44,8 @@ var gRios = null;
   var meta = {}; // id -> {nome, nome_video, cor, desde, ate, nota, nomes}
   var BLOCO = 25;
   var N = 0; // quantidade de anos
+  var LIM0 = 0; // primeira e última posição permitidas: o embutido na linha do tempo recebe ?de=2400&ate=-100
+  var LIM1 = 0;
   var blocos = {}; // índice do bloco -> {formas, uso}
   var pendentes = {}; // índice do bloco -> Promise
   var uso = 0;
@@ -51,19 +55,6 @@ var gRios = null;
   var desenhados = {}; // id -> {path, forma, g, texto, rot}
   var urlTimer = null;
 
-  function el(nome, attrs, pai) {
-    var e = document.createElementNS(NS, nome);
-    for (var k in attrs) if (Object.prototype.hasOwnProperty.call(attrs, k)) e.setAttribute(k, attrs[k]);
-    if (pai) pai.appendChild(e);
-    return e;
-  }
-
-  function esc(t) {
-    return String(t).replace(/[&<>"]/g, function (c) {
-      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
-    });
-  }
-
   /* ---------- anos e blocos ---------- */
 
   function anoDePos(i) {
@@ -72,10 +63,6 @@ var gRios = null;
 
   function posDeAno(a) {
     return a > 0 ? ANO0 - a : ANO0 - 1 - a;
-  }
-
-  function rotuloAno(a) {
-    return a > 0 ? a + " a.C." : (-a) + " d.C.";
   }
 
   function nomeArquivo(a) {
@@ -97,8 +84,10 @@ var gRios = null;
     return n;
   }
 
-  function limitar(v, a, b) {
-    return Math.max(a, Math.min(b, v));
+  // ?nome=N da URL como número inteiro; null se faltar ou não for número
+  function numParam(nome) {
+    var n = parseInt(Util.param(nome), 10);
+    return isNaN(n) ? null : n;
   }
 
   function carregarBloco(b) {
@@ -107,10 +96,7 @@ var gRios = null;
       return Promise.resolve(blocos[b].formas);
     }
     if (pendentes[b]) return pendentes[b];
-    pendentes[b] = fetch(arquivoBloco(b)).then(function (r) {
-      if (!r.ok) throw new Error("http " + r.status);
-      return r.json();
-    }).then(function (d) {
+    pendentes[b] = Util.json(arquivoBloco(b)).then(function (d) {
       delete pendentes[b];
       blocos[b] = { formas: d.formas || [], uso: ++uso };
       podarBlocos();
@@ -328,7 +314,7 @@ var gRios = null;
     var todos = gEstados.querySelectorAll('[data-id="' + ativo + '"]');
     for (var j = 0; j < todos.length; j++) todos[j].setAttribute("class", "geral-estado ativo");
     var m = meta[ativo];
-    var periodo = m.desde != null ? rotuloAno(m.desde) + " – " + rotuloAno(m.ate) : "";
+    var periodo = m.desde != null ? Util.ano(m.desde) + " – " + Util.ano(m.ate) : "";
     var nome = nomeNoAno(ativo, anoDePos(atual));
     cartao.innerHTML =
       '<button type="button" class="geral-cartao-fechar" aria-label="Fechar">×</button>' +
@@ -418,7 +404,8 @@ var gRios = null;
     }
   }
 
-  // o último ano visto fica no navegador e, com login, na conta; o embutido (linha do tempo) não grava
+  // o último ano visto fica no navegador e, com login, na conta (Conta.guardarVista grava os dois); o embutido
+  // (linha do tempo) não grava. KEY_ANO é a chave antiga do navegador, lida só se não houver a nova
   var KEY_ANO = "biblia-mapa-geral";
   var vistaPronta = false; // só grava depois de aplicar o que estava guardado
   var vistaTimer = null;
@@ -427,21 +414,13 @@ var gRios = null;
   }
   function gravarVista() {
     if (embutido || !vistaPronta || !svgEl) return;
-    var v = estadoVista();
-    Util.gravar(KEY_ANO, v);
-    if (window.Conta) window.Conta.guardarVista("mapa_geral", v);
-  }
-  function guardarAno() {
-    gravarVista();
+    if (window.Conta) window.Conta.guardarVista("mapa_geral", estadoVista());
   }
   function agendarVista() {
     clearTimeout(vistaTimer);
     vistaTimer = setTimeout(gravarVista, 600);
   }
-  window.addEventListener("pagehide", gravarVista);
-  document.addEventListener("visibilitychange", function () {
-    if (document.visibilityState === "hidden") gravarVista();
-  });
+  Util.aoSair(gravarVista);
   function anoGuardado() {
     var c = (window.Conta && window.Conta.lerVista("mapa_geral")) || Util.ler(KEY_ANO, null) || {};
     return typeof c.ano === "number" && c.ano ? c.ano : null;
@@ -454,15 +433,15 @@ var gRios = null;
       try {
         if (history.replaceState) history.replaceState(null, "", "?ano=" + a);
       } catch (e) {}
-      guardarAno(a);
+      gravarVista();
     }, 300);
   }
 
   function irPara(i) {
-    atual = limitar(i, 0, N - 1);
+    atual = limitar(i, LIM0, LIM1);
     slider.value = String(atual);
     var a = anoDePos(atual);
-    rotulo.textContent = rotuloAno(a);
+    rotulo.textContent = Util.ano(a);
     rotulo.setAttribute("data-ano", String(a));
     atualizarUrl(a);
     // embutido na linha do tempo: avisa o ano (a.C. positivo) para a linha de foco acompanhar
@@ -472,7 +451,7 @@ var gRios = null;
       if (Math.floor(atual / BLOCO) !== b) return;
       desenharAno(formas, atual);
     }).catch(function () {
-      nota.textContent = "Não foi possível carregar os dados de " + rotuloAno(a) + ".";
+      nota.textContent = "Não foi possível carregar os dados de " + Util.ano(a) + ".";
     });
     // pré-carrega o bloco seguinte (e o anterior, perto da borda)
     if ((b + 1) * BLOCO < N) carregarBloco(b + 1).catch(function () {});
@@ -498,14 +477,14 @@ var gRios = null;
     botaoPlay.innerHTML = "&#10073;&#10073;";
     botaoPlay.setAttribute("aria-label", "Pausar");
     reproduzindo = setInterval(function () {
-      if (atual >= N - 1) return parar();
+      if (atual >= LIM1) return parar();
       irPara(atual + 1);
     }, 1000 / velocidade());
   }
 
   function alternarPlay() {
     if (reproduzindo) return parar();
-    if (atual >= N - 1) irPara(0);
+    if (atual >= LIM1) irPara(LIM0);
     tocar();
   }
 
@@ -549,15 +528,13 @@ var gRios = null;
     svgEl = el("svg", { "class": "geral-svg-el", viewBox: "0 0 " + L + " " + A, role: "img",
       "aria-label": "Mapa-múndi com os povos e impérios de cada ano" });
     var g = el("g", {}, svgEl);
+    function proj(p) { return P.proj(p[0], p[1]); }
     mundo.fundo.forEach(function (f) {
       if (f.tipo === "terra") {
-        var d = f.aneis.map(function (a) {
-          return "M" + a.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join("L") + "Z";
-        }).join("");
+        var d = f.aneis.map(function (a) { return "M" + Projecao.pontos(proj, a, "L") + "Z"; }).join("");
         el("path", { "class": "geral-terra", d: d }, g);
       } else if (f.tipo === "mar") {
-        var pts = f.pontos.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ");
-        el("polygon", { "class": "geral-agua", points: pts }, g);
+        el("polygon", { "class": "geral-agua", points: Projecao.pontos(proj, f.pontos) }, g);
       }
     });
     gEstados = el("g", {}, svgEl);
@@ -565,8 +542,7 @@ var gRios = null;
     gRios = el("g", { "class": "geral-rios" }, svgEl);
     mundo.fundo.forEach(function (f) {
       if (f.tipo !== "rio") return;
-      var pts = f.pontos.map(function (p) { var q = P.proj(p[0], p[1]); return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ");
-      el("polyline", { "class": "geral-rio", points: pts, fill: "none" }, gRios);
+      el("polyline", { "class": "geral-rio", points: Projecao.pontos(proj, f.pontos), fill: "none" }, gRios);
     });
     gNomes = el("g", {}, svgEl);
     contSvg.textContent = "";
@@ -575,26 +551,31 @@ var gRios = null;
     vistaInicial();
   }
 
-  function falha(msg) {
-    contSvg.innerHTML = '<p class="vazio hud faint">' + esc(msg) + "</p>";
-  }
-
-  Promise.all([
-    fetch("/mapa/mundo.json").then(function (r) { return r.json(); }),
-    fetch(DADOS + "indice.json").then(function (r) { return r.json(); })
-  ]).then(function (r) {
+  Promise.all([Util.json("/mapa/mundo.json"), Util.json(DADOS + "indice.json")]).then(function (r) {
     var ind = r[1];
-    if (ind.versao !== 2 || ind.de == null || ind.ate == null) return falha("Ainda não há dados no mapa geral.");
+    if (ind.versao !== 2 || ind.de == null || ind.ate == null) {
+      contSvg.innerHTML = '<p class="vazio hud faint">Ainda não há dados no mapa geral.</p>';
+      return;
+    }
     meta = ind.estados || {};
     ANO0 = ind.de;
     BLOCO = ind.bloco || 25;
     N = posDeAno(ind.ate) - posDeAno(ind.de) + 1;
     nota.textContent = "";
     base(r[0]);
-    slider.max = String(N - 1);
+    LIM0 = 0;
+    LIM1 = N - 1;
+    var de = numParam("de");
+    var ate = numParam("ate");
+    if (embutido && de !== null && ate !== null) {
+      LIM0 = limitar(posDeAno(de), 0, N - 1);
+      LIM1 = limitar(posDeAno(ate), LIM0, N - 1);
+    }
+    slider.min = String(LIM0);
+    slider.max = String(LIM1);
     ligarControles();
     // abre no ano pedido (?ano=-30 = 30 d.C.), senão no último visto, senão em 1010 a.C.
-    var pedido = /[?&]ano=(-?\d+)/.exec(location.search);
+    var pedido = numParam("ano");
     var espera = embutido || !window.Conta ? Promise.resolve() : window.Conta.pronto();
     espera.then(function () {
       // o zoom e a posição em que a pessoa deixou o mapa
@@ -606,8 +587,8 @@ var gRios = null;
         aplicar();
       }
       vistaPronta = true;
-      var ini = posDeAno(1010);
-      var alvo = pedido ? parseInt(pedido[1], 10) : embutido ? null : anoGuardado();
+      var ini = limitar(posDeAno(1010), LIM0, LIM1);
+      var alvo = pedido !== null ? pedido : embutido ? null : anoGuardado();
       if (alvo) ini = posDeAno(alvo);
       irPara(ini);
     });
@@ -620,6 +601,6 @@ var gRios = null;
       irPara(posDeAno(d.ano));
     });
   }).catch(function () {
-    falha("Não foi possível carregar o mapa geral. Abra por um servidor local (python -m http.server).");
+    Util.falha(contSvg, "o mapa geral", "hud faint");
   });
 })();

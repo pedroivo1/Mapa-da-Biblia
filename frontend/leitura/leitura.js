@@ -23,10 +23,6 @@
   var planos = [];
   var eras = {};
 
-  function urlEntrar() {
-    return Conta ? Conta.urlEntrar() : "/conta/";
-  }
-
   function todosVersos(b, c) {
     var a = [];
     for (var i = 1; i <= b.v[c - 1]; i++) a.push(i);
@@ -65,19 +61,31 @@
   function setLivro(b, on) {
     for (var c = 1; c <= b.v.length; c++) setCap(b, c, on);
   }
-  function capsCompletos(b) {
+  // capítulos de um trecho (de..ate, inclusive)
+  function nCaps(de, ate) {
+    return ate - de + 1;
+  }
+  // capítulos completos do trecho de..ate
+  function capsEm(b, de, ate) {
     var n = 0;
-    for (var c = 1; c <= b.v.length; c++) if (lidosCap(b, c) === b.v[c - 1]) n++;
+    for (var c = de; c <= ate; c++) if (lidosCap(b, c) === b.v[c - 1]) n++;
     return n;
+  }
+  // [versículos lidos, versículos ao todo] do trecho de..ate
+  function versosEm(b, de, ate) {
+    var n = 0, t = 0;
+    for (var c = de; c <= ate; c++) {
+      n += lidosCap(b, c);
+      t += b.v[c - 1];
+    }
+    return [n, t];
+  }
+  function capsCompletos(b) {
+    return capsEm(b, 1, b.v.length);
   }
   function capsComAlgo(b) {
     var n = 0;
     for (var c = 1; c <= b.v.length; c++) if (lidosCap(b, c) > 0) n++;
-    return n;
-  }
-  function totalVersos(b) {
-    var n = 0;
-    for (var c = 0; c < b.v.length; c++) n += b.v[c];
     return n;
   }
   // área colorida do quadrado = porcentagem de versículos lidos
@@ -86,11 +94,6 @@
   }
   function livroCompleto(b) {
     return capsCompletos(b) === b.v.length;
-  }
-  function versosLidos(b) {
-    var n = 0;
-    for (var c = 1; c <= b.v.length; c++) n += lidosCap(b, c);
-    return n;
   }
   function estado(feitos, total) {
     return feitos === 0 ? "" : feitos === total ? "feito" : "parcial";
@@ -113,8 +116,9 @@
       var c = capsCompletos(b);
       caps += c;
       totalCaps += b.v.length;
-      versos += versosLidos(b);
-      for (var i = 0; i < b.v.length; i++) totalVersos += b.v[i];
+      var vs = versosEm(b, 1, b.v.length);
+      versos += vs[0];
+      totalVersos += vs[1];
       if (c === b.v.length) livros++;
     });
     [
@@ -132,31 +136,11 @@
 
   // o progresso é sempre mostrado na ordem de um plano: o padrão da conta, ou o histórico
   function planoAtual() {
-    var c = Conta && Conta.usuario() && Conta.config().plano;
+    var c = Conta.usuario() && Conta.config().plano;
     var id = (c && c.padrao) || "historico";
     var achado = null;
     planos.forEach(function (m) { if (m.id === id) achado = m; });
     return achado || planos[0] || null;
-  }
-  function capsEm(b, de, ate) {
-    var n = 0;
-    for (var c = de; c <= ate; c++) if (lidosCap(b, c) === b.v[c - 1]) n++;
-    return n;
-  }
-  function versosEm(b, de, ate) {
-    var n = 0, t = 0;
-    for (var c = de; c <= ate; c++) {
-      n += lidosCap(b, c);
-      t += b.v[c - 1];
-    }
-    return [n, t];
-  }
-  function nomeTrecho(b, tr) {
-    if (tr.de === 1 && tr.ate === b.v.length) return b.nome;
-    return b.nome + " " + tr.de + (tr.ate > tr.de ? "–" + tr.ate : "");
-  }
-  function trechoCompleto(b, tr) {
-    return capsEm(b, tr.de, tr.ate) === tr.ate - tr.de + 1;
   }
   function htmlPlano(plano, off) {
     var h = '<p class="hud muted l-plano">Plano: ' + esc(plano.nome) + ' · <a href="/plano-de-leitura/" target="_top">trocar</a></p>';
@@ -166,20 +150,21 @@
       et.trechos.forEach(function (tr) {
         var b = canonPorId[tr.livro];
         feitos += capsEm(b, tr.de, tr.ate);
-        total += tr.ate - tr.de + 1;
+        total += nCaps(tr.de, tr.ate);
       });
       h += '<p class="l-secao hud">' + esc(era.nome) + (era.periodo ? ' <span class="faint">' + esc(era.periodo) + "</span>" : "") +
         '<span class="faint">' + feitos + "/" + total + " cap.</span></p>";
       h += '<div class="l-livros">';
       et.trechos.forEach(function (tr) {
         var b = canonPorId[tr.livro];
-        var n = tr.ate - tr.de + 1;
+        var n = nCaps(tr.de, tr.ate);
         var c = capsEm(b, tr.de, tr.ate);
         var vs = versosEm(b, tr.de, tr.ate);
         var st = c === n ? "feito" : vs[0] ? "parcial" : "";
+        var nome = esc(Util.trecho(b.nome, tr.de, tr.ate, b.v.length));
         h += '<div class="l-livro ' + st + '">' +
-          '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(vs[0], vs[1]) + '%" data-l-trecho-tog="' + b.id + ":" + tr.de + ":" + tr.ate + '"' + off + ' aria-label="Marcar ' + esc(nomeTrecho(b, tr)) + '" title="Marcar este trecho inteiro"></button>' +
-          '<button type="button" class="l-nome" data-l-abrir="' + b.id + '">' + esc(nomeTrecho(b, tr)) + "</button>" +
+          '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(vs[0], vs[1]) + '%" data-l-trecho-tog="' + b.id + ":" + tr.de + ":" + tr.ate + '"' + off + ' aria-label="Marcar ' + nome + '" title="Marcar este trecho inteiro"></button>' +
+          '<button type="button" class="l-nome" data-l-abrir="' + b.id + '">' + nome + "</button>" +
           '<span class="hud faint">' + c + "/" + n + " cap.</span>" +
           '<progress value="' + c + '" max="' + n + '"></progress></div>';
       });
@@ -212,8 +197,9 @@
         lista.forEach(function (x) {
           var c = capsCompletos(x);
           var st = c === x.v.length ? "feito" : capsComAlgo(x) ? "parcial" : "";
+          var vs = versosEm(x, 1, x.v.length);
           h += '<div class="l-livro ' + st + '">' +
-            '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(versosLidos(x), totalVersos(x)) + '%" data-l-livro-tog="' + x.id + '"' + off + ' aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
+            '<button type="button" class="l-check ' + st + '" style="--pct:' + pct(vs[0], vs[1]) + '%" data-l-livro-tog="' + x.id + '"' + off + ' aria-label="Marcar ' + esc(x.nome) + ' inteiro" title="Marcar o livro inteiro"></button>' +
             '<button type="button" class="l-nome" data-l-abrir="' + x.id + '">' + esc(x.nome) + "</button>" +
             '<span class="hud faint">' + c + "/" + x.v.length + " cap.</span>" +
             '<progress value="' + c + '" max="' + x.v.length + '"></progress></div>';
@@ -254,20 +240,13 @@
 
   var aviso = null;
   function avisarLogin() {
-    if (!aviso) {
-      aviso = document.createElement("dialog");
-      aviso.className = "aviso-dlg";
-      aviso.addEventListener("click", function (ev) {
-        if (ev.target === aviso || ev.target.closest("[data-fechar-aviso]")) aviso.close();
-      });
-      document.body.appendChild(aviso);
-    }
+    if (!aviso) aviso = Util.dialogo("aviso-dlg");
     aviso.innerHTML =
       "<h2>Entre para marcar sua leitura</h2>" +
       "<p>Sem login você só consulta. Com uma conta, o que você marca fica salvo e acompanha você em qualquer aparelho.</p>" +
-      '<p class="aviso-acoes"><a class="chip" href="' + esc(urlEntrar()) + '">Entrar</a> ' +
-      '<button type="button" class="chip" data-fechar-aviso>Agora não</button></p>';
-    if (!aviso.open) aviso.showModal();
+      '<p class="aviso-acoes"><a class="chip" href="' + esc(Conta.urlEntrar()) + '">Entrar</a> ' +
+      '<button type="button" class="chip" data-fechar>Agora não</button></p>';
+    Util.mostrar(aviso);
   }
 
   raiz.addEventListener("click", function (ev) {
@@ -276,7 +255,7 @@
     var muda = t.hasAttribute("data-l-livro-tog") || t.hasAttribute("data-l-trecho-tog") || t.hasAttribute("data-l-livro-set") ||
       t.hasAttribute("data-l-cap-tog") || t.hasAttribute("data-l-cap-set") || t.hasAttribute("data-l-verso");
     // com a cópia guardada na tela, o servidor ainda não confirmou: aguarda, sem pedir login
-    if (muda && !conectado) return Conta && Conta.usuario() ? undefined : avisarLogin();
+    if (muda && !conectado) return Conta.usuario() ? undefined : avisarLogin();
     var b = nav.livro ? canonPorId[nav.livro] : null;
     if (t.hasAttribute("data-l-ir")) {
       nav.nivel = t.getAttribute("data-l-ir");
@@ -292,7 +271,7 @@
       var tt = t.getAttribute("data-l-trecho-tog").split(":");
       var bt = canonPorId[tt[0]];
       var de = Number(tt[1]), ate = Number(tt[2]);
-      var ligar = capsEm(bt, de, ate) !== ate - de + 1;
+      var ligar = capsEm(bt, de, ate) !== nCaps(de, ate);
       for (var k = de; k <= ate; k++) setCap(bt, k, ligar);
       sincronizar(bt);
     } else if (t.hasAttribute("data-l-livro-set")) {
@@ -329,14 +308,13 @@
   }
 
   function carregarProgresso() {
-    if (!Conta) return Promise.resolve(null);
     return Conta.pronto().then(function (u) {
       return u ? Conta.carregar() : null;
     });
   }
 
   function aplicarProgresso(p) {
-    var u = Conta && Conta.usuario();
+    var u = Conta.usuario();
     usuarioCarregado = p && u ? u.id : null;
     conectado = !!usuarioCarregado;
     lido = p ? p.lido : {};
@@ -371,31 +349,28 @@
     return true;
   }
 
-  function mostrar() {
-    render();
-  }
-
   window.addEventListener("hashchange", function () {
     if (canon.length && abrirDoHash()) render();
   });
 
+  // o progresso não veio: nada fica marcável (conectado = false) e nada é salvo
+  function falhaProgresso() {
+    aplicarProgresso(null);
+    raiz.innerHTML = '<p class="vazio">Não consegui carregar seu progresso. Recarregue a página para tentar de novo.</p>';
+  }
+
   function recarregarProgresso() {
     carregarProgresso().then(function (p) {
       aplicarProgresso(p);
-      mostrar();
-    }, function () {
-      aplicarProgresso(null);
-      raiz.innerHTML = '<p class="vazio">Não consegui carregar seu progresso. Recarregue a página para tentar de novo.</p>';
-    });
+      render();
+    }, falhaProgresso);
   }
 
-  if (Conta) {
-    Conta.aoMudar(function (evento, u) {
-      if (!canon.length) return;
-      var id = u ? u.id : null;
-      if (id !== usuarioCarregado) recarregarProgresso();
-    });
-  }
+  Conta.aoMudar(function (evento, u) {
+    if (!canon.length) return;
+    var id = u ? u.id : null;
+    if (id !== usuarioCarregado) recarregarProgresso();
+  });
 
   document.addEventListener("visibilitychange", function () {
     if (document.visibilityState !== "visible" || !conectado || Conta.temPendente()) return;
@@ -404,41 +379,37 @@
 
   // a ordem do progresso vem dos planos (dado de outra fatia); sem eles, cai na lista AT/NT
   var carregarPlanos = Promise.all([
-    fetch("/plano-de-leitura/planos.json").then(function (r) { return r.json(); }),
-    fetch("/compartilhado/dados/eras.json").then(function (r) { return r.json(); })
+    Util.json("/plano-de-leitura/planos.json"),
+    Util.json("/compartilhado/dados/eras.json")
   ]).then(function (r) {
     planos = r[0].planos;
     r[1].eras.forEach(function (e) { eras[e.id] = e; });
   }, function () {});
 
-  if (Conta) Conta.aoConfig(function () { if (canon.length) render(); });
+  Conta.aoConfig(function () { if (canon.length) render(); });
 
-  carregarPlanos.then(function () { return fetch("/compartilhado/dados/canon.json"); })
-    .then(function (r) { return r.json(); })
+  carregarPlanos.then(function () { return Util.json("/compartilhado/dados/canon.json"); })
     .then(function (lista) {
       canon = lista;
       canon.forEach(function (b) { canonPorId[b.id] = b; });
       abrirDoHash();
       // a cópia guardada neste navegador aparece na hora, só para consulta; marcar só depois
       // que o servidor confirmar o progresso (o envio substitui a linha inteira)
-      var mostrouGuardado = (Conta ? Conta.pronto() : Promise.resolve(null)).then(function (u) {
+      var mostrouGuardado = Conta.pronto().then(function (u) {
         var g = u && Conta.progressoGuardado();
         if (!g) return;
         lido = g.lido;
         leitura = g.versiculos;
         conectado = false;
         usuarioCarregado = null;
-        mostrar();
+        render();
       });
       return mostrouGuardado.then(carregarProgresso).then(function (p) {
         aplicarProgresso(p);
         abrirDoHash();
-        mostrar();
-      }, function () {
-        aplicarProgresso(null);
-        raiz.innerHTML = '<p class="vazio">Não consegui carregar seu progresso. Recarregue a página para tentar de novo.</p>';
-      });
+        render();
+      }, falhaProgresso);
     }, function () {
-      raiz.innerHTML = '<p class="vazio">Não consegui carregar os livros. Abra por um servidor local (<code>python -m http.server</code>).</p>';
+      Util.falha(raiz, "os livros");
     });
 })();

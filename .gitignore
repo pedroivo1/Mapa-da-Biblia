@@ -1,3 +1,4 @@
 __pycache__/
 src-tauri/target/
 src-tauri/gen/
+src-tauri/dist/

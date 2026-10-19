@@ -6,6 +6,7 @@
 
   var LT = (window.LT = window.LT || {});
   var esc = Util.esc;
+  var ano = Util.ano;
   var AVALIACAO = LT.AVALIACAO;
   var GRUPO = LT.GRUPO;
   var MARCOS = LT.MARCOS;
@@ -14,9 +15,6 @@
   var dados = {}; // preenchido por carregarDados(); o objeto é o mesmo para todos os arquivos
   var itens = {};
 
-  function ano(a) {
-    return a > 0 ? a + " a.C." : -a + " d.C.";
-  }
   function periodo(i, f) {
     if (i === f) return ano(i);
     if (i > 0 && f > 0) return i + "–" + f + " a.C.";
@@ -181,7 +179,6 @@
     });
   }
 
-  LT.ano = ano;
   LT.carregarDados = carregarDados;
   LT.chip = chip;
   LT.corpo = corpo;
